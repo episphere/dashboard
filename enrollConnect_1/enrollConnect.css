@@ -5,3 +5,7 @@ body {
 h2 {
     color:maroon
 }
+button {
+    border-radius: 15px;
+    color:blue
+}
