@@ -42,16 +42,11 @@ recruit.dashLogin=async function(){ // build the dashboard after logged with key
     // check that key is valid
     try {
         let files = await (await fetch(`${recruit.api}/files`,{
-            //method: 'GET', // *GET, POST, PUT, DELETE, etc.
-            //mode: 'cors', // no-cors, cors, *same-origin
-            //cache: 'no-cache',
-            //credentials: 'omit', // include, *same-origin, omit
             headers:{
                 "Authorization":`Bearer ${recruit.key}`
             }
         })).json()
         recruit.dashUI(files)
-
     } catch(e){
         recruit.dash.innerHTML='<p style="color:red">login failed - invalid key?</p>'
         setTimeout(function(){
