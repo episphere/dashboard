@@ -20,6 +20,7 @@ recruit.ui=function(div){ // build user interface if
         <p>Site Key: <input size=30 type="password" id="key" value="${recruit.store.key}"><button id="connectKey" onclick="recruit.withKey()">Connect</button><input type="checkbox" id="checkSave"><span style="font-size:small;color:black">save</span></p>
         </div>
         `
+        //connectKey.click()
     }
 }
 
@@ -56,7 +57,26 @@ recruit.dashLogin=async function(){ // build the dashboard after logged with key
 }
 
 recruit.dashUI=async function(files){
-    recruit.dash.innerHTML=`<pre>${JSON.stringify(files,null,3)}</pre>`
+    let h = ''
+    h += `<pre>${JSON.stringify(files,null,3)}</pre>`
+    h += '<table><tr><td></td><td></td></tr>'
+    h += '<tr><td id="fileList"></td><td id="datatd">...</td></tr></table>'
+    recruit.dash.innerHTML=h
+    // file list
+    h=''
+    h += `<p id="filesListHeader">File submissions <span style="color:blue;cursor:hand" id="numFiles">(${files.result.length})</span></p>`
+    h += `<p id="fileListBody"></p>`
+    fileList.innerHTML=h
+    numFiles.onclick=function(){
+        h=''
+        files.result.forEach(f=>{
+            debugger
+        })
+
+        
+    }
+    numFiles.onclick()
+
 }
 
 
