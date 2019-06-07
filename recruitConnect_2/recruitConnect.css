@@ -1,0 +1,14 @@
+body {
+    color:navy;
+    font-family:sans-serif
+}
+h2 {
+    color:blueviolet
+}
+button {
+    border-radius: 15px;
+    color:blue
+}
+td {
+    font-family:inherit
+}
