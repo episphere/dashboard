@@ -24,8 +24,8 @@ recruit.ui=function(div){ // build user interface if
     }
 }
 
-recruit.api='https://episphere-connect.herokuapp.com'
-// recruit.api='http://localhost:3000'
+// recruit.api='https://episphere-connect.herokuapp.com'
+recruit.api='http://localhost:3000'
 
 recruit.withKey=function(){
     recruit.dash=recruit.div.querySelector('#recruitDash')
@@ -65,7 +65,7 @@ recruit.dashUI=async function(files){
     recruit.dash.innerHTML=h
     // file list
     h=''
-    h += `<p id="filesListHeader">File submissions <span style="color:blue;cursor:hand" id="numFiles">(${files.result.length})</span></p>`
+    h += `<p id="filesListHeader">File submissions <span style="color:blue;cursor:pointer" id="numFiles">(${files.result.length})</span></p>`
     h += `<p id="fileListBody"></p>`
     fileList.innerHTML=h
     numFiles.onclick=function(){
@@ -76,13 +76,13 @@ recruit.dashUI=async function(files){
             let downloadCSV = document.getElementById('downloadSubmission');
             const result = getSubmissionData(submissionId);
             
-            result.then( data => {
+            result.then(data => {
                 downloadCSV.addEventListener('click', () => {
                     const csv = convertToCSV(data);
                     downloadCSVFile(csv);
                 });
                 downloadCSV.hidden = false;
-                displayTable(data);
+                displayTable(preProcessData(data));
             });
         });
     };
@@ -97,10 +97,24 @@ const getSubmissionData = async (submissionId) => {
     return files.result;
 }
 
+const preProcessData = data => {
+    data.forEach(obj => {
+        for (let key in obj){
+            if(key === 'Connect_ID'){
+                obj['Connect_ID (Internal)'] = obj[key];
+                obj[key] = generateHumanReadableID();
+            }
+        }
+    });
+    return data;
+}
 
+const generateHumanReadableID = () => {
+    let ID = Math.floor(100000000000 + Math.random() * 900000000000).toString();
+    if(ID.indexOf('0') !== 0) return ID;
+}
 
 const displayTable = (tableData) => {
-    console.log(tableData);
     var table = new Tabulator('#submissionData', {
         data:tableData,
         layout:"fitColumns",
