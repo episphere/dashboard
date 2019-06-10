@@ -24,8 +24,8 @@ recruit.ui=function(div){ // build user interface if
     }
 }
 
-// recruit.api='https://episphere-connect.herokuapp.com'
-recruit.api='http://localhost:3000'
+recruit.api='https://episphere-connect.herokuapp.com'
+// recruit.api='http://localhost:3000'
 
 recruit.withKey=function(){
     recruit.dash=recruit.div.querySelector('#recruitDash')
