@@ -72,16 +72,20 @@ recruit.dashUI=async function(files){
         h=''
         files.result.forEach(f=>{
             const submissionId = f.id;
-            const result = getSubmissionData(submissionId);
-            result.then( data => {
-                console.log(data);
-                // displayTable(array);
-            })
-        })
 
-        
-    }
-    numFiles.onclick()
+            let downloadCSV = document.getElementById('downloadSubmission');
+            const result = getSubmissionData(submissionId);
+            
+            result.then( data => {
+                downloadCSV.addEventListener('click', () => {
+                    const csv = convertToCSV(data);
+                    downloadCSVFile(csv);
+                });
+                downloadCSV.hidden = false;
+                displayTable(data);
+            });
+        });
+    };
 }
 
 const getSubmissionData = async (submissionId) => {
@@ -93,9 +97,59 @@ const getSubmissionData = async (submissionId) => {
     return files.result;
 }
 
-const displayTable =(data) => {
-    //define table
-   
+
+
+const displayTable = (tableData) => {
+    console.log(tableData);
+    var table = new Tabulator('#submissionData', {
+        data:tableData,
+        layout:"fitColumns",
+        autoColumns:true,
+        height:"600px",
+        pagination:"local",
+        paginationSize:30,
+        paginationSizeSelector:[30, 40, 50, 60],
+        movableColumns:true,
+    });
+};
+
+function convertToCSV(objArray) {
+    var array = typeof objArray != 'object' ? JSON.parse(objArray) : objArray;
+    var str = '';
+
+    for (var i = 0; i < array.length; i++) {
+        var header = '';
+        var line = '';
+        if(i === 0){
+            const tmp_arr = Object.keys(array[i]);
+            tmp_arr.forEach((h, index) => {
+                if(index !== 0) header += ',';
+                header += h;
+            })
+            header += '\n';
+        }
+        
+        for (var index in array[i]) {
+            if (line != '') line += ','
+            line += array[i][index];
+        }
+
+        str += header+line + '\r\n';
+    }
+    return str;
+};
+
+function downloadCSVFile(csv){
+    let csvData = new Blob([csv], { type: 'data:text/csv;charset=utf-8,' });
+    let csvUrl = URL.createObjectURL(csvData);
+    let link = document.createElement('a');
+    link.href = csvUrl;
+    link.target = '_blank';
+    link.download = 'submission_data.csv';
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 window.onload=_=>{recruit.ui()}
