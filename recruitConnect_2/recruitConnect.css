@@ -12,3 +12,12 @@ button {
 td {
     font-family:inherit
 }
+.col{
+    padding: 30px 0 30px 0;
+}
+.row-first {
+    padding-top: 60px;
+}
+.no-wrap {
+    white-space: nowrap;
+}
