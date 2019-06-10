@@ -63,7 +63,12 @@ recruit.dashLogin=async function(){ // build the dashboard after logged with key
 recruit.dashUI=async function(files){
     document.getElementById('recruitDash').hidden=true;
     let fileList = document.getElementById('fileList');
-    fileList.innerHTML=table(files);
+    if(files.result.length !== 0){
+        fileList.innerHTML=table(files); 
+    }
+    else{
+        fileList.innerHTML = 'No Submission Found!';
+    }
 
     let viewSubmissionElement = document.getElementsByClassName('viewSubmission');
     let downloadSubmissionElement = document.getElementsByClassName('downloadSubmission');
