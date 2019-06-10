@@ -14,7 +14,7 @@ export function table(files) {
             ${files.result.map((value) => `
                 <tr>
                     <td>${value.id}</td>
-                    <td>${value.submissionTimestamp}</td>
+                    <td>${new Date(value.submissionTimestamp).toLocaleString()}</td>
                     <td>${value.version}</td>
                     <td><a class="viewSubmission" data-submission-id="${value.id}" href="#">View Submisson</a></td>
                     <td><a class="downloadSubmission" data-submission-id="${value.id}" href="#">Download Submission</a></td>
