@@ -3,12 +3,12 @@ export function table(files) {
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
                 <tr>
-                    <th>Submission ID</th>
-                    <th>Submission File Name</th>
-                    <th>Submission Time Stamp</th>
-                    <th>Version</th>
-                    <th>View Submission</th>
-                    <th>Download Submission</th>
+                    <th class="no-wrap">Submission ID</th>
+                    <th class="no-wrap">Submission File Name</th>
+                    <th class="no-wrap">Submission Time Stamp</th>
+                    <th class="no-wrap">Version</th>
+                    <th class="no-wrap">View Submission</th>
+                    <th class="no-wrap">Download Submission</th>
                 </tr>
             </thead>
             <tbody>
