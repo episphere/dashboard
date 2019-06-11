@@ -21,3 +21,16 @@ td {
 .no-wrap {
     white-space: nowrap;
 }
+img{
+    height: 70px;
+    width: 210px;
+}
+.td-align {
+    text-align: center;
+}
+.active {
+    color: #253648;
+}
+.fas:hover{
+    color: #253648;
+}

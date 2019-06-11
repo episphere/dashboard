@@ -75,16 +75,21 @@ recruit.dashUI=async function(files){
 
     Array.from(viewSubmissionElement).forEach(element => {
         element.addEventListener('click', () => {
+            removeActiveClass('viewSubmission');
+            element.classList.add('active');
             const submissionId = element.dataset.submissionId;
             const result = getSubmissionData(submissionId);
             result.then(data => {
-                displayTable(preProcessData(data));
+                let finalData = preProcessData(data);
+                displayTable(finalData);
             });
         });
     });
 
     Array.from(downloadSubmissionElement).forEach(element => {
         element.addEventListener('click', () => {
+            removeActiveClass('downloadSubmission');
+            element.classList.add('active');
             const submissionId = element.dataset.submissionId;
             const result = getSubmissionData(submissionId);
             result.then(data => {
@@ -102,6 +107,13 @@ const getSubmissionData = async (submissionId) => {
         }
     })).json();
     return files.result;
+}
+
+const removeActiveClass = (className) => {
+    let fileIconElement = document.getElementsByClassName(className);
+    Array.from(fileIconElement).forEach(elm => {
+        elm.classList.remove('active');
+    });
 }
 
 const preProcessData = data => {
