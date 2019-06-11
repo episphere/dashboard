@@ -22,8 +22,8 @@ td {
     white-space: nowrap;
 }
 img{
-    height: 70px;
-    width: 210px;
+    height: 80px;
+    width: 180px;
 }
 .td-align {
     text-align: center;
@@ -31,6 +31,13 @@ img{
 .active {
     color: #253648;
 }
-.fas:hover{
+.fas:hover {
     color: #253648;
+}
+.site-specific-logo {
+    height: 100px;
+    width: 280px;
+}
+.align-right {
+    text-align: right;
 }
