@@ -49,25 +49,6 @@ recruit.generateKey=async function(){
     recruit.div.querySelector('#newKeyP').innerHTML=`Your Site Key is <span style="color:red">${res.token}</span>. Please store it somewhere safe, you'll need it to start new sessions. This new key was also filled above, so you can now click on the connect button to start a session. If you check the save box, this key will also be stored in this machine and will be filled automatically. Do not use this option in devices that are not under your control at all times`
 }
 
-/*
-recruit.dashLogin=async function(){ // build the dashboard after logged with key
-    // check that key is valid
-    try {
-        let files = await (await fetch(`${recruit.api}/files`,{
-            headers:{
-                "Authorization":`Bearer ${recruit.key}`
-            }
-        })).json()
-        recruit.dashUI(files)
-    } catch(e){
-        recruit.dash.innerHTML='<p style="color:red">login failed - invalid key?</p>'
-        setTimeout(function(){
-            location.reload()
-        },1000)
-    }
-}
-*/
-
 recruit.dashUI=async function(files){
     let h = ''
     h += `<pre>${JSON.stringify(files,null,3)}</pre>`
