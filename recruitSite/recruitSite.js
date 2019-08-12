@@ -22,6 +22,9 @@ recruit.ui=function(div){ // build user interface if
         </div>
         `
         //connectKey.click()
+
+        
+
     }
 }
 
@@ -69,6 +72,12 @@ recruit.dashUI=async function(files){
         
     }
     numFiles.onclick()
+
+}
+
+recruit.selectSite=function(i){
+    i = i||recruit.parms.site
+    let el= document.createElement('select')
 
 }
 
