@@ -73,6 +73,11 @@ recruit.ui=function(div){ // build user interface if
                 recruit.selectSite.appendChild(op)
             })
             recruit.selectSite.value=recruit.parms.siteCode
+            recruit.selectSite.onchange=function(){
+                recruit.parms.siteCode=this.selectedOptions[0].value
+                liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
+                localStorage.recruitParms=JSON.stringify(recruit.parms)
+            }
         })
 
         //<p>Participant Key: <input size=30 type="password" id="key" value="${recruit.store.key}"><button id="connectKey" onclick="recruit.withKey()">Connect</button><input type="checkbox" id="checkSave"><span style="font-size:small;color:black">save</span></p>
