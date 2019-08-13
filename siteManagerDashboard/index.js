@@ -167,8 +167,12 @@ const renderPieChart = (participants) => {
         labels: ['Eligible', 'Not eligible, due to cancer', 'Not eligible, due to age', 'Not eligible, due to age and cancer'],
         type: 'pie'
     }];
+    const pieLayout = {
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)'
+    };
     
-    Plotly.newPlot('pieChart', data, {}, {responsive: true, displayModeBar: false});
+    Plotly.newPlot('pieChart', data, pieLayout, {responsive: true, displayModeBar: false});
 }
 
 const renderBarChart = (participants) => {
