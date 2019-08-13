@@ -4,4 +4,11 @@
 
 .row {
     margin-top: 1rem;
+    margin-bottom: 1rem;
+}
+
+.js-plotly-plot {
+    background-image: radial-gradient(at center center, #f9f7f1 0%, #fffaeb 48%, #feeac9 100%);
+    border-radius: 1rem;
+    margin: 1rem;
 }

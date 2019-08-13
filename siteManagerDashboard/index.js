@@ -12,7 +12,6 @@ const main = async () => {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = '';
             renderCharts(siteKey, userId);
-
             eventParticipantAll(siteKey, userId);
             eventParticipantVerified(siteKey, userId);
             eventParticipantNotVerified(siteKey, userId);
@@ -46,7 +45,6 @@ const main = async () => {
                 document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
                 mainContent.innerHTML = '';
                 renderCharts(siteKey, userId);
-
                 eventParticipantAll(siteKey, userId);
                 eventParticipantVerified(siteKey, userId);
                 eventParticipantNotVerified(siteKey, userId);
@@ -59,6 +57,9 @@ const main = async () => {
 
 const renderLogin = () => {
     return `
+        <div class="row">
+            <h1>Site Study Manager Dashboard</h1>
+        </div>
         <div class="row">
             <div class="col">
                 <label for="siteKey">Site Key</label><input type="password" class="form-control" id="siteKey">
@@ -132,22 +133,27 @@ const authorize = async (siteKey, userId) => {
 }
 
 const renderTable = (data, showButtons) => {
+    if(data.length < 1) return;
     let template = '<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">'
     template += `<thead>
         <tr>
             <th>First Name</th>
+            <th>Middle Initial</th>
             <th>Last Name</th>
+            <th>Date of Birth</th>
             <th>Email</th>
             ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
         </tr>
     </thead>`;
     data.forEach(participant => {
-        if(participant.RcrutES_Fname_v1r0 && participant.RcrutES_Lname_v1r0 && participant.RcrutES_Email_v1r0){
+        if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0){
             template += `
             <tr>
-                <td>${participant.RcrutES_Fname_v1r0}</td>
-                <td>${participant.RcrutES_Lname_v1r0}</td>
-                <td>${participant.RcrutES_Email_v1r0}</td>
+                <td>${participant.RcrutUP_Fname_v1r0}</td>
+                <td>${participant.RcrutUP_Minitial_v1r0 ? participant.RcrutUP_Minitial_v1r0 : ''}</td>
+                <td>${participant.RcrutUP_Lname_v1r0}</td>
+                <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
+                <td>${participant.RcrutUP_Email1_v1r0}</td>
                 ${showButtons ? `<td><button class="btn btn-primary">Verify</button> / <button class="btn btn-primary">Not Verify</button></td>`: ``}
             </tr>
             `;
@@ -169,14 +175,43 @@ const renderPieChart = (participants) => {
     }];
     const pieLayout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)'
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        colorway : ['#00009C', '#006400', '#187981', '#071426']
     };
     
     Plotly.newPlot('pieChart', data, pieLayout, {responsive: true, displayModeBar: false});
 }
 
 const renderBarChart = (participants) => {
-
+    const accountCreated = participants.data.filter(dt => dt.RcrutUP_Fname_v1r0 !== undefined);
+    const consent = participants.data.filter(dt => dt.RcrutCS_Consented_v1r0 === 1);
+    const trace1 = {
+        x: [accountCreated.length, consent.length],
+        y: ['Accounts created', 'Consent complete'],
+        name: 'Completed',
+        type: 'bar',
+        orientation: 'h'
+    };
+    const trace2 = {
+        x: [participants.data.length-accountCreated.length, participants.data.length-consent.length],
+        y: ['Accounts created', 'Consent complete'],
+        name: 'Pending',
+        type: 'bar',
+        orientation: 'h'
+    };
+    const data = [trace1, trace2];
+      
+    const layout = {
+        barmode: 'stack',
+        showlegend: false,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        yaxis: {automargin: true},
+        xaxis: {automargin: true},
+        colorway : ['#184481', '#815518']
+    };
+      
+    Plotly.newPlot('barChart', data, layout, {responsive: true, displayModeBar: false});
 }
 
 const removeActiveClass = (className, activeClass) => {
