@@ -7,7 +7,7 @@ recruit.parms={}
 // At some point this will be an asynchrnous call to a jsonfile or to the data service above
 //recruit.sitesData=(await recruit.getLazyJSON('https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getSiteDetails')).data
 //recruit.sitesData=(await recruit.getLazyJSON('https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getSiteDetails')).data
-recruit.ui=function(div){ // build user interface if 
+recruit.ui=async function(div){ // build user interface if 
     recruit.div=div||document.getElementById('recruitmentDiv')
     if(recruit.div){ // if a target div exists, build
         if(!localStorage.recruit){localStorage.recruit='{}'}
@@ -56,17 +56,29 @@ recruit.ui=function(div){ // build user interface if
         
         // report parameters
         const liParms=document.createElement('li')
-        const liSite=document.createElement('li')
-        liSite.innerHTML='Select Site'
-        liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
         recruitDash.appendChild(liParms)
-        //debugger
+        liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
         
+        const liSite=document.createElement('li')
+        liSite.innerHTML='Select Site: '
+        recruitDash.appendChild(liSite)
+        
+        const liToken=document.createElement('li')
+        recruitDash.appendChild(liToken)
+        liToken.innerHTML='Token: <input id="inputToken" style="color:black" type="password" size=36> <button id="validateToken">validate</button> <button id="generateToken">generate</button> <button id="showToken">show</button>'
+
+        // update parms
+        function updateParms(){
+            liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
+            localStorage.recruitParms=JSON.stringify(recruit.parms)
+        }
+
+
         // Site selection/claim
         recruit.getLazyJSON('https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getSiteDetails',24*60*60*1000).then(x=>{
             recruit.sitesData=x.data
             recruit.selectSite=document.createElement('select')
-            recruitDash.appendChild(recruit.selectSite)
+            liSite.appendChild(recruit.selectSite)
             recruit.sitesData.forEach((s,i)=>{
                 let op = document.createElement('option')
                 op.innerText=s.siteName
@@ -77,14 +89,49 @@ recruit.ui=function(div){ // build user interface if
             recruit.selectSite.value=recruit.parms.siteCode
             recruit.selectSite.onchange=function(){
                 recruit.parms.siteCode=this.selectedOptions[0].value
-                liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
-                localStorage.recruitParms=JSON.stringify(recruit.parms)
+                updateParms()
             }
-            // create token if none was provided
-
-
-
         })
+
+        // Token
+        if(recruit.parms.token){
+            inputToken.value=recruit.parms.token
+        }
+        generateToken.onclick=async function(){
+            tks = await (await fetch('https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getKey')).json()
+            recruit.parms.token=inputToken.value=tks.token
+            recruit.parms.access_token=tks.access_token
+            updateParms()
+        }
+        showToken.onclick=function(){
+            inputToken.type="text"
+            setTimeout(function(){
+                inputToken.type="password"
+            },5000)
+        }
+        validateToken.onclick=async function(){
+            assTk = await (await fetch('https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateToken?token='+inputToken.value)).json()
+            if(assTk.message){
+                recruit.parms.access_token=validateToken.innerText=assTk.message
+                validateToken.style.color='red'
+            }else{
+                recruit.parms.access_token=assTk.access_token
+                validateToken.innerText='valid'
+                validateToken.style.color='green'
+            }
+            updateParms()
+        }
+        
+        inputToken.onkeyup=async function(evt){
+            if(evt.keyCode==13){
+                recruit.parms.token=this.value
+                updateParms()
+            }
+
+            //debugger
+        }
+
+
 
         //<p>Participant Key: <input size=30 type="password" id="key" value="${recruit.store.key}"><button id="connectKey" onclick="recruit.withKey()">Connect</button><input type="checkbox" id="checkSave"><span style="font-size:small;color:black">save</span></p>
         //<p id="newKeyP">If you are a new user you can also <button id="generateKey" onclick="recruit.generateKey()">Generate a new Key</button></p>
@@ -104,7 +151,7 @@ recruit.getToken=async function(){
 }
 
 
-
+/*
 recruit.withKey= async function(){
     recruit.dash=recruit.div.querySelector('#recruitDash')
     // login with key and display dashboard
@@ -149,6 +196,7 @@ recruit.dashUI=async function(files){
     numFiles.onclick()
 
 }
+*/
 
 recruit.getLazyJSON = async function(url,tw){ // lazily cashing url call within time window
     tw = tw || 10000 // default time window in miliseconds
