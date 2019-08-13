@@ -56,6 +56,8 @@ recruit.ui=function(div){ // build user interface if
         
         // report parameters
         const liParms=document.createElement('li')
+        const liSite=document.createElement('li')
+        liSite.innerHTML='Select Site'
         liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
         recruitDash.appendChild(liParms)
         //debugger
@@ -78,6 +80,10 @@ recruit.ui=function(div){ // build user interface if
                 liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
                 localStorage.recruitParms=JSON.stringify(recruit.parms)
             }
+            // create token if none was provided
+
+
+
         })
 
         //<p>Participant Key: <input size=30 type="password" id="key" value="${recruit.store.key}"><button id="connectKey" onclick="recruit.withKey()">Connect</button><input type="checkbox" id="checkSave"><span style="font-size:small;color:black">save</span></p>
@@ -89,7 +95,15 @@ recruit.ui=function(div){ // build user interface if
     }
 }
 
+
+
 recruit.api='https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net'
+
+recruit.getToken=async function(){
+    return (await fetch(recruit.api+'/getKey')).json()
+}
+
+
 
 recruit.withKey= async function(){
     recruit.dash=recruit.div.querySelector('#recruitDash')
