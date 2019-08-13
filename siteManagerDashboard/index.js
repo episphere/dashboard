@@ -176,7 +176,8 @@ const renderPieChart = (participants) => {
     const pieLayout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        colorway : ['#00009C', '#006400', '#187981', '#071426']
+        colorway : ['#00009C', '#006400', '#187981', '#071426'],
+        title: 'Eligibility Screener Progress'
     };
     
     Plotly.newPlot('pieChart', data, pieLayout, {responsive: true, displayModeBar: false});
@@ -187,14 +188,14 @@ const renderBarChart = (participants) => {
     const consent = participants.data.filter(dt => dt.RcrutCS_Consented_v1r0 === 1);
     const trace1 = {
         x: [accountCreated.length, consent.length],
-        y: ['Accounts created', 'Consent complete'],
+        y: ['Accounts created', '  Consent complete'],
         name: 'Completed',
         type: 'bar',
         orientation: 'h'
     };
     const trace2 = {
         x: [participants.data.length-accountCreated.length, participants.data.length-consent.length],
-        y: ['Accounts created', 'Consent complete'],
+        y: ['Accounts created', '  Consent complete'],
         name: 'Pending',
         type: 'bar',
         orientation: 'h'
@@ -208,7 +209,8 @@ const renderBarChart = (participants) => {
         plot_bgcolor: 'rgba(0,0,0,0)',
         yaxis: {automargin: true},
         xaxis: {automargin: true},
-        colorway : ['#184481', '#815518']
+        colorway : ['#184481', '#815518'],
+        title: 'Participant Progress'
     };
       
     Plotly.newPlot('barChart', data, layout, {responsive: true, displayModeBar: false});
