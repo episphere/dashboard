@@ -8,7 +8,7 @@
 }
 
 .js-plotly-plot {
-    background-image: radial-gradient(at center center, #f9f7f1 0%, #fffaeb 48%, #feeac9 100%);
+    background-image: radial-gradient(at center center, #f9f7f1 0%, #fffaeb 48%, #f5ede0 100%);
     border-radius: 1rem;
     margin: 1rem;
 }
