@@ -173,6 +173,9 @@ recruit.educate=function(id){
     <li> temporary link (1 hr default expiration) without participant token for data entry:<br>
     <a href="${location.origin+location.pathname}#access_token=${recruit.parms.access_token}" target="_blank">${location.origin+location.pathname}#access_token=${recruit.parms.access_token}</a>
     </li>
+    <li> to provoke conversation about tokenization trajectories:<br>
+    <a href="${location.origin+location.pathname}#onlyAppKnows=secret@email.com" target="_blank">${location.origin+location.pathname}#onlyAppKnows=secret@email.com</a>
+    </li>
 
     </ol>
 
