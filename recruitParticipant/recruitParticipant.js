@@ -25,6 +25,9 @@ recruit.ui=async function(div){ // build user interface if
         <div id="recruitDash">
         ...
         </div>
+        <div id="msg"></div>
+        <hr style="background-color:black">
+        <button id="resetLocal" style="color:orange">RESET</button>
         `
         // check parameters in location.search
         if(location.search.length>2){
@@ -72,6 +75,7 @@ recruit.ui=async function(div){ // build user interface if
             liParms.innerHTML=`Parameters: <pre>${JSON.stringify(recruit.parms,null,3)}</pre>`
             localStorage.recruitParms=JSON.stringify(recruit.parms)
         }
+        recruit.updateParms=updateParms
 
 
         // Site selection/claim
@@ -115,9 +119,10 @@ recruit.ui=async function(div){ // build user interface if
                 recruit.parms.access_token=validateToken.innerText=assTk.message
                 validateToken.style.color='red'
             }else{
-                recruit.parms.access_token=assTk.access_token
+                recruit.parms.access_token=assTk.access_token||'bearer_'+Math.random().toString().slice(2)
                 validateToken.innerText='valid'
                 validateToken.style.color='green'
+                recruit.educate()
             }
             updateParms()
         }
@@ -138,10 +143,45 @@ recruit.ui=async function(div){ // build user interface if
         
         //connectKey.click()
 
-
+        resetLocal.onclick=function(){
+            delete localStorage.recruitParms
+            location.reload()
+        }
     }
 }
 
+recruit.educate=function(id){
+    id=id||'msg'
+    let div = document.getElementById('msg')
+    div.innerHTML=`
+    <hr style="background-color:black">
+    <p style="color:green">
+    You could expose this to the participant being recruited in a number of ways:
+    <ol>
+    <li> Generic targeted recruitment (the prototype all others map back to):<br>
+    <a href="${location.origin+location.pathname}#token=${recruit.parms.token}&siteCode=${recruit.parms.siteCode}" target="_blank">${location.origin+location.pathname}#token=${recruit.parms.token}&siteCode=${recruit.parms.siteCode}</a>
+    </li>
+    <li> Targeted recruitment with token only (under dev):<br>
+    <a href="${location.origin+location.pathname}#${recruit.parms.token}" target="_blank">${location.origin+location.pathname}#${recruit.parms.token}</a>
+    </li>
+    <li> Site specific recruitment:<br>
+    <a href="${location.origin+location.pathname}#token=${recruit.parms.siteCode}" target="_blank">${location.origin+location.pathname}#siteCode=${recruit.parms.siteCode}</a>
+    </li>
+    <li> Customized site specific recruitment - you could host it with a redirect with these parameters, or we could hosted for you as something like (your content would direct participant to the parameters in #1):<br>
+    <a href="${location.origin+location.pathname}#token=${recruit.parms.token}&siteCode=${recruit.parms.siteCode}" target="_blank">${location.origin+location.pathname}/${recruit.selectSite.selectedOptions[0].innerText.replace(/\s/g,'')}</a>
+    </li>
+    <li> temporary link (1 hr default expiration) without participant token for data entry:<br>
+    <a href="${location.origin+location.pathname}#access_token=${recruit.parms.access_token}" target="_blank">${location.origin+location.pathname}#access_token=${recruit.parms.access_token}</a>
+    </li>
+
+    </ol>
+
+
+    </p>
+
+    `
+
+}
 
 
 recruit.api='https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net'
