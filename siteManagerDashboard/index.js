@@ -23,7 +23,6 @@ const main = async () => {
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderLogin();
-        
     }
     const submit = document.getElementById('submit');
     if(submit){
