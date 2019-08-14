@@ -170,14 +170,14 @@ const renderPieChart = (participants) => {
     const data = [{
         values: [eligibleParticipants.length, inEligibleCancer.length, inEligibleAge.length, inEligibleAgeCancer.length],
         labels: ['Eligible', 'Not eligible, due to cancer', 'Not eligible, due to age', 'Not eligible, due to age and cancer'],
-        type: 'pie'
+        type: 'pie',
+        textinfo: "value"
     }];
     const pieLayout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         colorway : ['#00009C', '#006400', '#187981', '#071426'],
-        title: 'Eligibility Screener Progress',
-        textinfo: "none"
+        title: 'Eligibility Screener Progress'
     };
     
     Plotly.newPlot('pieChart', data, pieLayout, {responsive: true, displayModeBar: false});
@@ -207,8 +207,14 @@ const renderBarChart = (participants) => {
         showlegend: false,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        yaxis: {automargin: true},
-        xaxis: {automargin: true},
+        yaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+        xaxis: {
+            automargin: true,
+            fixedrange: true
+        },
         colorway : ['#184481', '#815518'],
         title: 'Participant Progress'
     };
