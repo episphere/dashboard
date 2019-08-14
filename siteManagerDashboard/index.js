@@ -153,7 +153,7 @@ const renderTable = (data, showButtons) => {
                 <td>${participant.RcrutUP_Lname_v1r0}</td>
                 <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
                 <td>${participant.RcrutUP_Email1_v1r0}</td>
-                ${showButtons ? `<td><button class="btn btn-primary">Verify</button> / <button class="btn btn-primary">Not Verify</button></td>`: ``}
+                ${showButtons ? `<td><button disabled class="btn btn-primary">Verify</button> / <button disabled class="btn btn-primary">Not Verify</button></td>`: ``}
             </tr>
             `;
         }
@@ -176,7 +176,8 @@ const renderPieChart = (participants) => {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         colorway : ['#00009C', '#006400', '#187981', '#071426'],
-        title: 'Eligibility Screener Progress'
+        title: 'Eligibility Screener Progress',
+        textinfo: "none"
     };
     
     Plotly.newPlot('pieChart', data, pieLayout, {responsive: true, displayModeBar: false});
