@@ -80,7 +80,10 @@ recruit.ui=async function(div){ // build user interface if
 
         // Site selection/claim
         recruit.getLazyJSON('https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getSiteDetails',24*60*60*1000).then(x=>{
-            recruit.sitesData=x.data
+            recruit.sitesData=[]
+            x.data.forEach(d=>{ // making sure siteCode is the array index
+                recruit.sitesData[d.siteCode]=d
+            })
             recruit.selectSite=document.createElement('select')
             liSite.appendChild(recruit.selectSite)
             recruit.sitesData.forEach((s,i)=>{
@@ -276,6 +279,7 @@ recruit.addNewField=function(that){
     if(msgEl.innerHTML.length==0){
         recruit.parms.profile[newParmName]=''
         recruit.tabulateProfile()
+        recruit.updateParms()
     }
 
     setTimeout(_=>{
