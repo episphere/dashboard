@@ -23,7 +23,6 @@ const main = async () => {
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderLogin();
-        
     }
     const submit = document.getElementById('submit');
     if(submit){
@@ -154,7 +153,7 @@ const renderTable = (data, showButtons) => {
                 <td>${participant.RcrutUP_Lname_v1r0}</td>
                 <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
                 <td>${participant.RcrutUP_Email1_v1r0}</td>
-                ${showButtons ? `<td><button class="btn btn-primary">Verify</button> / <button class="btn btn-primary">Not Verify</button></td>`: ``}
+                ${showButtons ? `<td><button disabled class="btn btn-primary">Verify</button> / <button disabled class="btn btn-primary">Not Verify</button></td>`: ``}
             </tr>
             `;
         }
@@ -171,7 +170,8 @@ const renderPieChart = (participants) => {
     const data = [{
         values: [eligibleParticipants.length, inEligibleCancer.length, inEligibleAge.length, inEligibleAgeCancer.length],
         labels: ['Eligible', 'Not eligible, due to cancer', 'Not eligible, due to age', 'Not eligible, due to age and cancer'],
-        type: 'pie'
+        type: 'pie',
+        textinfo: "value"
     }];
     const pieLayout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
@@ -207,8 +207,14 @@ const renderBarChart = (participants) => {
         showlegend: false,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        yaxis: {automargin: true},
-        xaxis: {automargin: true},
+        yaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+        xaxis: {
+            automargin: true,
+            fixedrange: true
+        },
         colorway : ['#184481', '#815518'],
         title: 'Participant Progress'
     };
