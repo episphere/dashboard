@@ -161,7 +161,7 @@ recruit.educate=function(id){
     </div>
     </p>
     <hr style="background-color:black">
-    <h3>@ Elsewhere</h3>
+    <h3>@ Participants</h3>
     <p style="color:green">
     You could expose this to participants being recruited in a number of ways:
     <ol>
@@ -238,21 +238,10 @@ recruit.reccordUI=async function(id){
     let th3=document.createElement('th');htr.appendChild(th3)
     th3.innerHTML='Change'
     // fill table
-    Object.keys(recruit.parms.profile).forEach(p=>{
-        let tr = document.createElement('tr');recruit.profileTable.appendChild(tr)
-        let td1 = document.createElement('td');tr.appendChild(td1)
-        td1.innerHTML=p;td1.style.color='green'
-        let td2 = document.createElement('td');tr.appendChild(td2)
-        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.profile[p]}" size=60%>`
-        let td3 = document.createElement('td');tr.appendChild(td3)
-        td3.innerHTML=` <i class="fa fa-step-backward" style="font-size:x-large;color:green;cursor:pointer"></i> <i class="fa fa-trash" style="font-size:x-large;color:red;cursor:pointer"></i> `
-
-        //rows.push([p,recruit.parms.profile[p],`<input value="${recruit.parms.profile[p]}">`])
-    })
-
+    recruit.tabulateProfile()
     // add field
     let divNewField = document.createElement('div')
-    divNewField.innerHTML='<span style="color:black">Add new field:</span> <input id="newFieldName" style="font-size:small"> <i class="fa fa-plus" style="font-size:x-large;color:green;cursor:pointer"></i>'
+    divNewField.innerHTML='<span style="color:black">Add new field:</span> <input id="newFieldName" style="font-size:small"> <i class="fa fa-plus" id="addNewField" style="font-size:x-large;color:green;cursor:pointer;vertical-align:bottom" onclick="recruit.addNewField(this)"></i> <span id="newFieldMsg"></span>'
     div.appendChild(divNewField)
 
     //debugger
@@ -260,7 +249,39 @@ recruit.reccordUI=async function(id){
     bt.innerText='Submit to Connect@NCI/DCEG'
     bt.style.backgroundColor='yellow'
     div.appendChild(bt)
+}
 
+recruit.tabulateProfile=function(){
+    recruit.profileTable.innerHTML=''
+    Object.keys(recruit.parms.profile).forEach(p=>{
+        let tr = document.createElement('tr');recruit.profileTable.appendChild(tr)
+        let td1 = document.createElement('td');tr.appendChild(td1)
+        td1.innerHTML=p;td1.style.color='green'
+        let td2 = document.createElement('td');tr.appendChild(td2)
+        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.profile[p]}" size=60%>`
+        let td3 = document.createElement('td');tr.appendChild(td3)
+        td3.innerHTML=` <i class="fa fa-step-backward" style="font-size:x-large;color:green;cursor:pointer"></i> <i class="fa fa-trash" style="font-size:x-large;color:red;cursor:pointer"></i>`
+    })
+}
+
+recruit.addNewField=function(that){
+    let newParmName=that.parentElement.querySelector('input').value
+    let msgEl = that.parentElement.querySelector('#newFieldMsg')
+    if(newParmName.length==0){
+        msgEl.innerHTML='<span style="color:red"> field name missing</span>'
+    }
+    if(recruit.parms.profile[newParmName]){
+        msgEl.innerHTML='<span style="color:red"> field already exists</span>'
+    }
+    if(msgEl.innerHTML.length==0){
+        recruit.parms.profile[newParmName]=''
+        recruit.tabulateProfile()
+    }
+
+    setTimeout(_=>{
+        msgEl.innerHTML=''
+    },1000)
+    //debugger
 }
 
 recruit.getLazyJSON = async function(url,tw){ // lazily cashing url call within time window
