@@ -23,7 +23,7 @@ recruit.ui=async function(div){ // build user interface if
         <a href="https://documenter.getpostman.com/view/7490604/SVYnT26j" target="_blank"><img height=22 src="https://assets.getpostman.com/common-share/postman-logo-horizontal-white.svg"></a>
         <p style="color:gray">Use something with the form <a href="https://episphere.github.io/dashboard/recruitParticipant/#siteCode=1&token=abc" target="_blank">https://episphere.github.io/dashboard/recruitParticipant/#siteCode={siteCode}&token={participantToken}</a> for an example of a tokenized trajectory. The code accomodates search and hash (try the same link with # instead of ?), or a combination of the two. The preference for the hash is that it can be wiped from the URL and from prying eyes. If the page is then reloaded, or returned to later, the latest version of teh parameters, whicever they may be, is retrieved. Give it a try.</p>
         <div id="recruitDash">
-        ...
+        <h3>@ App</h3>
         </div>
         <div id="msg"></div>
         <hr style="background-color:black">
@@ -155,8 +155,15 @@ recruit.educate=function(id){
     let div = document.getElementById('msg')
     div.innerHTML=`
     <hr style="background-color:black">
+    <h3>@ NCI</h3>
+    <p>This is your profile record stored at NCI. Note the App knows more about you than NCI does, and that is the point: a participant centered governance model where the participant stays in control.</p>
+    <div id="participantProfile">
+    </div>
+    </p>
+    <hr style="background-color:black">
+    <h3>@ Elsewhere</h3>
     <p style="color:green">
-    You could expose this to the participant being recruited in a number of ways:
+    You could expose this to participants being recruited in a number of ways:
     <ol>
     <li> Generic targeted recruitment (the prototype all others map back to):<br>
     <a href="${location.origin+location.pathname}#token=${recruit.parms.token}&siteCode=${recruit.parms.siteCode}" target="_blank">${location.origin+location.pathname}#token=${recruit.parms.token}&siteCode=${recruit.parms.siteCode}</a>
@@ -179,10 +186,12 @@ recruit.educate=function(id){
 
     </ol>
 
-
-    </p>
+    <hr style="background-color:black">
+    
 
     `
+    recruit.reccord={}
+    recruit.reccordUI()
 
 }
 
@@ -193,53 +202,66 @@ recruit.getToken=async function(){
     return (await fetch(recruit.api+'/getKey')).json()
 }
 
-
-/*
-recruit.withKey= async function(){
-    recruit.dash=recruit.div.querySelector('#recruitDash')
-    // login with key and display dashboard
-    recruit.key=recruit.div.querySelector('#key').value
-    if(recruit.div.querySelector('#checkSave').checked){ // store key for future sessions if requested
-        let st=JSON.parse(localStorage.recruit)
-        st.key=recruit.key
-        localStorage.recruit=JSON.stringify(st)
-    }
-    recruit.dash=recruit.div.querySelector('#recruitDash') // <-- this is where the dynamic interaction happens
-    recruit.div.querySelector('#newKeyP').innerHTML='<span style="color:red">validating key ...</span>'
-    const res = await (await fetch(`${recruit.api}/validateToken?token=${recruit.key}`)).json()
-    recruit.dash.innerHTML=`<pre style="color:blue">${JSON.stringify(res,null,3)}</pre>`
+recruit.getUserProfile=async function(){
+    return await(await fetch(`${recruit.api}/getUserProfile`,{
+        headers:{
+            //'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+ recruit.parms.access_token
+        }
+    })).json()
 }
+recruit.reccordUI=async function(id){
+    id=id||'participantProfile' // default div
+    let div=document.getElementById(id)
+    let doc = await recruit.getUserProfile()
+    recruit.parms.profile=doc.data // <--- the record (doc) is linked to the parameter structure
+    // default parameters
+    recruit.parms.profile.created_at=recruit.parms.profile.created_at||Date()
+    recruit.parms.profile.siteCode=recruit.parms.profile.siteCode||recruit.parms.siteCode
+    recruit.parms.profile.siteName=recruit.parms.profile.siteName||recruit.sitesData[parseInt(recruit.parms.siteCode)].siteName
+    recruit.updateParms() // <-- update local parameters with a personal device in mind.
+    recruit.profileTable=document.createElement('table')
+    recruit.profileTable.style.backgroundColor='silver'
+    div.appendChild(recruit.profileTable)
+    let rows=[]
+    // rows[0]=['Parm','current','new']
+    Object.keys(recruit.parms.profile).forEach(p=>{
+        rows.push([p,recruit.parms.profile[p],`<input value="${recruit.parms.profile[p]}">`])
+    })
 
-recruit.generateKey=async function(){
-    recruit.dash=recruit.div.querySelector('#recruitDash')
-    let res = await (await fetch(`${recruit.api}/getKey`)).json()
-    recruit.div.querySelector('#key').value=res.token
-    recruit.div.querySelector('#newKeyP').innerHTML=`Your Participant Key is <span style="color:red">${res.token}</span>. Please store it somewhere safe, you'll need it to start new sessions. This new key was also filled above, so you can now click on the connect button to start a session. If you check the save box, this key will also be stored in this machine and will be filled automatically. Do not use this option in devices that are not under your control at all times`
+    //let hd=document.createElement('theader');recruit.profileTable.appendChild(hd)
+    let htr=document.createElement('tr');recruit.profileTable.appendChild(htr)
+    let th1=document.createElement('th');htr.appendChild(th1)
+    th1.innerHTML='Parameter'
+    let th2=document.createElement('th');htr.appendChild(th2)
+    th2.innerHTML='Value'
+    let th3=document.createElement('th');htr.appendChild(th3)
+    th3.innerHTML='Change'
+    // fill table
+    Object.keys(recruit.parms.profile).forEach(p=>{
+        let tr = document.createElement('tr');recruit.profileTable.appendChild(tr)
+        let td1 = document.createElement('td');tr.appendChild(td1)
+        td1.innerHTML=p;td1.style.color='green'
+        let td2 = document.createElement('td');tr.appendChild(td2)
+        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.profile[p]}" size=60%>`
+        let td3 = document.createElement('td');tr.appendChild(td3)
+        td3.innerHTML=` <i class="fa fa-step-backward" style="font-size:x-large;color:green;cursor:pointer"></i> <i class="fa fa-trash" style="font-size:x-large;color:red;cursor:pointer"></i> `
+
+        //rows.push([p,recruit.parms.profile[p],`<input value="${recruit.parms.profile[p]}">`])
+    })
+
+    // add field
+    let divNewField = document.createElement('div')
+    divNewField.innerHTML='<span style="color:black">Add new field:</span> <input id="newFieldName" style="font-size:small"> <i class="fa fa-plus" style="font-size:x-large;color:green;cursor:pointer"></i>'
+    div.appendChild(divNewField)
+
+    //debugger
+    let bt = document.createElement('button')
+    bt.innerText='Submit to Connect@NCI/DCEG'
+    bt.style.backgroundColor='yellow'
+    div.appendChild(bt)
+
 }
-
-recruit.dashUI=async function(files){
-    let h = ''
-    h += `<pre>${JSON.stringify(files,null,3)}</pre>`
-    h += '<table><tr><td></td><td></td></tr>'
-    h += '<tr><td id="fileList"></td><td id="datatd">...</td></tr></table>'
-    recruit.dash.innerHTML=h
-    // file list
-    h=''
-    h += `<p id="filesListHeader">File submissions <span style="color:blue;cursor:hand" id="numFiles">(${files.result.length})</span></p>`
-    h += `<p id="fileListBody"></p>`
-    fileList.innerHTML=h
-    numFiles.onclick=function(){
-        h=''
-        files.result.forEach(f=>{
-            debugger
-        })
-
-        
-    }
-    numFiles.onclick()
-
-}
-*/
 
 recruit.getLazyJSON = async function(url,tw){ // lazily cashing url call within time window
     tw = tw || 10000 // default time window in miliseconds
