@@ -45,6 +45,22 @@ const homePage = () => {
     `;
 }
 
+const sites = () => {
+    return {
+        1: 'Health Partners',
+        2: 'Henry Ford Health System',
+        3: 'Kaiser Permanente Colorado',
+        4: 'Kaiser Permanente Georgia',
+        5: 'Kaiser Permanente Hawaii',
+        6: 'Kaiser Permanente Northwest',
+        7: 'Marshfield Clinic',
+        8: 'Sanford Health',
+        9: 'University of Chicago Medicine',
+        13: 'Natiocal Cancer Institute',
+        88: 'None of these'
+    }
+}
+
 const eligibilityScreener = () => {
     return `
     <div class="col">
@@ -164,6 +180,6 @@ const eligibilityQuestionnaire = () => {
 const ineligible = () => {
     return `
         <h4>Thank you for your interest, but you are not eligible for the Connect study.</h4>
-        <h4>Would you like us to let ${ localStorage.connectApp ? JSON.parse(localStorage.connectApp).RcrtES_Site_v1r0 : ''} know that you are not eligible? We will not use this information for any other purpose.</h4>
+        <h4>Would you like us to let ${ localStorage.connectApp ? sites()[JSON.parse(localStorage.connectApp).RcrtES_Site_v1r0] : ''} know that you are not eligible? We will not use this information for any other purpose.</h4>
     `;
 }
