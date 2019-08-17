@@ -1,0 +1,12 @@
+.required {
+    color: red;
+}
+
+.container {
+    min-height: calc(100vh - 65px);
+    padding-top: 5rem;
+}
+
+#root {
+    height: 100%;
+}

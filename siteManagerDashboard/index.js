@@ -18,6 +18,9 @@ const main = async () => {
             eventDashboard(siteKey, userId);
             eventLogOut();
         }
+        if(isAuthorized.code === 401){
+            animation(false);
+        }
     }
     else{
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
@@ -27,6 +30,7 @@ const main = async () => {
     const submit = document.getElementById('submit');
     if(submit){
         submit.addEventListener('click',async () => {
+            animation(true);
             const siteKey = document.getElementById('siteKey').value;
             const userId = document.getElementById('userId').value;
             const rememberMe = document.getElementById('rememberMe');
@@ -49,6 +53,9 @@ const main = async () => {
                 eventParticipantNotVerified(siteKey, userId);
                 eventDashboard(siteKey, userId);
                 eventLogOut();
+            }
+            if(isAuthorized.code === 401){
+                animation(false);
             }
         });
     }
@@ -194,7 +201,7 @@ const renderBarChart = (participants) => {
         orientation: 'h'
     };
     const trace2 = {
-        x: [participants.data.length-accountCreated.length, participants.data.length-consent.length],
+        x: [participants.data.length - accountCreated.length, participants.data.length - consent.length],
         y: ['Accounts created', '  Consent complete'],
         name: 'Pending',
         type: 'bar',
@@ -233,11 +240,16 @@ const eventParticipantAll = (siteKey, userId) => {
     const all = document.getElementById('all');
     const participants = document.getElementById('participants');
     all.addEventListener('click', async () => {
+        animation(true);
         removeActiveClass('nav-link', 'active');
         participants.classList.add('active');
         const response = await fetchData(siteKey, userId, 'all');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data);
+            animation(false);
+        }
+        if(response.code === 401){
+            animation(false);
         }
     });
 }
@@ -257,6 +269,10 @@ const renderCharts = async (siteKey, userId) => {
         mainContent.appendChild(barChart);
         renderPieChart(participantsData);
         renderBarChart(participantsData);
+        animation(false);
+    }
+    if(participantsData.code === 401){
+        animation(false);
     }
 }
 
@@ -264,11 +280,16 @@ const eventParticipantVerified = (siteKey, userId) => {
     const verified = document.getElementById('verified');
     const participants = document.getElementById('participants');
     verified.addEventListener('click', async () => {
+        animation(true);
         removeActiveClass('nav-link', 'active');
         participants.classList.add('active');
         const response = await fetchData(siteKey, userId, 'verified');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data);
+            animation(false);
+        }
+        if(response.code === 401){
+            animation(false);
         }
     });
 }
@@ -277,11 +298,16 @@ const eventParticipantNotVerified = (siteKey, userId) => {
     const notVerified = document.getElementById('notVerified');
     const participants = document.getElementById('participants');
     notVerified.addEventListener('click', async () => {
+        animation(true);
         removeActiveClass('nav-link', 'active');
         participants.classList.add('active');
         const response = await fetchData(siteKey, userId, 'notverified');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data, true);
+            animation(false);
+        }
+        if(response.code === 401){
+            animation(false);
         }
     });
 }
@@ -302,4 +328,28 @@ const eventLogOut = () => {
         delete localStorage.dashboard;
         location.reload();
     });
+}
+
+const loadingAnimation = () => {
+    return `
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    `;
+}
+
+const animation = (status) => {
+    if(status) document.getElementById('loadingAnimation').innerHTML = loadingAnimation();
+    if(!status) document.getElementById('loadingAnimation').innerHTML = '';
 }
