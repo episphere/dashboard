@@ -7,6 +7,8 @@ window.onhashchange = () => {
     router();
 }
 
+const api = 'https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/';
+
 const main = () => {
     if('serviceWorker' in navigator){
         try {
@@ -18,12 +20,28 @@ const main = () => {
     }
 }
 
-const router = () => {
+const router = async () => {
     const mainContent = document.getElementById('root');
     const hash = decodeURIComponent(window.location.hash);
     const index = hash.indexOf('?');
     const parameters = index !== -1 ? getparameters(hash.slice(index+1, hash.length)) : {};
-    console.log(parameters);
+    if(parameters.token){
+        if(localStorage.connectApp){
+            localStorage.connectApp = JSON.stringify(JSON.parse(localStorage.connectApp).token = parameters.token);
+        }
+        else{
+            let obj = {};
+            obj["token"] = parameters.token;
+            localStorage.connectApp = JSON.stringify(obj);
+        }
+    }
+    else{
+        const response = await getKey();
+        if(response.code === 200) {
+            let obj = { access_token: response.access_token, token: response.token };
+            localStorage.connectApp = JSON.stringify(obj);
+        }
+    }
     const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
     const routes = allRoutes();
     mainContent.innerHTML = routes[route];
@@ -34,7 +52,8 @@ const allRoutes = () => {
         '#': homePage(),
         '#eligibility_screener': eligibilityScreener(),
         '#eligible': eligibleParticipant(),
-        "#ineligible": ineligible()
+        "#ineligible": ineligible(),
+        "#ineligible_site": ineligibleSite()
     }
 }
 
@@ -168,9 +187,14 @@ const eligibilityQuestionnaire = () => {
     formData["RcrtES_Aware_v1r0"]["RcrtES_Aware_v1r0_Poster"] = document.getElementById('checkbox9').checked ? 1 : 0;
     formData["RcrtES_Aware_v1r0"]["RcrtES_Aware_v1r0_Table"] = document.getElementById('checkbox10').checked ? 1 : 0;
     formData["RcrtES_Aware_v1r0"]["RcrtES_Aware_v1r0_Other"] = document.getElementById('checkbox11').checked ? 1 : 0;
-    localStorage.connectApp = JSON.stringify(formData);
+    
+    localStorage.eligibilityQuestionnaire = JSON.stringify(formData);
     if(formData.RcrtES_AgeQualify_v1r0 === 1 && formData.RcrtES_CancerHist_v1r0 === 0 && formData.RcrtES_Site_v1r0 !== 88){
+        storeResponse(formData);
         window.location.hash = '#eligible';
+    }
+    else if(formData.RcrtES_AgeQualify_v1r0 === 1 && formData.RcrtES_CancerHist_v1r0 === 0 && formData.RcrtES_Site_v1r0 === 88){
+        window.location.hash = "#ineligible_site";
     }
     else{
         window.location.hash = '#ineligible';
@@ -180,6 +204,43 @@ const eligibilityQuestionnaire = () => {
 const ineligible = () => {
     return `
         <h4>Thank you for your interest, but you are not eligible for the Connect study.</h4>
-        <h4>Would you like us to let ${ localStorage.connectApp ? sites()[JSON.parse(localStorage.connectApp).RcrtES_Site_v1r0] : ''} know that you are not eligible? We will not use this information for any other purpose.</h4>
+        <h4>Would you like us to let ${ localStorage.eligibilityQuestionnaire ? sites()[JSON.parse(localStorage.eligibilityQuestionnaire).RcrtES_Site_v1r0] : ''} know that you are not eligible? We will not use this information for any other purpose.</h4>
+
+        </br></br>
+        <button class="btn btn-primary">Yes</button>  <button class="btn btn-primary">No</button>
     `;
+}
+
+const ineligibleSite = () => {
+    return `
+        <h4>Thank you for your interest, but you are not eligible for the Connect study as the study is only being conducted through these institutions at this time.</h4>
+        <h4>Please check back in the future as we add more study sites. If you have any questions, please contact the Connect help desk.</h4>
+    `
+}
+
+const getparameters = (query) => {
+    const array = query.split('&');
+    let obj = {};
+    array.forEach(value => {
+        obj[value.split('=')[0]] = value.split('=')[1];
+    });
+    return obj;
+}
+
+const getKey = async () => {
+    const response = await fetch(api+'getKey');
+    return response.json();
+}
+
+const storeResponse = async (formData) => {
+    formData.token = JSON.parse(localStorage.connectApp).token;
+    const response = await fetch(api+'recruit/submit',
+    {
+        method: 'POST',
+        headers:{
+            Authorization:"Bearer "+JSON.parse(localStorage.connectApp).access_token,
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    });
 }
