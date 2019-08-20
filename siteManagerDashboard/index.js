@@ -9,6 +9,7 @@ const main = async () => {
         const userId = localStr.userId;
         const isAuthorized = await authorize(siteKey, userId);
         if(isAuthorized.code === 200){
+            animation(true);
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = '';
             renderCharts(siteKey, userId);
