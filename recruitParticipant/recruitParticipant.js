@@ -68,7 +68,7 @@ recruit.ui=async function(div){ // build user interface if
         
         const liToken=document.createElement('li')
         recruitDash.appendChild(liToken)
-        liToken.innerHTML='Token: <input id="inputToken" style="color:black" type="password" size=36> <button id="validateToken">validate</button> <button id="generateToken">generate</button> <button id="showToken">show</button>'
+        liToken.innerHTML='Token: <input id="inputToken" style="color:black" type="password" size=36> <button id="validateToken" style="background-color:yellow">validate</button> <button id="generateToken">generate</button> <button id="showToken">show</button>'
 
         // update parms
         function updateParms(){
