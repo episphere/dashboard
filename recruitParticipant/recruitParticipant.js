@@ -250,6 +250,23 @@ recruit.reccordUI=async function(id){
     bt.innerText='Submit to Connect@NCI/DCEG'
     bt.style.backgroundColor='yellow'
     div.appendChild(bt)
+    bt.onclick=recruit.submit
+}
+
+recruit.submit=async function(){
+    let parms_atConnect = recruit.parms.atConnect
+    parms_atConnect.token=recruit.parms.token
+    let res = await (await fetch(recruit.api+'/recruit/submit',{
+        method:'post',
+        body:JSON.stringify(parms_atConnect),
+        headers:{
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer '+ recruit.parms.access_token
+        }
+
+    })).json()
+    //debugger
+
 }
 
 recruit.tabulateProfile=function(){
@@ -259,10 +276,17 @@ recruit.tabulateProfile=function(){
         let td1 = document.createElement('td');tr.appendChild(td1)
         td1.innerHTML=p;td1.style.color='green'
         let td2 = document.createElement('td');tr.appendChild(td2)
-        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.atConnect[p]}" size=60%>`
+        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.atConnect[p]}" size=60% onkeyup=recruit.updateInput(this)>`
         let td3 = document.createElement('td');tr.appendChild(td3)
         td3.innerHTML=` <i class="fa fa-step-backward" style="font-size:x-large;color:green;cursor:pointer"></i> <i class="fa fa-trash" style="font-size:x-large;color:red;cursor:pointer"></i>`
     })
+}
+
+recruit.updateInput=function(that){
+    let p = that.parentElement.parentElement.firstChild.textContent // parameter name
+    recruit.parms.atConnect[p]=that.value
+    recruit.updateParms()
+    //debugger
 }
 
 recruit.addNewField=function(that){
