@@ -12,3 +12,9 @@
     border-radius: 1rem;
     margin: 1rem;
 }
+
+#loadingAnimation{
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
