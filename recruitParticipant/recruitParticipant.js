@@ -158,7 +158,7 @@ recruit.educate=function(id){
     let div = document.getElementById('msg')
     div.innerHTML=`
     <hr style="background-color:black">
-    <h3>@ NCI</h3>
+    <h3>@ Connect</h3>
     <p>This is your profile record stored at NCI. Note the App knows more about you than NCI does, and that is the point: a participant centered governance model where the participant stays in control.</p>
     <div id="participantProfile">
     </div>
@@ -188,8 +188,6 @@ recruit.educate=function(id){
     </li>
 
     </ol>
-
-    <hr style="background-color:black">
     
 
     `
@@ -217,19 +215,19 @@ recruit.reccordUI=async function(id){
     id=id||'participantProfile' // default div
     let div=document.getElementById(id)
     let doc = await recruit.getUserProfile()
-    recruit.parms.profile=doc.data // <--- the record (doc) is linked to the parameter structure
+    recruit.parms.atConnect=doc.data // <--- the record (doc) is linked to the parameter structure
     // default parameters
-    recruit.parms.profile.created_at=recruit.parms.profile.created_at||Date()
-    recruit.parms.profile.siteCode=recruit.parms.profile.siteCode||recruit.parms.siteCode
-    recruit.parms.profile.siteName=recruit.parms.profile.siteName||recruit.sitesData[parseInt(recruit.parms.siteCode)].siteName
+    recruit.parms.atConnect.created_at=recruit.parms.atConnect.created_at||Date()
+    recruit.parms.atConnect.siteCode=recruit.parms.atConnect.siteCode||recruit.parms.siteCode
+    recruit.parms.atConnect.siteName=recruit.parms.atConnect.siteName||recruit.sitesData[parseInt(recruit.parms.siteCode)].siteName
     recruit.updateParms() // <-- update local parameters with a personal device in mind.
     recruit.profileTable=document.createElement('table')
     recruit.profileTable.style.backgroundColor='silver'
     div.appendChild(recruit.profileTable)
     let rows=[]
     // rows[0]=['Parm','current','new']
-    Object.keys(recruit.parms.profile).forEach(p=>{
-        rows.push([p,recruit.parms.profile[p],`<input value="${recruit.parms.profile[p]}">`])
+    Object.keys(recruit.parms.atConnect).forEach(p=>{
+        rows.push([p,recruit.parms.atConnect[p],`<input value="${recruit.parms.atConnect[p]}">`])
     })
 
     //let hd=document.createElement('theader');recruit.profileTable.appendChild(hd)
@@ -256,12 +254,12 @@ recruit.reccordUI=async function(id){
 
 recruit.tabulateProfile=function(){
     recruit.profileTable.innerHTML=''
-    Object.keys(recruit.parms.profile).forEach(p=>{
+    Object.keys(recruit.parms.atConnect).forEach(p=>{
         let tr = document.createElement('tr');recruit.profileTable.appendChild(tr)
         let td1 = document.createElement('td');tr.appendChild(td1)
         td1.innerHTML=p;td1.style.color='green'
         let td2 = document.createElement('td');tr.appendChild(td2)
-        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.profile[p]}" size=60%>`
+        td2.innerHTML=`<input style="color:blue" value="${recruit.parms.atConnect[p]}" size=60%>`
         let td3 = document.createElement('td');tr.appendChild(td3)
         td3.innerHTML=` <i class="fa fa-step-backward" style="font-size:x-large;color:green;cursor:pointer"></i> <i class="fa fa-trash" style="font-size:x-large;color:red;cursor:pointer"></i>`
     })
@@ -273,11 +271,11 @@ recruit.addNewField=function(that){
     if(newParmName.length==0){
         msgEl.innerHTML='<span style="color:red"> field name missing</span>'
     }
-    if(recruit.parms.profile[newParmName]){
+    if(recruit.parms.atConnect[newParmName]){
         msgEl.innerHTML='<span style="color:red"> field already exists</span>'
     }
     if(msgEl.innerHTML.length==0){
-        recruit.parms.profile[newParmName]=''
+        recruit.parms.atConnect[newParmName]=''
         recruit.tabulateProfile()
         recruit.updateParms()
     }
