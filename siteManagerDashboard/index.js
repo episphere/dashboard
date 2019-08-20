@@ -43,6 +43,14 @@ const main = async () => {
                 }
                 localStorage.dashboard = JSON.stringify(dashboard);
             }
+            else{
+                const dashboard = {
+                    siteKey,
+                    userId,
+                    expires: new Date(Date.now() + 3600000)
+                }
+                localStorage.dashboard = JSON.stringify(dashboard);
+            }
 
             const isAuthorized = await authorize(siteKey, userId);
             if(isAuthorized.code === 200){
@@ -120,7 +128,11 @@ const dashboardNavBarLinks = () => {
 }
 
 const fetchData = async (siteKey, userId, type) => {
-    let response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}?userId=`+userId,{
+    if(!checkSession()){
+        alert('Session expired!');
+        clearLocalStroage();
+    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}?userId=`+userId,{
         method:'GET',
         headers:{
             Authorization:"Bearer "+siteKey
@@ -130,13 +142,24 @@ const fetchData = async (siteKey, userId, type) => {
 }
 
 const authorize = async (siteKey, userId) => {
-    let response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers?userId=${userId}`,{
+    if(!checkSession()){
+        alert('Session expired!');
+        clearLocalStroage();
+    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers?userId=${userId}`,{
         method:'GET',
         headers:{
             Authorization:"Bearer "+siteKey
         }
     });
     return response.json();
+}
+
+const checkSession = () => {
+    const localStr = JSON.parse(localStorage.dashboard);
+    const expires = localStr.expires ? new Date(localStr.expires) : undefined;
+    const currentDateTime = new Date(Date.now());
+    return expires ? expires > currentDateTime : true;
 }
 
 const renderTable = (data, showButtons) => {
@@ -326,9 +349,13 @@ const eventDashboard = (siteKey, userId) => {
 const eventLogOut = () => {
     const logOutBtn = document.getElementById('logOut');
     logOutBtn.addEventListener('click', () => {
-        delete localStorage.dashboard;
-        location.reload();
+        clearLocalStroage();
     });
+}
+
+const clearLocalStroage = () => {
+    delete localStorage.dashboard;
+    location.reload();
 }
 
 const loadingAnimation = () => {
