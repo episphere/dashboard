@@ -4,12 +4,12 @@ window.onload = () => {
 
 const main = async () => {
     if(localStorage.dashboard){
+        animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const userId = localStr.userId;
         const isAuthorized = await authorize(siteKey, userId);
         if(isAuthorized.code === 200){
-            animation(true);
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = '';
             renderCharts(siteKey, userId);
