@@ -20,7 +20,7 @@ const main = () => {
     }
 }
 
-const router = async () => {
+const router = () => {
     const mainContent = document.getElementById('root');
     const hash = decodeURIComponent(window.location.hash);
     const index = hash.indexOf('?');
@@ -36,11 +36,7 @@ const router = async () => {
         }
     }
     else{
-        const response = await getKey();
-        if(response.code === 200) {
-            let obj = { access_token: response.access_token, token: response.token };
-            localStorage.connectApp = JSON.stringify(obj);
-        }
+        getKey();
     }
     const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
     const routes = allRoutes();
@@ -229,7 +225,11 @@ const getparameters = (query) => {
 
 const getKey = async () => {
     const response = await fetch(api+'getKey');
-    return response.json();
+    const data = await response.json();
+    if(data.code === 200) {
+        let obj = { access_token: data.access_token, token: data.token };
+        localStorage.connectApp = JSON.stringify(obj);
+    }
 }
 
 const storeResponse = async (formData) => {
