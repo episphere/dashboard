@@ -7,16 +7,15 @@ const main = async () => {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
-        const userId = localStr.userId;
-        const isAuthorized = await authorize(siteKey, userId);
+        const isAuthorized = await authorize(siteKey);
         if(isAuthorized.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = '';
-            renderCharts(siteKey, userId);
-            eventParticipantAll(siteKey, userId);
-            eventParticipantVerified(siteKey, userId);
-            eventParticipantNotVerified(siteKey, userId);
-            eventDashboard(siteKey, userId);
+            renderCharts(siteKey);
+            eventParticipantAll(siteKey);
+            eventParticipantVerified(siteKey);
+            eventParticipantNotVerified(siteKey);
+            eventDashboard(siteKey);
             eventLogOut();
         }
         if(isAuthorized.code === 401){
@@ -33,34 +32,29 @@ const main = async () => {
         submit.addEventListener('click',async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
-            const userId = document.getElementById('userId').value;
             const rememberMe = document.getElementById('rememberMe');
-            if(siteKey.trim() === '' || userId.trim() === '') return;
+            if(siteKey.trim() === '') return;
             if(rememberMe.checked){
-                const dashboard = {
-                    siteKey,
-                    userId
-                }
+                const dashboard = { siteKey }
                 localStorage.dashboard = JSON.stringify(dashboard);
             }
             else{
                 const dashboard = {
                     siteKey,
-                    userId,
                     expires: new Date(Date.now() + 3600000)
                 }
                 localStorage.dashboard = JSON.stringify(dashboard);
             }
 
-            const isAuthorized = await authorize(siteKey, userId);
+            const isAuthorized = await authorize(siteKey);
             if(isAuthorized.code === 200){
                 document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
                 mainContent.innerHTML = '';
-                renderCharts(siteKey, userId);
-                eventParticipantAll(siteKey, userId);
-                eventParticipantVerified(siteKey, userId);
-                eventParticipantNotVerified(siteKey, userId);
-                eventDashboard(siteKey, userId);
+                renderCharts(siteKey);
+                eventParticipantAll(siteKey);
+                eventParticipantVerified(siteKey);
+                eventParticipantNotVerified(siteKey);
+                eventDashboard(siteKey);
                 eventLogOut();
             }
             if(isAuthorized.code === 401){
@@ -79,9 +73,7 @@ const renderLogin = () => {
             <div class="col">
                 <label for="siteKey">Site Key</label><input type="password" class="form-control" id="siteKey">
             </div>
-            <div class="col">
-                <label for="userId">User Id</label><input type="text" class="form-control" id="userId">
-            </div>
+            
         </div>
         <div class="row">
             <div class="col">
@@ -127,12 +119,12 @@ const dashboardNavBarLinks = () => {
     `;
 }
 
-const fetchData = async (siteKey, userId, type) => {
+const fetchData = async (siteKey, type) => {
     if(!checkSession()){
         alert('Session expired!');
         clearLocalStroage();
     }
-    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}?userId=`+userId,{
+    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}`,{
         method:'GET',
         headers:{
             Authorization:"Bearer "+siteKey
@@ -141,12 +133,12 @@ const fetchData = async (siteKey, userId, type) => {
     return response.json();
 }
 
-const authorize = async (siteKey, userId) => {
+const authorize = async (siteKey) => {
     if(!checkSession()){
         alert('Session expired!');
         clearLocalStroage();
     }
-    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers?userId=${userId}`,{
+    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers`,{
         method:'GET',
         headers:{
             Authorization:"Bearer "+siteKey
@@ -260,14 +252,14 @@ const removeActiveClass = (className, activeClass) => {
     });
 }
 
-const eventParticipantAll = (siteKey, userId) => {
+const eventParticipantAll = (siteKey) => {
     const all = document.getElementById('all');
     const participants = document.getElementById('participants');
     all.addEventListener('click', async () => {
         animation(true);
         removeActiveClass('nav-link', 'active');
         participants.classList.add('active');
-        const response = await fetchData(siteKey, userId, 'all');
+        const response = await fetchData(siteKey, 'all');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data);
             animation(false);
@@ -278,8 +270,8 @@ const eventParticipantAll = (siteKey, userId) => {
     });
 }
 
-const renderCharts = async (siteKey, userId) => {
-    const participantsData = await fetchData(siteKey, userId, 'all');
+const renderCharts = async (siteKey) => {
+    const participantsData = await fetchData(siteKey, 'all');
     if(participantsData.code === 200){
         let pieChart = document.createElement('div');
         pieChart.setAttribute('class', 'col');
@@ -300,14 +292,14 @@ const renderCharts = async (siteKey, userId) => {
     }
 }
 
-const eventParticipantVerified = (siteKey, userId) => {
+const eventParticipantVerified = (siteKey) => {
     const verified = document.getElementById('verified');
     const participants = document.getElementById('participants');
     verified.addEventListener('click', async () => {
         animation(true);
         removeActiveClass('nav-link', 'active');
         participants.classList.add('active');
-        const response = await fetchData(siteKey, userId, 'verified');
+        const response = await fetchData(siteKey, 'verified');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data);
             animation(false);
@@ -318,14 +310,14 @@ const eventParticipantVerified = (siteKey, userId) => {
     });
 }
 
-const eventParticipantNotVerified = (siteKey, userId) => {
+const eventParticipantNotVerified = (siteKey) => {
     const notVerified = document.getElementById('notVerified');
     const participants = document.getElementById('participants');
     notVerified.addEventListener('click', async () => {
         animation(true);
         removeActiveClass('nav-link', 'active');
         participants.classList.add('active');
-        const response = await fetchData(siteKey, userId, 'notverified');
+        const response = await fetchData(siteKey, 'notverified');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data, true);
             animation(false);
@@ -336,13 +328,13 @@ const eventParticipantNotVerified = (siteKey, userId) => {
     });
 }
 
-const eventDashboard = (siteKey, userId) => {
+const eventDashboard = (siteKey) => {
     const dashboard = document.getElementById('dashboard');
     dashboard.addEventListener('click', async () => {
         removeActiveClass('nav-link', 'active');
         dashboard.classList.add('active');
         mainContent.innerHTML = '';
-        renderCharts(siteKey, userId);
+        renderCharts(siteKey);
     });
 }
 
