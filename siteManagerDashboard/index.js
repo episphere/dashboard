@@ -1,26 +1,26 @@
 window.onload = () => {
-    main();
+    router();
 }
 
-const main = async () => {
+window.onhashchange = () => {
+    router();
+}
+
+const router = () => {
+    const hash = decodeURIComponent(window.location.hash);
+    const route =  hash || '#';
+    if(route === '#') homePage();
+    else if(route === '#dashboard') renderDashboard();
+    else if(route === '#participants_notverified') renderParticipantsNotVerified();
+    else if(route === '#participants_verified') renderParticipantsVerified();
+    else if(route === '#participants_all') renderParticipantsAll();
+    else if(route === '#logout') clearLocalStroage();
+    else window.location.hash = '#';
+}
+
+const homePage = async () => {
     if(localStorage.dashboard){
-        animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
-        const isAuthorized = await authorize(siteKey);
-        if(isAuthorized.code === 200){
-            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
-            mainContent.innerHTML = '';
-            renderCharts(siteKey);
-            eventParticipantAll(siteKey);
-            eventParticipantVerified(siteKey);
-            eventParticipantNotVerified(siteKey);
-            eventDashboard(siteKey);
-            eventLogOut();
-        }
-        if(isAuthorized.code === 401){
-            animation(false);
-        }
+        window.location.hash = '#dashboard';
     }
     else{
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
@@ -29,7 +29,7 @@ const main = async () => {
     }
     const submit = document.getElementById('submit');
     if(submit){
-        submit.addEventListener('click',async () => {
+        submit.addEventListener('click', async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
             const rememberMe = document.getElementById('rememberMe');
@@ -45,23 +45,66 @@ const main = async () => {
                 }
                 localStorage.dashboard = JSON.stringify(dashboard);
             }
-
+    
             const isAuthorized = await authorize(siteKey);
             if(isAuthorized.code === 200){
-                document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
-                mainContent.innerHTML = '';
-                renderCharts(siteKey);
-                eventParticipantAll(siteKey);
-                eventParticipantVerified(siteKey);
-                eventParticipantNotVerified(siteKey);
-                eventDashboard(siteKey);
-                eventLogOut();
+                window.location.hash = '#dashboard';
             }
             if(isAuthorized.code === 401){
                 animation(false);
+                clearLocalStroage();
             }
         });
     }
+}
+
+const renderDashboard = async () => {
+    if(localStorage.dashboard){
+        animation(true);
+        const localStr = JSON.parse(localStorage.dashboard);
+        const siteKey = localStr.siteKey;
+        const isAuthorized = await authorize(siteKey);
+        if(isAuthorized.code === 200){
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            mainContent.innerHTML = '';
+            renderCharts(siteKey);
+        }
+        if(isAuthorized.code === 401){
+            animation(false);
+            clearLocalStroage();
+        }
+    }else{
+        window.location.hash = '#';
+    }
+}
+
+const renderNavBarLinks = () => {
+    return `
+        <li class="nav-item active">
+            <a class="nav-item nav-link active" href="#" title="Home"><i class="fas fa-home"></i> Home</a>
+        </li>
+    `;
+}
+
+const dashboardNavBarLinks = () => {
+    return `
+        <li class="nav-item active">
+            <a class="nav-item nav-link active" href="#dashboard" title="Dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        </li>
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="fas fa-users"></i> Participants
+            </a>
+            <div class="dropdown-menu" aria-labelledby="participants">
+                <a class="dropdown-item" href="#participants_notverified">Not Verified Participants</a>
+                <a class="dropdown-item" href="#participants_verified">Verified Participants</a>
+                <a class="dropdown-item" href="#participants_all">All Participants</a>
+            </div>
+        </li>
+        <li class="nav-item">
+            <a class="nav-item nav-link" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </li>
+    `;
 }
 
 const renderLogin = () => {
@@ -87,35 +130,6 @@ const renderLogin = () => {
                 <button class="btn btn-primary" id="submit">Log In</button>
             </div>
         </div>
-    `;
-}
-
-const renderNavBarLinks = () => {
-    return `
-        <li class="nav-item active">
-            <a class="nav-item nav-link active" href="#" title="Home"><i class="fas fa-home"></i> Home</a>
-        </li>
-    `;
-}
-
-const dashboardNavBarLinks = () => {
-    return `
-        <li class="nav-item active">
-            <a class="nav-item nav-link active" href="#" id="dashboard" title="Dashboard"><i class="fas fa-home"></i> Dashboard</a>
-        </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-users"></i> Participants
-            </a>
-            <div class="dropdown-menu" aria-labelledby="participants">
-                <a class="dropdown-item" href="#" id="notVerified">Not Verified Participants</a>
-                <a class="dropdown-item" href="#" id="verified">Verified Participants</a>
-                <a class="dropdown-item" href="#" id="all">All Participants</a>
-            </div>
-        </li>
-        <li class="nav-item">
-            <a class="nav-item nav-link" href="#" id="logOut" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
-        </li>
     `;
 }
 
@@ -161,6 +175,7 @@ const authorize = async (siteKey) => {
     return response.json();
 }
 
+
 const checkSession = () => {
     const localStr = JSON.parse(localStorage.dashboard);
     const expires = localStr.expires ? new Date(localStr.expires) : undefined;
@@ -168,35 +183,51 @@ const checkSession = () => {
     return expires ? expires > currentDateTime : true;
 }
 
-const renderTable = (data, showButtons) => {
-    if(data.length < 1) return;
-    let template = '<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">'
-    template += `<thead>
-        <tr>
-            <th>First Name</th>
-            <th>Middle Initial</th>
-            <th>Last Name</th>
-            <th>Date of Birth</th>
-            <th>Email</th>
-            ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
-        </tr>
-    </thead>`;
-    data.forEach(participant => {
-        if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0){
-            template += `
-            <tr>
-                <td>${participant.RcrutUP_Fname_v1r0}</td>
-                <td>${participant.RcrutUP_Minitial_v1r0 ? participant.RcrutUP_Minitial_v1r0 : ''}</td>
-                <td>${participant.RcrutUP_Lname_v1r0}</td>
-                <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
-                <td>${participant.RcrutUP_Email1_v1r0}</td>
-                ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
-            </tr>
-            `;
-        }
-    });
-    template += '</table></div></div>'
-    return template;
+const animation = (status) => {
+    if(status) document.getElementById('loadingAnimation').innerHTML = loadingAnimation();
+    if(!status) document.getElementById('loadingAnimation').innerHTML = '';
+}
+
+const loadingAnimation = () => {
+    return `
+    <div class="d-flex justify-content-center">
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+        <div class="spinner-grow text-dark" role="status">
+            <span class="sr-only">Loading...</span>
+        </div>
+    </div>
+    `;
+}
+
+const renderCharts = async (siteKey) => {
+    const participantsData = await fetchData(siteKey, 'all');
+    if(participantsData.code === 200){
+        let pieChart = document.createElement('div');
+        pieChart.setAttribute('class', 'col');
+        pieChart.setAttribute('id', 'pieChart');
+
+        let barChart = document.createElement('div');
+        barChart.setAttribute('class','col');
+        barChart.setAttribute('id', 'barChart');
+
+        mainContent.appendChild(pieChart);
+        mainContent.appendChild(barChart);
+        renderPieChart(participantsData);
+        renderBarChart(participantsData);
+        animation(false);
+    }
+    if(participantsData.code === 401){
+        animation(false);
+        clearLocalStroage();
+    }
 }
 
 const renderPieChart = (participants) => {
@@ -259,80 +290,20 @@ const renderBarChart = (participants) => {
     Plotly.newPlot('barChart', data, layout, {responsive: true, displayModeBar: false});
 }
 
-const removeActiveClass = (className, activeClass) => {
-    let fileIconElement = document.getElementsByClassName(className);
-    Array.from(fileIconElement).forEach(elm => {
-        elm.classList.remove(activeClass);
-    });
+const clearLocalStroage = () => {
+    delete localStorage.dashboard;
+    window.location.hash = '#';
 }
 
-const eventParticipantAll = (siteKey) => {
-    const all = document.getElementById('all');
-    const participants = document.getElementById('participants');
-    all.addEventListener('click', async () => {
+const renderParticipantsNotVerified = async () => {
+    if(localStorage.dashboard){
         animation(true);
+        const localStr = JSON.parse(localStorage.dashboard);
+        const siteKey = localStr.siteKey;
         removeActiveClass('nav-link', 'active');
-        participants.classList.add('active');
-        const response = await fetchData(siteKey, 'all');
-        if(response.code === 200){
-            mainContent.innerHTML = renderTable(response.data);
-            animation(false);
-        }
-        if(response.code === 401){
-            animation(false);
-        }
-    });
-}
-
-const renderCharts = async (siteKey) => {
-    const participantsData = await fetchData(siteKey, 'all');
-    if(participantsData.code === 200){
-        let pieChart = document.createElement('div');
-        pieChart.setAttribute('class', 'col');
-        pieChart.setAttribute('id', 'pieChart');
-
-        let barChart = document.createElement('div');
-        barChart.setAttribute('class','col');
-        barChart.setAttribute('id', 'barChart');
-
-        mainContent.appendChild(pieChart);
-        mainContent.appendChild(barChart);
-        renderPieChart(participantsData);
-        renderBarChart(participantsData);
-        animation(false);
-    }
-    if(participantsData.code === 401){
-        animation(false);
-    }
-}
-
-const eventParticipantVerified = (siteKey) => {
-    const verified = document.getElementById('verified');
-    const participants = document.getElementById('participants');
-    verified.addEventListener('click', async () => {
-        animation(true);
-        removeActiveClass('nav-link', 'active');
-        participants.classList.add('active');
-        const response = await fetchData(siteKey, 'verified');
-        if(response.code === 200){
-            mainContent.innerHTML = renderTable(response.data);
-            animation(false);
-        }
-        if(response.code === 401){
-            animation(false);
-        }
-    });
-}
-
-const eventParticipantNotVerified = (siteKey) => {
-    const notVerified = document.getElementById('notVerified');
-    const participants = document.getElementById('participants');
-    notVerified.addEventListener('click', async () => {
-        animation(true);
-        removeActiveClass('nav-link', 'active');
-        participants.classList.add('active');
         const response = await fetchData(siteKey, 'notverified');
         if(response.code === 200){
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = renderTable(response.data, true);
             // Add button events
             eventVerifiedButton(siteKey);
@@ -341,17 +312,70 @@ const eventParticipantNotVerified = (siteKey) => {
         }
         if(response.code === 401){
             animation(false);
+            clearLocalStroage();
         }
-    });
+    }else{
+        window.location.hash = '#';
+    }
+}
+
+const renderParticipantsVerified = async () => {
+    if(localStorage.dashboard){
+        animation(true);
+        const localStr = JSON.parse(localStorage.dashboard);
+        const siteKey = localStr.siteKey;
+        removeActiveClass('nav-link', 'active');
+        const response = await fetchData(siteKey, 'verified');
+        if(response.code === 200){
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            mainContent.innerHTML = renderTable(response.data);
+            // Add button events
+            eventVerifiedButton(siteKey);
+            eventNotVerifiedButton(siteKey);
+            animation(false);
+        }
+        if(response.code === 401){
+            animation(false);
+            clearLocalStroage();
+        }
+    }else{
+        window.location.hash = '#';
+    }
+}
+
+const renderParticipantsAll = async () => {
+    if(localStorage.dashboard){
+        animation(true);
+        const localStr = JSON.parse(localStorage.dashboard);
+        const siteKey = localStr.siteKey;
+        removeActiveClass('nav-link', 'active');
+        const response = await fetchData(siteKey, 'all');
+        if(response.code === 200){
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            mainContent.innerHTML = renderTable(response.data);
+            // Add button events
+            eventVerifiedButton(siteKey);
+            eventNotVerifiedButton(siteKey);
+            animation(false);
+        }
+        if(response.code === 401){
+            animation(false);
+            clearLocalStroage();
+        }
+    }else{
+        window.location.hash = '#';
+    }
 }
 
 const eventVerifiedButton = (siteKey) => {
     const verifiedBtns = document.getElementsByClassName('participantVerified');
     Array.from(verifiedBtns).forEach(elem => {
         elem.addEventListener('click', async () => {
+            animation(true);
             const token = elem.dataset.token;
             const response = await participantVerification(token, true, siteKey);
             if(response.code === 200){
+                animation(false);
                 location.reload();
             }
         });
@@ -371,48 +395,40 @@ const eventNotVerifiedButton = (siteKey) => {
     });
 }
 
-const eventDashboard = (siteKey) => {
-    const dashboard = document.getElementById('dashboard');
-    dashboard.addEventListener('click', async () => {
-        removeActiveClass('nav-link', 'active');
-        dashboard.classList.add('active');
-        mainContent.innerHTML = '';
-        renderCharts(siteKey);
+const renderTable = (data, showButtons) => {
+    if(data.length < 1) return;
+    let template = '<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">'
+    template += `<thead>
+        <tr>
+            <th>First Name</th>
+            <th>Middle Initial</th>
+            <th>Last Name</th>
+            <th>Date of Birth</th>
+            <th>Email</th>
+            ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
+        </tr>
+    </thead>`;
+    data.forEach(participant => {
+        if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0){
+            template += `
+            <tr>
+                <td>${participant.RcrutUP_Fname_v1r0}</td>
+                <td>${participant.RcrutUP_Minitial_v1r0 ? participant.RcrutUP_Minitial_v1r0 : ''}</td>
+                <td>${participant.RcrutUP_Lname_v1r0}</td>
+                <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
+                <td>${participant.RcrutUP_Email1_v1r0}</td>
+                ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
+            </tr>
+            `;
+        }
     });
+    template += '</table></div></div>'
+    return template;
 }
 
-const eventLogOut = () => {
-    const logOutBtn = document.getElementById('logOut');
-    logOutBtn.addEventListener('click', () => {
-        clearLocalStroage();
+const removeActiveClass = (className, activeClass) => {
+    let fileIconElement = document.getElementsByClassName(className);
+    Array.from(fileIconElement).forEach(elm => {
+        elm.classList.remove(activeClass);
     });
-}
-
-const clearLocalStroage = () => {
-    delete localStorage.dashboard;
-    location.reload();
-}
-
-const loadingAnimation = () => {
-    return `
-    <div class="d-flex justify-content-center">
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    </div>
-    `;
-}
-
-const animation = (status) => {
-    if(status) document.getElementById('loadingAnimation').innerHTML = loadingAnimation();
-    if(!status) document.getElementById('loadingAnimation').innerHTML = '';
 }
