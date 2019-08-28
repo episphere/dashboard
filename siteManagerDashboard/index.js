@@ -133,6 +133,20 @@ const fetchData = async (siteKey, type) => {
     return response.json();
 }
 
+const participantVerification = async (token, verified, siteKey) => {
+    if(!checkSession()){
+        alert('Session expired!');
+        clearLocalStroage();
+    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`notverified`}&token=${token}`, {
+        method:'GET',
+        headers:{
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return response.json();
+}
+
 const authorize = async (siteKey) => {
     if(!checkSession()){
         alert('Session expired!');
@@ -176,7 +190,7 @@ const renderTable = (data, showButtons) => {
                 <td>${participant.RcrutUP_Lname_v1r0}</td>
                 <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
                 <td>${participant.RcrutUP_Email1_v1r0}</td>
-                ${showButtons ? `<td><button disabled class="btn btn-primary">Verify</button> / <button disabled class="btn btn-primary">Not Verify</button></td>`: ``}
+                ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
             </tr>
             `;
         }
@@ -320,11 +334,40 @@ const eventParticipantNotVerified = (siteKey) => {
         const response = await fetchData(siteKey, 'notverified');
         if(response.code === 200){
             mainContent.innerHTML = renderTable(response.data, true);
+            // Add button events
+            eventVerifiedButton(siteKey);
+            eventNotVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
             animation(false);
         }
+    });
+}
+
+const eventVerifiedButton = (siteKey) => {
+    const verifiedBtns = document.getElementsByClassName('participantVerified');
+    Array.from(verifiedBtns).forEach(elem => {
+        elem.addEventListener('click', async () => {
+            const token = elem.dataset.token;
+            const response = await participantVerification(token, true, siteKey);
+            if(response.code === 200){
+                location.reload();
+            }
+        });
+    });
+}
+
+const eventNotVerifiedButton = (siteKey) => {
+    const notVerifiedBtns = document.getElementsByClassName('participantNotVerified');
+    Array.from(notVerifiedBtns).forEach(elem => {
+        elem.addEventListener('click', async () => {
+            const token = elem.dataset.token;
+            const response = await participantVerification(token, false, siteKey);
+            if(response.code === 200){
+                location.reload();
+            }
+        });
     });
 }
 
