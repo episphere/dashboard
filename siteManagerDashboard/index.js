@@ -51,7 +51,6 @@ const homePage = async () => {
                 window.location.hash = '#dashboard';
             }
             if(isAuthorized.code === 401){
-                animation(false);
                 clearLocalStroage();
             }
         });
@@ -70,10 +69,10 @@ const renderDashboard = async () => {
             renderCharts(siteKey);
         }
         if(isAuthorized.code === 401){
-            animation(false);
             clearLocalStroage();
         }
     }else{
+        animation(false);
         window.location.hash = '#';
     }
 }
@@ -225,7 +224,6 @@ const renderCharts = async (siteKey) => {
         animation(false);
     }
     if(participantsData.code === 401){
-        animation(false);
         clearLocalStroage();
     }
 }
@@ -291,6 +289,7 @@ const renderBarChart = (participants) => {
 }
 
 const clearLocalStroage = () => {
+    animation(false);
     delete localStorage.dashboard;
     window.location.hash = '#';
 }
@@ -305,16 +304,15 @@ const renderParticipantsNotVerified = async () => {
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = renderTable(response.data, true);
-            // Add button events
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
-            animation(false);
             clearLocalStroage();
         }
     }else{
+        animation(false);
         window.location.hash = '#';
     }
 }
@@ -329,16 +327,15 @@ const renderParticipantsVerified = async () => {
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             mainContent.innerHTML = renderTable(response.data);
-            // Add button events
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
-            animation(false);
             clearLocalStroage();
         }
     }else{
+        animation(false);
         window.location.hash = '#';
     }
 }
@@ -359,10 +356,10 @@ const renderParticipantsAll = async () => {
             animation(false);
         }
         if(response.code === 401){
-            animation(false);
             clearLocalStroage();
         }
     }else{
+        animation(false);
         window.location.hash = '#';
     }
 }
@@ -386,9 +383,11 @@ const eventNotVerifiedButton = (siteKey) => {
     const notVerifiedBtns = document.getElementsByClassName('participantNotVerified');
     Array.from(notVerifiedBtns).forEach(elem => {
         elem.addEventListener('click', async () => {
+            animation(true);
             const token = elem.dataset.token;
             const response = await participantVerification(token, false, siteKey);
             if(response.code === 200){
+                animation(false);
                 location.reload();
             }
         });
