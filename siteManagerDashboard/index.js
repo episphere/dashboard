@@ -11,9 +11,9 @@ const router = () => {
     const route =  hash || '#';
     if(route === '#') homePage();
     else if(route === '#dashboard') renderDashboard();
-    else if(route === '#participants_notverified') renderParticipantsNotVerified();
-    else if(route === '#participants_verified') renderParticipantsVerified();
-    else if(route === '#participants_all') renderParticipantsAll();
+    else if(route === '#participants/notverified') renderParticipantsNotVerified();
+    else if(route === '#participants/verified') renderParticipantsVerified();
+    else if(route === '#participants/all') renderParticipantsAll();
     else if(route === '#logout') clearLocalStroage();
     else window.location.hash = '#';
 }
@@ -95,9 +95,9 @@ const dashboardNavBarLinks = () => {
                 <i class="fas fa-users"></i> Participants
             </a>
             <div class="dropdown-menu" aria-labelledby="participants">
-                <a class="dropdown-item" href="#participants_notverified">Not Verified Participants</a>
-                <a class="dropdown-item" href="#participants_verified">Verified Participants</a>
-                <a class="dropdown-item" href="#participants_all">All Participants</a>
+                <a class="dropdown-item" href="#participants/notverified">Not Verified Participants</a>
+                <a class="dropdown-item" href="#participants/verified">Verified Participants</a>
+                <a class="dropdown-item" href="#participants/all">All Participants</a>
             </div>
         </li>
         <li class="nav-item">
