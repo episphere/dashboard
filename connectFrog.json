@@ -2,6 +2,7 @@
    "url": "episphere.github.io/dashboard/connectFrog.json",
    "id": "frog123",
    "edit_at":"https://github.com/episphere/dashboard/edit/master/connectFrog.json",
-   "vers": "remember github also keep one",
-   "description":"who is Dr. Frog Girl"
+   "vers": "remember github also keeps one",
+   "description":"who is Dr. Frog Girl",
+   "notes": "note how governance is managed at the dereferencing level, not UI"
 }
