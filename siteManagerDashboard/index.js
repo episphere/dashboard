@@ -26,9 +26,7 @@ const homePage = async () => {
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderLogin();
-    }
-    const submit = document.getElementById('submit');
-    if(submit){
+        const submit = document.getElementById('submit');
         submit.addEventListener('click', async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
@@ -139,13 +137,15 @@ const fetchData = async (siteKey, type) => {
         alert('Session expired!');
         clearLocalStroage();
     }
-    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}`,{
-        method:'GET',
-        headers:{
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return response.json();
+    else{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}`,{
+            method:'GET',
+            headers:{
+                Authorization:"Bearer "+siteKey
+            }
+        });
+        return response.json();
+    }
 }
 
 const participantVerification = async (token, verified, siteKey) => {
@@ -153,13 +153,15 @@ const participantVerification = async (token, verified, siteKey) => {
         alert('Session expired!');
         clearLocalStroage();
     }
-    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`notverified`}&token=${token}`, {
-        method:'GET',
-        headers:{
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return response.json();
+    else{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`notverified`}&token=${token}`, {
+            method:'GET',
+            headers:{
+                Authorization:"Bearer "+siteKey
+            }
+        });
+        return response.json();
+    }
 }
 
 const authorize = async (siteKey) => {
@@ -167,21 +169,25 @@ const authorize = async (siteKey) => {
         alert('Session expired!');
         clearLocalStroage();
     }
-    const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers`,{
-        method:'GET',
-        headers:{
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return response.json();
+    else{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers`,{
+            method:'GET',
+            headers:{
+                Authorization:"Bearer "+siteKey
+            }
+        });
+        return response.json();
+    }
+    
 }
 
-
 const checkSession = () => {
-    const localStr = JSON.parse(localStorage.dashboard);
-    const expires = localStr.expires ? new Date(localStr.expires) : undefined;
-    const currentDateTime = new Date(Date.now());
-    return expires ? expires > currentDateTime : true;
+    if(localStorage.dashboard){
+        const localStr = JSON.parse(localStorage.dashboard);
+        const expires = localStr.expires ? new Date(localStr.expires) : undefined;
+        const currentDateTime = new Date(Date.now());
+        return expires ? expires > currentDateTime : true;
+    }
 }
 
 const animation = (status) => {
