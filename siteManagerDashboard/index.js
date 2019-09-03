@@ -396,32 +396,42 @@ const eventNotVerifiedButton = (siteKey) => {
 
 const renderTable = (data, showButtons) => {
     if(data.length < 1) return;
-    let template = '<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">'
-    template += `<thead>
-        <tr>
-            <th>First Name</th>
-            <th>Middle Initial</th>
-            <th>Last Name</th>
-            <th>Date of Birth</th>
-            <th>Email</th>
-            ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
-        </tr>
-    </thead>`;
+    let template = '';
+    let showTable = false;
     data.forEach(participant => {
-        if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0){
-            template += `
-            <tr>
-                <td>${participant.RcrutUP_Fname_v1r0}</td>
-                <td>${participant.RcrutUP_Minitial_v1r0 ? participant.RcrutUP_Minitial_v1r0 : ''}</td>
-                <td>${participant.RcrutUP_Lname_v1r0}</td>
-                <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
-                <td>${participant.RcrutUP_Email1_v1r0}</td>
-                ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
-            </tr>
-            `;
-        }
+        if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0) showTable = true;
     });
-    template += '</table></div></div>'
+    if(showTable){
+        template += `<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">`;
+        template += `<thead>
+            <tr>
+                <th>First Name</th>
+                <th>Middle Initial</th>
+                <th>Last Name</th>
+                <th>Date of Birth</th>
+                <th>Email</th>
+                ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
+            </tr>
+        </thead>`;
+        data.forEach(participant => {
+            if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0){
+                template += `
+                <tr>
+                    <td>${participant.RcrutUP_Fname_v1r0}</td>
+                    <td>${participant.RcrutUP_Minitial_v1r0 ? participant.RcrutUP_Minitial_v1r0 : ''}</td>
+                    <td>${participant.RcrutUP_Lname_v1r0}</td>
+                    <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
+                    <td>${participant.RcrutUP_Email1_v1r0}</td>
+                    ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
+                </tr>
+                `;
+            }
+        });
+        template += '</table></div></div>'
+    }else{
+        template += `No data found!`;
+    }
+    
     return template;
 }
 
