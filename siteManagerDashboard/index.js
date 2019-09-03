@@ -65,6 +65,8 @@ const renderDashboard = async () => {
         const isAuthorized = await authorize(siteKey);
         if(isAuthorized.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            removeActiveClass('nav-link', 'active');
+            document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
             renderCharts(siteKey);
         }
@@ -87,17 +89,17 @@ const renderNavBarLinks = () => {
 
 const dashboardNavBarLinks = () => {
     return `
-        <li class="nav-item active">
-            <a class="nav-item nav-link active" href="#dashboard" title="Dashboard"><i class="fas fa-home"></i> Dashboard</a>
+        <li class="nav-item">
+            <a class="nav-item nav-link" href="#dashboard" title="Dashboard" id="dashboardBtn"><i class="fas fa-home"></i> Dashboard</a>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-users"></i> Participants
             </a>
             <div class="dropdown-menu" aria-labelledby="participants">
-                <a class="dropdown-item" href="#participants/notverified">Not Verified Participants</a>
-                <a class="dropdown-item" href="#participants/verified">Verified Participants</a>
-                <a class="dropdown-item" href="#participants/all">All Participants</a>
+                <a class="dropdown-item" href="#participants/notverified" id="notVerifiedBtn">Not Verified Participants</a>
+                <a class="dropdown-item" href="#participants/verified" id="verifiedBtn">Verified Participants</a>
+                <a class="dropdown-item" href="#participants/all" id="allBtn">All Participants</a>
             </div>
         </li>
         <li class="nav-item">
@@ -299,10 +301,14 @@ const renderParticipantsNotVerified = async () => {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
-        removeActiveClass('nav-link', 'active');
         const response = await fetchData(siteKey, 'notverified');
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
+            removeActiveClass('dropdown-item', 'dd-item-active')
+            document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
+            removeActiveClass('nav-link', 'active');
+            document.getElementById('participants').classList.add('active');
             mainContent.innerHTML = renderTable(response.data, true);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
@@ -322,10 +328,14 @@ const renderParticipantsVerified = async () => {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
-        removeActiveClass('nav-link', 'active');
         const response = await fetchData(siteKey, 'verified');
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
+            removeActiveClass('dropdown-item', 'dd-item-active')
+            document.getElementById('verifiedBtn').classList.add('dd-item-active');
+            removeActiveClass('nav-link', 'active');
+            document.getElementById('participants').classList.add('active');
             mainContent.innerHTML = renderTable(response.data);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
@@ -345,10 +355,14 @@ const renderParticipantsAll = async () => {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
-        removeActiveClass('nav-link', 'active');
         const response = await fetchData(siteKey, 'all');
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+            removeActiveClass('dropdown-item', 'dd-item-active');
+            document.getElementById('allBtn').classList.add('dd-item-active');
+            removeActiveClass('nav-link', 'active');
+            document.getElementById('participants').classList.add('active');
             mainContent.innerHTML = renderTable(response.data);
             // Add button events
             eventVerifiedButton(siteKey);

@@ -18,3 +18,9 @@
     left: 50%;
     position: absolute;
 }
+
+.dd-item-active {
+    color: #000000;
+    text-decoration: none;
+    background-color: #d4d9de;
+}
