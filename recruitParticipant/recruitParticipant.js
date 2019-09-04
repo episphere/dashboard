@@ -254,10 +254,15 @@ recruit.reccordUI=async function(id){
 }
 
 recruit.submit=async function(){
+    this.innerText="Submitted to Connect@NCI/DCEG"
+    this.style.backgroundColor='orange'
     let parms_atConnect = recruit.parms.atConnect
     parms_atConnect.token=recruit.parms.token
     let res = await (await fetch(recruit.api+'/recruit/submit',{
         method:'post',
+        //mode:'cors',
+        //credentials: 'include',
+        //cache: 'no-cache',
         body:JSON.stringify(parms_atConnect),
         headers:{
             'Content-Type': 'application/json',
@@ -266,6 +271,12 @@ recruit.submit=async function(){
 
     })).json()
     //debugger
+    let that=this
+
+    setTimeout(_=>{
+        that.innerText="Submit to Connect@NCI/DCEG"
+        that.style.backgroundColor='yellow'
+    },500)
 
 }
 
