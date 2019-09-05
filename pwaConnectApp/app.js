@@ -105,7 +105,8 @@ const sites = () => {
 
 const eligibilityScreener = () => {
     return `
-    <div class="col">
+    <div class="col eligibility-form">
+        <h4>Please fill out this form to determine your eligibility for Connect.</h4></br>
         <label>Are you between the ages of 40-65?<span class="required"> *</span></label>
         <div class="form-group">
             <div class="radio">
@@ -179,7 +180,7 @@ const eligibilityScreener = () => {
                 <label><input type="checkbox"  id="checkbox11"> Other</label>
             </div>
         </div>
-        <button onclick="eligibilityQuestionnaire()" class="btn btn-primary">Submit</button>
+        <button onclick="eligibilityQuestionnaire()" class="btn btn-primary">Submit</button></br></br>
     </div>
     `;
 }
