@@ -30,16 +30,18 @@
     background-color: red;
     color: #ffffff;
     padding: 0px !important;
+    font-size: 2vw;
 }
 
 .join-now-btn {
     background-color: transparent !important;
     border-color: #000000 !important;
     margin-bottom: 0.25rem;
+    margin-top: 0.5rem; 
 }
 
+
 .join-now-heading {
-    font-size: 2vw;
     white-space: normal;
 }
 
