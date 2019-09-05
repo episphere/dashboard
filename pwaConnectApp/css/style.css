@@ -10,3 +10,44 @@
 #root {
     height: 100%;
 }
+
+.landing-page-images {
+    height: 100%;
+    width: 100%;
+}
+
+.row {
+    padding: .5rem;
+}
+
+.images-col {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
+.join-now-col {
+    text-align: center;
+    background-color: red;
+    color: #ffffff;
+    padding: 0px !important;
+}
+
+.join-now-btn {
+    background-color: transparent !important;
+    border-color: #000000 !important;
+    margin-bottom: 0.25rem;
+}
+
+.join-now-heading {
+    font-size: 2vw;
+    white-space: normal;
+}
+
+.images-grid {
+    padding: 0px !important;
+}
+
+.images-row {
+    padding: 0px !important;
+    margin: 0px !important;
+}

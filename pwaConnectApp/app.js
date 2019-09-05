@@ -56,7 +56,34 @@ const allRoutes = () => {
 const homePage = () => {
     return `
         <h1>Welcome to Connect Cohort Study!</h1>
-        <a class="btn btn-primary" href="#eligibility_screener">Join Now</a>
+        <div class="row">
+            <div class="col-sm-9 images-grid">
+                <div class="row images-row">
+                    <div class="col-sm-4 images-col">
+                        <img class="landing-page-images" src="./images/1.jpg">
+                    </div>
+                    <div class="col-sm-4 images-col">
+                        <img class="landing-page-images" src="./images/2.jpg">
+                    </div>
+                    <div class="col-sm-4 images-col">
+                        <img class="landing-page-images" src="./images/3.jpg">
+                    </div>
+                </div>
+                <div class="row images-row">
+                    <div class="col-sm-6 images-col">
+                        <img class="landing-page-images" src="./images/4.jpg">
+                    </div>
+                    <div class="col-sm-6 images-col">
+                        <img class="landing-page-images" src="./images/5.jpg">
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-3 join-now-col">
+                <span class="join-now-heading">What causes and prevents cancer? Help researchers answer this question for future generations</span>
+                </br><a class="btn join-now-btn" href="#eligibility_screener">Join Now</a>
+            </div>
+        </div>
+        
     `;
 }
 
