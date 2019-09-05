@@ -338,3 +338,6 @@ recruit.getLazyJSON = async function(url,tw){ // lazily cashing url call within 
 
 
 window.onload=_=>{recruit.ui()}
+
+
+// a comment illustrating the code update in the workshop
