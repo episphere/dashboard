@@ -35,7 +35,7 @@ function createTokenAtBackend() {
     return request
   }
 
-  function showToken() {
+  function showToken(token) {
     const p1 = document.createElement("p")
     p1.className = "h3"
     const tokenText = document.createTextNode(`Token created: ${token}`)
