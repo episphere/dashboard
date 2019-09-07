@@ -4,6 +4,7 @@ window.onload = () => {
 }
 
 window.onhashchange = () => {
+    document.getElementById('navbarNavAltMarkup').classList.remove('show');
     router();
 }
 
