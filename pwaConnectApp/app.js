@@ -292,6 +292,7 @@ const signIn = () => {
     const mainContent = document.getElementById('root');
     mainContent.innerHTML = '';
     ui.start('#root', {
+        signInFlow: 'popup',
         signInSuccessUrl: '#account_created',
         signInOptions: [
             firebase.auth.GoogleAuthProvider.PROVIDER_ID,
