@@ -21,7 +21,6 @@ const main = () => {
 }
 
 const router = () => {
-    const mainContent = document.getElementById('root');
     const hash = decodeURIComponent(window.location.hash);
     const index = hash.indexOf('?');
     const parameters = index !== -1 ? getparameters(hash.slice(index+1, hash.length)) : {};
@@ -39,22 +38,22 @@ const router = () => {
         getKey();
     }
     const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
-    const routes = allRoutes();
-    mainContent.innerHTML = routes[route];
-}
-
-const allRoutes = () => {
-    return {
-        '#': homePage(),
-        '#eligibility_screener': eligibilityScreener(),
-        '#eligible': eligibleParticipant(),
-        "#ineligible": ineligible(),
-        "#ineligible_site": ineligibleSite()
-    }
+    // const routes = allRoutes();
+    // mainContent.innerHTML = routes[route];
+    if(route === '#') homePage();
+    else if(route === '#eligibility_screener') eligibilityScreener();
+    else if(route === '#eligible') eligibleParticipant();
+    else if(route === '#ineligible') ineligible();
+    else if(route === '#ineligible_site') ineligible_site();
+    else if(route === '#sign_in') signIn();
+    else if (route === '#account_created') accountCreated();
+    else if (route === '#sign_out') signOut();
+    else window.location.hash = '#';
 }
 
 const homePage = () => {
-    return `
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = `
         <h1>Welcome to Connect Cohort Study!</h1>
         <div class="row">
             <div class="col-sm-9 images-grid">
@@ -83,7 +82,6 @@ const homePage = () => {
                 </br><a class="btn join-now-btn" href="#eligibility_screener">Join Now</a>
             </div>
         </div>
-        
     `;
 }
 
@@ -104,7 +102,8 @@ const sites = () => {
 }
 
 const eligibilityScreener = () => {
-    return `
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = `
     <div class="col eligibility-form">
         <h4>Please fill out this form to determine your eligibility for Connect.</h4></br>
         <label>Are you between the ages of 40-65?<span class="required"> *</span></label>
@@ -186,7 +185,8 @@ const eligibilityScreener = () => {
 }
 
 const eligibleParticipant = () => {
-    return `
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = `
         <div class="col">
             <h1>You are eligible! Thank you for joining Connect.</h1>
             <button class="btn btn-primary">Create Account</button>
@@ -226,7 +226,8 @@ const eligibilityQuestionnaire = () => {
 }
 
 const ineligible = () => {
-    return `
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = `
         <h4>Thank you for your interest, but you are not eligible for the Connect study.</h4>
         <h4>Would you like us to let ${ localStorage.eligibilityQuestionnaire ? sites()[JSON.parse(localStorage.eligibilityQuestionnaire).RcrtES_Site_v1r0] : ''} know that you are not eligible? We will not use this information for any other purpose.</h4>
 
@@ -236,10 +237,11 @@ const ineligible = () => {
 }
 
 const ineligibleSite = () => {
-    return `
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = `
         <h4>Thank you for your interest, but you are not eligible for the Connect study as the study is only being conducted through these institutions at this time.</h4>
         <h4>Please check back in the future as we add more study sites. If you have any questions, please contact the Connect help desk.</h4>
-    `
+    `;
 }
 
 const getparameters = (query) => {
@@ -271,4 +273,58 @@ const storeResponse = async (formData) => {
         },
         body: JSON.stringify(formData)
     });
+}
+
+const signIn = () => {
+    const firebaseConfig = {
+        apiKey: "AIzaSyDe3Ewzl4x7hEX30EiQJ0tvXBtzd2Hghiw",
+        authDomain: "nih-nci-dceg-episphere-dev.firebaseapp.com",
+        databaseURL: "https://nih-nci-dceg-episphere-dev.firebaseio.com",
+        projectId: "nih-nci-dceg-episphere-dev",
+        storageBucket: "nih-nci-dceg-episphere-dev.appspot.com",
+        messagingSenderId: "1061219778575",
+        appId: "1:1061219778575:web:c9f40bbc7ec2cdccc5637a"
+    };
+    !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+    const auth = new firebase.auth();
+    const ui =new firebaseui.auth.AuthUI(firebase.auth());
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = '';
+    ui.start('#root', {
+        signInSuccessUrl: '#account_created',
+        signInOptions: [
+            firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+            firebase.auth.FacebookAuthProvider.PROVIDER_ID,
+            firebase.auth.TwitterAuthProvider.PROVIDER_ID,
+            firebase.auth.GithubAuthProvider.PROVIDER_ID,
+            firebase.auth.EmailAuthProvider.PROVIDER_ID,
+            firebase.auth.PhoneAuthProvider.PROVIDER_ID
+        ]
+    });
+    auth.onAuthStateChanged(user => {
+        if(user){
+            document.getElementById('signOut').classList.remove('hide');
+            document.getElementById('signIn').classList.add('hide');
+            window.location = '#account_created';
+        }
+        else{
+            document.getElementById('signIn').classList.remove('hide');
+            document.getElementById('signOut').classList.add('hide');
+        }
+    });
+}
+
+const accountCreated = () => {
+    if (!firebase.apps.length) window.location.hash = '#';
+    const auth = firebase.auth();
+    auth.onAuthStateChanged(user => {
+        console.log(user);
+        const mainContent = document.getElementById('root');
+        mainContent.innerHTML = `<pre>${JSON.stringify(user, null, 3)}</pre>`;
+    });
+}
+
+const signOut = () => {
+    firebase.auth().signOut();
+    window.location.hash = '#';
 }
