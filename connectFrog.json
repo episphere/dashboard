@@ -7,5 +7,5 @@
    "notes": "note how governance is managed at the dereferencing level, not UI",
    "edit":"https://github.com/episphere/dashboard/edit/master/connectFrog.json",
    "type":"input",
-   "fun":function(x){prompt('who is Dr Frog Girl?')}
+   "fun":"function(x){prompt('who is Dr Frog Girl?')}"
 }
