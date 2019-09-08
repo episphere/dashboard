@@ -46,7 +46,7 @@ const router = () => {
     else if(route === '#ineligible') ineligible();
     else if(route === '#ineligible_site') ineligible_site();
     else if(route === '#sign_in') signIn();
-    else if (route === '#account_created') accountCreated();
+    else if (route === '#profile') accountCreated();
     else if (route === '#sign_out') signOut();
     else window.location.hash = '#';
 }
@@ -287,7 +287,7 @@ const signIn = () => {
     const mainContent = document.getElementById('root');
     mainContent.innerHTML = '';
     ui.start('#root', {
-        signInSuccessUrl: '#account_created',
+        signInSuccessUrl: '#profile',
         signInOptions: [
             firebase.auth.GoogleAuthProvider.PROVIDER_ID,
             firebase.auth.GithubAuthProvider.PROVIDER_ID,
@@ -353,7 +353,7 @@ const userNavBar = () => {
         </div>
         <div class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="#account_created" id="profile" title="Sign In"><i class="fas fa-user"></i> Profile</a>
+                <a class="nav-link" href="#profile" id="profile" title="Sign In"><i class="fas fa-user"></i> Profile</a>
             </li>
         </div>
         <div class="navbar-nav">
