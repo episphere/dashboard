@@ -1,11 +1,13 @@
 window.onload = () => {
     router();
     main();
+    toggleButtons();
 }
 
 window.onhashchange = () => {
     document.getElementById('navbarNavAltMarkup').classList.remove('show');
     router();
+    toggleButtons();
 }
 
 const api = 'https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/';
@@ -277,16 +279,8 @@ const storeResponse = async (formData) => {
 }
 
 const signIn = () => {
-    const firebaseConfig = {
-        apiKey: "AIzaSyDe3Ewzl4x7hEX30EiQJ0tvXBtzd2Hghiw",
-        authDomain: "nih-nci-dceg-episphere-dev.firebaseapp.com",
-        databaseURL: "https://nih-nci-dceg-episphere-dev.firebaseio.com",
-        projectId: "nih-nci-dceg-episphere-dev",
-        storageBucket: "nih-nci-dceg-episphere-dev.appspot.com",
-        messagingSenderId: "1061219778575",
-        appId: "1:1061219778575:web:c9f40bbc7ec2cdccc5637a"
-    };
-    !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+    const config = firebaseConfig();
+    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
     const auth = new firebase.auth();
     const ui = new firebaseui.auth.AuthUI(firebase.auth());
     const mainContent = document.getElementById('root');
@@ -317,16 +311,49 @@ const signIn = () => {
 }
 
 const accountCreated = () => {
-    if (!firebase.apps.length) window.location.hash = '#';
+    const config = firebaseConfig();
+    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
     const auth = firebase.auth();
     auth.onAuthStateChanged(user => {
-        console.log(user);
-        const mainContent = document.getElementById('root');
-        mainContent.innerHTML = `<pre>${JSON.stringify(user, null, 3)}</pre>`;
+        if(user){
+            const mainContent = document.getElementById('root');
+            mainContent.innerHTML = `<pre>${JSON.stringify(user, null, 3)}</pre>`;
+        }
+        else{
+            window.location.hash = '#';
+        }
     });
 }
 
 const signOut = () => {
     firebase.auth().signOut();
     window.location.hash = '#';
+}
+
+const firebaseConfig = () => {
+    return {
+        apiKey: "AIzaSyDe3Ewzl4x7hEX30EiQJ0tvXBtzd2Hghiw",
+        authDomain: "nih-nci-dceg-episphere-dev.firebaseapp.com",
+        databaseURL: "https://nih-nci-dceg-episphere-dev.firebaseio.com",
+        projectId: "nih-nci-dceg-episphere-dev",
+        storageBucket: "nih-nci-dceg-episphere-dev.appspot.com",
+        messagingSenderId: "1061219778575",
+        appId: "1:1061219778575:web:c9f40bbc7ec2cdccc5637a"
+    };
+}
+
+const toggleButtons = () => {
+    const config = firebaseConfig();
+    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+    const auth = firebase.auth();
+    auth.onAuthStateChanged(user => {
+        if(user){
+            document.getElementById('signOut').classList.remove('hide');
+            document.getElementById('signIn').classList.add('hide');
+        }
+        else{
+            document.getElementById('signIn').classList.remove('hide');
+            document.getElementById('signOut').classList.add('hide');
+        }
+    });
 }
