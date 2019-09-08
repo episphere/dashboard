@@ -77,10 +77,7 @@ const homePage = () => {
                     </div>
                 </div>
             </div>
-            <div class="col-sm-3 join-now-col">
-                <span class="join-now-heading">What causes and prevents cancer? Help researchers answer this question for future generations</span>
-                </br><a class="btn join-now-btn" href="#eligibility_screener">Join Now</a>
-            </div>
+            <div class="col-sm-3 join-now-col" id="joinNow"></div>
         </div>
     `;
     // removeActiveClass('nav-link', 'active');
@@ -386,11 +383,23 @@ const toggleNavBar = () => {
     auth.onAuthStateChanged(user => {
         if(user){
             document.getElementById('navbarNavAltMarkup').innerHTML = userNavBar();
+            document.getElementById('joinNow').innerHTML = joinNowBtn(false);
         }
         else{
             document.getElementById('navbarNavAltMarkup').innerHTML = homeNavBar();
+            document.getElementById('joinNow').innerHTML = joinNowBtn(true);
         }
     });
+}
+
+const joinNowBtn = (bool) => {
+    if(bool){
+        return `<span class="join-now-heading">What causes and prevents cancer? Help researchers answer this question for future generations</span>
+        </br><a class="btn join-now-btn" href="#eligibility_screener">Join Now</a>`
+    }
+    else {
+        return `<span class="join-now-heading">Thanks for joining Connect Cohort Study!</span>`
+    }
 }
 
 const removeActiveClass = (className, activeClass) => {
