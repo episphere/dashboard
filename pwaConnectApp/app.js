@@ -1,13 +1,11 @@
 window.onload = () => {
     router();
     main();
-    toggleButtons();
 }
 
 window.onhashchange = () => {
     document.getElementById('navbarNavAltMarkup').classList.remove('show');
     router();
-    toggleButtons();
 }
 
 const api = 'https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/';
@@ -41,8 +39,7 @@ const router = () => {
         getKey();
     }
     const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
-    // const routes = allRoutes();
-    // mainContent.innerHTML = routes[route];
+    toggleNavBar();
     if(route === '#') homePage();
     else if(route === '#eligibility_screener') eligibilityScreener();
     else if(route === '#eligible') eligibleParticipant();
@@ -86,6 +83,8 @@ const homePage = () => {
             </div>
         </div>
     `;
+    // removeActiveClass('nav-link', 'active');
+    // document.getElementById('home').classList.add('active');
 }
 
 const sites = () => {
@@ -279,6 +278,8 @@ const storeResponse = async (formData) => {
 }
 
 const signIn = () => {
+    // removeActiveClass('nav-link', 'active');
+    // document.getElementById('signIn').classList.add('active');
     const config = firebaseConfig();
     !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
     const auth = new firebase.auth();
@@ -299,13 +300,10 @@ const signIn = () => {
     });
     auth.onAuthStateChanged(user => {
         if(user){
-            document.getElementById('signOut').classList.remove('hide');
-            document.getElementById('signIn').classList.add('hide');
-            window.location = '#account_created';
+            document.getElementById('navbarNavAltMarkup').innerHTML = userNavBar();
         }
         else{
-            document.getElementById('signIn').classList.remove('hide');
-            document.getElementById('signOut').classList.add('hide');
+            document.getElementById('navbarNavAltMarkup').innerHTML = homeNavBar();
         }
     });
 }
@@ -323,9 +321,13 @@ const accountCreated = () => {
             window.location.hash = '#';
         }
     });
+    // removeActiveClass('nav-link', 'active');
+    // document.getElementById('profile').classList.add('active');
 }
 
 const signOut = () => {
+    // removeActiveClass('nav-link', 'active');
+    // document.getElementById('signOut').classList.add('active');
     firebase.auth().signOut();
     window.location.hash = '#';
 }
@@ -342,18 +344,58 @@ const firebaseConfig = () => {
     };
 }
 
-const toggleButtons = () => {
+const userNavBar = () => {
+    return `
+        <div class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="home" title="Home"><i class="fas fa-home"></i> Home</a>
+            </li>
+        </div>
+        <div class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#account_created" id="profile" title="Sign In"><i class="fas fa-user"></i> Profile</a>
+            </li>
+        </div>
+        <div class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#sign_out" id="signOut" title="Sign Out"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
+            </li>
+        </div>
+    `;
+}
+
+const homeNavBar = () => {
+    return `
+        <div class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#" id="home" title="Home"><i class="fas fa-home"></i> Home</a>
+            </li>
+        </div>
+        <div class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#sign_in" id="signIn" title="Sign In"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+            </li>
+        </div>
+    `;
+}
+
+const toggleNavBar = () => {
     const config = firebaseConfig();
     !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
     const auth = firebase.auth();
     auth.onAuthStateChanged(user => {
         if(user){
-            document.getElementById('signOut').classList.remove('hide');
-            document.getElementById('signIn').classList.add('hide');
+            document.getElementById('navbarNavAltMarkup').innerHTML = userNavBar();
         }
         else{
-            document.getElementById('signIn').classList.remove('hide');
-            document.getElementById('signOut').classList.add('hide');
+            document.getElementById('navbarNavAltMarkup').innerHTML = homeNavBar();
         }
+    });
+}
+
+const removeActiveClass = (className, activeClass) => {
+    let fileIconElement = document.getElementsByClassName(className);
+    Array.from(fileIconElement).forEach(elm => {
+        elm.classList.remove(activeClass);
     });
 }
