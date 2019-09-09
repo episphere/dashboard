@@ -1,4 +1,9 @@
+let auth = '';
+
 window.onload = () => {
+    const config = firebaseConfig();
+    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
+    auth = firebase.auth();
     router();
     main();
 }
@@ -38,15 +43,15 @@ const router = () => {
     else{
         getKey();
     }
-    const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
     toggleNavBar();
+    const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
     if(route === '#') homePage();
-    else if(route === '#eligibility_screener') eligibilityScreener();
-    else if(route === '#eligible') eligibleParticipant();
-    else if(route === '#ineligible') ineligible();
-    else if(route === '#ineligible_site') ineligible_site();
-    else if(route === '#sign_in') signIn();
-    else if (route === '#profile') accountCreated();
+    else if(route === '#eligibility_screener' && !checkSession()) eligibilityScreener();
+    else if(route === '#eligible' && !checkSession()) eligibleParticipant();
+    else if(route === '#ineligible' && !checkSession()) ineligible();
+    else if(route === '#ineligible_site' && !checkSession()) ineligible_site();
+    else if(route === '#sign_in' && !checkSession()) signIn();
+    else if (route === '#profile' && checkSession()) accountCreated();
     else if (route === '#sign_out') signOut();
     else window.location.hash = '#';
 }
@@ -277,12 +282,9 @@ const storeResponse = async (formData) => {
 const signIn = () => {
     // removeActiveClass('nav-link', 'active');
     // document.getElementById('signIn').classList.add('active');
-    const config = firebaseConfig();
-    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
-    const auth = new firebase.auth();
-    const ui = new firebaseui.auth.AuthUI(firebase.auth());
-    const mainContent = document.getElementById('root');
-    mainContent.innerHTML = '';
+    
+    document.getElementById('root').innerHTML = '';
+    const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());
     ui.start('#root', {
         signInSuccessUrl: '#profile',
         signInOptions: [
@@ -290,7 +292,8 @@ const signIn = () => {
             firebase.auth.GithubAuthProvider.PROVIDER_ID,
             {
                 provider:firebase.auth.EmailAuthProvider.PROVIDER_ID,
-                signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD
+                signInMethod: firebase.auth.EmailAuthProvider.EMAIL_LINK_SIGN_IN_METHOD,
+                forceSameDevice: true,
             },
             firebase.auth.PhoneAuthProvider.PROVIDER_ID
         ]
@@ -306,9 +309,6 @@ const signIn = () => {
 }
 
 const accountCreated = () => {
-    const config = firebaseConfig();
-    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
-    const auth = firebase.auth();
     auth.onAuthStateChanged(user => {
         if(user){
             const mainContent = document.getElementById('root');
@@ -377,19 +377,21 @@ const homeNavBar = () => {
 }
 
 const toggleNavBar = () => {
-    const config = firebaseConfig();
-    !firebase.apps.length ? firebase.initializeApp(config) : firebase.app();
-    const auth = firebase.auth();
     auth.onAuthStateChanged(user => {
         if(user){
             document.getElementById('navbarNavAltMarkup').innerHTML = userNavBar();
-            document.getElementById('joinNow').innerHTML = joinNowBtn(false);
+            document.getElementById('joinNow') ? document.getElementById('joinNow').innerHTML = joinNowBtn(false) : ``;
         }
         else{
             document.getElementById('navbarNavAltMarkup').innerHTML = homeNavBar();
-            document.getElementById('joinNow').innerHTML = joinNowBtn(true);
+            document.getElementById('joinNow') ? document.getElementById('joinNow').innerHTML = joinNowBtn(true) : ``;
         }
     });
+}
+
+const checkSession = () => {
+    const user = firebase.auth().currentUser;
+    return user ? true : false;
 }
 
 const joinNowBtn = (bool) => {
