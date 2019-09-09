@@ -69,3 +69,18 @@
 .bar-code {
     text-align: center;
 }
+
+.heading {
+    color: #c01414;
+    font-size: 1rem;
+    font-weight: bold;
+}
+
+.description {
+    font-size: 0.8rem;
+}
+
+.bar-code-image {
+    max-width: 150px;
+    max-height: 150px;
+}

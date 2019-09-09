@@ -52,7 +52,6 @@ const router = () => {
     else if(route === '#ineligible_site' && !checkSession()) ineligible_site();
     else if(route === '#sign_in' && !checkSession()) signIn();
     else if (route === '#profile' && checkSession()) accountCreated();
-    else if(route === '#share') shareconnectApp();
     else if (route === '#sign_out') signOut();
     else window.location.hash = '#';
 }
@@ -84,6 +83,44 @@ const homePage = () => {
                 </div>
             </div>
             <div class="col-sm-3 join-now-col" id="joinNow"></div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <span class="heading">Advancing Cancer Research</span> <i class="fab fa-searchengin"></i>
+                </br></br>
+                <span class="description">
+                    The Connect Study wants to better understand:
+                    <ul>
+                        <li><strong>What causes cancer,</strong></li>
+                        <li><strong>Ways to prevent cancer, and</strong></li>
+                        <li><strong>How to improve earlt detection of cancer.</strong></li>
+                    </ul>
+                </span>
+            </div>
+            <div class="col">
+                <span class="heading">Why should I join Connect?</span> <i class="fas fa-users"></i>
+                </br></br>
+                <span class="description">
+                    <strong>Being a part of Connect means you are contributing to the future of cancer prevention for our families and communities.</strong></br>
+                    With your help, Connect will be one of the largest and most imporatnt cancer studies in the United States.    
+                </span>
+            </div>
+            <div class="col">
+                <span class="heading">Who can join Connect?</span> <i class="fas fa-female"></i><i class="fas fa-male"></i>
+                </br></br>
+                <span class="description">
+                    <ul>
+                        <li><strong>Men and women between the ages of 40 and 65</strong></li>
+                        <li><strong>Current (patients/members) of participating sites</strong></li>
+                        <li><strong>No previous history of cancer</strong> (other than non-melanoma skin cancer)</li>
+                    </ul>
+                </span>
+            </div>
+            <div class="col bar-code">
+                <span class="heading">Share connect</span> <i class="fas fa-share"></i>
+                </br></br>
+                <img class="bar-code-image" src="./images/connectApp.png">
+            </div>
         </div>
     `;
     // removeActiveClass('nav-link', 'active');
@@ -359,11 +396,6 @@ const userNavBar = () => {
         </div>
         <div class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="#share" id="share" title="Share Connect App"><i class="fas fa-share"></i> Share</a>
-            </li>
-        </div>
-        <div class="navbar-nav">
-            <li class="nav-item">
                 <a class="nav-link" href="#sign_out" id="signOut" title="Sign Out"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
             </li>
         </div>
@@ -380,11 +412,6 @@ const homeNavBar = () => {
         <div class="navbar-nav">
             <li class="nav-item">
                 <a class="nav-link" href="#sign_in" id="signIn" title="Sign In"><i class="fas fa-sign-in-alt"></i> Sign In</a>
-            </li>
-        </div>
-        <div class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="#share" id="share" title="Share Connect App"><i class="fas fa-share"></i> Share</a>
             </li>
         </div>
     `;
@@ -423,12 +450,4 @@ const removeActiveClass = (className, activeClass) => {
     Array.from(fileIconElement).forEach(elm => {
         elm.classList.remove(activeClass);
     });
-}
-
-const shareconnectApp = () => {
-    const mainContent = document.getElementById('root');
-    mainContent.innerHTML = `
-    <div class="col bar-code">
-        <img src="./images/connectApp.png">
-    </div>`
 }
