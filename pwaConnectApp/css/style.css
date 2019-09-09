@@ -30,7 +30,6 @@
     background-color: #c01414;
     color: #ffffff;
     padding: 0px !important;
-    font-size: 2vw;
 }
 
 .join-now-btn {
@@ -47,6 +46,7 @@
 
 .join-now-heading {
     white-space: normal;
+    font-size: 1.5vw;
 }
 
 .images-grid {
