@@ -428,7 +428,7 @@ const removeActiveClass = (className, activeClass) => {
 const shareconnectApp = () => {
     const mainContent = document.getElementById('root');
     mainContent.innerHTML = `
-    <div class="col">
-        <img class="bar-code" src="./images/connectApp.png">
+    <div class="col bar-code">
+        <img src="./images/connectApp.png">
     </div>`
 }
