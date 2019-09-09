@@ -93,7 +93,7 @@ const homePage = () => {
                     <ul>
                         <li><strong>What causes cancer,</strong></li>
                         <li><strong>Ways to prevent cancer, and</strong></li>
-                        <li><strong>How to improve earlt detection of cancer.</strong></li>
+                        <li><strong>How to improve early detection of cancer.</strong></li>
                     </ul>
                 </span>
             </div>
@@ -102,7 +102,7 @@ const homePage = () => {
                 </br></br>
                 <span class="description">
                     <strong>Being a part of Connect means you are contributing to the future of cancer prevention for our families and communities.</strong></br>
-                    With your help, Connect will be one of the largest and most imporatnt cancer studies in the United States.    
+                    With your help, Connect will be one of the largest and most important cancer studies in the United States.    
                 </span>
             </div>
             <div class="col">
