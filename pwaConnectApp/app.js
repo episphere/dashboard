@@ -52,6 +52,7 @@ const router = () => {
     else if(route === '#ineligible_site' && !checkSession()) ineligible_site();
     else if(route === '#sign_in' && !checkSession()) signIn();
     else if (route === '#profile' && checkSession()) accountCreated();
+    else if(route === '#share') shareconnectApp();
     else if (route === '#sign_out') signOut();
     else window.location.hash = '#';
 }
@@ -358,6 +359,11 @@ const userNavBar = () => {
         </div>
         <div class="navbar-nav">
             <li class="nav-item">
+                <a class="nav-link" href="#share" id="share" title="Share Connect App"><i class="fas fa-share"></i> Share</a>
+            </li>
+        </div>
+        <div class="navbar-nav">
+            <li class="nav-item">
                 <a class="nav-link" href="#sign_out" id="signOut" title="Sign Out"><i class="fas fa-sign-out-alt"></i> Sign Out</a>
             </li>
         </div>
@@ -374,6 +380,11 @@ const homeNavBar = () => {
         <div class="navbar-nav">
             <li class="nav-item">
                 <a class="nav-link" href="#sign_in" id="signIn" title="Sign In"><i class="fas fa-sign-in-alt"></i> Sign In</a>
+            </li>
+        </div>
+        <div class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="#share" id="share" title="Share Connect App"><i class="fas fa-share"></i> Share</a>
             </li>
         </div>
     `;
@@ -412,4 +423,12 @@ const removeActiveClass = (className, activeClass) => {
     Array.from(fileIconElement).forEach(elm => {
         elm.classList.remove(activeClass);
     });
+}
+
+const shareconnectApp = () => {
+    const mainContent = document.getElementById('root');
+    mainContent.innerHTML = `
+    <div class="col">
+        <img class="bar-code" src="./images/connectApp.png">
+    </div>`
 }
