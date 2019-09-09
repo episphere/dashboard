@@ -285,7 +285,19 @@ const signIn = () => {
     
     document.getElementById('root').innerHTML = '';
     const ui = firebaseui.auth.AuthUI.getInstance() || new firebaseui.auth.AuthUI(firebase.auth());
-    ui.start('#root', {
+    ui.start('#root', signInConfig());
+    auth.onAuthStateChanged(user => {
+        if(user){
+            document.getElementById('navbarNavAltMarkup').innerHTML = userNavBar();
+        }
+        else{
+            document.getElementById('navbarNavAltMarkup').innerHTML = homeNavBar();
+        }
+    });
+}
+
+const signInConfig = () => {
+    return {
         signInSuccessUrl: '#profile',
         signInOptions: [
             firebase.auth.GoogleAuthProvider.PROVIDER_ID,
@@ -297,15 +309,7 @@ const signIn = () => {
             },
             firebase.auth.PhoneAuthProvider.PROVIDER_ID
         ]
-    });
-    auth.onAuthStateChanged(user => {
-        if(user){
-            document.getElementById('navbarNavAltMarkup').innerHTML = userNavBar();
-        }
-        else{
-            document.getElementById('navbarNavAltMarkup').innerHTML = homeNavBar();
-        }
-    });
+    }
 }
 
 const accountCreated = () => {
@@ -333,7 +337,6 @@ const firebaseConfig = () => {
     return {
         apiKey: "AIzaSyDe3Ewzl4x7hEX30EiQJ0tvXBtzd2Hghiw",
         authDomain: "nih-nci-dceg-episphere-dev.firebaseapp.com",
-        databaseURL: "https://nih-nci-dceg-episphere-dev.firebaseio.com",
         projectId: "nih-nci-dceg-episphere-dev",
         storageBucket: "nih-nci-dceg-episphere-dev.appspot.com",
         messagingSenderId: "1061219778575",
