@@ -316,6 +316,7 @@ const renderParticipantsNotVerified = async () => {
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
             mainContent.innerHTML = renderTable(response.data, true);
+            addEventShowMoreInfo(response.data);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
@@ -343,6 +344,7 @@ const renderParticipantsVerified = async () => {
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
             mainContent.innerHTML = renderTable(response.data);
+            addEventShowMoreInfo(response.data);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
@@ -371,6 +373,7 @@ const renderParticipantsAll = async () => {
             document.getElementById('participants').classList.add('active');
             mainContent.innerHTML = renderTable(response.data);
             // Add button events
+            addEventShowMoreInfo(response.data);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
@@ -382,6 +385,18 @@ const renderParticipantsAll = async () => {
         animation(false);
         window.location.hash = '#';
     }
+}
+
+const addEventShowMoreInfo = data => {
+    const elements = document.getElementsByClassName('showMoreInfo');
+    Array.from(elements).forEach(element => {
+        const filteredData = data.filter(dt => dt.token === element.dataset.token);
+        const header = document.getElementById('modalHeader');
+        const body = document.getElementById('modalBody');
+        const user = filteredData[0];
+        header.innerHTML = `<h4>${user.RcrtUP_Fname_v1r0} ${user.RcrtUP_Lname_v1r0}</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+        body.innerHTML = `<pre>${JSON.stringify(user, undefined, 4)}</pre>`
+    })
 }
 
 const eventVerifiedButton = (siteKey) => {
@@ -430,6 +445,7 @@ const renderTable = (data, showButtons) => {
                 <th>Last Name</th>
                 <th>Date of Birth</th>
                 <th>Email</th>
+                <th>Show more</th>
                 ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
             </tr>
         </thead>`;
@@ -442,12 +458,24 @@ const renderTable = (data, showButtons) => {
                     <td>${participant.RcrtUP_Lname_v1r0}</td>
                     <td>${participant.RcrtUP_MOB_v1r0 && participant.RcrtUP_BD_v1r0 && participant.RcrtUP_YOB_v1r0 ? `${participant.RcrtUP_MOB_v1r0}/${participant.RcrtUP_BD_v1r0}/${participant.RcrtUP_YOB_v1r0}` : ''}</td>
                     <td>${participant.RcrtUP_Email1_v1r0}</td>
+                    <td><a data-toggle="modal" data-target="#modalShowMoreData"  class="change-pointer showMoreInfo" data-token="${participant.token}"><i class="fas fa-info-circle"></i></a></td>
                     ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
                 </tr>
                 `;
             }
         });
-        template += '</table></div></div>'
+        template += `</table></div><div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header" id="modalHeader">
+                            
+                        </div>
+                        <div class="modal-body" id="modalBody">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div></div>`
     }else{
         template += `No data found!`;
     }
