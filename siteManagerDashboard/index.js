@@ -419,7 +419,7 @@ const renderTable = (data, showButtons) => {
     let template = '';
     let showTable = false;
     data.forEach(participant => {
-        if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0) showTable = true;
+        if(participant.RcrtUP_Fname_v1r0 && participant.RcrtUP_Lname_v1r0 && participant.RcrtUP_Email1_v1r0) showTable = true;
     });
     if(showTable){
         template += `<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">`;
@@ -434,14 +434,14 @@ const renderTable = (data, showButtons) => {
             </tr>
         </thead>`;
         data.forEach(participant => {
-            if(participant.RcrutUP_Fname_v1r0 && participant.RcrutUP_Lname_v1r0 && participant.RcrutUP_Email1_v1r0){
+            if(participant.RcrtUP_Fname_v1r0 && participant.RcrtUP_Lname_v1r0 && participant.RcrtUP_Email1_v1r0){
                 template += `
                 <tr>
-                    <td>${participant.RcrutUP_Fname_v1r0}</td>
-                    <td>${participant.RcrutUP_Minitial_v1r0 ? participant.RcrutUP_Minitial_v1r0 : ''}</td>
-                    <td>${participant.RcrutUP_Lname_v1r0}</td>
-                    <td>${participant.RcrutUP_MOB_v1r0 && participant.RcrutUP_BD_v1r0 && participant.RcrutUP_YOB_v1r0 ? `${participant.RcrutUP_MOB_v1r0}/${participant.RcrutUP_BD_v1r0}/${participant.RcrutUP_YOB_v1r0}` : ''}</td>
-                    <td>${participant.RcrutUP_Email1_v1r0}</td>
+                    <td>${participant.RcrtUP_Fname_v1r0}</td>
+                    <td>${participant.RcrtUP_Minitial_v1r0 ? participant.RcrtUP_Minitial_v1r0 : ''}</td>
+                    <td>${participant.RcrtUP_Lname_v1r0}</td>
+                    <td>${participant.RcrtUP_MOB_v1r0 && participant.RcrtUP_BD_v1r0 && participant.RcrtUP_YOB_v1r0 ? `${participant.RcrtUP_MOB_v1r0}/${participant.RcrtUP_BD_v1r0}/${participant.RcrtUP_YOB_v1r0}` : ''}</td>
+                    <td>${participant.RcrtUP_Email1_v1r0}</td>
                     ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
                 </tr>
                 `;
