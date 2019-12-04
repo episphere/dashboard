@@ -83,7 +83,7 @@ const renderNavBarLinks = () => {
             <a class="nav-item nav-link active" href="#" title="Home"><i class="fas fa-home"></i> Home</a>
         </li>
         <li class="nav-item">
-            <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"> Report issue</i></a>
+            <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"></i> Report issue</a>
         </li>
         <li class="nav-item">
             <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
@@ -113,7 +113,7 @@ const dashboardNavBarLinks = () => {
             <a class="nav-item nav-link" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </li>
         <li class="nav-item">
-            <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"> Report issue</i></a>
+            <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"></i> Report issue</a>
         </li>
         <li class="nav-item">
             <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
