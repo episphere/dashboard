@@ -82,6 +82,9 @@ const renderNavBarLinks = () => {
         <li class="nav-item active">
             <a class="nav-item nav-link active" href="#" title="Home"><i class="fas fa-home"></i> Home</a>
         </li>
+        <li class="nav-item">
+            <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"> Report issue</i></a>
+        </li>
     `;
 }
 
@@ -102,6 +105,9 @@ const dashboardNavBarLinks = () => {
         </li>
         <li class="nav-item">
             <a class="nav-item nav-link" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
+        </li>
+        <li class="nav-item">
+            <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"> Report issue</i></a>
         </li>
     `;
 }
@@ -258,7 +264,7 @@ const renderPieChart = (participants) => {
 }
 
 const renderBarChart = (participants) => {
-    const accountCreated = participants.data.filter(dt => dt.RcrutUP_Fname_v1r0 !== undefined);
+    const accountCreated = participants.data.filter(dt => dt.RcrtUP_Fname_v1r0 !== undefined);
     const consent = participants.data.filter(dt => dt.RcrutCS_Consented_v1r0 === 1);
     const trace1 = {
         x: [accountCreated.length, consent.length],
