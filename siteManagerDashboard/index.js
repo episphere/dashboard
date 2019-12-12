@@ -156,7 +156,7 @@ const fetchData = async (siteKey, type) => {
         clearLocalStroage();
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants/${type}`,{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants?type=${type}`,{
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
