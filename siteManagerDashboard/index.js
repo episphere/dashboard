@@ -1,3 +1,4 @@
+const importantColumns = ['RcrtUP_Fname_v1r0', 'RcrtUP_Minitial_v1r0', 'RcrtUP_Lname_v1r0', 'RcrtUP_MOB_v1r0', 'RcrtUP_BD_v1r0', 'RcrtUP_YOB_v1r0', 'RcrtUP_Email1_v1r0'];
 window.onload = () => {
     router();
 }
@@ -209,27 +210,8 @@ const checkSession = () => {
 }
 
 const animation = (status) => {
-    if(status) document.getElementById('loadingAnimation').innerHTML = loadingAnimation();
-    if(!status) document.getElementById('loadingAnimation').innerHTML = '';
-}
-
-const loadingAnimation = () => {
-    return `
-    <div class="d-flex justify-content-center">
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <div class="spinner-grow text-dark" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-    </div>
-    `;
+    if(status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
+    if(!status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
 
 const renderCharts = async (siteKey) => {
@@ -333,8 +315,10 @@ const renderParticipantsNotVerified = async () => {
             document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
-            mainContent.innerHTML = renderTable(response.data, true);
-            addEventShowMoreInfo(response.data);
+            mainContent.innerHTML = renderTable(filterdata(response.data));
+            addEventFilterData(filterdata(response.data), true);
+            renderData(filterdata(response.data), true);
+            activeColumns(filterdata(response.data), true);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
@@ -361,8 +345,10 @@ const renderParticipantsVerified = async () => {
             document.getElementById('verifiedBtn').classList.add('dd-item-active');
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
-            mainContent.innerHTML = renderTable(response.data);
-            addEventShowMoreInfo(response.data);
+            mainContent.innerHTML = renderTable(filterdata(response.data));
+            addEventFilterData(filterdata(response.data));
+            renderData(filterdata(response.data));
+            activeColumns(filterdata(response.data));
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
@@ -389,9 +375,10 @@ const renderParticipantsAll = async () => {
             document.getElementById('allBtn').classList.add('dd-item-active');
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
-            mainContent.innerHTML = renderTable(response.data);
-            // Add button events
-            addEventShowMoreInfo(response.data);
+            mainContent.innerHTML = renderTable(filterdata(response.data));
+            addEventFilterData(filterdata(response.data));
+            renderData(filterdata(response.data));
+            activeColumns(filterdata(response.data));
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
             animation(false);
@@ -408,12 +395,27 @@ const renderParticipantsAll = async () => {
 const addEventShowMoreInfo = data => {
     const elements = document.getElementsByClassName('showMoreInfo');
     Array.from(elements).forEach(element => {
-        const filteredData = data.filter(dt => dt.token === element.dataset.token);
-        const header = document.getElementById('modalHeader');
-        const body = document.getElementById('modalBody');
-        const user = filteredData[0];
-        header.innerHTML = `<h4>${user.RcrtUP_Fname_v1r0} ${user.RcrtUP_Lname_v1r0}</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-        body.innerHTML = `<pre>${JSON.stringify(user, undefined, 4)}</pre>`
+        element.addEventListener('click', () => {
+            const filteredData = data.filter(dt => dt.token === element.dataset.token);
+            const header = document.getElementById('modalHeader');
+            const body = document.getElementById('modalBody');
+            const user = filteredData[0];
+            header.innerHTML = `<h4>${user.RcrtUP_Fname_v1r0} ${user.RcrtUP_Lname_v1r0}</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            let template = '<div>';
+            for(let key in user){
+                if(typeof user[key] === 'object') {
+                    template += `<span><strong>${key}</strong></span> - <ul class="user-data-ul">`
+                    for(let nestedKey in user[key]){
+                        template += `<li><span><strong>${nestedKey}</strong></span> - <span>${user[key][nestedKey]}</span></li>`
+                    }
+                    template += `</ul>`
+                }
+                else {
+                    template += `<span><strong>${key}</strong></span> - <span>${user[key]}</span></br>`
+                }
+            }
+            body.innerHTML = template;
+        })
     })
 }
 
@@ -447,58 +449,125 @@ const eventNotVerifiedButton = (siteKey) => {
     });
 }
 
-const renderTable = (data, showButtons) => {
+const filterdata = (data) => {
+    return data.filter(participant => {
+        if(participant.RcrtUP_Fname_v1r0 && participant.RcrtUP_Lname_v1r0 && participant.RcrtUP_Email1_v1r0) return participant;
+    });
+}
+
+const renderTable = (data) => {
     if(data.length < 1) return;
     let template = '';
-    let showTable = false;
-    data.forEach(participant => {
-        if(participant.RcrtUP_Fname_v1r0 && participant.RcrtUP_Lname_v1r0 && participant.RcrtUP_Email1_v1r0) showTable = true;
+    if(data.length === 0) return `No data found!`; 
+    let obj = {
+        value: 0,
+        keys: []
+    };
+    data.forEach(dt => {
+        let KeysInObj = Object.keys(dt).length;
+        if(obj.value < KeysInObj){
+            obj.value = KeysInObj;
+            obj.keys = Object.keys(dt);
+        }
     });
-    if(showTable){
-        template += `<div class="row"><div class="col"><table class="table table-striped table-bordered table-sm">`;
-        template += `<thead>
-            <tr>
-                <th>First Name</th>
-                <th>Middle Initial</th>
-                <th>Last Name</th>
-                <th>Date of Birth</th>
-                <th>Email</th>
-                <th>Show more</th>
-                ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
-            </tr>
-        </thead>`;
-        data.forEach(participant => {
-            if(participant.RcrtUP_Fname_v1r0 && participant.RcrtUP_Lname_v1r0 && participant.RcrtUP_Email1_v1r0){
-                template += `
-                <tr>
-                    <td>${participant.RcrtUP_Fname_v1r0}</td>
-                    <td>${participant.RcrtUP_Minitial_v1r0 ? participant.RcrtUP_Minitial_v1r0 : ''}</td>
-                    <td>${participant.RcrtUP_Lname_v1r0}</td>
-                    <td>${participant.RcrtUP_MOB_v1r0 && participant.RcrtUP_BD_v1r0 && participant.RcrtUP_YOB_v1r0 ? `${participant.RcrtUP_MOB_v1r0}/${participant.RcrtUP_BD_v1r0}/${participant.RcrtUP_YOB_v1r0}` : ''}</td>
-                    <td>${participant.RcrtUP_Email1_v1r0}</td>
-                    <td><a data-toggle="modal" data-target="#modalShowMoreData"  class="change-pointer showMoreInfo" data-token="${participant.token}"><i class="fas fa-info-circle"></i></a></td>
-                    ${showButtons ? `<td><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
-                </tr>
-                `;
-            }
-        });
-        template += `</table></div><div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-                <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header" id="modalHeader">
-                            
-                        </div>
-                        <div class="modal-body" id="modalBody">
-                            
+    obj.keys.sort();
+    if(obj.value > 0) {
+        template += `<div class="row">
+            <div class="col" id="columnFilter">
+                ${obj.keys.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${x}</button>`)}
+            </div>
+        </div>`
+    }
+
+    template += `
+                <div class="row"><div class="col">
+                    <div class="float-right">
+                        <i class="fas fa-search"></i><input id="filterData" class="form-control" type="text" placeholder="Min. 3 characters"></div>
+                </div></div>
+                <div class="row allow-overflow">
+                    <div class="col">
+                        <table id="dataTable" class="table table-striped table-bordered table-sm table-borderless sub-div-shadow no-wrap"></table>
+                    </div>
+                    <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header" id="modalHeader"></div>
+                                <div class="modal-body" id="modalBody"></div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            </div></div>`
-    }else{
-        template += `No data found!`;
-    }
-    
+                </div>`
     return template;
+}
+
+const renderData = (data, showButtons) => {
+    let template = '';
+    template += `<thead><tr>`
+    importantColumns.forEach(x => template += `<th>${x}</th>`)
+    template += `<th class="no-wrap">Show all info</th>
+            ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
+        </tr>
+    </thead>`;
+    data.forEach(participant => {
+        template += `<tbody><tr>`
+        importantColumns.forEach(x => {
+            if(participant[x] && typeof participant[x] === 'object'){
+                template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`
+            }
+            else {
+                template += `<td>${participant[x] ? participant[x] : ''}</td>`
+            }
+        })
+        template += `<td><a data-toggle="modal" data-target="#modalShowMoreData" name="modalParticipantData" class="change-pointer showMoreInfo" data-token="${participant.token}"><i class="fas fa-info-circle"></i></a></td>
+        ${showButtons ? `<td class="no-wrap"><button class="btn btn-primary participantVerified" data-token="${participant.token}">Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}">Not Verify</button></td>`: ``}
+    </tr>
+        `; 
+    });
+    template += '</tbody>'
+    document.getElementById('dataTable').innerHTML = template;
+    addEventShowMoreInfo(data);
+}
+
+const addEventFilterData = (data, showButtons) => {
+    const btn = document.getElementById('filterData');
+    btn.addEventListener('keyup', () => {
+        const value = document.getElementById('filterData').value;
+        if(value.length < 3) {
+            renderData(data, showButtons);
+            return;
+        };
+        renderData(serachBy(data, value), showButtons);
+    });
+}
+
+const serachBy = (data, value) => {
+    return data.filter(dt => {
+        if((new RegExp(value, 'i')).test(dt.RcrtUP_Fname_v1r0)) return dt
+        if((new RegExp(value, 'i')).test(dt.RcrtUP_Lname_v1r0)) return dt
+        if((new RegExp(value, 'i')).test(dt.Connect_ID)) return dt
+    });
+}
+
+const activeColumns = (data, showButtons) => {
+    const btns = document.getElementsByName('column-filter');
+    Array.from(btns).forEach(btn => {
+        const value = btn.dataset.column;
+        if(importantColumns.indexOf(value) !== -1) {
+            btn.classList.add('filter-active');
+        }
+        btn.addEventListener('click', () => {
+            if(!btn.classList.contains('filter-active')){
+                btn.classList.add('filter-active');
+                importantColumns.push(value);
+                renderData(data, showButtons);
+            }
+            else{
+                btn.classList.remove('filter-active');
+                importantColumns.splice(importantColumns.indexOf(value), 1);
+                renderData(data, showButtons);
+            }
+        })
+    });
 }
 
 const removeActiveClass = (className, activeClass) => {
