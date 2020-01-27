@@ -531,7 +531,7 @@ const renderData = (data, showButtons) => {
 const addEventFilterData = (data, showButtons) => {
     const btn = document.getElementById('filterData');
     btn.addEventListener('keyup', () => {
-        const value = document.getElementById('filterData').value;
+        const value = document.getElementById('filterData').value.trim();
         if(value.length < 3) {
             renderData(data, showButtons);
             return;
@@ -542,9 +542,22 @@ const addEventFilterData = (data, showButtons) => {
 
 const serachBy = (data, value) => {
     return data.filter(dt => {
-        if((new RegExp(value, 'i')).test(dt.RcrtUP_Fname_v1r0)) return dt
-        if((new RegExp(value, 'i')).test(dt.RcrtUP_Lname_v1r0)) return dt
-        if((new RegExp(value, 'i')).test(dt.Connect_ID)) return dt
+        const fn = dt.RcrtUP_Fname_v1r0;
+        const ln = dt.RcrtUP_Lname_v1r0;
+        
+        if((new RegExp(value, 'i')).test(fn)) {
+            // dt.RcrtUP_Fname_v1r0 = fn.replace((new RegExp(value, 'ig')), "<b>$&</b>");
+            return dt
+        }
+        if((new RegExp(value, 'i')).test(ln)) {
+            // dt.RcrtUP_Lname_v1r0 = ln.replace((new RegExp(value, 'ig')), "<b>$&</b>");
+            return dt
+        }
+        if((new RegExp(value, 'i')).test(dt.Connect_ID)) {
+            // const ID = dt.Connect_ID.toString();
+            // dt.Connect_ID = ID.replace((new RegExp(value, 'ig')), "<b>$&</b>");
+            return dt
+        }
     });
 }
 
@@ -559,12 +572,14 @@ const activeColumns = (data, showButtons) => {
             if(!btn.classList.contains('filter-active')){
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
-                renderData(data, showButtons);
+                if(document.getElementById('filterData').value.trim().length >= 3) renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                else renderData(data, showButtons);
             }
             else{
                 btn.classList.remove('filter-active');
                 importantColumns.splice(importantColumns.indexOf(value), 1);
-                renderData(data, showButtons);
+                if(document.getElementById('filterData').value.trim().length >= 3) renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                else renderData(data, showButtons);
             }
         })
     });
