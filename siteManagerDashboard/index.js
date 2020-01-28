@@ -105,7 +105,7 @@ const dashboardNavBarLinks = () => {
             <a class="nav-link dropdown-toggle" href="#" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-users"></i> Participants
             </a>
-            <div class="dropdown-menu" aria-labelledby="participants">
+            <div class="dropdown-menu sub-div-shadow" aria-labelledby="participants">
                 <a class="dropdown-item" href="#participants/notyetverified" id="notVerifiedBtn">Not Yet Verified Participants</a>
                 <a class="dropdown-item" href="#participants/cannotbeverified" id="cannotVerifiedBtn">Cannot Be Verified Participants</a>
                 <a class="dropdown-item" href="#participants/verified" id="verifiedBtn">Verified Participants</a>
