@@ -12,7 +12,8 @@ const router = () => {
     const route =  hash || '#';
     if(route === '#') homePage();
     else if(route === '#dashboard') renderDashboard();
-    else if(route === '#participants/notverified') renderParticipantsNotVerified();
+    else if(route === '#participants/notyetverified') renderParticipantsNotVerified();
+    else if(route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
     else if(route === '#participants/verified') renderParticipantsVerified();
     else if(route === '#participants/all') renderParticipantsAll();
     else if(route === '#logout') clearLocalStroage();
@@ -105,7 +106,8 @@ const dashboardNavBarLinks = () => {
                 <i class="fas fa-users"></i> Participants
             </a>
             <div class="dropdown-menu" aria-labelledby="participants">
-                <a class="dropdown-item" href="#participants/notverified" id="notVerifiedBtn">Not Verified Participants</a>
+                <a class="dropdown-item" href="#participants/notyetverified" id="notVerifiedBtn">Not Yet Verified Participants</a>
+                <a class="dropdown-item" href="#participants/cannotbeverified" id="cannotVerifiedBtn">Cannot Be Verified Participants</a>
                 <a class="dropdown-item" href="#participants/verified" id="verifiedBtn">Verified Participants</a>
                 <a class="dropdown-item" href="#participants/all" id="allBtn">All Participants</a>
             </div>
@@ -173,7 +175,7 @@ const participantVerification = async (token, verified, siteKey) => {
         clearLocalStroage();
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`notverified`}&token=${token}`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`cannotbeverified`}&token=${token}`, {
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
@@ -307,7 +309,7 @@ const renderParticipantsNotVerified = async () => {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
-        const response = await fetchData(siteKey, 'notverified');
+        const response = await fetchData(siteKey, 'notyetverified');
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
@@ -321,6 +323,41 @@ const renderParticipantsNotVerified = async () => {
             activeColumns(filterdata(response.data), true);
             eventVerifiedButton(siteKey);
             eventNotVerifiedButton(siteKey);
+            animation(false);
+        }
+        if(response.code === 401){
+            clearLocalStroage();
+        }
+    }else{
+        animation(false);
+        window.location.hash = '#';
+    }
+}
+
+const renderParticipantsCanNotBeVerified = async () => {
+    if(localStorage.dashboard){
+        animation(true);
+        const localStr = JSON.parse(localStorage.dashboard);
+        const siteKey = localStr.siteKey;
+        const response = await fetchData(siteKey, 'cannotbeverified');
+        console.log(response)
+        if(response.code === 200){
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
+            removeActiveClass('dropdown-item', 'dd-item-active')
+            document.getElementById('cannotVerifiedBtn').classList.add('dd-item-active');
+            removeActiveClass('nav-link', 'active');
+            document.getElementById('participants').classList.add('active');
+            const filteredData = filterdata(response.data);
+            if(filteredData.length === 0) {
+                mainContent.innerHTML = 'No Data Found!'
+                animation(false);
+                return;
+            }
+            mainContent.innerHTML = renderTable(filteredData);
+            addEventFilterData(filteredData);
+            renderData(filteredData);
+            activeColumns(filteredData);
             animation(false);
         }
         if(response.code === 401){
@@ -349,8 +386,6 @@ const renderParticipantsVerified = async () => {
             addEventFilterData(filterdata(response.data));
             renderData(filterdata(response.data));
             activeColumns(filterdata(response.data));
-            eventVerifiedButton(siteKey);
-            eventNotVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
@@ -379,8 +414,6 @@ const renderParticipantsAll = async () => {
             addEventFilterData(filterdata(response.data));
             renderData(filterdata(response.data));
             activeColumns(filterdata(response.data));
-            eventVerifiedButton(siteKey);
-            eventNotVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
@@ -427,7 +460,10 @@ const eventVerifiedButton = (siteKey) => {
             const token = elem.dataset.token;
             const response = await participantVerification(token, true, siteKey);
             if(response.code === 200){
-                animation(false);
+                // animation(false);
+                // const dataTable = document.getElementById('dataTable');
+                // const elements = dataTable.querySelectorAll(`[data-token="${token}"]`);
+                // elements[0].parentNode.parentNode.parentNode.removeChild(elements[0].parentNode.parentNode);
                 location.reload();
             }
         });
@@ -442,7 +478,10 @@ const eventNotVerifiedButton = (siteKey) => {
             const token = elem.dataset.token;
             const response = await participantVerification(token, false, siteKey);
             if(response.code === 200){
-                animation(false);
+                // animation(false);
+                // const dataTable = document.getElementById('dataTable');
+                // const elements = dataTable.querySelectorAll(`[data-token="${token}"]`);
+                // elements[0].parentNode.parentNode.parentNode.removeChild(elements[0].parentNode.parentNode);
                 location.reload();
             }
         });
@@ -530,6 +569,7 @@ const renderData = (data, showButtons) => {
 
 const addEventFilterData = (data, showButtons) => {
     const btn = document.getElementById('filterData');
+    if(!btn) return;
     btn.addEventListener('keyup', () => {
         const value = document.getElementById('filterData').value.trim();
         if(value.length < 3) {
