@@ -433,7 +433,7 @@ const addEventShowMoreInfo = data => {
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
             const user = filteredData[0];
-            header.innerHTML = `<h4>${user.RcrtUP_Fname_v1r0} ${user.RcrtUP_Lname_v1r0}</h4><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            header.innerHTML = `<h4>${user.RcrtUP_Fname_v1r0} ${user.RcrtUP_Lname_v1r0}</h4><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             let template = '<div>';
             for(let key in user){
                 if(typeof user[key] === 'object') {
@@ -529,7 +529,7 @@ const renderTable = (data) => {
                     </div>
                     <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                            <div class="modal-content">
+                            <div class="modal-content sub-div-shadow">
                                 <div class="modal-header" id="modalHeader"></div>
                                 <div class="modal-body" id="modalBody"></div>
                             </div>
