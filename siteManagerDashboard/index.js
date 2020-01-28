@@ -525,7 +525,7 @@ const renderTable = (data) => {
                 </div></div>
                 <div class="row allow-overflow">
                     <div class="col">
-                        <table id="dataTable" class="table table-striped table-bordered table-sm table-borderless sub-div-shadow no-wrap"></table>
+                        <table id="dataTable" class="table table-hover table-bordered table-borderless sub-div-shadow no-wrap"></table>
                     </div>
                     <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -541,7 +541,7 @@ const renderTable = (data) => {
 
 const renderData = (data, showButtons) => {
     let template = '';
-    template += `<thead><tr>`
+    template += `<thead class="thead-dark"><tr>`
     importantColumns.forEach(x => template += `<th>${x}</th>`)
     template += `<th class="no-wrap">Show all info</th>
             ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
