@@ -104,3 +104,15 @@ table {
 .custom-input {
     width: 80% !important;
 }
+
+#mainContent {
+    padding: 5rem 1rem;
+}
+
+.search-icon {
+    float: right;
+    margin-right: 6px;
+    margin-top: -26px;
+    position: relative;
+    z-index: 2;
+}

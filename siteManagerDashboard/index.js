@@ -482,7 +482,7 @@ const renderTable = (data) => {
     template += `
                 <div class="row"><div class="col">
                     <div class="float-right">
-                        <i class="fas fa-search"></i><input id="filterData" class="form-control" type="text" placeholder="Min. 3 characters"></div>
+                        <input id="filterData" class="form-control" type="text" placeholder="Min. 3 characters"><span class="fas fa-search search-icon"></span></div>
                 </div></div>
                 <div class="row allow-overflow">
                     <div class="col">
