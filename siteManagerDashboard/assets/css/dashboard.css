@@ -115,4 +115,7 @@ table {
     margin-top: -26px;
     position: relative;
     z-index: 2;
+    background-color: #ffffff;
+    padding-left: 4px;
+    padding-bottom: 4px;
 }
