@@ -234,7 +234,7 @@ const renderCharts = async (siteKey) => {
         row.appendChild(funnelChart);
         row.appendChild(barChart);
         mainContent.appendChild(row);
-        renderPieChart(participantsData);
+        renderFunnelChart(participantsData);
         renderBarChart(participantsData);
         animation(false);
     }
@@ -243,7 +243,7 @@ const renderCharts = async (siteKey) => {
     }
 }
 
-const renderPieChart = (participants) => {
+const renderFunnelChart = (participants) => {
     const UPSubmitted = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1);
     const consented = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1);
     const signedIn = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === undefined);
@@ -253,7 +253,7 @@ const renderPieChart = (participants) => {
         y: ['Sign-on', 'Consent', 'User Profile'],
         type: 'funnel',
         marker: {
-            color: ["0C1368", "242C8F", "525DE9"]
+            color: ["#0C1368", "#242C8F", "#525DE9"]
         }
     }];
     const layout = {
@@ -297,7 +297,7 @@ const renderBarChart = (participants) => {
             automargin: true,
             fixedrange: true
         },
-        colorway : ['#184481', '#815518'],
+        colorway : ['#7f7fcc', '#0C1368'],
         title: 'Participant Progress'
     };
       
