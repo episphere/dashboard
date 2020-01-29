@@ -219,16 +219,21 @@ const animation = (status) => {
 const renderCharts = async (siteKey) => {
     const participantsData = await fetchData(siteKey, 'all');
     if(participantsData.code === 200){
+        const row = document.createElement('div');
+        row.classList = ['row'];
+
         let pieChart = document.createElement('div');
-        pieChart.setAttribute('class', 'col');
+        pieChart.classList = ['col sub-div-shadow'];
         pieChart.setAttribute('id', 'pieChart');
 
         let barChart = document.createElement('div');
-        barChart.setAttribute('class','col');
+        barChart.classList = ['col sub-div-shadow'];
         barChart.setAttribute('id', 'barChart');
 
-        mainContent.appendChild(pieChart);
-        mainContent.appendChild(barChart);
+
+        row.appendChild(pieChart);
+        row.appendChild(barChart);
+        mainContent.appendChild(row);
         renderPieChart(participantsData);
         renderBarChart(participantsData);
         animation(false);
@@ -239,29 +244,27 @@ const renderCharts = async (siteKey) => {
 }
 
 const renderPieChart = (participants) => {
-    const eligibleParticipants = participants.data.filter(dt => dt.RcrtES_Eligible_v1r0 === 1);
-    const inEligibleCancer = participants.data.filter(dt => dt.RcrtES_CancerHist_v1r0 === 1);
-    const inEligibleAge = participants.data.filter(dt => dt.RcrtES_AgeQualify_v1r0 === 0);
-    const inEligibleAgeCancer = participants.data.filter(dt => dt.RcrtES_CancerHist_v1r0 === 1 && dt.RcrtES_AgeQualify_v1r0 === 0);
+    const UPSubmitted = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1);
+    const consented = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1);
+    const signedIn = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === undefined);
+
     const data = [{
-        values: [eligibleParticipants.length, inEligibleCancer.length, inEligibleAge.length, inEligibleAgeCancer.length],
-        labels: ['Eligible', 'Not eligible, due to cancer', 'Not eligible, due to age', 'Not eligible, due to age and cancer'],
-        type: 'pie',
-        textinfo: "value"
+        x: [signedIn.length, consented.length, UPSubmitted.length],
+        y: ['Sign-on', 'Consent', 'User Profile'],
+        type: 'funnel'
     }];
-    const pieLayout = {
+    const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        colorway : ['#00009C', '#006400', '#187981', '#071426'],
-        title: 'Eligibility Screener Progress'
+        title: `${UPSubmitted.length+consented.length} Active Recruits`
     };
     
-    Plotly.newPlot('pieChart', data, pieLayout, {responsive: true, displayModeBar: false});
+    Plotly.newPlot('pieChart', data, layout, {responsive: true, displayModeBar: false});
 }
 
 const renderBarChart = (participants) => {
-    const accountCreated = participants.data.filter(dt => dt.RcrtUP_Fname_v1r0 !== undefined);
-    const consent = participants.data.filter(dt => dt.RcrutCS_Consented_v1r0 === 1);
+    const accountCreated = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1);
+    const consent = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1);
     const trace1 = {
         x: [accountCreated.length, consent.length],
         y: ['Accounts created', '  Consent complete'],
