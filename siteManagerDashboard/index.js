@@ -256,7 +256,7 @@ const renderPieChart = (participants) => {
     const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `${UPSubmitted.length+consented.length} Active Recruits`
+        title: `${signedIn.length} Active Recruits`
     };
     
     Plotly.newPlot('pieChart', data, layout, {responsive: true, displayModeBar: false});
