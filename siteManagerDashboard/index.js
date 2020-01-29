@@ -1,5 +1,5 @@
 const importantColumns = ['RcrtUP_Fname_v1r0', 'RcrtUP_Minitial_v1r0', 'RcrtUP_Lname_v1r0', 'RcrtUP_MOB_v1r0', 'RcrtUP_BD_v1r0', 'RcrtUP_YOB_v1r0', 'RcrtUP_Email1_v1r0'];
-window.onload = () => {
+window.onload = async () => {
     router();
 }
 
@@ -222,16 +222,16 @@ const renderCharts = async (siteKey) => {
         const row = document.createElement('div');
         row.classList = ['row'];
 
-        let pieChart = document.createElement('div');
-        pieChart.classList = ['col sub-div-shadow'];
-        pieChart.setAttribute('id', 'pieChart');
+        let funnelChart = document.createElement('div');
+        funnelChart.classList = ['col sub-div-shadow'];
+        funnelChart.setAttribute('id', 'funnelChart');
 
         let barChart = document.createElement('div');
         barChart.classList = ['col sub-div-shadow'];
         barChart.setAttribute('id', 'barChart');
 
 
-        row.appendChild(pieChart);
+        row.appendChild(funnelChart);
         row.appendChild(barChart);
         mainContent.appendChild(row);
         renderPieChart(participantsData);
@@ -251,7 +251,10 @@ const renderPieChart = (participants) => {
     const data = [{
         x: [signedIn.length, consented.length, UPSubmitted.length],
         y: ['Sign-on', 'Consent', 'User Profile'],
-        type: 'funnel'
+        type: 'funnel',
+        marker: {
+            color: ["0C1368", "242C8F", "525DE9"]
+        }
     }];
     const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
@@ -259,7 +262,7 @@ const renderPieChart = (participants) => {
         title: `${participants.data.length} Active Recruits`
     };
     
-    Plotly.newPlot('pieChart', data, layout, {responsive: true, displayModeBar: false});
+    Plotly.newPlot('funnelChart', data, layout, {responsive: true, displayModeBar: false});
 }
 
 const renderBarChart = (participants) => {
