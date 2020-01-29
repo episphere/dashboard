@@ -139,3 +139,38 @@ table {
     line-height: 1;
     text-shadow: 0 1px 0 #fff;
 }
+
+.participantNotVerified, .participantVerified {
+    padding: .075rem .75rem !important;
+}
+
+.content-wrapper {
+    padding-top: 15px;
+}
+
+.footer-content {
+    text-align:center;
+    border-top: 0.25px solid #574F4F;
+    width: 100%;
+    background-color: #fff;
+    margin: 0px !important;
+}
+
+.menu-item {
+    display: inline;
+    padding: 0.375em 9px;
+}
+
+.links-border-right {
+    border-right: 1px solid #000000;
+}
+
+.footer-links {
+    color: #4d4d4d;
+    text-decoration: underline;
+}
+
+#mainContent {
+    background-color: #f5f5f5;
+    min-height: calc(100vh - 135px);
+}
