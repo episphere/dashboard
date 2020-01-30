@@ -102,7 +102,7 @@ const dashboardNavBarLinks = () => {
             <a class="nav-item nav-link" href="#dashboard" title="Dashboard" id="dashboardBtn"><i class="fas fa-home"></i> Dashboard</a>
         </li>
         <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a class="nav-link dropdown-toggle" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <i class="fas fa-users"></i> Participants
             </a>
             <div class="dropdown-menu sub-div-shadow" aria-labelledby="participants">
@@ -246,8 +246,7 @@ const renderCharts = async (siteKey) => {
 const renderFunnelChart = (participants) => {
     const UPSubmitted = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1);
     const consented = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1);
-    const signedIn = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === undefined);
-
+    const signedIn = participants.data.filter(dt => dt.RcrtES_Aware_v1r0 !== undefined);
     const data = [{
         x: [signedIn.length, consented.length, UPSubmitted.length],
         y: ['Sign-on', 'Consent', 'User Profile'],
@@ -346,7 +345,6 @@ const renderParticipantsCanNotBeVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'cannotbeverified');
-        console.log(response)
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
@@ -527,11 +525,13 @@ const renderTable = (data) => {
     template += `
                 <div class="row"><div class="col">
                     <div class="float-right">
-                        <input id="filterData" class="form-control" type="text" placeholder="Min. 3 characters"><span class="fas fa-search search-icon"></span></div>
+                        <input id="filterData" class="form-control" type="text" placeholder="Min. 3 characters"><span data-toggle="tooltip" title='Search by first name, last name or connect id' class="fas fa-search search-icon"></span></div>
                 </div></div>
                 <div class="row allow-overflow">
                     <div class="col">
                         <table id="dataTable" class="table table-hover table-bordered table-borderless sub-div-shadow no-wrap"></table>
+                        <div id="paginationContainer"></div>
+                        
                     </div>
                     <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -546,6 +546,86 @@ const renderTable = (data) => {
 }
 
 const renderData = (data, showButtons) => {
+    const pageSize = 10;
+    const dataLength = data.length;
+    const pages = Math.ceil(dataLength/pageSize);
+    const array = [];
+
+    for(let i = 0; i< pages; i++){
+        array.push(i+1);
+    }
+    document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
+    addEventPageBtns(pageSize, data, showButtons);
+    document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
+    addEventShowMoreInfo(data);
+}
+
+const addEventPageBtns = (pageSize, data, showButtons) => {
+    const elements = document.getElementsByClassName('page-link');
+    Array.from(elements).forEach(element => {
+        element.addEventListener('click', () => {
+            const previous = element.dataset.previous;
+            const next = element.dataset.next;
+            const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
+            
+            if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
+            
+            if(!element.classList.contains('active-page')){
+                let start = (pageNumber - 1) * pageSize;
+                let end = pageNumber * pageSize;
+                document.getElementById('previousPage').dataset.previous = pageNumber;
+                document.getElementById('nextPage').dataset.next = pageNumber;
+                document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
+
+                Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
+                document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
+            }
+        })
+    });
+}
+
+const dataPagination = (start, end, data) => {
+    const paginatedData = [];
+    for(let i=start; i<end; i++){
+        if(data[i]) paginatedData.push(data[i]);
+    }
+    return paginatedData;
+}
+
+const paginationTemplate = (array) => {
+    let template = `
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">`
+    
+    array.forEach((a,i) => {
+        if(i === 0){
+            template += `<li class="page-item">
+                            <a class="page-link" id="previousPage" data-previous="1" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                            </a>
+                        </li>`
+        }
+        template += `<li class="page-item"><a class="page-link ${i === 0 ? 'active-page':''}" data-page=${a}>${a}</a></li>`;
+
+        if(i === (array.length - 1)){
+            template += `
+            <li class="page-item">
+                <a class="page-link" id="nextPage" data-next="1" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+                </a>
+            </li>`
+        }
+    });
+    template += `
+            </ul>
+        </nav>
+    `;
+    return template;
+}
+
+const tableTemplate = (data, showButtons) => {
     let template = '';
     template += `<thead class="thead-dark"><tr>`
     importantColumns.forEach(x => template += `<th>${x}</th>`)
@@ -568,9 +648,8 @@ const renderData = (data, showButtons) => {
     </tr>
         `; 
     });
-    template += '</tbody>'
-    document.getElementById('dataTable').innerHTML = template;
-    addEventShowMoreInfo(data);
+    template += '</tbody>';
+    return template;
 }
 
 const addEventFilterData = (data, showButtons) => {
