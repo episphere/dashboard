@@ -190,4 +190,6 @@ table {
 .active-page {
     color: #ffffff !important;
     background-color: #343a40 !important;
+    border-color: #343a40 !important;
+    box-shadow: 5px 3px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
 }

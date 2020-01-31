@@ -531,7 +531,6 @@ const renderTable = (data) => {
                     <div class="col">
                         <table id="dataTable" class="table table-hover table-bordered table-borderless sub-div-shadow no-wrap"></table>
                         <div id="paginationContainer"></div>
-                        
                     </div>
                     <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
