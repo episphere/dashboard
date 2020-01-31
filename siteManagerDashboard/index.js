@@ -521,10 +521,12 @@ const renderTable = (data) => {
     }
 
     template += `
-                <div class="row"><div class="col">
-                    <div class="float-right">
-                        <input id="filterData" class="form-control" type="text" placeholder="Min. 3 characters"><span data-toggle="tooltip" title='Search by first name, last name or connect id' class="fas fa-search search-icon"></span></div>
-                </div></div>
+                <div class="row">
+                    <div class="col">
+                        <div class="float-right">
+                            <input id="filterData" class="form-control sub-div-shadow" type="text" placeholder="Min. 3 characters"><span data-toggle="tooltip" title='Search by first name, last name or connect id' class="fas fa-search search-icon"></span></div>
+                        </div>
+                    </div>
                 <div class="row allow-overflow">
                     <div class="col">
                         <table id="dataTable" class="table table-hover table-bordered table-borderless sub-div-shadow no-wrap"></table>
