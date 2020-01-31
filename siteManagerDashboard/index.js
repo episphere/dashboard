@@ -493,9 +493,7 @@ const eventNotVerifiedButton = (siteKey) => {
 }
 
 const filterdata = (data) => {
-    return data.filter(participant => {
-        if(participant.RcrtUP_Fname_v1r0 && participant.RcrtUP_Lname_v1r0 && participant.RcrtUP_Email1_v1r0) return participant;
-    });
+    return data.filter(participant => participant.RcrtUP_Submitted_v1r0 !== undefined);
 }
 
 const renderTable = (data) => {
