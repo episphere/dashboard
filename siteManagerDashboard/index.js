@@ -129,9 +129,7 @@ const dashboardNavBarLinks = () => {
 
 const renderLogin = () => {
     return `
-        <div class="row">
-            <h1>Site Study Manager Dashboard</h1>
-        </div>
+        <h1>Site Study Manager Dashboard</h1>
         <div class="row">
             <div class="col">
                 <label for="siteKey">Site Key</label><input type="password" class="form-control" id="siteKey">
