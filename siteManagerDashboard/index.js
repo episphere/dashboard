@@ -313,6 +313,7 @@ const renderParticipantsNotVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'notyetverified');
+        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
@@ -343,6 +344,7 @@ const renderParticipantsCanNotBeVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'cannotbeverified');
+        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
@@ -377,6 +379,7 @@ const renderParticipantsVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'verified');
+        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
@@ -405,6 +408,7 @@ const renderParticipantsAll = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'all');
+        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
