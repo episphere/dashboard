@@ -547,6 +547,11 @@ const renderTable = (data) => {
 }
 
 const renderData = (data, showButtons) => {
+    if(data.length === 0) {
+        document.getElementById('mainContent').innerHTML = 'No records found!';
+        animation(false);
+        return;
+    }
     const pageSize = 10;
     const dataLength = data.length;
     const pages = Math.ceil(dataLength/pageSize);
