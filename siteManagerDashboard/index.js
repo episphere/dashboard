@@ -220,20 +220,49 @@ const renderCharts = async (siteKey) => {
         const row = document.createElement('div');
         row.classList = ['row'];
 
+        let activeCounts = document.createElement('div');
+        activeCounts.classList = ['col sub-div-shadow viz-div'];
+        activeCounts.setAttribute('id', 'activeCounts');
+
         let funnelChart = document.createElement('div');
-        funnelChart.classList = ['col sub-div-shadow'];
+        funnelChart.classList = ['col sub-div-shadow viz-div'];
         funnelChart.setAttribute('id', 'funnelChart');
 
         let barChart = document.createElement('div');
-        barChart.classList = ['col sub-div-shadow'];
+        barChart.classList = ['col sub-div-shadow viz-div'];
         barChart.setAttribute('id', 'barChart');
 
-
+        row.appendChild(activeCounts);
         row.appendChild(funnelChart);
         row.appendChild(barChart);
         mainContent.appendChild(row);
-        renderFunnelChart(participantsData);
-        renderBarChart(participantsData);
+
+        const row1 = document.createElement('div');
+        row1.classList = ['row'];
+
+        let activeCounts1 = document.createElement('div');
+        activeCounts1.classList = ['col sub-div-shadow viz-div'];
+        activeCounts1.setAttribute('id', 'passiveCounts');
+
+        let funnelChart1 = document.createElement('div');
+        funnelChart1.classList = ['col sub-div-shadow viz-div'];
+        funnelChart1.setAttribute('id', 'passiveFunnelChart');
+
+        let barChart1 = document.createElement('div');
+        barChart1.classList = ['col sub-div-shadow viz-div'];
+        barChart1.setAttribute('id', 'passiveBarChart');
+
+        row1.appendChild(activeCounts1);
+        row1.appendChild(funnelChart1);
+        row1.appendChild(barChart1);
+        mainContent.appendChild(row1);
+
+        renderFunnelChart(participantsData, 'funnelChart', 1);
+        renderBarChart(participantsData, 'barChart', 1);
+        renderCounts(participantsData, 'activeCounts', 1)
+        renderCounts(participantsData, 'passiveCounts', 2)
+        renderFunnelChart(participantsData, 'passiveFunnelChart', 2);
+        renderBarChart(participantsData, 'passiveBarChart', 2);
         animation(false);
     }
     if(participantsData.code === 401){
@@ -241,10 +270,10 @@ const renderCharts = async (siteKey) => {
     }
 }
 
-const renderFunnelChart = (participants) => {
-    const UPSubmitted = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1);
-    const consented = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1);
-    const signedIn = participants.data.filter(dt => dt.RcrtES_Aware_v1r0 !== undefined);
+const renderFunnelChart = (participants, id, decider) => {
+    const UPSubmitted = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
+    const consented = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
+    const signedIn = participants.data.filter(dt => dt.RcrtES_Aware_v1r0 !== undefined && dt.RcrtSI_RecruitType_v1r0 === decider);
     const data = [{
         x: [signedIn.length, consented.length, UPSubmitted.length],
         y: ['Sign-on', 'Consent', 'User Profile'],
@@ -256,15 +285,19 @@ const renderFunnelChart = (participants) => {
     const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `${participants.data.length} Active Recruits`
+        title: `${decider === 1 ? 'Active':'Passive'} Recruits`
     };
     
-    Plotly.newPlot('funnelChart', data, layout, {responsive: true, displayModeBar: false});
+    Plotly.newPlot(id, data, layout, {responsive: true, displayModeBar: false});
 }
 
-const renderBarChart = (participants) => {
-    const accountCreated = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1);
-    const consent = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1);
+const renderCounts = (participants, id, decider) => {
+    document.getElementById(id).innerHTML = `${decider === 1 ? 'Active':'Passive'} recruit <br><h3>${participants.data.filter(dt => dt.RcrtSI_RecruitType_v1r0 === decider).length}</h3>`
+}
+
+const renderBarChart = (participants, id, decider) => {
+    const accountCreated = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
+    const consent = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
     const trace1 = {
         x: [accountCreated.length, consent.length],
         y: ['Accounts created', '  Consent complete'],
@@ -298,7 +331,7 @@ const renderBarChart = (participants) => {
         title: 'Participant Progress'
     };
       
-    Plotly.newPlot('barChart', data, layout, {responsive: true, displayModeBar: false});
+    Plotly.newPlot(id, data, layout, {responsive: true, displayModeBar: false});
 }
 
 const clearLocalStroage = () => {
