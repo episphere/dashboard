@@ -292,7 +292,7 @@ const renderFunnelChart = (participants, id, decider) => {
 }
 
 const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider === 1 ? 'Active':'Passive'} recruit <br><h3>${participants.data.filter(dt => dt.RcrtSI_RecruitType_v1r0 === decider).length}</h3>`
+    document.getElementById(id).innerHTML = `${decider === 1 ? 'Active':'Passive'} recruits <br><h3>${participants.data.filter(dt => dt.RcrtSI_RecruitType_v1r0 === decider).length}</h3>`
 }
 
 const renderBarChart = (participants, id, decider) => {
