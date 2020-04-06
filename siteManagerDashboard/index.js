@@ -534,23 +534,16 @@ const filterdata = (data) => {
 const renderTable = (data) => {
     if(data.length < 1) return;
     let template = '';
-    if(data.length === 0) return `No data found!`; 
-    let obj = {
-        value: 0,
-        keys: []
-    };
+    if(data.length === 0) return `No data found!`;
+    let array = [];
     data.forEach(dt => {
-        let KeysInObj = Object.keys(dt).length;
-        if(obj.value < KeysInObj){
-            obj.value = KeysInObj;
-            obj.keys = Object.keys(dt);
-        }
+        array = array.concat(Object.keys(dt))
     });
-    obj.keys.sort();
-    if(obj.value > 0) {
+    array = array.filter((item, index) => array.indexOf(item) === index);
+    if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
-                ${obj.keys.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${x}</button>`)}
+                ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${x}</button>`)}
             </div>
         </div>`
     }
