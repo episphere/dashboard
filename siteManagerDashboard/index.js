@@ -221,16 +221,28 @@ const renderCharts = async (siteKey) => {
         row.classList = ['row'];
 
         let activeCounts = document.createElement('div');
-        activeCounts.classList = ['col sub-div-shadow viz-div'];
-        activeCounts.setAttribute('id', 'activeCounts');
+        activeCounts.classList = ['col-lg-4 charts'];
+
+        let subActiveCounts = document.createElement('div');
+        subActiveCounts.classList = ['col-lg-12 sub-div-shadow viz-div'];
+        subActiveCounts.setAttribute('id', 'activeCounts');
+        activeCounts.appendChild(subActiveCounts);
 
         let funnelChart = document.createElement('div');
-        funnelChart.classList = ['col sub-div-shadow viz-div'];
-        funnelChart.setAttribute('id', 'funnelChart');
+        funnelChart.classList = ['col-lg-4 charts'];
+
+        let subFunnelChart = document.createElement('div');
+        subFunnelChart.classList = ['col-lg-12 sub-div-shadow viz-div'];
+        subFunnelChart.setAttribute('id', 'funnelChart');
+        funnelChart.appendChild(subFunnelChart);
 
         let barChart = document.createElement('div');
-        barChart.classList = ['col sub-div-shadow viz-div'];
-        barChart.setAttribute('id', 'barChart');
+        barChart.classList = ['col-lg-4 charts'];
+
+        let subBarChart = document.createElement('div');
+        subBarChart.classList = ['col-lg-12 sub-div-shadow viz-div'];
+        subBarChart.setAttribute('id', 'barChart');
+        barChart.appendChild(subBarChart);
 
         row.appendChild(activeCounts);
         row.appendChild(funnelChart);
@@ -241,16 +253,28 @@ const renderCharts = async (siteKey) => {
         row1.classList = ['row'];
 
         let activeCounts1 = document.createElement('div');
-        activeCounts1.classList = ['col sub-div-shadow viz-div'];
-        activeCounts1.setAttribute('id', 'passiveCounts');
+        activeCounts1.classList = ['col-lg-4 charts'];
+
+        let subActiveCounts1 = document.createElement('div');
+        subActiveCounts1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subActiveCounts1.setAttribute('id', 'passiveCounts');
+        activeCounts1.appendChild(subActiveCounts1);
 
         let funnelChart1 = document.createElement('div');
-        funnelChart1.classList = ['col sub-div-shadow viz-div'];
-        funnelChart1.setAttribute('id', 'passiveFunnelChart');
+        funnelChart1.classList = ['col-lg-4 charts'];
+
+        let subFunnelChart1 = document.createElement('div');
+        subFunnelChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subFunnelChart1.setAttribute('id', 'passiveFunnelChart');
+        funnelChart1.appendChild(subFunnelChart1);
 
         let barChart1 = document.createElement('div');
-        barChart1.classList = ['col sub-div-shadow viz-div'];
-        barChart1.setAttribute('id', 'passiveBarChart');
+        barChart1.classList = ['col-lg-4 charts'];
+
+        let subBarChart1 = document.createElement('div');
+        subBarChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subBarChart1.setAttribute('id', 'passiveBarChart');
+        barChart1.appendChild(subBarChart1);
 
         row1.appendChild(activeCounts1);
         row1.appendChild(funnelChart1);

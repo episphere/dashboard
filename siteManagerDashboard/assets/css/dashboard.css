@@ -8,10 +8,14 @@
 }
 
 .viz-div {
-    height: 300px !important;
+    min-height: 300px !important;
     background-image: radial-gradient(at center center, #f9f7f1 0%, #fffaeb 48%, #f5ede0 100%);
     border-radius: 1rem;
-    margin: 1rem;
+    padding: 0px !important;
+}
+
+.charts {
+    margin: 10px 0;
 }
 
 #activeCounts, #passiveCounts {
@@ -112,7 +116,7 @@ table {
 }
 
 #mainContent {
-    padding: 5rem 1rem;
+    padding: 5rem 1rem 1rem 1rem;
 }
 
 .search-icon {
