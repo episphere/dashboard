@@ -91,7 +91,7 @@ const renderNavBarLinks = () => {
             <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
         </li>
         <li class="nav-item">
-            <a target="_blank" class="nav-item nav-link" href="https://gitter.im/episphere/Connect-AlphaTest" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
+            <a target="_blank" class="nav-item nav-link" href="https://gitter.im/episphere/connect" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
         </li>
     `;
 }
@@ -122,7 +122,7 @@ const dashboardNavBarLinks = () => {
             <a target="_blank" class="nav-item nav-link" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
         </li>
         <li class="nav-item">
-            <a target="_blank" class="nav-item nav-link" href="https://gitter.im/episphere/Connect-AlphaTest" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
+            <a target="_blank" class="nav-item nav-link" href="https://gitter.im/episphere/connect" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
         </li>
     `;
 }
