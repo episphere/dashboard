@@ -63,7 +63,7 @@ const renderDashboard = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
-        if(isAuthorized.code === 200){
+        if(isAuthorized && isAuthorized.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             removeActiveClass('nav-link', 'active');
             document.getElementById('dashboardBtn').classList.add('active');
@@ -187,6 +187,7 @@ const authorize = async (siteKey) => {
     if(!checkSession()){
         alert('Session expired!');
         clearLocalStroage();
+        return false;
     }
     else{
         const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers`,{
@@ -195,7 +196,7 @@ const authorize = async (siteKey) => {
                 Authorization:"Bearer "+siteKey
             }
         });
-        return response.json();
+        return await response.json();
     }
     
 }
@@ -419,6 +420,7 @@ const renderParticipantsCanNotBeVerified = async () => {
             addEventFilterData(filteredData);
             renderData(filteredData);
             activeColumns(filteredData);
+            eventVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
@@ -448,6 +450,7 @@ const renderParticipantsVerified = async () => {
             addEventFilterData(filterdata(response.data));
             renderData(filterdata(response.data));
             activeColumns(filterdata(response.data));
+            eventVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
@@ -477,6 +480,7 @@ const renderParticipantsAll = async () => {
             addEventFilterData(filterdata(response.data));
             renderData(filterdata(response.data));
             activeColumns(filterdata(response.data));
+            eventVerifiedButton(siteKey);
             animation(false);
         }
         if(response.code === 401){
@@ -718,6 +722,7 @@ const addEventFilterData = (data, showButtons) => {
             return;
         };
         renderData(serachBy(data, value), showButtons);
+        if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
     });
 }
 
