@@ -323,6 +323,7 @@ const renderCounts = (participants, id, decider) => {
 const renderBarChart = (participants, id, decider) => {
     const accountCreated = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
     const consent = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
+    const participantData = participants.data.filter(dt => dt.RcrtSI_RecruitType_v1r0 === decider)
     const trace1 = {
         x: [accountCreated.length, consent.length],
         y: ['Accounts created', '  Consent complete'],
@@ -331,7 +332,7 @@ const renderBarChart = (participants, id, decider) => {
         orientation: 'h'
     };
     const trace2 = {
-        x: [participants.data.length - accountCreated.length, participants.data.length - consent.length],
+        x: [participantData.length - accountCreated.length, participantData.length - consent.length],
         y: ['Accounts created', '  Consent complete'],
         name: 'Pending',
         type: 'bar',
