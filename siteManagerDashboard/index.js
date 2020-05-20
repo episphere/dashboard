@@ -637,7 +637,7 @@ const addEventPageBtns = (pageSize, data, showButtons) => {
                 document.getElementById('previousPage').dataset.previous = pageNumber;
                 document.getElementById('nextPage').dataset.next = pageNumber;
                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
-
+                addEventShowMoreInfo(data);
                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
             }
