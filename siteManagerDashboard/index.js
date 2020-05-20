@@ -638,6 +638,7 @@ const addEventPageBtns = (pageSize, data, showButtons) => {
                 document.getElementById('nextPage').dataset.next = pageNumber;
                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
                 addEventShowMoreInfo(data);
+                if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
             }
@@ -720,6 +721,7 @@ const addEventFilterData = (data, showButtons) => {
         const value = document.getElementById('filterData').value.trim();
         if(value.length < 3) {
             renderData(data, showButtons);
+            if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
             return;
         };
         renderData(serachBy(data, value), showButtons);
@@ -759,14 +761,26 @@ const activeColumns = (data, showButtons) => {
             if(!btn.classList.contains('filter-active')){
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
-                if(document.getElementById('filterData').value.trim().length >= 3) renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
-                else renderData(data, showButtons);
+                if(document.getElementById('filterData').value.trim().length >= 3) {
+                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
+                else {
+                    renderData(data, showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
             }
             else{
                 btn.classList.remove('filter-active');
                 importantColumns.splice(importantColumns.indexOf(value), 1);
-                if(document.getElementById('filterData').value.trim().length >= 3) renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
-                else renderData(data, showButtons);
+                if(document.getElementById('filterData').value.trim().length >= 3) {
+                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
+                else {
+                    renderData(data, showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
             }
         })
     });
