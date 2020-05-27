@@ -561,7 +561,6 @@ const filterdata = (data) => {
 }
 
 const renderTable = (data) => {
-    if(data.length < 1) return;
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [];
@@ -603,7 +602,8 @@ const renderTable = (data) => {
 
 const renderData = (data, showButtons) => {
     if(data.length === 0) {
-        document.getElementById('dataTable').innerHTML = 'No records found!';
+        const mainContent = document.getElementById('mainContent');
+        mainContent.innerHTML = renderTable(data);
         animation(false);
         return;
     }
