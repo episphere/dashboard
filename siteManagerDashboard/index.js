@@ -157,7 +157,7 @@ const fetchData = async (siteKey, type) => {
         clearLocalStroage();
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants?type=${type}`,{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/getParticipants?type=${type}`,{
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
@@ -173,7 +173,7 @@ const participantVerification = async (token, verified, siteKey) => {
         clearLocalStroage();
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`cannotbeverified`}&token=${token}`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`cannotbeverified`}&token=${token}`, {
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
@@ -190,7 +190,7 @@ const authorize = async (siteKey) => {
         return false;
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers`,{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/validateSiteUsers`,{
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
