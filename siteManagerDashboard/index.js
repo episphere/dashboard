@@ -1,4 +1,4 @@
-const importantColumns = ['RcrtUP_Fname_v1r0', 'RcrtUP_Minitial_v1r0', 'RcrtUP_Lname_v1r0', 'RcrtUP_MOB_v1r0', 'RcrtUP_BD_v1r0', 'RcrtUP_YOB_v1r0', 'RcrtUP_Email1_v1r0'];
+const importantColumns = ['399159511', '231676651', '996038075', '564964481', '795827569', '544150384', '849786503'];
 window.onload = async () => {
     router();
 }
@@ -157,7 +157,7 @@ const fetchData = async (siteKey, type) => {
         clearLocalStroage();
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/getParticipants?type=${type}`,{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/getParticipants?type=${type}`,{
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
@@ -173,7 +173,7 @@ const participantVerification = async (token, verified, siteKey) => {
         clearLocalStroage();
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`cannotbeverified`}&token=${token}`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`cannotbeverified`}&token=${token}`, {
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
@@ -190,7 +190,7 @@ const authorize = async (siteKey) => {
         return false;
     }
     else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-episphere-dev.cloudfunctions.net/validateSiteUsers`,{
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/validateSiteUsers`,{
             method:'GET',
             headers:{
                 Authorization:"Bearer "+siteKey
@@ -282,11 +282,11 @@ const renderCharts = async (siteKey) => {
         row1.appendChild(barChart1);
         mainContent.appendChild(row1);
 
-        renderFunnelChart(participantsData, 'funnelChart', 1);
+        renderFunnelChart(participantsData, 'funnelChart', 486306141);
         renderBarChart(participantsData, 'barChart', 1);
         renderCounts(participantsData, 'activeCounts', 1)
         renderCounts(participantsData, 'passiveCounts', 2)
-        renderFunnelChart(participantsData, 'passiveFunnelChart', 2);
+        renderFunnelChart(participantsData, 'passiveFunnelChart', 854703046);
         renderBarChart(participantsData, 'passiveBarChart', 2);
         animation(false);
     }
@@ -296,9 +296,9 @@ const renderCharts = async (siteKey) => {
 }
 
 const renderFunnelChart = (participants, id, decider) => {
-    const UPSubmitted = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
-    const consented = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
-    const signedIn = participants.data.filter(dt => dt.RcrtES_Aware_v1r0 !== undefined && dt.RcrtSI_RecruitType_v1r0 === decider);
+    const UPSubmitted = participants.data.filter(dt => dt['699625233'] === 353358909 && dt['512820379'] === decider);
+    const consented = participants.data.filter(dt => dt['919254129'] === 353358909 && dt['512820379'] === decider);
+    const signedIn = participants.data.filter(dt => dt['142654897'] !== undefined && dt['512820379'] === decider);
     const data = [{
         x: [signedIn.length, consented.length, UPSubmitted.length],
         y: ['Sign-on', 'Consent', 'User Profile'],
@@ -310,20 +310,20 @@ const renderFunnelChart = (participants, id, decider) => {
     const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `${decider === 1 ? 'Active':'Passive'} Recruits`
+        title: `${decider === 486306141 ? 'Active':'Passive'} Recruits`
     };
     
     Plotly.newPlot(id, data, layout, {responsive: true, displayModeBar: false});
 }
 
 const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider === 1 ? 'Active':'Passive'} recruits <br><h3>${participants.data.filter(dt => dt.RcrtSI_RecruitType_v1r0 === decider).length}</h3>`
+    document.getElementById(id).innerHTML = `${decider === 486306141 ? 'Active':'Passive'} recruits <br><h3>${participants.data.filter(dt => dt['512820379'] === decider).length}</h3>`
 }
 
 const renderBarChart = (participants, id, decider) => {
-    const accountCreated = participants.data.filter(dt => dt.RcrtUP_Submitted_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
-    const consent = participants.data.filter(dt => dt.RcrtCS_Consented_v1r0 === 1 && dt.RcrtSI_RecruitType_v1r0 === decider);
-    const participantData = participants.data.filter(dt => dt.RcrtSI_RecruitType_v1r0 === decider)
+    const accountCreated = participants.data.filter(dt => dt['699625233'] === 353358909 && dt['512820379'] === decider);
+    const consent = participants.data.filter(dt => dt['919254129'] === 353358909 && dt['512820379'] === decider);
+    const participantData = participants.data.filter(dt => dt['512820379'] === decider)
     const trace1 = {
         x: [accountCreated.length, consent.length],
         y: ['Accounts created', '  Consent complete'],
@@ -372,7 +372,7 @@ const renderParticipantsNotVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'notyetverified');
-        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
+        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
@@ -403,7 +403,7 @@ const renderParticipantsCanNotBeVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'cannotbeverified');
-        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
+        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
@@ -439,7 +439,7 @@ const renderParticipantsVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'verified');
-        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
+        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
@@ -469,7 +469,7 @@ const renderParticipantsAll = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'all');
-        response.data = response.data.sort((a, b) => (a.RcrtES_Site_v1r0 > b.RcrtES_Site_v1r0) ? 1 : ((b.RcrtES_Site_v1r0 > a.RcrtES_Site_v1r0) ? -1 : 0));
+        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if(response.code === 200){
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
@@ -501,7 +501,7 @@ const addEventShowMoreInfo = data => {
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
             const user = filteredData[0];
-            header.innerHTML = `<h4>${user.RcrtUP_Fname_v1r0} ${user.RcrtUP_Lname_v1r0}</h4><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            header.innerHTML = `<h4>${user['399159511']} ${user['996038075']}</h4><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             let template = '<div>';
             for(let key in user){
                 if(typeof user[key] === 'object') {
@@ -557,7 +557,7 @@ const eventNotVerifiedButton = (siteKey) => {
 }
 
 const filterdata = (data) => {
-    return data.filter(participant => participant.RcrtUP_Submitted_v1r0 !== undefined);
+    return data.filter(participant => participant['699625233'] !== undefined);
 }
 
 const renderTable = (data) => {
@@ -731,8 +731,8 @@ const addEventFilterData = (data, showButtons) => {
 
 const serachBy = (data, value) => {
     return data.filter(dt => {
-        const fn = dt.RcrtUP_Fname_v1r0;
-        const ln = dt.RcrtUP_Lname_v1r0;
+        const fn = dt['399159511'];
+        const ln = dt['996038075'];
         
         if((new RegExp(value, 'i')).test(fn)) {
             // dt.RcrtUP_Fname_v1r0 = fn.replace((new RegExp(value, 'ig')), "<b>$&</b>");
