@@ -283,11 +283,11 @@ const renderCharts = async (siteKey) => {
         mainContent.appendChild(row1);
 
         renderFunnelChart(participantsData, 'funnelChart', 486306141);
-        renderBarChart(participantsData, 'barChart', 1);
-        renderCounts(participantsData, 'activeCounts', 1)
-        renderCounts(participantsData, 'passiveCounts', 2)
+        renderBarChart(participantsData, 'barChart', 486306141);
+        renderCounts(participantsData, 'activeCounts', 486306141)
+        renderCounts(participantsData, 'passiveCounts', 854703046)
         renderFunnelChart(participantsData, 'passiveFunnelChart', 854703046);
-        renderBarChart(participantsData, 'passiveBarChart', 2);
+        renderBarChart(participantsData, 'passiveBarChart', 854703046);
         animation(false);
     }
     if(participantsData.code === 401){
@@ -299,6 +299,7 @@ const renderFunnelChart = (participants, id, decider) => {
     const UPSubmitted = participants.data.filter(dt => dt['699625233'] === 353358909 && dt['512820379'] === decider);
     const consented = participants.data.filter(dt => dt['919254129'] === 353358909 && dt['512820379'] === decider);
     const signedIn = participants.data.filter(dt => dt['142654897'] !== undefined && dt['512820379'] === decider);
+    
     const data = [{
         x: [signedIn.length, consented.length, UPSubmitted.length],
         y: ['Sign-on', 'Consent', 'User Profile'],
@@ -310,14 +311,14 @@ const renderFunnelChart = (participants, id, decider) => {
     const layout = {
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `${decider === 486306141 ? 'Active':'Passive'} Recruits`
+        title: `${decider === 486306141 ? 'Active' : 'Passive'} Recruits`
     };
     
     Plotly.newPlot(id, data, layout, {responsive: true, displayModeBar: false});
 }
 
 const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider === 486306141 ? 'Active':'Passive'} recruits <br><h3>${participants.data.filter(dt => dt['512820379'] === decider).length}</h3>`
+    document.getElementById(id).innerHTML = `${decider === 486306141 ? 'Active' : 'Passive'} recruits <br><h3>${participants.data.filter(dt => dt['512820379'] === decider).length}</h3>`
 }
 
 const renderBarChart = (participants, id, decider) => {
