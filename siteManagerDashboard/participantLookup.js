@@ -4,7 +4,6 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 
 export function renderParticipantLookup(){
 
-
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantLookupBtn').classList.add('active');
@@ -48,6 +47,9 @@ export function rederParticipantSearch() {
                                 <label class="col-form-label search-label">Email</label>
                                 <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
                             </div>
+                            <div id="search-failed" class="search-not-found" hidden>
+                                The participant with entered search criteria not found!
+                            </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-outline-primary">Search</button>
                             </div>
@@ -61,6 +63,9 @@ export function rederParticipantSearch() {
                                 <label class="col-form-label search-label">Connect ID</label>
                                 <input class="form-control" autocomplete="off" required type="text" maxlength="10" id="connectId" placeholder="Enter ConnectID"/>
                             </div>
+                        <div id="search-connect-id-failed" class="search-not-found" hidden>
+                            The participant with entered search criteria not found!
+                        </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-outline-primary">Search</button>
                             </div>
@@ -78,8 +83,10 @@ export function rederParticipantSearch() {
 const addEventSearch = () => {
     console.log("registering")
     const form = document.getElementById('search');
+
     if(!form) return;
     form.addEventListener('submit', e => {
+        document.getElementById("search-failed").hidden = true;
         console.log("clicked",e);
         e.preventDefault();
         const firstName = document.getElementById('firstName').value;
@@ -94,7 +101,7 @@ const addEventSearch = () => {
         if(dob) query += `dob=${dob.replace(/-/g,'')}&`;
         if(phone) query += `phone=${phone}&`;
         if(email) query += `email=${email}&`;
-        performSearch(query);
+        performSearch(query, "search-failed");
     })
 };
 
@@ -102,21 +109,23 @@ export const addEventSearchConnectId = () => {
     const form = document.getElementById('searchConnectId');
     if(!form) return;
     form.addEventListener('submit', e => {
+        document.getElementById("search-connect-id-failed").hidden = true;
         e.preventDefault();
         const connectId = document.getElementById('connectId').value;
         let query = '';
         if(connectId) query += `connectId=${connectId}`;
-        performSearch(query);
+        performSearch(query,"search-connect-id-failed");
     })
 };
 
-export const performSearch = async (query) => {
+export const performSearch = async (query, failedElem) => {
     showAnimation();
     const response = await findParticipant(query);
     hideAnimation();
     const getVerifiedParticipants = response.data.filter(dt => dt['821247024'] === 197316935);
+    
     if(response.code === 200 && getVerifiedParticipants.length > 0) console.log(getVerifiedParticipants);
-    else if(response.code === 200 && getVerifiedParticipants.length === 0) showNotifications({title: 'Not found', body: 'The participant with entered search criteria not found!'}, true)
+    else if(response.code === 200 && getVerifiedParticipants.length === 0) document.getElementById(failedElem).hidden = false;
 }
 
 export const showAnimation = () => {
@@ -128,33 +137,27 @@ export const hideAnimation = () => {
 }
 
 export const showNotifications = (data, error) => {
-    const div = document.createElement('div');
-    div.classList = ["notification"];
-    div.innerHTML = `
-        <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header">
-                <strong class="mr-auto ${error ? 'error-heading': ''}">${data.title}</strong>
-                <button type="button" class="ml-2 mb-1 close hideNotification" data-dismiss="toast" aria-label="Close">&times;</button>
-            </div>
-            <div class="toast-body">
-                ${data.body}
-            </div>
-        </div>
-    `
-    document.getElementById('showNotification').appendChild(div);
-    document.getElementsByClassName('container')[0].scrollIntoView(true);
-    addEventHideNotification(div);
+    document.getElementById("search-failed").hidden = false;
+    // const div = document.createElement('div');
+    // //debugger;
+    // div.classList = ["notification"];
+    // // div.innerHTML = `
+    // //     <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
+    // //         <div class="toast-header">
+    // //             <strong class="mr-auto ${error ? 'error-heading': ''}">${data.title}</strong>
+    // //             <button type="button" class="ml-2 mb-1 close hideNotification" data-dismiss="toast" aria-label="Close">&times;</button>
+    // //         </div>
+    // //         <div class="toast-body">
+    // //             ${data.body}
+    // //         </div>
+    // //     </div>
+    // // `
+    // div.innerHTML = `<h2>hello</h2>`
+    // document.getElementById('showNotification').appendChild(div);
+    // //document.getElementsByClassName('container')[0].scrollIntoView(true);
+    // addEventHideNotification(div);
 }
 
-export const addEventHideNotification = (element) => {
-    const hideNotification = element.querySelectorAll('.hideNotification');
-    Array.from(hideNotification).forEach(btn => {
-        btn.addEventListener('click', () => {
-            btn.parentNode.parentNode.parentNode.parentNode.removeChild(btn.parentNode.parentNode.parentNode);
-        });
-        setTimeout(() => { btn.dispatchEvent(new Event('click')) }, 8000);
-    });
-}
 
 
 export const findParticipant = async (query) => {
