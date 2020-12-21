@@ -10,7 +10,8 @@ export function renderParticipantLookup(){
     document.getElementById('participantLookupBtn').classList.add('active');
     mainContent.innerHTML = rederParticipantSearch();
 
-    addEventSearchForm1();
+    addEventSearch();
+    addEventSearchConnectId();
 }
 const api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/';
 export function rederParticipantSearch() {
@@ -26,7 +27,7 @@ export function rederParticipantSearch() {
             <div class="row">
                 <div class="col-lg">
                     <div class="row form-row">
-                        <form id="search1" method="POST">
+                        <form id="search" method="POST">
                             <div class="form-group">
                                 <label class="col-form-label search-label">First name</label>
                                 <input class="form-control" autocomplete="off" type="text" id="firstName" placeholder="Enter First Name"/>
@@ -55,7 +56,7 @@ export function rederParticipantSearch() {
                 </div>
                 <div class="col-lg">
                     <div class="row form-row">
-                        <form id="search4" method="POST">
+                        <form id="searchConnectId" method="POST">
                             <div class="form-group">
                                 <label class="col-form-label search-label">Connect ID</label>
                                 <input class="form-control" autocomplete="off" required type="text" maxlength="10" id="connectId" placeholder="Enter ConnectID"/>
@@ -74,9 +75,9 @@ export function rederParticipantSearch() {
 
 }
 
-const addEventSearchForm1 = () => {
+const addEventSearch = () => {
     console.log("registering")
-    const form = document.getElementById('search1');
+    const form = document.getElementById('search');
     if(!form) return;
     form.addEventListener('submit', e => {
         console.log("clicked",e);
@@ -93,6 +94,18 @@ const addEventSearchForm1 = () => {
         if(dob) query += `dob=${dob.replace(/-/g,'')}&`;
         if(phone) query += `phone=${phone}&`;
         if(email) query += `email=${email}&`;
+        performSearch(query);
+    })
+};
+
+export const addEventSearchConnectId = () => {
+    const form = document.getElementById('searchConnectId');
+    if(!form) return;
+    form.addEventListener('submit', e => {
+        e.preventDefault();
+        const connectId = document.getElementById('connectId').value;
+        let query = '';
+        if(connectId) query += `connectId=${connectId}`;
         performSearch(query);
     })
 };
