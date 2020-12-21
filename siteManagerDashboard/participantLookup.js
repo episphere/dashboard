@@ -36,8 +36,16 @@ export function rederParticipantSearch() {
                                 <input class="form-control" autocomplete="off" type="text" id="lastName" placeholder="Enter Last Name"/>
                             </div>
                             <div class="form-group">
-                                <label class="col-form-label search-label">Date of Birth</label>
+                                <label class="col-form-label search-label">Date of birth</label>
                                 <input class="form-control" type="date" id="dob"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label search-label">Phone number</label>
+                                <input class="form-control" id="phone" placeholder="Enter Phone Number"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label search-label">Email</label>
+                                <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-outline-primary">Search</button>
@@ -76,11 +84,15 @@ const addEventSearchForm1 = () => {
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
         const dob = document.getElementById('dob').value;
-        if(!firstName && !lastName && !dob) return;
+        const email = document.getElementById('email').value;
+        const phone = document.getElementById('phone').value;
+        if(!firstName && !lastName && !dob && !phone && !email) return;
         let query = '';
         if(firstName) query += `firstName=${firstName}&`;
         if(lastName) query += `lastName=${lastName}&`;
         if(dob) query += `dob=${dob.replace(/-/g,'')}&`;
+        if(phone) query += `phone=${phone}&`;
+        if(email) query += `email=${email}&`;
         performSearch(query);
     })
 };
