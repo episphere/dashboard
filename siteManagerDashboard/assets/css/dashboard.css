@@ -210,3 +210,8 @@ table {
 #search, #searchConnectId {
     width: 100%;
 }
+
+.search-not-found {
+    color:red;
+    margin-bottom: .75rem;
+}
