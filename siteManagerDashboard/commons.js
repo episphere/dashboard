@@ -1,3 +1,5 @@
+import {renderParticipantDetails} from './participantDetails.js';
+
 export const importantColumns = ['399159511', '231676651', '996038075', '564964481', '795827569', '544150384', '849786503', 'Connect_ID'];
 
 export const renderTable = (data, source) => {
@@ -185,6 +187,16 @@ const addEventShowMoreInfo = data => {
             body.innerHTML = template;
         })
     })
+
+    const selectElements = document.getElementsByClassName('select-participant');
+    Array.from(selectElements).forEach(element => {
+        element.addEventListener('click', () => {
+            const filteredData = data.filter(dt => dt.token === element.dataset.token);
+            console.log("select clicked", filteredData );
+            renderParticipantDetails(filteredData[0]);
+        });
+    });
+
 }
 export const addEventFilterData = (data, showButtons) => {
     const btn = document.getElementById('filterData');
