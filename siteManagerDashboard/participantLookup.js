@@ -1,5 +1,5 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata} from './commons.js';
+import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns} from './commons.js';
 
 
 export function renderParticipantLookup(){
@@ -126,6 +126,10 @@ export const performSearch = async (query, failedElem) => {
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderTable(filterdata(response.data));
+        addEventFilterData(filterdata(response.data));
+        renderData(filterdata(response.data));
+        activeColumns(filterdata(response.data));
+        eventVerifiedButton(siteKey);
     }
     else if(response.code === 200 && response.data.length === 0) document.getElementById(failedElem).hidden = false;
 }

@@ -1,6 +1,6 @@
 import {renderParticipantLookup} from './participantLookup.js'; 
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns} from './commons.js';
+import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns} from './commons.js';
 
 window.onload = async () => {
     router();
@@ -473,20 +473,7 @@ const eventNotVerifiedButton = (siteKey) => {
 
 
 
-const addEventFilterData = (data, showButtons) => {
-    const btn = document.getElementById('filterData');
-    if(!btn) return;
-    btn.addEventListener('keyup', () => {
-        const value = document.getElementById('filterData').value.trim();
-        if(value.length < 3) {
-            renderData(data, showButtons);
-            if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
-            return;
-        };
-        renderData(serachBy(data, value), showButtons);
-        if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
-    });
-}
+
 
 const serachBy = (data, value) => {
     return data.filter(dt => {
@@ -506,42 +493,6 @@ const serachBy = (data, value) => {
             // dt.Connect_ID = ID.replace((new RegExp(value, 'ig')), "<b>$&</b>");
             return dt
         }
-    });
-}
-
-const activeColumns = (data, showButtons) => {
-    const btns = document.getElementsByName('column-filter');
-    Array.from(btns).forEach(btn => {
-        const value = btn.dataset.column;
-        if(importantColumns.indexOf(value) !== -1) {
-            btn.classList.add('filter-active');
-        }
-        btn.addEventListener('click', () => {
-            if(!btn.classList.contains('filter-active')){
-                btn.classList.add('filter-active');
-                importantColumns.push(value);
-                if(document.getElementById('filterData').value.trim().length >= 3) {
-                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
-                }
-                else {
-                    renderData(data, showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
-                }
-            }
-            else{
-                btn.classList.remove('filter-active');
-                importantColumns.splice(importantColumns.indexOf(value), 1);
-                if(document.getElementById('filterData').value.trim().length >= 3) {
-                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
-                }
-                else {
-                    renderData(data, showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
-                }
-            }
-        })
     });
 }
 

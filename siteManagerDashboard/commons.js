@@ -1,4 +1,4 @@
-export const importantColumns = ['399159511', '231676651', '996038075', '564964481', '795827569', '544150384', '849786503'];
+export const importantColumns = ['399159511', '231676651', '996038075', '564964481', '795827569', '544150384', '849786503', 'Connect_ID'];
 
 export const renderTable = (data) => {
     let template = '';
@@ -182,6 +182,56 @@ const addEventShowMoreInfo = data => {
         })
     })
 }
+export const addEventFilterData = (data, showButtons) => {
+    const btn = document.getElementById('filterData');
+    if(!btn) return;
+    btn.addEventListener('keyup', () => {
+        const value = document.getElementById('filterData').value.trim();
+        if(value.length < 3) {
+            renderData(data, showButtons);
+            if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+            return;
+        };
+        renderData(serachBy(data, value), showButtons);
+        if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+    });
+}
 export const filterdata = (data) => {
     return data.filter(participant => participant['699625233'] !== undefined);
 }
+export const activeColumns = (data, showButtons) => {
+    const btns = document.getElementsByName('column-filter');
+    Array.from(btns).forEach(btn => {
+        const value = btn.dataset.column;
+        if(importantColumns.indexOf(value) !== -1) {
+            btn.classList.add('filter-active');
+        }
+        btn.addEventListener('click', () => {
+            if(!btn.classList.contains('filter-active')){
+                btn.classList.add('filter-active');
+                importantColumns.push(value);
+                if(document.getElementById('filterData').value.trim().length >= 3) {
+                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
+                else {
+                    renderData(data, showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
+            }
+            else{
+                btn.classList.remove('filter-active');
+                importantColumns.splice(importantColumns.indexOf(value), 1);
+                if(document.getElementById('filterData').value.trim().length >= 3) {
+                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
+                else {
+                    renderData(data, showButtons);
+                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                }
+            }
+        })
+    });
+}
+
