@@ -15,7 +15,7 @@ export const renderTable = (data, source) => {
             </div>
         </div>`
     }
-    let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
+    let backToSearch = (source === '')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
                 <div class="row">
                     <div class="col">
@@ -135,14 +135,14 @@ const paginationTemplate = (array) => {
 
 const tableTemplate = (data, showButtons) => {
     let template = '';
-    template += `<thead class="thead-dark"><tr>`
+    template += `<thead class="thead-dark"><tr><th>Select</th>`
     importantColumns.forEach(x => template += `<th>${x}</th>`)
     template += `<th class="no-wrap">Show all info</th>
             ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
         </tr>
     </thead>`;
     data.forEach(participant => {
-        template += `<tbody><tr>`
+        template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
         importantColumns.forEach(x => {
             if(participant[x] && typeof participant[x] === 'object'){
                 template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`
@@ -239,3 +239,21 @@ export const activeColumns = (data, showButtons) => {
     });
 }
 
+
+export const eventVerifiedButton = (siteKey) => {
+    const verifiedBtns = document.getElementsByClassName('participantVerified');
+    Array.from(verifiedBtns).forEach(elem => {
+        elem.addEventListener('click', async () => {
+            animation(true);
+            const token = elem.dataset.token;
+            const response = await participantVerification(token, true, siteKey);
+            if(response.code === 200){
+                // animation(false);
+                // const dataTable = document.getElementById('dataTable');
+                // const elements = dataTable.querySelectorAll(`[data-token="${token}"]`);
+                // elements[0].parentNode.parentNode.parentNode.removeChild(elements[0].parentNode.parentNode);
+                location.reload();
+            }
+        });
+    });
+}

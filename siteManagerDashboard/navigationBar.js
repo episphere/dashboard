@@ -34,6 +34,9 @@ export const dashboardNavBarLinks = () => {
         <li class="nav-item" id="participantLookupBtn">
             <a class="nav-item nav-link" href="#participantLookup" title="Participant Lookup"><i class="fas fa-search"></i> Participant Lookup</a>
         </li>
+        <li class="nav-item" id="participantDetailsBtn">
+            <a class="nav-item nav-link" href="#participantDetails" title="Participant Details"><i class="fa fa-info-circle"></i> Participant Details</a>
+        </li>
         <li class="nav-item">
             <a class="nav-item nav-link" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </li>

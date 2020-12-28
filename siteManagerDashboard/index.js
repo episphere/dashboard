@@ -1,6 +1,7 @@
 import {renderParticipantLookup} from './participantLookup.js'; 
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns} from './commons.js';
+import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './commons.js';
+import { renderParticipantDetails } from './participantDetails.js';
 
 window.onload = async () => {
     router();
@@ -20,6 +21,7 @@ const router = () => {
     else if(route === '#participants/verified') renderParticipantsVerified();
     else if(route === '#participants/all') renderParticipantsAll();
     else if(route === '#participantLookup') renderParticipantLookup();
+    else if(route === '#participantDetails') renderParticipantDetails();
     else if(route === '#logout') clearLocalStroage();
     else window.location.hash = '#';
 }
@@ -430,23 +432,7 @@ const renderParticipantsAll = async () => {
 
 
 
-const eventVerifiedButton = (siteKey) => {
-    const verifiedBtns = document.getElementsByClassName('participantVerified');
-    Array.from(verifiedBtns).forEach(elem => {
-        elem.addEventListener('click', async () => {
-            animation(true);
-            const token = elem.dataset.token;
-            const response = await participantVerification(token, true, siteKey);
-            if(response.code === 200){
-                // animation(false);
-                // const dataTable = document.getElementById('dataTable');
-                // const elements = dataTable.querySelectorAll(`[data-token="${token}"]`);
-                // elements[0].parentNode.parentNode.parentNode.removeChild(elements[0].parentNode.parentNode);
-                location.reload();
-            }
-        });
-    });
-}
+
 
 const eventNotVerifiedButton = (siteKey) => {
     const notVerifiedBtns = document.getElementsByClassName('participantNotVerified');

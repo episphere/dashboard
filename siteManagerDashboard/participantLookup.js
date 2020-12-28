@@ -1,5 +1,5 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns} from './commons.js';
+import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './commons.js';
 
 export function renderParticipantLookup(){
 
@@ -85,7 +85,6 @@ const addEventSearch = () => {
     if(!form) return;
     form.addEventListener('submit', e => {
         document.getElementById("search-failed").hidden = true;
-        console.log("clicked",e);
         e.preventDefault();
         const firstName = document.getElementById('firstName').value;
         const lastName = document.getElementById('lastName').value;
@@ -120,7 +119,6 @@ export const performSearch = async (query, failedElem) => {
     showAnimation();
     const response = await findParticipant(query);
     hideAnimation();
-    console.log(response.data);
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderTable(filterdata(response.data), 'participantLookup');
