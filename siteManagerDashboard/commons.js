@@ -18,7 +18,8 @@ export const renderTable = (data, source) => {
             </div>
         </div>`
     }
-    let backToSearch = (source === '')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
+
+    let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
                 <div class="row">
                     <div class="col">
