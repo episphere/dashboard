@@ -1,15 +1,14 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './commons.js';
 
-export function renderParticipantDetails(){
+export function renderParticipantDetails(participant){
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
-    mainContent.innerHTML = rederParticipantDetails();
+    mainContent.innerHTML = render(participant);
 
 }
-export function rederParticipantDetails(participant) {
+export function render(participant) {
     let template;
     if (!participant) {
         template=` 
@@ -19,6 +18,14 @@ export function rederParticipantDetails(participant) {
             </div>
         </div>
          `
+    } else {
+        template = `
+        <div class="container">
+            <div id="root">
+            ${participant.Connect_ID} found!
+            </div>
+        </div>
+        `;
     }
     return template;
 

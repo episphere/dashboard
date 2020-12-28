@@ -5,6 +5,7 @@ import { renderParticipantDetails } from './participantDetails.js';
 
 window.onload = async () => {
     router();
+    await getMappings();
 }
 
 window.onhashchange = () => {
@@ -455,30 +456,11 @@ const eventNotVerifiedButton = (siteKey) => {
 
 
 
-
-
-
-
-
-
-const serachBy = (data, value) => {
-    return data.filter(dt => {
-        const fn = dt['399159511'];
-        const ln = dt['996038075'];
-        
-        if((new RegExp(value, 'i')).test(fn)) {
-            // dt.RcrtUP_Fname_v1r0 = fn.replace((new RegExp(value, 'ig')), "<b>$&</b>");
-            return dt
-        }
-        if((new RegExp(value, 'i')).test(ln)) {
-            // dt.RcrtUP_Lname_v1r0 = ln.replace((new RegExp(value, 'ig')), "<b>$&</b>");
-            return dt
-        }
-        if((new RegExp(value, 'i')).test(dt.Connect_ID)) {
-            // const ID = dt.Connect_ID.toString();
-            // dt.Connect_ID = ID.replace((new RegExp(value, 'ig')), "<b>$&</b>");
-            return dt
-        }
-    });
+const getMappings = async () => {
+    const response = await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/aggregate.json');
+    const mappings = await response.json();
+    localStorage.setItem("conceptIdMapping", JSON.stringify(mappings));
 }
+
+
 

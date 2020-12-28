@@ -1,4 +1,6 @@
-export const importantColumns = ['399159511', '231676651', '996038075', '564964481', '795827569', '544150384', '849786503', 'Connect_ID'];
+import {renderParticipantDetails} from './participantDetails.js';
+import fieldMapping from './fieldToConceptIdMapping.js'; 
+export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.prefEmail, 'Connect_ID'];
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -8,14 +10,16 @@ export const renderTable = (data, source) => {
         array = array.concat(Object.keys(dt))
     });
     array = array.filter((item, index) => array.indexOf(item) === index);
+    let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
-                ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${x}</button>`)}
+                ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</button>`)}
             </div>
         </div>`
     }
-    let backToSearch = (source === '')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
+
+    let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
                 <div class="row">
                     <div class="col">
@@ -135,8 +139,9 @@ const paginationTemplate = (array) => {
 
 const tableTemplate = (data, showButtons) => {
     let template = '';
+    let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     template += `<thead class="thead-dark"><tr><th>Select</th>`
-    importantColumns.forEach(x => template += `<th>${x}</th>`)
+    importantColumns.forEach(x => template += `<th>${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</th>`)
     template += `<th class="no-wrap">Show all info</th>
             ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
         </tr>
@@ -168,7 +173,7 @@ const addEventShowMoreInfo = data => {
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
             const user = filteredData[0];
-            header.innerHTML = `<h4>${user['399159511']} ${user['996038075']}</h4><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            header.innerHTML = `<h4>${user[fieldMapping.fName]} ${user[fieldMapping.lName]}</h4><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             let template = '<div>';
             for(let key in user){
                 if(typeof user[key] === 'object') {
@@ -185,6 +190,16 @@ const addEventShowMoreInfo = data => {
             body.innerHTML = template;
         })
     })
+
+    const selectElements = document.getElementsByClassName('select-participant');
+    Array.from(selectElements).forEach(element => {
+        element.addEventListener('click', () => {
+            const filteredData = data.filter(dt => dt.token === element.dataset.token);
+            console.log("select clicked", filteredData );
+            renderParticipantDetails(filteredData[0]);
+        });
+    });
+
 }
 export const addEventFilterData = (data, showButtons) => {
     const btn = document.getElementById('filterData');
@@ -196,7 +211,7 @@ export const addEventFilterData = (data, showButtons) => {
             if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
             return;
         };
-        renderData(serachBy(data, value), showButtons);
+        renderData(searchBy(data, value), showButtons);
         if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
     });
 }
@@ -215,7 +230,7 @@ export const activeColumns = (data, showButtons) => {
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
-                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                     if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
                 }
                 else {
@@ -227,7 +242,7 @@ export const activeColumns = (data, showButtons) => {
                 btn.classList.remove('filter-active');
                 importantColumns.splice(importantColumns.indexOf(value), 1);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
-                    renderData(serachBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                     if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
                 }
                 else {
@@ -255,5 +270,29 @@ export const eventVerifiedButton = (siteKey) => {
                 location.reload();
             }
         });
+    });
+}
+
+
+
+
+export const searchBy = (data, value) => {
+    return data.filter(dt => {
+        const fn = dt[conceptIdMapping.fName];
+        const ln = dt['996038075'];
+        
+        if((new RegExp(value, 'i')).test(fn)) {
+            // dt.RcrtUP_Fname_v1r0 = fn.replace((new RegExp(value, 'ig')), "<b>$&</b>");
+            return dt
+        }
+        if((new RegExp(value, 'i')).test(ln)) {
+            // dt.RcrtUP_Lname_v1r0 = ln.replace((new RegExp(value, 'ig')), "<b>$&</b>");
+            return dt
+        }
+        if((new RegExp(value, 'i')).test(dt.Connect_ID)) {
+            // const ID = dt.Connect_ID.toString();
+            // dt.Connect_ID = ID.replace((new RegExp(value, 'ig')), "<b>$&</b>");
+            return dt
+        }
     });
 }
