@@ -1,5 +1,5 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-
+import {renderTable, filterdata} from './commons.js';
 
 
 export function renderParticipantLookup(){
@@ -122,10 +122,12 @@ export const performSearch = async (query, failedElem) => {
     showAnimation();
     const response = await findParticipant(query);
     hideAnimation();
-    const getVerifiedParticipants = response.data.filter(dt => dt['821247024'] === 197316935);
-    
-    if(response.code === 200 && getVerifiedParticipants.length > 0) console.log(getVerifiedParticipants);
-    else if(response.code === 200 && getVerifiedParticipants.length === 0) document.getElementById(failedElem).hidden = false;
+    console.log(response.data);
+    if(response.code === 200 && response.data.length > 0) {
+        const mainContent = document.getElementById('mainContent')
+        mainContent.innerHTML = renderTable(filterdata(response.data));
+    }
+    else if(response.code === 200 && response.data.length === 0) document.getElementById(failedElem).hidden = false;
 }
 
 export const showAnimation = () => {
@@ -138,25 +140,8 @@ export const hideAnimation = () => {
 
 export const showNotifications = (data, error) => {
     document.getElementById("search-failed").hidden = false;
-    // const div = document.createElement('div');
-    // //debugger;
-    // div.classList = ["notification"];
-    // // div.innerHTML = `
-    // //     <div class="toast fade show" role="alert" aria-live="assertive" aria-atomic="true">
-    // //         <div class="toast-header">
-    // //             <strong class="mr-auto ${error ? 'error-heading': ''}">${data.title}</strong>
-    // //             <button type="button" class="ml-2 mb-1 close hideNotification" data-dismiss="toast" aria-label="Close">&times;</button>
-    // //         </div>
-    // //         <div class="toast-body">
-    // //             ${data.body}
-    // //         </div>
-    // //     </div>
-    // // `
-    // div.innerHTML = `<h2>hello</h2>`
-    // document.getElementById('showNotification').appendChild(div);
-    // //document.getElementsByClassName('container')[0].scrollIntoView(true);
-    // addEventHideNotification(div);
 }
+
 
 
 

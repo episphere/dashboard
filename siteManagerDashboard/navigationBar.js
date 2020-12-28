@@ -1,4 +1,4 @@
-const renderNavBarLinks = () => {
+export const renderNavBarLinks = () => {
     return `
         <li class="nav-item active">
             <a class="nav-item nav-link active" href="#" title="Home"><i class="fas fa-home"></i> Home</a>
@@ -15,7 +15,7 @@ const renderNavBarLinks = () => {
     `;
 }
 
-const dashboardNavBarLinks = () => {
+export const dashboardNavBarLinks = () => {
     return `
         <li class="nav-item">
             <a class="nav-item nav-link" href="#dashboard" title="Dashboard" id="dashboardBtn"><i class="fas fa-home"></i> Dashboard</a>
@@ -49,7 +49,7 @@ const dashboardNavBarLinks = () => {
     `;
 }
 
-const renderLogin = () => {
+export const  renderLogin = () => {
     return `
         <h1>Site Study Manager Dashboard</h1>
         <div class="row">
@@ -73,11 +73,9 @@ const renderLogin = () => {
     `;
 }
 
-const removeActiveClass = (className, activeClass) => {
+export const removeActiveClass = (className, activeClass) => {
     let fileIconElement = document.getElementsByClassName(className);
     Array.from(fileIconElement).forEach(elm => {
         elm.classList.remove(activeClass);
     });
 }
-
-export{renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}; 
