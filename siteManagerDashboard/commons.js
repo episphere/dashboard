@@ -1,6 +1,6 @@
 export const importantColumns = ['399159511', '231676651', '996038075', '564964481', '795827569', '544150384', '849786503', 'Connect_ID'];
 
-export const renderTable = (data) => {
+export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [];
@@ -15,10 +15,13 @@ export const renderTable = (data) => {
             </div>
         </div>`
     }
-
+    let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
                 <div class="row">
                     <div class="col">
+                        <div class="float-left">
+                            ${backToSearch}
+                        </div>
                         <div class="float-right">
                             <input id="filterData" class="form-control sub-div-shadow" type="text" placeholder="Min. 3 characters"><span data-toggle="tooltip" title='Search by first name, last name or connect id' class="fas fa-search search-icon"></span></div>
                         </div>
@@ -39,6 +42,7 @@ export const renderTable = (data) => {
                 </div>`
     return template;
 }
+
 
 export  const renderData = (data, showButtons) => {
     if(data.length === 0) {

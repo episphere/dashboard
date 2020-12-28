@@ -1,7 +1,6 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns} from './commons.js';
 
-
 export function renderParticipantLookup(){
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
@@ -81,7 +80,6 @@ export function rederParticipantSearch() {
 }
 
 const addEventSearch = () => {
-    console.log("registering")
     const form = document.getElementById('search');
 
     if(!form) return;
@@ -125,11 +123,14 @@ export const performSearch = async (query, failedElem) => {
     console.log(response.data);
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'participantLookup');
         addEventFilterData(filterdata(response.data));
         renderData(filterdata(response.data));
         activeColumns(filterdata(response.data));
-        eventVerifiedButton(siteKey);
+        const element = document.getElementById('back-to-search');
+        element.addEventListener('click', () => { 
+            renderParticipantLookup();
+        });
     }
     else if(response.code === 200 && response.data.length === 0) document.getElementById(failedElem).hidden = false;
 }
