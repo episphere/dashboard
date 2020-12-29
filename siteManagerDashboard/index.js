@@ -1,6 +1,6 @@
 import {renderParticipantLookup} from './participantLookup.js'; 
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './commons.js';
+import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 
 window.onload = async () => {
