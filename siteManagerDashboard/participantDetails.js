@@ -41,11 +41,11 @@ export function render(participant) {
        
         importantColumns.forEach(x => template += `<tr><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : x}</label></div></th>
-            <td>${participant[x] !== undefined ?  participant[x] : ""}</td> <td><button type="button" class="btn btn-primary">Edit</button></td></tr>&nbsp;`)
+            <td>${participant[x] !== undefined ?  participant[x] : ""}</td> <td id="showMore"><button type="button"  class="btn btn-primary">Edit</button></td></tr>&nbsp;`)
 
         template += `</tbody></table>
                     <table class="table">
-                                <h4 style="text-align: center;"> Alternate Contact Details &nbsp; <button type="button" class="btn btn-primary">Edit</button> </h4>
+                                <h4 style="text-align: center;"> Alternate Contact Details &nbsp; <button type="button" id="showMore" class="btn btn-primary">Edit</button> </h4>
                                     <thead>
                                         <tr>
                                         <th scope="col">Contact Name</th>
@@ -74,10 +74,47 @@ export function render(participant) {
                                         </tr>
                                     </tbody>
                                     </table>
+                                    <div style="display:inline-block;">
+                                        <button type="button" class="btn btn-primary">Save</button>
+                                        <button type="button" class="btn btn-danger">Cancel</button>
+                                    </div>
                                 </form>
                             </div>
                         </div>
         `;
     }
     return template;
+}
+
+export function changeParticipantDetail(conceptId, particpantDetail){
+    console.log("123456")
+    const a = document.getElementById('showMore')
+    a.addEventListener('click', () => {
+        console.log("hellooooo")
+        alert("You clicked?"); 
+      });
+    // console.log("conceptId", conceptId)
+    // console.log("particpantDetail", particpantDetail)
+    // template = '';
+
+    // template += `
+    //     <div class="modal" tabindex="-1">
+    //         <div class="modal-dialog">
+    //             <div class="modal-content">
+    //             <div class="modal-header">
+    //                 <h5 class="modal-title">Modal title</h5>
+    //                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    //             </div>
+    //             <div class="modal-body">
+    //                 <p>Modal body text goes here.</p>
+    //             </div>
+    //             <div class="modal-footer">
+    //                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    //                 <button type="button" class="btn btn-primary">Save changes</button>
+    //             </div>
+    //             </div>
+    //         </div>
+    //     </div>`
+    
+    // mainContent.innerHTML = template;
 }

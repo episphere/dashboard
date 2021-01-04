@@ -21,5 +21,7 @@ export default
     "city":703385619,    
     "state":634434746,
     "zip":892050548,
-    "healthcareProvider":827220437
+    "healthcareProvider":827220437,
+    "suffix":480305327,
+    "ssnOnFile": 454067894
 }
