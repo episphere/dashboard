@@ -14,9 +14,12 @@ export function renderParticipantDetails(participant){
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
+    changeParticipantDetail()
+
 
 }
 export function render(participant) {
+
     console.log('participant', participant)
     let template;
     if (!participant) {
@@ -41,8 +44,8 @@ export function render(participant) {
        
         importantColumns.forEach(x => template += `<tr><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : x}</label></div></th>
-            <td>${participant[x] !== undefined ?  participant[x] : ""}</td> <td id="showMore"><button type="button"  class="btn btn-primary">Edit</button></td></tr>&nbsp;`)
-
+            <td>${participant[x] !== undefined ?  participant[x] : ""}</td> <td> <a id="showMore" ><button type="button" class="btn btn-primary">Edit</button></a></td></tr>&nbsp;`)
+          
         template += `</tbody></table>
                     <table class="table">
                                 <h4 style="text-align: center;"> Alternate Contact Details &nbsp; <button type="button" id="showMore" class="btn btn-primary">Edit</button> </h4>
@@ -75,24 +78,27 @@ export function render(participant) {
                                     </tbody>
                                     </table>
                                     <div style="display:inline-block;">
-                                        <button type="button" class="btn btn-primary">Save</button>
-                                        <button type="button" class="btn btn-danger">Cancel</button>
+                                        <button type="button"  id="showMore" class="btn btn-primary">Save</button>
+                                        <button type="button"  id="showMore"class="btn btn-danger">Cancel</button>
                                     </div>
                                 </form>
                             </div>
                         </div>
         `;
+        
     }
     return template;
 }
 
-export function changeParticipantDetail(conceptId, particpantDetail){
+export function changeParticipantDetail(){
     console.log("123456")
     const a = document.getElementById('showMore')
-    a.addEventListener('click', () => {
-        console.log("hellooooo")
-        alert("You clicked?"); 
-      });
+    if (a) {
+        a.addEventListener('click', click_handler1);
+    }
+    else {
+        console.log("test123", a)
+    }
     // console.log("conceptId", conceptId)
     // console.log("particpantDetail", particpantDetail)
     // template = '';
@@ -118,3 +124,8 @@ export function changeParticipantDetail(conceptId, particpantDetail){
     
     // mainContent.innerHTML = template;
 }
+
+function click_handler1() { 
+    console.log("conceptId")
+    alert("hello")
+ }
