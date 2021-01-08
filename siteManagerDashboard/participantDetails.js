@@ -3,21 +3,80 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 
 export const headerImportantColumns = ['Connect_ID', fieldMapping.fName, fieldMapping.birthYear, fieldMapping.consentDate, 'Years in Connect']
 
-export const importantColumns = [fieldMapping.lName, fieldMapping.fName, fieldMapping.prefName, fieldMapping.mName, fieldMapping.suffix, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, 
-    fieldMapping.homePhone, fieldMapping.cellPhone, fieldMapping.otherPhone, fieldMapping.prefEmail, fieldMapping.prefContact, fieldMapping.canWeText, fieldMapping.ssnOnFile,
-    fieldMapping.address1, fieldMapping.city, fieldMapping.state, fieldMapping.zip, 'Connect_ID'];
+export const importantColumns = [ 
+    { field: fieldMapping.lName,
+        editable: true,
+        display: true } ,
+    { field: fieldMapping.fName,
+        editable: true,
+        display: true } ,
+     { field: fieldMapping.prefName,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.mName,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.suffix,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.birthMonth,
+    editable: false,
+    display: true } ,
+     { field: fieldMapping.birthDay,
+    editable: false,
+    display: true } ,
+     { field: fieldMapping.birthYear,
+    editable: false,
+    display: true } ,
+     { field: fieldMapping.homePhone,
+    editable: true,
+    display: true } ,
+    { field: fieldMapping.cellPhone,
+    editable: true,
+    display: true },
+    { field: fieldMapping.otherPhone,
+    editable: true,
+    display: true },
+    { field: fieldMapping.prefEmail,
+    editable: true,
+    display: true },
+    { field: fieldMapping.prefContact,
+    editable: true,
+    display: true },
+    { field: fieldMapping.canWeText,
+    editable: true,
+    display: true },
+    { field: fieldMapping.ssnOnFile,
+    editable: true,
+    display: true },
+    { field: fieldMapping.address1,
+    editable: true,
+    display: true },
+    { field: fieldMapping.city,
+    editable: true,
+    display: true },
+    { field: fieldMapping.state,
+    editable: true,
+    display: true },
+    { field: 'Connect_ID',
+    editable: false,
+    display: true }
+]
 
 
-export function renderParticipantDetails(participant){
+
+export function renderParticipantDetails(participant, adminSubjectAudit){
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
-    changeParticipantDetail()
+
+    changeParticipantDetail(adminSubjectAudit)
 
 }
 export function render(participant) {
+    console.log("participant", participant)
     let template;
     if (!participant) {
         template=` 
@@ -29,6 +88,7 @@ export function render(participant) {
          `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+        console.log("conceptIdMapping", conceptIdMapping)
         template += `
             <div class="container">
                 <div id="root">
@@ -40,7 +100,7 @@ export function render(participant) {
                 getYearsInConnect(participant)}
                 </b></span> : ${participant[x] !== undefined ?  participant[x] : ""} &nbsp;`)
         
-        template += `</div><form><table class="table"> <h4 style="text-align: center;"> Participant Details </h4><tbody>`
+        template += `</div><table class="table"> <h4 style="text-align: center;"> Participant Details </h4><tbody>`
        
         template += ` <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -51,11 +111,26 @@ export function render(participant) {
             </div>
         </div>`
 
+        template += ` <div class="modal fade" id="modalShowAuditData"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content sub-div-shadow">
+                <div class="modal-header" id="modalHeaderAudit"></div>
+                <div class="modal-body" id="modalBodyAudit"></div>
+            </div>
+        </div>
+    </div>`
+
+
         importantColumns.forEach(x => template += `<tr ><th scope="row"><div class="mb-3"><label class="form-label">
-            ${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : x}</label></div></th>
-            <td>${participant[x] !== undefined ?  participant[x] : ""}</td> <td> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
-            data-participantkey=${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : x}
-            data-participantValue=${participant[x]} name="modalParticipantData" ><button type="button" class="btn btn-primary">Edit</button></a></td></tr>&nbsp;`) 
+            ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
+            <td>${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> <td> 
+            <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
+                data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}
+                data-participantValue=${participant[x.field]} name="modalParticipantData" >
+                ${x.editable ? `<button type="button" class="btn btn-primary">Edit</button>`
+                 : `<button type="button" class="btn btn-primary" disabled>Edit</button>`
+                }
+            </a></td></tr>&nbsp;`) 
         
 
             template += `</tbody></table>
@@ -90,19 +165,23 @@ export function render(participant) {
                                     </tbody>
                                     </table>
                                     <div style="display:inline-block;">
-                                        <button type="button" class="btn btn-primary">Save</button>
+                                        <button type="submit" id="sendResponse" class="btn btn-primary" >Save</button>
+                                            &nbsp;
+                                        <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowAuditData" class="btn btn-success">Success</button>
+                                            &nbsp;
                                         <button type="button" class="btn btn-danger">Cancel</button>
                                     </div>
-                                </form>
                             </div>
                         </div>
         `;
+
         
     }
     return template;
 }
 
-function changeParticipantDetail(){
+
+function changeParticipantDetail(adminSubjectAudit){
     const timeStamp = getCurrentTimeStamp()
     const a = Array.from(document.getElementsByClassName('showMore'))
     if (a) {
@@ -116,24 +195,29 @@ function changeParticipantDetail(){
                 let template = '<div>'
                 template += `
                 <form id="formResponse" method="post">
-                    <ul>
-                        <li id="currentValue"><span><strong>Current value</span></strong> :  <span>${data.participantvalue}</span></li>
-                        <li id="newValues"><span><strong>New value</span></strong> :  <input required type="text" name="newValue" id="newValue"></li>
-                        <li id="timeStamp"><span><strong>Time stamp</span></strong> :  <span>${timeStamp}</span></li>
-                        <li id="comment"><span><strong>Comment</span></strong> :  <input required type="text" name="comment" id="comment"></li>
-                        <li id="userId><span><strong>User ID</span></strong> :  <span>${timeStamp}</span></li>
-                    </ul>
+                        <span><strong>Field Modified</strong></span> :  <span id="fieldModified" data-fieldModified=${data.participantkey}>${data.participantkey}</span>
+                        <br >
+                        <span><strong>Current value</strong></span> :  <span id="currentValue" data-currentValue=${data.participantvalue}>${data.participantvalue}</span>
+                        <br >
+                        <span><strong>New value</strong></span> :  <input required type="text" name="newValue" id="newValue">
+                        <br >
+                        <span><strong>Time stamp</strong></span> :  <span id="timeStamp" data-timeStamp=${timeStamp}>${timeStamp}</span>
+                        <br >
+                        <span><strong>Comment</strong></span> :  <input required type="text" name="comment" id="comment"></li>
+                        <br >
+                        <span><strong>User ID</strong></span> :  <span  id="userId" data-userId=${timeStamp}>${timeStamp}</span></li>
+                        <br >
+
                     <div style="display:inline-block;">
                         <button type="submit" class="btn btn-primary">Submit</button>
-                        <button type="button" class="btn btn-danger">Cancel</button>
                     </div>
                 </form>
                </div>`
-               debugger
-               
                 body.innerHTML = template;
-                saveResponses()
-                // create a function taht listens to form event
+                saveResponses(adminSubjectAudit)
+                postEditedResponse(adminSubjectAudit)
+                viewAuditHandler(adminSubjectAudit)
+          
             });
 
 
@@ -144,13 +228,28 @@ function changeParticipantDetail(){
     }
 }
 
-function saveResponses() {
+function saveResponses(adminSubjectAudit) {
+    let changedOption = {}
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
-        console.log(document.getElementById('currentValue').value)
-        console.log(document.getElementById('newValue').value)
-        // API
+        // fieldModifiedData
+        let fieldModifiedData = getDataAttributes1(document.getElementById('fieldModified'))
+        changedOption.fieldModified = fieldModifiedData.fieldmodified
+        // currentValue
+        let currentValueData = getDataAttributes1(document.getElementById('currentValue'))
+        changedOption.currentvalue = currentValueData.currentvalue
+        // newValue
+        changedOption.newValue = document.getElementById('newValue').value
+        // timeStamp
+        let timeStampData = getDataAttributes1(document.getElementById('timeStamp'))
+        changedOption.timeStamp = timeStampData.timestamp
+        // comment
+        changedOption.comment = document.getElementById('comment').value
+        // userID
+        let userIdData = getDataAttributes1(document.getElementById('userId'))
+        changedOption.userId = userIdData.userid
+        adminSubjectAudit.push(changedOption)
     })
 }
     
@@ -183,15 +282,27 @@ function saveResponses() {
     //     console.log("test123", a)
     // }
 
+
+function getDataAttributes1(el) {
+    let data = {};
     
-    // mainContent.innerHTML = template;
-
-
+    [].forEach.call(el.attributes, function(attr) {
+        
+        if (/^data-/.test(attr.name)) {
+            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
+                return $1.toUpperCase();
+            });
+            data[camelCaseName] = attr.value;
+        }
+    });
+    return data;
+}
 
 
 function getDataAttributes(el) {
-    var data = {};
+    let data = {};
     [].forEach.call(el.attributes, function(attr) {
+   
         if (/^data-/.test(attr.name)) {
             var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
                 return $1.toUpperCase();
@@ -230,3 +341,64 @@ function getYearsInConnect(participant) {
     let yearsInConnect = `Year(s) in connect: ${totalYears}`
     return yearsInConnect;
 }
+
+function postEditedResponse(adminSubjectAudit) {
+    const a = document.getElementById('sendResponse')
+    a.addEventListener('click', clickHandler(adminSubjectAudit));
+}
+
+function clickHandler (adminSubjectAudit)  {
+    // const idToken = 'GFDS365Hsa6ZGJA3aduy5326qwkjgddghDASHDgh'
+  //  console.log('Button Clicked');
+    // let requestObj = {
+    //     method: "POST",
+    //     headers:{
+    //     Authorization:"Bearer "+ idToken,
+    //     "Content-Type": "application/json"
+    //     },
+    //     body: JSON.stringify(adminSubjectAudit)
+    // }
+    //     // const response = await fetch(`http://localhost:8010/nih-nci-dceg-episphere-dev/us-central1/app?api=submit`, requestObj);
+    //     const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/app?api=submit`, requestObj));
+    //     return response.json();
+ }
+
+
+ function viewAuditHandler(adminSubjectAudit) {
+    const a = document.getElementById('adminAudit')
+    a.addEventListener('click',  buttonAuditHandler(adminSubjectAudit))
+}
+
+ function buttonAuditHandler (adminSubjectAudit) {
+
+        const header = document.getElementById('modalHeaderAudit');
+        const body = document.getElementById('modalBodyAudit');
+        header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+        let template = '<div>'
+        for (let i = 0; i < adminSubjectAudit.length; i++) {
+            console.log('zzzzzz', adminSubjectAudit)
+            let JSONresponse = JSON.stringify(adminSubjectAudit[i])
+            template += `<span>
+               ${JSONresponse}
+            </span>
+        </div>`
+        }
+        // for (let i of adminSubjectAudit) {
+        //     let JSONresponse = JSON.stringify(i)
+        //     template += `<span>
+        //        ${JSONresponse}
+        //     </span>
+        // </div>`
+        // }
+        // adminSubjectAudit.map(element => {
+        //     let JSONresponse = JSON.stringify(element)
+        //     template += `<span>
+        //        ${JSONresponse}
+        //     </span>
+        // </div>`
+        // })
+       
+        body.innerHTML = template;
+        console.log('Button Clicked2');
+    } 
+

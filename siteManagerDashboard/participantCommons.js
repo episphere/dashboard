@@ -196,7 +196,8 @@ const addEventShowMoreInfo = data => {
         element.addEventListener('click', () => {
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
             console.log("select clicked", filteredData );
-            renderParticipantDetails(filteredData[0]);
+            let adminSubjectAudit = []
+            renderParticipantDetails(filteredData[0], adminSubjectAudit);
         });
     });
 
