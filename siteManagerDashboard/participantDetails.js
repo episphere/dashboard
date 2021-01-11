@@ -347,20 +347,20 @@ function postEditedResponse(adminSubjectAudit) {
     a.addEventListener('click', clickHandler(adminSubjectAudit));
 }
 
-function clickHandler (adminSubjectAudit)  {
-    // const idToken = 'GFDS365Hsa6ZGJA3aduy5326qwkjgddghDASHDgh'
-  //  console.log('Button Clicked');
-    // let requestObj = {
-    //     method: "POST",
-    //     headers:{
-    //     Authorization:"Bearer "+ idToken,
-    //     "Content-Type": "application/json"
-    //     },
-    //     body: JSON.stringify(adminSubjectAudit)
-    // }
-    //     // const response = await fetch(`http://localhost:8010/nih-nci-dceg-episphere-dev/us-central1/app?api=submit`, requestObj);
-    //     const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/app?api=submit`, requestObj));
-    //     return response.json();
+async function clickHandler (adminSubjectAudit)  {
+    const idToken = 'GFDS365Hsa6ZGJA3aduy5326qwkjgddghDASHDgh'
+   console.log('Button Clicked');
+    let requestObj = {
+        method: "POST",
+        headers:{
+        Authorization:"Bearer "+ idToken,
+        "Content-Type": "application/json"
+        },
+        body: JSON.stringify(adminSubjectAudit)
+    }
+        // const response = await fetch(`http://localhost:8010/nih-nci-dceg-episphere-dev/us-central1/app?api=submit`, requestObj);
+        const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/app?api=submit`, requestObj));
+        return response.json();
  }
 
 
