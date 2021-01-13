@@ -167,7 +167,7 @@ export function render(participant) {
                                     <div style="display:inline-block;">
                                         <button type="submit" id="sendResponse" class="btn btn-primary" >Save</button>
                                             &nbsp;
-                                        <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowAuditData" class="btn btn-success">Success</button>
+                                        <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowAuditData" class="btn btn-success">Audit History</button>
                                             &nbsp;
                                         <button type="button" class="btn btn-danger">Cancel</button>
                                     </div>
@@ -337,18 +337,20 @@ function getYearsInConnect(participant) {
     let currentYear = currentTime.split("-")
     currentYear = parseInt(currentYear[0])
     let totalYears =  currentYear - submittedYear
-    totalYears === 0 ? totalYears ='< 1' : totalYears
+    totalYears === 0 ? totalYears = '< 1' : totalYears
     let yearsInConnect = `Year(s) in connect: ${totalYears}`
     return yearsInConnect;
 }
 
 function postEditedResponse(adminSubjectAudit) {
     const a = document.getElementById('sendResponse')
-    a.addEventListener('click', clickHandler(adminSubjectAudit));
+    a.addEventListener('click', () => {
+        clickHandler(adminSubjectAudit);
+    })
 }
 
 async function clickHandler (adminSubjectAudit)  {
-    const idToken = 'GFDS365Hsa6ZGJA3aduy5326qwkjgddghDASHDgh'
+    const idToken = ''
    console.log('Button Clicked');
     let requestObj = {
         method: "POST",
@@ -358,7 +360,6 @@ async function clickHandler (adminSubjectAudit)  {
         },
         body: JSON.stringify(adminSubjectAudit)
     }
-        // const response = await fetch(`http://localhost:8010/nih-nci-dceg-episphere-dev/us-central1/app?api=submit`, requestObj);
         const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/app?api=submit`, requestObj));
         return response.json();
  }
@@ -375,7 +376,8 @@ async function clickHandler (adminSubjectAudit)  {
         const body = document.getElementById('modalBodyAudit');
         header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
         let template = '<div>'
-        for (let i = 0; i < adminSubjectAudit.length; i++) {
+        for (let i = 0; i <= adminSubjectAudit.length; i++) {
+            console.log('dd', i)
             console.log('zzzzzz', adminSubjectAudit)
             let JSONresponse = JSON.stringify(adminSubjectAudit[i])
             template += `<span>
