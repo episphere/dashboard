@@ -72,9 +72,10 @@ export function renderParticipantDetails(participant, adminSubjectAudit){
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
 
-    changeParticipantDetail(adminSubjectAudit)
+    changeParticipantDetail(participant, adminSubjectAudit)
 
 }
+
 export function render(participant) {
     console.log("participant", participant)
     let template;
@@ -125,7 +126,7 @@ export function render(participant) {
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
             <td>${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> <td> 
             <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
-                data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}
+                data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
                 data-participantValue=${participant[x.field]} name="modalParticipantData" >
                 ${x.editable ? `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-primary" disabled>Edit</button>`
@@ -165,24 +166,25 @@ export function render(participant) {
                                     </tbody>
                                     </table>
                                     <div style="display:inline-block;">
-                                        <button type="submit" id="sendResponse" class="btn btn-primary" >Save</button>
+                                        <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
                                             &nbsp;
                                         <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowAuditData" class="btn btn-success">Audit History</button>
                                             &nbsp;
-                                        <button type="button" class="btn btn-danger">Cancel</button>
+                                        <button type="button" class="btn btn-danger">Cancel Changes</button>
+                                        &nbsp;
+                                        <b>Last Modified by: <span id="modifiedId"></span></b>
                                     </div>
                             </div>
                         </div>
         `;
-
-        
+     
     }
     return template;
 }
 
 
-function changeParticipantDetail(adminSubjectAudit){
-    const timeStamp = getCurrentTimeStamp()
+function changeParticipantDetail(participant, adminSubjectAudit){
+
     const a = Array.from(document.getElementsByClassName('showMore'))
     if (a) {
         a.forEach(element => {
@@ -201,22 +203,22 @@ function changeParticipantDetail(adminSubjectAudit){
                         <br >
                         <span><strong>New value</strong></span> :  <input required type="text" name="newValue" id="newValue">
                         <br >
-                        <span><strong>Time stamp</strong></span> :  <span id="timeStamp" data-timeStamp=${timeStamp}>${timeStamp}</span>
                         <br >
-                        <span><strong>Comment</strong></span> :  <input required type="text" name="comment" id="comment"></li>
-                        <br >
-                        <span><strong>User ID</strong></span> :  <span  id="userId" data-userId=${timeStamp}>${timeStamp}</span></li>
+                        <span><strong>Comment</strong></span> :  <textarea required type="text" name="comment" id="comment" style="height: 100px; width: 400px;"> </textarea></li>
                         <br >
 
                     <div style="display:inline-block;">
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="disableEditModal">Submit</button>
+                        <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
                     </div>
                 </form>
                </div>`
                 body.innerHTML = template;
-                saveResponses(adminSubjectAudit)
+                saveResponses(participant, adminSubjectAudit)
                 postEditedResponse(adminSubjectAudit)
                 viewAuditHandler(adminSubjectAudit)
+                showSaveAlert()
+            //    lastModified(adminSubjectAudit)
           
             });
 
@@ -228,78 +230,53 @@ function changeParticipantDetail(adminSubjectAudit){
     }
 }
 
-function saveResponses(adminSubjectAudit) {
+function saveResponses(participant, adminSubjectAudit) {
     let changedOption = {}
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
+        // participant token
+        changedOption.token = participant.token
         // fieldModifiedData
-        let fieldModifiedData = getDataAttributes1(document.getElementById('fieldModified'))
+        let fieldModifiedData = getDataAttributes(document.getElementById('fieldModified'))
         changedOption.fieldModified = fieldModifiedData.fieldmodified
         // currentValue
-        let currentValueData = getDataAttributes1(document.getElementById('currentValue'))
+        let currentValueData = getDataAttributes(document.getElementById('currentValue'))
         changedOption.currentvalue = currentValueData.currentvalue
         // newValue
         changedOption.newValue = document.getElementById('newValue').value
         // timeStamp
-        let timeStampData = getDataAttributes1(document.getElementById('timeStamp'))
-        changedOption.timeStamp = timeStampData.timestamp
+        let timeStampData =  getCurrentTimeStamp()
+        changedOption.timeStamp = timeStampData
         // comment
         changedOption.comment = document.getElementById('comment').value
         // userID
-        let userIdData = getDataAttributes1(document.getElementById('userId'))
-        changedOption.userId = userIdData.userid
+        let userIdData = getCurrentTimeStamp()
+        changedOption.userId = userIdData
+        // Source
+        let source = "Site Manager Dashboard"
+        changedOption.source = source
         adminSubjectAudit.push(changedOption)
+
+        console.log('inp', changedOption.newValue, changedOption.fieldModified );
+
+        let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+        let template;
+
+        importantColumns.forEach(x => template += `<tr ><th scope="row"><div class="mb-3"><label class="form-label">
+        ${conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") === changedOption.fieldModified ? changedOption.fieldModified : "" } </label></div></th>
+        <td>${participant[x.field] !== undefined ?  changedOption.newValue : ""}</td> </tr>&nbsp;`) 
+
+       mainContent.innerHTML = template;
     })
-}
+
     
 
 
-    // if (a) {
-    //     a.addEventListener('click', () => {
-    //                 console.log("text", text)
-    //                 // let temp = document.createElement("div")
-    //                 // temp.innerHTML = text
-    //                 // console.log("conceptId", temp)
-    //                 const header = document.getElementById('modalHeader');
-    //                 const body = document.getElementById('modalBody');
-    //                 header.innerHTML = `<h5>Test</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-    //                 let template = '<div>'
-    //                 template += `
-    //                     <ul>
-    //                         <li><span><strong>Current value</span></strong> :  <span>${text}</span></li>
-    //                         <li><span><strong>New value</span></strong> :  <input required type="text" name="newValue" id="newValue"></li>
-    //                         <li><span><strong>Time stamp</span></strong> :  <span>${currentDate.getTime()}</span></li>
-    //                         <li><span><strong>Comment</span></strong> :  <input required type="text" name="comment" id="comment"></li>
-    //                         <li><span><strong>User ID</span></strong> :  <span>${currentDate.getTime()}</span></li>
-    //                     </ul>
-    //                     </div>`
-    //                 body.innerHTML = template;
-             
-    //     });
-    // }
-    // else {
-    //     console.log("test123", a)
-    // }
-
-
-function getDataAttributes1(el) {
-    let data = {};
-    
-    [].forEach.call(el.attributes, function(attr) {
-        
-        if (/^data-/.test(attr.name)) {
-            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
-                return $1.toUpperCase();
-            });
-            data[camelCaseName] = attr.value;
-        }
-    });
-    return data;
 }
-
 
 function getDataAttributes(el) {
+    console.log('el', el)
     let data = {};
     [].forEach.call(el.attributes, function(attr) {
    
@@ -339,7 +316,16 @@ function getYearsInConnect(participant) {
     let totalYears =  currentYear - submittedYear
     totalYears === 0 ? totalYears = '< 1' : totalYears
     let yearsInConnect = `Year(s) in connect: ${totalYears}`
-    return yearsInConnect;
+    return yearsInConnect;  
+}
+
+function showSaveAlert() {
+
+    const a = document.getElementById('disableEditModal')
+    a.addEventListener('click', e => {
+        alert('Changes Saved')
+    })
+   
 }
 
 function postEditedResponse(adminSubjectAudit) {
@@ -350,7 +336,7 @@ function postEditedResponse(adminSubjectAudit) {
 }
 
 async function clickHandler (adminSubjectAudit)  {
-    const idToken = ''
+   const idToken = ''
    console.log('Button Clicked');
     let requestObj = {
         method: "POST",
@@ -358,16 +344,26 @@ async function clickHandler (adminSubjectAudit)  {
         Authorization:"Bearer "+ idToken,
         "Content-Type": "application/json"
         },
-        body: JSON.stringify(adminSubjectAudit)
+         body: JSON.stringify(adminSubjectAudit)
+
     }
-        const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/app?api=submit`, requestObj));
-        return response.json();
+        const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/submitParticipantsData`, requestObj));
+        console.log('response', response.json())
+
+        let lastModifiedHolder;
+        adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
+        console.log('admin', lastModifiedHolder.userId)
+        let a = document.getElementById('modifiedId')
+        a.innerHTML = lastModifiedHolder.userId + ' @ ' + lastModifiedHolder.timeStamp;
+      //  return response.json();
  }
 
 
  function viewAuditHandler(adminSubjectAudit) {
     const a = document.getElementById('adminAudit')
-    a.addEventListener('click',  buttonAuditHandler(adminSubjectAudit))
+    a.addEventListener('click',  () => {
+        buttonAuditHandler(adminSubjectAudit)
+    })
 }
 
  function buttonAuditHandler (adminSubjectAudit) {
@@ -376,29 +372,14 @@ async function clickHandler (adminSubjectAudit)  {
         const body = document.getElementById('modalBodyAudit');
         header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
         let template = '<div>'
-        for (let i = 0; i <= adminSubjectAudit.length; i++) {
-            console.log('dd', i)
-            console.log('zzzzzz', adminSubjectAudit)
-            let JSONresponse = JSON.stringify(adminSubjectAudit[i])
+
+        adminSubjectAudit.map(element => {
+            let JSONresponse = JSON.stringify(element)
             template += `<span>
                ${JSONresponse}
             </span>
         </div>`
-        }
-        // for (let i of adminSubjectAudit) {
-        //     let JSONresponse = JSON.stringify(i)
-        //     template += `<span>
-        //        ${JSONresponse}
-        //     </span>
-        // </div>`
-        // }
-        // adminSubjectAudit.map(element => {
-        //     let JSONresponse = JSON.stringify(element)
-        //     template += `<span>
-        //        ${JSONresponse}
-        //     </span>
-        // </div>`
-        // })
+        })
        
         body.innerHTML = template;
         console.log('Button Clicked2');
