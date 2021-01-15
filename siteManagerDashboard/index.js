@@ -147,7 +147,7 @@ const checkSession = () => {
     }
 }
 
-const animation = (status) => {
+export const animation = (status) => {
     if(status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
     if(!status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
