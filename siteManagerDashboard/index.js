@@ -104,7 +104,7 @@ const fetchData = async (siteKey, type) => {
     }
 }
 
-const participantVerification = async (token, verified, siteKey) => {
+export const participantVerification = async (token, verified, siteKey) => {
     if(!checkSession()){
         alert('Session expired!');
         clearLocalStroage();
