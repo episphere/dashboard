@@ -101,7 +101,7 @@ export function render(participant) {
                 getYearsInConnect(participant)}
                 </b></span> : ${participant[x] !== undefined ?  participant[x] : ""} &nbsp;`)
         
-        template += `</div><table class="table"> <h4 style="text-align: center;"> Participant Details </h4><tbody>`
+        template += `</div><table class="table"> <h4 style="text-align: center;"> Participant Details </h4><tbody class="participantDetailTable">`
        
         template += ` <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
             <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
@@ -122,7 +122,7 @@ export function render(participant) {
     </div>`
 
 
-        importantColumns.forEach(x => template += `<tr ><th scope="row"><div class="mb-3"><label class="form-label">
+        importantColumns.forEach(x => template += `<tr class="selectedRow"><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
             <td>${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> <td> 
             <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
@@ -236,7 +236,7 @@ function saveResponses(participant, adminSubjectAudit) {
     a.addEventListener('submit', e => {
         e.preventDefault()
         // participant token
-        changedOption.token = participant.token
+      //  changedOption.token = participant.token
         // fieldModifiedData
         let fieldModifiedData = getDataAttributes(document.getElementById('fieldModified'))
         changedOption.fieldModified = fieldModifiedData.fieldmodified
@@ -258,25 +258,35 @@ function saveResponses(participant, adminSubjectAudit) {
         changedOption.source = source
         adminSubjectAudit.push(changedOption)
 
-        console.log('inp', changedOption.newValue, changedOption.fieldModified );
+    //  console.log('inp', changedOption.newValue, changedOption.fieldModified );
+    //  const a = document.getElementById('participantDetailTable')
+    //  console.log('table', a)
 
-        let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        let template;
+//    const t = document.getElementsByClassName('participantDetailTable')
+//     console.log('table', t)
 
-        importantColumns.forEach(x => template += `<tr ><th scope="row"><div class="mb-3"><label class="form-label">
-        ${conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") === changedOption.fieldModified ? changedOption.fieldModified : "" } </label></div></th>
-        <td>${participant[x.field] !== undefined ?  changedOption.newValue : ""}</td> </tr>&nbsp;`) 
+//     t.forEach(e => {
+//         console.log('e...', e)
+  
+//     })
 
-       mainContent.innerHTML = template;
     })
+    const t = Array.from(document.getElementsByClassName('participantDetailTable'))
+    console.log('table', t)
+    t.forEach(element => {
+        
+        let s = element.querySelectorAll('.form-label')
+        s.forEach(e => {
+            if (e.innerText === "First Name") {
+                console.log('ele....', element)
+            }
+        })
+        console.log('sss', s)
 
-    
-
-
+    })
 }
 
 function getDataAttributes(el) {
-    console.log('el', el)
     let data = {};
     [].forEach.call(el.attributes, function(attr) {
    
