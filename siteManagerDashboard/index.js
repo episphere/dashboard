@@ -156,6 +156,14 @@ const renderCharts = async (siteKey) => {
     const stats = await fetchData(siteKey, 'stats');
     
     if(stats.code === 200){
+        const siteSelectionRow = document.createElement('div');
+        siteSelectionRow.classList = ['row'];
+        siteSelectionRow.id = 'siteSelection';
+        if(stats.data.length > 1) {
+            mainContent.appendChild(siteSelectionRow);
+            renderSiteSelection(stats.data);
+        }
+
         const row = document.createElement('div');
         row.classList = ['row'];
 
@@ -186,6 +194,7 @@ const renderCharts = async (siteKey) => {
         row.appendChild(activeCounts);
         row.appendChild(funnelChart);
         row.appendChild(barChart);
+        
         mainContent.appendChild(row);
 
         const row1 = document.createElement('div');
@@ -220,12 +229,7 @@ const renderCharts = async (siteKey) => {
         row1.appendChild(barChart1);
         mainContent.appendChild(row1);
 
-        renderFunnelChart(stats, 'funnelChart', 'active');
-        renderBarChart(stats, 'barChart', 'active');
-        renderCounts(stats, 'activeCounts', 'Active')
-        renderCounts(stats, 'passiveCounts', 'Passive')
-        renderFunnelChart(stats, 'passiveFunnelChart', 'passive');
-        renderBarChart(stats, 'passiveBarChart', 'passive');
+        renderAllCharts(stats.data);
         animation(false);
     }
     if(stats.code === 401){
@@ -233,10 +237,40 @@ const renderCharts = async (siteKey) => {
     }
 }
 
+const renderAllCharts = (stats) => {
+    renderFunnelChart(stats, 'funnelChart', 'active');
+    renderBarChart(stats, 'barChart', 'active');
+    renderCounts(stats, 'activeCounts', 'Active')
+    renderCounts(stats, 'passiveCounts', 'Passive')
+    renderFunnelChart(stats, 'passiveFunnelChart', 'passive');
+    renderBarChart(stats, 'passiveBarChart', 'passive');
+}
+
+const renderSiteSelection = (data) => {
+    let template = `<label class="col-md-1 col-form-label" for="selectSites">Select IHCS</label><div class="col-md-4 form-group"><select id="selectSites" class="form-control">`
+    template += `<option value="all">All</option>`
+    data.map(dt => dt['siteCode']).forEach(siteCode => {
+        template += `<option value="${siteCode}">${JSON.parse(localStorage.conceptIdMapping)[siteCode]['Variable Name']}</option>`
+    })
+    template += '</select></div>'
+    document.getElementById('siteSelection').innerHTML = template;
+    addEventSiteSelection(data);
+}
+
+const addEventSiteSelection = (data) => {
+    const select = document.getElementById('selectSites');
+    select.addEventListener('change', () => {
+        let filteredData = '';
+        if(select.value === 'all') filteredData = data;
+        else filteredData = data.filter(dt => dt['siteCode'] === parseInt(select.value));
+        renderAllCharts(filteredData);
+    })
+}
+
 const renderFunnelChart = (participants, id, decider) => {
-    const UPSubmitted = participants.data.map(dt => dt[decider]).map(dt => dt['profileSubmitted']).reduce((a,b) => a+b);
-    const consented = participants.data.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
-    const signedIn = participants.data.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
+    const UPSubmitted = participants.map(dt => dt[decider]).map(dt => dt['profileSubmitted']).reduce((a,b) => a+b);
+    const consented = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
+    const signedIn = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
     
     const data = [{
         x: [signedIn, consented, UPSubmitted],
@@ -256,13 +290,13 @@ const renderFunnelChart = (participants, id, decider) => {
 }
 
 const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider} recruits <br><h3>${participants.data.map(dt => dt[`${decider.toLowerCase()}`]).map(dt => dt['count']).reduce((a,b) => a+b)}</h3>`
+    document.getElementById(id).innerHTML = `${decider} recruits <br><h3>${participants.map(dt => dt[`${decider.toLowerCase()}`]).map(dt => dt['count']).reduce((a,b) => a+b)}</h3>`
 }
 
 const renderBarChart = (participants, id, decider) => {
-    const accountCreated = participants.data.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
-    const consent = participants.data.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
-    const participantData = participants.data.map(dt => dt[decider]).map(dt => dt['count']).reduce((a,b) => a+b);
+    const accountCreated = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
+    const consent = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
+    const participantData = participants.map(dt => dt[decider]).map(dt => dt['count']).reduce((a,b) => a+b);
     const trace1 = {
         x: [accountCreated, consent],
         y: ['Accounts created', '  Consent complete'],
