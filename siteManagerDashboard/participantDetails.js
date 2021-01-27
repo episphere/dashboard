@@ -199,7 +199,7 @@ export function render(participant) {
 }
 
 
-function changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey, counter){
+function changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey){
 
     const a = Array.from(document.getElementsByClassName('detailedRow'))
     if (a) {
@@ -214,12 +214,12 @@ function changeParticipantDetail(participant, adminSubjectAudit, changedOption, 
                 let template = '<div>'
                 template += `
                 <form id="formResponse" method="post">
-                        <span><strong>Field Modified</strong></span> :  <span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${data.participantconceptid}</span>
+                        <span><strong>Field Modified</strong></span> :  <span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${data.participantkey}</span>
                         <br >
-                        <span><strong>Value</strong></span> :  <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue}>
+                        <span><strong>Field Value</strong></span> :  <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue}>
                         <br >
                         <br >
-                        <span><strong>Comment</strong></span> :  <textarea required type="text" name="comment" id="comment" style="height: 100px; width: 400px;"> </textarea></li>
+                        <span style="display: block;"><strong>Comment :</strong></span>  <textarea required type="text" name="comment" id="comment" style="height: 100px; width: 400px; display: block;"> </textarea></li>
                         <br >
 
                     <div style="display:inline-block;">
