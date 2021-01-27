@@ -104,7 +104,7 @@ const fetchData = async (siteKey, type) => {
     }
 }
 
-const participantVerification = async (token, verified, siteKey) => {
+export const participantVerification = async (token, verified, siteKey) => {
     if(!checkSession()){
         alert('Session expired!');
         clearLocalStroage();
@@ -153,8 +153,17 @@ export const animation = (status) => {
 }
 
 const renderCharts = async (siteKey) => {
-    const participantsData = await fetchData(siteKey, 'all');
-    if(participantsData.code === 200){
+    const stats = await fetchData(siteKey, 'stats');
+    
+    if(stats.code === 200){
+        const siteSelectionRow = document.createElement('div');
+        siteSelectionRow.classList = ['row'];
+        siteSelectionRow.id = 'siteSelection';
+        if(stats.data.length > 1) {
+            mainContent.appendChild(siteSelectionRow);
+            renderSiteSelection(stats.data);
+        }
+
         const row = document.createElement('div');
         row.classList = ['row'];
 
@@ -185,6 +194,7 @@ const renderCharts = async (siteKey) => {
         row.appendChild(activeCounts);
         row.appendChild(funnelChart);
         row.appendChild(barChart);
+        
         mainContent.appendChild(row);
 
         const row1 = document.createElement('div');
@@ -219,26 +229,51 @@ const renderCharts = async (siteKey) => {
         row1.appendChild(barChart1);
         mainContent.appendChild(row1);
 
-        renderFunnelChart(participantsData, 'funnelChart', 486306141);
-        renderBarChart(participantsData, 'barChart', 486306141);
-        renderCounts(participantsData, 'activeCounts', 486306141)
-        renderCounts(participantsData, 'passiveCounts', 854703046)
-        renderFunnelChart(participantsData, 'passiveFunnelChart', 854703046);
-        renderBarChart(participantsData, 'passiveBarChart', 854703046);
+        renderAllCharts(stats.data);
         animation(false);
     }
-    if(participantsData.code === 401){
+    if(stats.code === 401){
         clearLocalStroage();
     }
 }
 
+const renderAllCharts = (stats) => {
+    renderFunnelChart(stats, 'funnelChart', 'active');
+    renderBarChart(stats, 'barChart', 'active');
+    renderCounts(stats, 'activeCounts', 'Active')
+    renderCounts(stats, 'passiveCounts', 'Passive')
+    renderFunnelChart(stats, 'passiveFunnelChart', 'passive');
+    renderBarChart(stats, 'passiveBarChart', 'passive');
+}
+
+const renderSiteSelection = (data) => {
+    let template = `<label class="col-md-1 col-form-label" for="selectSites">Select IHCS</label><div class="col-md-4 form-group"><select id="selectSites" class="form-control">`
+    template += `<option value="all">All</option>`
+    data.map(dt => dt['siteCode']).forEach(siteCode => {
+        template += `<option value="${siteCode}">${JSON.parse(localStorage.conceptIdMapping)[siteCode]['Variable Name']}</option>`
+    })
+    template += '</select></div>'
+    document.getElementById('siteSelection').innerHTML = template;
+    addEventSiteSelection(data);
+}
+
+const addEventSiteSelection = (data) => {
+    const select = document.getElementById('selectSites');
+    select.addEventListener('change', () => {
+        let filteredData = '';
+        if(select.value === 'all') filteredData = data;
+        else filteredData = data.filter(dt => dt['siteCode'] === parseInt(select.value));
+        renderAllCharts(filteredData);
+    })
+}
+
 const renderFunnelChart = (participants, id, decider) => {
-    const UPSubmitted = participants.data.filter(dt => dt['699625233'] === 353358909 && dt['512820379'] === decider);
-    const consented = participants.data.filter(dt => dt['919254129'] === 353358909 && dt['512820379'] === decider);
-    const signedIn = participants.data.filter(dt => dt['142654897'] !== undefined && dt['512820379'] === decider);
+    const UPSubmitted = participants.map(dt => dt[decider]).map(dt => dt['profileSubmitted']).reduce((a,b) => a+b);
+    const consented = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
+    const signedIn = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
     
     const data = [{
-        x: [signedIn.length, consented.length, UPSubmitted.length],
+        x: [signedIn, consented, UPSubmitted],
         y: ['Sign-on', 'Consent', 'User Profile'],
         type: 'funnel',
         marker: {
@@ -255,22 +290,22 @@ const renderFunnelChart = (participants, id, decider) => {
 }
 
 const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider === 486306141 ? 'Active' : 'Passive'} recruits <br><h3>${participants.data.filter(dt => dt['512820379'] === decider).length}</h3>`
+    document.getElementById(id).innerHTML = `${decider} recruits <br><h3>${participants.map(dt => dt[`${decider.toLowerCase()}`]).map(dt => dt['count']).reduce((a,b) => a+b)}</h3>`
 }
 
 const renderBarChart = (participants, id, decider) => {
-    const accountCreated = participants.data.filter(dt => dt['699625233'] === 353358909 && dt['512820379'] === decider);
-    const consent = participants.data.filter(dt => dt['919254129'] === 353358909 && dt['512820379'] === decider);
-    const participantData = participants.data.filter(dt => dt['512820379'] === decider)
+    const accountCreated = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
+    const consent = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
+    const participantData = participants.map(dt => dt[decider]).map(dt => dt['count']).reduce((a,b) => a+b);
     const trace1 = {
-        x: [accountCreated.length, consent.length],
+        x: [accountCreated, consent],
         y: ['Accounts created', '  Consent complete'],
         name: 'Completed',
         type: 'bar',
         orientation: 'h'
     };
     const trace2 = {
-        x: [participantData.length - accountCreated.length, participantData.length - consent.length],
+        x: [participantData - accountCreated, participantData - consent],
         y: ['Accounts created', '  Consent complete'],
         name: 'Pending',
         type: 'bar',
