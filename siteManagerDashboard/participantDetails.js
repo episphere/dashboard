@@ -1,7 +1,6 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-
-export const headerImportantColumns = ['Connect_ID', fieldMapping.fName, fieldMapping.birthYear, fieldMapping.consentDate, 'Years in Connect']
+import { renderParticipantHeader } from './participantHeader.js';
 
 export const importantColumns = [ 
     { field: fieldMapping.lName,
@@ -65,39 +64,49 @@ export const importantColumns = [
 
 
 let saveFlag = false
+let counter = 0
 
-window.addEventListener('beforeunload',  
-        function (e) { 
-            // Check if any of the input 
-            // fields are filled 
-            if (saveFlag === false) { 
-            // Cancel the event and 
-            // show alert that the unsaved 
-            // changes would be lost 
-                console.log("hellooo123")
-                e.preventDefault(); 
-                e.returnValue = ''; 
-            } 
+window.addEventListener('beforeunload',  (e) => {
+    if (saveFlag === false && counter > 0) { 
+    // Cancel the event and show alert that the unsaved changes would be lost 
+        e.preventDefault(); 
+        e.returnValue = ''; 
+    } 
+    else {
+        console.log('12')
+    }
+
 })
 
-export function renderParticipantDetails(participant, adminSubjectAudit){
+
+
+// window.addEventListener('popstate', function (e) {
+//     // The URL changed...
+//     if (window.location.hash !== "#participantLookup") {
+//         alert('Unsave changes detected')
+//         // add a modal
+        
+//     }
+// });
+
+
+export function renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey){
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
     let originalHTML =  mainContent.innerHTML
-    changeParticipantDetail(participant, adminSubjectAudit, originalHTML)
+    viewAuditHandler(adminSubjectAudit)
+    changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey)
     editAltContact(participant, adminSubjectAudit)
   
 }
 
 export function render(participant) {
-    console.log("participant", participant)
-    let template;
+    let template = `<div class="container">`
     if (!participant) {
-        template=` 
-        <div class="container">
+        template +=` 
             <div id="root">
             Please select a participant first!
             </div>
@@ -105,54 +114,17 @@ export function render(participant) {
          `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        console.log("conceptIdMapping", conceptIdMapping)
         template += `
-            <div class="container">
-                <div id="root">
-                    <div class="alert alert-light" role="alert">`
-        headerImportantColumns.forEach(x => template += `<span><b>
-                ${conceptIdMapping[x] && conceptIdMapping[x] != 'Years in Connect' ? 
-                conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] 
-                : 
-                getYearsInConnect(participant)}
-                </b></span> : ${participant[x] !== undefined ?  participant[x] : ""} &nbsp;`)
-        
-        template += `</div><table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4><tbody class="participantDetailTable">`
-       
-        template += ` <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content sub-div-shadow">
-                    <div class="modal-header" id="modalHeader"></div>
-                    <div class="modal-body" id="modalBody"></div>
-                </div>
-            </div>
-        </div>`
-
-        template += ` <div class="modal fade" id="modalShowAuditData"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content sub-div-shadow">
-                <div class="modal-header" id="modalHeaderAudit"></div>
-                <div class="modal-body" id="modalBodyAudit"></div>
-            </div>
-        </div>
-    </div>`
-
-    template += ` <div class="modal fade" id="modalShowAltContact"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-        <div class="modal-content sub-div-shadow">
-            <div class="modal-header" id="modalHeaderAltContact"></div>
-            <div class="modal-body" id="modalBodyAltContact"></div>
-        </div>
-    </div>
-</div>`
-
-
+                <div id="root"> `
+        template += renderParticipantHeader(participant)
+        template += `<table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4><tbody class="participantDetailTable">`
+     
         importantColumns.forEach(x => template += `<tr class="detailedRow"><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
             <td>${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> <td> 
             <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                 data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                data-participantValue=${participant[x.field]} name="modalParticipantData" >
+                data-participantconceptid=${x.field} data-participantValue=${participant[x.field]} name="modalParticipantData" >
                 ${x.editable ? `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-primary" disabled>Edit</button>`
                 }
@@ -160,6 +132,7 @@ export function render(participant) {
         
 
             template += `</tbody></table>
+                    <br />
                     <table class="table">
                                 <h4 style="text-align: center;"> Alternate Contact Details &nbsp;</h4>
                                     <thead>
@@ -174,15 +147,12 @@ export function render(participant) {
                                     </thead>
                                     <tbody>
                                         <tr class="detaileAltRow">
-                                        <td>${participant.Module1.ALTCONTACT1 !== undefined ? participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME : ""} `+` ${participant.Module1.ALTCONTACT1 !== undefined ? participant.Module1.ALTCONTACT1.ALTCONTACT1_LNAME : ""} </td>
+                                        <td>${participant.Module1 && participant.Module1.ALTCONTACT1 !== undefined ? participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME : ""} `+` ${participant.Module1  && participant.Module1.ALTCONTACT1 !== undefined ? participant.Module1.ALTCONTACT1.ALTCONTACT1_LNAME : ""} </td>
                                         <td></td>
-                                        <td>${participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME : ""}</td>
-                                        <td>${participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE : ""}</td>
-                                        <td>${participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL : ""}</td>
-                                        <td> <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowAltContact"  
-                                            data-altParticipantKey=${['Contact Name', 'Relationship', 'Home Number', 'Mobile Number', 'Email']}
-                                            data-altParticipantValue=${participant.Module1}
-                                            class="btn btn-primary">Edit</button> </td>
+                                        <td>${participant.Module1  && participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME : ""}</td>
+                                        <td>${participant.Module1  && participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE : ""}</td>
+                                        <td>${participant.Module1  && participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL : ""}</td>
+                                        <td> <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowAltContact" class="btn btn-primary">Edit</button> </td>
                                         </tr>
                                     </tbody>
                                     </table>
@@ -198,13 +168,43 @@ export function render(participant) {
                             </div>
                         </div>
         `;
+
+
+        template += ` <div class="modal fade" id="modalShowMoreData" data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content sub-div-shadow">
+                    <div class="modal-header" id="modalHeader"></div>
+                    <div class="modal-body" id="modalBody"></div>
+                </div>
+            </div>
+        </div>`
+
+        template += ` <div class="modal fade" id="modalShowAltContact"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content sub-div-shadow">
+                <div class="modal-header" id="modalHeaderAltContact"></div>
+                <div class="modal-body" id="modalBodyAltContact"></div>
+            </div>
+        </div>
+    </div>`
+    
+        template += ` <div class="modal fade" id="modalShowAuditData"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content sub-div-shadow">
+                <div class="modal-header" id="modalHeaderAudit"></div>
+                <div class="modal-body" id="modalBodyAudit"></div>
+            </div>
+        </div>
+    </div>`
+
+
      
     }
     return template;
 }
 
 
-function changeParticipantDetail(participant, adminSubjectAudit, originalHTML){
+function changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey, counter){
 
     const a = Array.from(document.getElementsByClassName('detailedRow'))
     if (a) {
@@ -219,11 +219,9 @@ function changeParticipantDetail(participant, adminSubjectAudit, originalHTML){
                 let template = '<div>'
                 template += `
                 <form id="formResponse" method="post">
-                        <span><strong>Field Modified</strong></span> :  <span id="fieldModified" data-fieldModified=${data.participantkey}>${data.participantkey}</span>
+                        <span><strong>Field Modified</strong></span> :  <span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${data.participantconceptid}</span>
                         <br >
-                        <span><strong>Current value</strong></span> :  <span id="currentValue" data-currentValue=${data.participantvalue}>${data.participantvalue}</span>
-                        <br >
-                        <span><strong>New value</strong></span> :  <input required type="text" name="newValue" id="newValue">
+                        <span><strong>Value</strong></span> :  <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue}>
                         <br >
                         <br >
                         <span><strong>Comment</strong></span> :  <textarea required type="text" name="comment" id="comment" style="height: 100px; width: 400px;"> </textarea></li>
@@ -236,14 +234,11 @@ function changeParticipantDetail(participant, adminSubjectAudit, originalHTML){
                 </form>
                </div>`
                 body.innerHTML = template;
-                saveResponses(participant, adminSubjectAudit, element)
-                console.log('eleee', element)
-                postEditedResponse(adminSubjectAudit)
+                saveResponses(participant, adminSubjectAudit, changedOption, element)
+                postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey)
                 viewAuditHandler(adminSubjectAudit)
                 showSaveAlert()
-                resetChanges(participant, originalHTML)  
-            //    lastModified(adminSubjectAudit)
-          
+                resetChanges(participant, originalHTML, siteKey)            
             });
 
         })
@@ -253,40 +248,48 @@ function changeParticipantDetail(participant, adminSubjectAudit, originalHTML){
     }
 }
 
-function saveResponses(participant, adminSubjectAudit, editedElement) {
-    let changedOption = {}
+function saveResponses(participant, adminSubjectAudit, changedOption, editedElement) {
+   
+    let displayAuditHistory = {}
+    let conceptId = []
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
-        // participant token
-        changedOption.token = participant.token
-        // fieldModifiedData
+        // bject.keys(changedOption).length
+        // fieldModifiedData   
         let fieldModifiedData = getDataAttributes(document.getElementById('fieldModified'))
-        changedOption.fieldModified = fieldModifiedData.fieldmodified
+        conceptId.push(fieldModifiedData.fieldconceptid)
+        // new value
+        let newUpdatedValue = document.getElementById('newValue').value
+        changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue
+        // update changed field
+        let updatedEditedValue = editedElement.querySelectorAll("td")[0]
+        updatedEditedValue.innerHTML = newUpdatedValue
+        
+        ///////////////////////////////////////////////
+        // participant token
+        displayAuditHistory.token = participant.token
+        // fieldModifiedData
+        let fieldChanged = getDataAttributes(document.getElementById('fieldModified'))
+        displayAuditHistory.fieldModified = fieldChanged.fieldmodified
         // currentValue
-        let currentValueData = getDataAttributes(document.getElementById('currentValue'))
-        changedOption.currentvalue = currentValueData.currentvalue
+        let currentValueData = getDataAttributes(document.getElementById('newValue'))
+        displayAuditHistory.currentvalue = currentValueData.currentvalue
         // newValue
-        changedOption.newValue = document.getElementById('newValue').value
+        displayAuditHistory.newValue = document.getElementById('newValue').value
         // timeStamp
         let timeStampData =  getCurrentTimeStamp()
-        changedOption.timeStamp = timeStampData
+        displayAuditHistory.timeStamp = timeStampData
         // comment
-        changedOption.comment = document.getElementById('comment').value
+        displayAuditHistory.comment = document.getElementById('comment').value
         // userID
         let userIdData = getCurrentTimeStamp()
-        changedOption.userId = userIdData
+        displayAuditHistory.userId = userIdData
         // Source
         let source = "Site Manager Dashboard"
-        changedOption.source = source
-        adminSubjectAudit.push(changedOption)
-
-        // updates edited field
-
-        let updatedEditedValue = editedElement.querySelectorAll("td")[0]
-        console.log("updatedEditedValue", updatedEditedValue)
-        updatedEditedValue.innerHTML = changedOption.newValue
-
+        displayAuditHistory.source = source
+        adminSubjectAudit.push(displayAuditHistory)
+      
     })
 
 }
@@ -304,20 +307,19 @@ function altContactHandler(participant, adminSubjectAudit) {
     header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     template += `
+
             <br />
-            <span id='fieldName' data-fieldName='name'><strong>Name</strong></span> : <span id='currentName' data-currrentName=${participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME}>${participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME}</span> 
-                : <input type="text" name="newName" id="newName" />
+            <span id='fieldName' data-fieldName='First Name'><strong>Name</strong></span> : <input type="text" name="newName" id="newName" data-currrentFName=${participant.Module1 && participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME} value=${participant.Module1 && participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME} />
             <br />
-            <span id='fieldRelationship' data-fieldRelationship='relationship'><strong>Relationship</strong></span> : <span id='currentRelationship'></span> : <input type="text" name="newRelationship" id="newRelationship" />
+            <span id='fieldLName' data-fieldLName='Last Name'><strong>Last Name</strong></span> : <input type="text" name="newLName" id="newLName" data-currrentLName=${participant.Module1 && participant.Module1.ALTCONTACT1.ALTCONTACT1_LNAME} value=${participant.Module1 && participant.Module1.ALTCONTACT1.ALTCONTACT1_LNAME} />
             <br />
-            <span id='fieldHome' data-fieldHome='home'><strong>Home Number</strong></span> : <span id='currentHome' data-currentHome=${participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME}>${participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME}</span> 
-                : <input type="text" name="newHome" id="newHome" />
+            <span id='fieldRelationship' data-fieldRelationship='relationship'><strong>Relationship</strong></span> : <input type="text" name="newRelationship" id="newRelationship" />
             <br />
-            <span id='fieldMobile' data-fieldMobile='mobile'><strong>Mobile Number</strong></span> : <span id='currentMobile' data-currentMobile=${participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE}>${participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE}</span> 
-                : <input type="text" name="newMobile" id="newMobile" />
+            <span id='fieldHome' data-fieldHome='home'><strong>Home Number</strong></span> : <input type="text" name="newHome" id="newHome" data-currentHome=${participant.Module1 && participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME} value=${participant.Module1 && participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME} />
             <br />
-            <span id='fieldEmail' data-fieldEmail='email'><strong>Email</strong></span> : <span id='currentEmail' data-currentEmail=${participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL}>${participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL}</span> 
-                : <input type="text" name="newEmail" id="newEmail" />
+            <span id='fieldMobile' data-fieldMobile='mobile'><strong>Mobile Number</strong></span> : <input type="text" name="newMobile" id="newMobile" data-currentMobile=${participant.Module1 && participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE} value=${participant.Module1 && participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE} />
+            <br />
+            <span id='fieldEmail' data-fieldEmail='email'><strong>Email</strong></span> : <input type="text" name="newEmail" id="newEmail" data-currentEmail=${participant.Module1 && participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL} value="${participant.Module1 && participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL}" />
             <br />
 
             <div style="display:inline-block;">
@@ -328,6 +330,7 @@ function altContactHandler(participant, adminSubjectAudit) {
    </div>`
     body.innerHTML = template;
     saveAltResponse(adminSubjectAudit, participant)
+    viewAuditHandler(adminSubjectAudit)
 } 
 
 function saveAltResponse(adminSubjectAudit, participant) {
@@ -336,33 +339,32 @@ function saveAltResponse(adminSubjectAudit, participant) {
         e.preventDefault()
         let changedModuleOption = {}
         let altNewName = document.getElementById('newName').value
-        // let altFieldName = getDataAttributes(document.getElementById('fieldName'))
-        let altCurrentName = getDataAttributes(document.getElementById('currentName'))
-        console.log('texttt', altCurrentName)
+        let altCurrentName = getDataAttributes(document.getElementById('newName'))
         changedModuleOption['Name'] = altNewName
+
+        let altNewLName = document.getElementById('newLName').value
+        let altCurrentLName = getDataAttributes(document.getElementById('newLName'))
+        changedModuleOption['Last Name'] = altNewLName
 
         let newRelationship = document.getElementById('newRelationship').value
         // let altFieldRelationship = getDataAttributes(document.getElementById('fieldRelationship'))
         // let altCurrentRelationship = getDataAttributes(document.getElementById('currentRelationship'))
         changedModuleOption['Relationship'] = newRelationship
 
-        
-        // let altFieldHome = getDataAttributes(document.getElementById('fieldHome'))
-        let altCurrentHome = getDataAttributes(document.getElementById('currentHome'))
+
+        let altCurrentHome = getDataAttributes(document.getElementById('newHome'))
         let newHome = document.getElementById('newHome').value
         changedModuleOption['Home'] = newHome
 
-        
-        // let altFieldMobile= getDataAttributes(document.getElementById('fieldMobile'))
-        let altCurrentMobile = getDataAttributes(document.getElementById('currentMobile'))
+        let altCurrentMobile = getDataAttributes(document.getElementById('newMobile'))
         console.log('altCurrentMobile',altCurrentMobile)
         let newMobile = document.getElementById('newMobile').value
         changedModuleOption['Mobile'] = newMobile
 
         let newEmail = document.getElementById('newEmail').value
-        // let altFieldEmail = getDataAttributes(document.getElementById('fieldEmail'))
-        let altCurrentEmail = getDataAttributes(document.getElementById('currentEmail'))
+        let altCurrentEmail = getDataAttributes(document.getElementById('newEmail'))
         changedModuleOption['Email'] = newEmail 
+
         for (let key in changedModuleOption) {
             changedModuleOption[key] === '' ?
                 delete changedModuleOption[key] : ''
@@ -375,7 +377,6 @@ function saveAltResponse(adminSubjectAudit, participant) {
 
         const module1 = {'token': participant.token, 'Module': changedModuleOption, 'timeStamp': timeStampData, 'userId': userIdData}
         adminSubjectAudit.push(module1)
-        console.log('adminSubjectAudit', adminSubjectAudit)
         alert('Changes Submitted')
         let editedElement
         const a = Array.from(document.getElementsByClassName('detaileAltRow'))
@@ -384,23 +385,26 @@ function saveAltResponse(adminSubjectAudit, participant) {
         )
 
         let updatedEditedValue = editedElement.querySelectorAll("td")[0]
-        console.log("updatedEditedValue", updatedEditedValue)
-        updatedEditedValue.innerHTML = altNewName !== '' ? altNewName : altCurrentName.currrentname
+        if (altNewName !== '' && altNewLName !== '') {
+            updatedEditedValue.innerHTML = altNewName +" "+ altNewLName
+        }
+        else if (altNewName !== '') {
+            updatedEditedValue.innerHTML = altNewName +" "+ altCurrentLName.currrentlname
+        }
+        else if (altNewLName !== '') {
+            updatedEditedValue.innerHTML = altCurrentName.currrentfname +" "+ altNewLName
+        }
 
         updatedEditedValue = editedElement.querySelectorAll("td")[1]
-        console.log("updatedEditedValue", updatedEditedValue)
         updatedEditedValue.innerHTML = newRelationship !== '' ? newRelationship : null
 
         updatedEditedValue = editedElement.querySelectorAll("td")[2]
-        console.log("updatedEditedValue", updatedEditedValue)
         updatedEditedValue.innerHTML = newHome !== '' ? newHome : altCurrentHome.currenthome
 
         updatedEditedValue = editedElement.querySelectorAll("td")[3]
-        console.log("updatedEditedValue", updatedEditedValue)
         updatedEditedValue.innerHTML = newMobile !== '' ? newMobile : altCurrentMobile.currentmobile
 
         updatedEditedValue = editedElement.querySelectorAll("td")[4]
-        console.log("updatedEditedValue", updatedEditedValue)
         updatedEditedValue.innerHTML = newEmail !== '' ? newEmail : altCurrentEmail.currentemail
       
     })
@@ -435,38 +439,25 @@ function getCurrentTimeStamp() {
     return timeStamp;
 }
 
-function getYearsInConnect(participant) {
-    let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted]
-    let submittedYear = String(timeProfileSubmitted)
-    submittedYear = submittedYear.split("-")
-    submittedYear = parseInt(submittedYear[0])
-    const currentTime = getCurrentTimeStamp()
-    let currentYear = currentTime.split("-")
-    currentYear = parseInt(currentYear[0])
-    let totalYears =  currentYear - submittedYear
-    totalYears === 0 ? totalYears = '< 1' : totalYears
-    let yearsInConnect = `Year(s) in connect: ${totalYears}`
-    return yearsInConnect;  
-}
 
 function showSaveAlert() {
     const a = document.getElementById('disableEditModal')
     a.addEventListener('click', e => {
+        counter++
         alert('Changes Submitted')
     })
    
 }
 
-function resetChanges(participant, originalHTML) {
+function resetChanges(participant, originalHTML, siteKey) {
     const a = document.getElementById("cancelChanges")
     a.addEventListener("click", () => {
-
         if (saveFlag === false) {
             alert('Changes cancelled')
             mainContent.innerHTML = originalHTML;
-            renderParticipantDetails(participant, [])
+            renderParticipantDetails(participant, [], {}, siteKey)
         }
-        else {
+        else {  
             alert('No changes to save or cancel')
         }
     })
@@ -474,43 +465,45 @@ function resetChanges(participant, originalHTML) {
 }
 
 
-function postEditedResponse(adminSubjectAudit) {
+function postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey) {
+
     const a = document.getElementById('sendResponse')
     a.addEventListener('click', () => {
-        clickHandler(adminSubjectAudit);
+        const participantToken = participant.token
+        changedOption['token'] = participantToken
+        clickHandler(adminSubjectAudit, changedOption, siteKey);
     })
 }
 
-async function clickHandler(adminSubjectAudit)  {
-   const idToken = ''
-   console.log('Button Clicked');
 
-    const para1 = {
-        "data": adminSubjectAudit
+
+
+async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
+
+   const idToken = siteKey
+   
+    const updateParticpantPayload = {
+        "data": updatedOptions
     }
 
-    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/submitParticipantsData`,{
+    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/updateParticipantData`,{
         method:'POST',
-        body: JSON.stringify(para1),
+        body: JSON.stringify(updateParticpantPayload),
         headers:{
             Authorization:"Bearer "+idToken,
             "Content-Type": "application/json"
             }
         }))
-    console.log('response', response)
         if (response.status === 200) {
             saveFlag = true
-            console.log('save post', saveFlag)
             let lastModifiedHolder;
             adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
-            console.log('admin', lastModifiedHolder.userId)
             let a = document.getElementById('modifiedId')
-            a.innerHTML = lastModifiedHolder.userId + ' @ ' + lastModifiedHolder.timeStamp;
+            a.innerHTML = 'Placeholder for User id' + ' @ ' + lastModifiedHolder.timeStamp;
          }
            else { 
                (alert('Error'))
         }
-      //  return response.json();
  }
 
 
@@ -526,16 +519,17 @@ async function clickHandler(adminSubjectAudit)  {
         const body = document.getElementById('modalBodyAudit');
         header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
         let template = '<div>'
-        console.log('admin', adminSubjectAudit)
+        adminSubjectAudit.length === 0 ? (
+            template+= `<span> No changes to show </span></div>`
+        ) : (
         adminSubjectAudit.map(element => {
             let JSONresponse = JSON.stringify(element)
             template += `<span>
                ${JSONresponse}
             </span>
         </div>`
-        })
+        }))
        
         body.innerHTML = template;
-        console.log('Button Clicked2');
     } 
 
