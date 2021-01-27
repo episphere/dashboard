@@ -63,11 +63,9 @@ export const importantColumns = [
     display: true }
 ]
 
-
+// Would be updated soon: Prevents unsaved changes to be lost when hit referesh
 let saveFlag = false
 let counter = 0
-
-// Prevents unsaved changes to be lost when hit referesh
 window.addEventListener('beforeunload',  (e) => {
     if (saveFlag === false && counter > 0) { 
     // Cancel the event and show alert that the unsaved changes would be lost 
@@ -76,8 +74,6 @@ window.addEventListener('beforeunload',  (e) => {
     } 
 
 })
-
-
 
 // window.addEventListener('popstate', function (e) {
 //     // The URL changed...
