@@ -1,6 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
+import { getCurrentTimeStamp } from './utils.js';
 
 export const importantColumns = [ 
     { field: fieldMapping.lName,
@@ -66,15 +67,13 @@ export const importantColumns = [
 let saveFlag = false
 let counter = 0
 
+// Prevents unsaved changes to be lost when hit referesh
 window.addEventListener('beforeunload',  (e) => {
     if (saveFlag === false && counter > 0) { 
     // Cancel the event and show alert that the unsaved changes would be lost 
         e.preventDefault(); 
         e.returnValue = ''; 
     } 
-    else {
-        console.log('12')
-    }
 
 })
 
@@ -247,7 +246,7 @@ function changeParticipantDetail(participant, adminSubjectAudit, changedOption, 
 
     }
 }
-
+// creates payload to be sent to backend and update the UI. Remaps the field name back to concept id along with new responses.
 function saveResponses(participant, adminSubjectAudit, changedOption, editedElement) {
    
     let displayAuditHistory = {}
@@ -255,14 +254,13 @@ function saveResponses(participant, adminSubjectAudit, changedOption, editedElem
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
-        // bject.keys(changedOption).length
         // fieldModifiedData   
         let fieldModifiedData = getDataAttributes(document.getElementById('fieldModified'))
         conceptId.push(fieldModifiedData.fieldconceptid)
         // new value
         let newUpdatedValue = document.getElementById('newValue').value
         changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue
-        // update changed field
+        // update changed field on UI
         let updatedEditedValue = editedElement.querySelectorAll("td")[0]
         updatedEditedValue.innerHTML = newUpdatedValue
         
@@ -293,6 +291,8 @@ function saveResponses(participant, adminSubjectAudit, changedOption, editedElem
     })
 
 }
+
+// For alternate contact details. Would be updates once concept ids for alt details are ready
 
 function editAltContact(participant, adminSubjectAudit) {
     const a = document.getElementById('altContact')
@@ -410,6 +410,7 @@ function saveAltResponse(adminSubjectAudit, participant) {
     })
 }
 
+/////// Helper Functions /////////
 
 function getDataAttributes(el) {
     let data = {};
@@ -423,22 +424,6 @@ function getDataAttributes(el) {
     });
     return data;
 }
-
-function getCurrentTimeStamp() {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentDayOfMonth = currentDate.getDate();
-    const currentYear = currentDate.getFullYear();
-    const currentHour = currentDate.getHours();
-    const currentMinute = currentDate.getMinutes();
-    const currentSecond = currentDate.getSeconds();
-    const currentMillisecond = currentDate.getMilliseconds();
-    const timeStamp = currentYear + "-" + (currentMonth + 1)  + "-" + currentDayOfMonth + "T" 
-                        + currentHour + ":" + currentMinute + ":" + currentSecond + ":" + currentMillisecond;
-    
-    return timeStamp;
-}
-
 
 function showSaveAlert() {
     const a = document.getElementById('disableEditModal')
@@ -477,7 +462,7 @@ function postEditedResponse(participant, adminSubjectAudit, changedOption, siteK
 
 
 
-
+// async-await function to make HTTP POST request
 async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
 
    const idToken = siteKey
@@ -506,7 +491,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         }
  }
 
-
+// Admin audit displaying logs
  function viewAuditHandler(adminSubjectAudit) {
     const a = document.getElementById('adminAudit')
     a.addEventListener('click',  () => {

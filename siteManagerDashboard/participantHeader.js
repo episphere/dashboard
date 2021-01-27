@@ -1,5 +1,6 @@
 
 import fieldMapping from './fieldToConceptIdMapping.js'; 
+import { getCurrentTimeStamp } from './utils.js';
 
 export const headerImportantColumns = [
     // { field: 'Connect_ID' },
@@ -25,21 +26,6 @@ export function renderParticipantHeader(participant) {
     return template
 } 
 
-
-function getCurrentTimeStamp() {
-    const currentDate = new Date();
-    const currentMonth = currentDate.getMonth();
-    const currentDayOfMonth = currentDate.getDate();
-    const currentYear = currentDate.getFullYear();
-    const currentHour = currentDate.getHours();
-    const currentMinute = currentDate.getMinutes();
-    const currentSecond = currentDate.getSeconds();
-    const currentMillisecond = currentDate.getMilliseconds();
-    const timeStamp = currentYear + "-" + (currentMonth + 1)  + "-" + currentDayOfMonth + "T" 
-                        + currentHour + ":" + currentMinute + ":" + currentSecond + ":" + currentMillisecond;
-    
-    return timeStamp;
-}
 
 function getYearsInConnect(participant) {
     let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted]
