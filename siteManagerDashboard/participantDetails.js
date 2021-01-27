@@ -147,14 +147,14 @@ export function render(participant) {
                                         <td>${participant.Module1  && participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME : ""}</td>
                                         <td>${participant.Module1  && participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE : ""}</td>
                                         <td>${participant.Module1  && participant.Module1.ALTCONTACT2 !== undefined ? participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL : ""}</td>
-                                        <td> <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowAltContact" class="btn btn-primary">Edit</button> </td>
+                                        <td> <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-primary">Edit</button> </td>
                                         </tr>
                                     </tbody>
                                     </table>
                                     <div style="display:inline-block;">
                                         <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
                                             &nbsp;
-                                        <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowAuditData" class="btn btn-success">Audit History</button>
+                                        <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-success">Audit History</button>
                                             &nbsp;
                                         <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
                                         &nbsp;
@@ -173,26 +173,6 @@ export function render(participant) {
                 </div>
             </div>
         </div>`
-
-        template += ` <div class="modal fade" id="modalShowAltContact"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content sub-div-shadow">
-                <div class="modal-header" id="modalHeaderAltContact"></div>
-                <div class="modal-body" id="modalBodyAltContact"></div>
-            </div>
-        </div>
-    </div>`
-    
-        template += ` <div class="modal fade" id="modalShowAuditData"  data-keyboard="false" data-backdrop="static" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-            <div class="modal-content sub-div-shadow">
-                <div class="modal-header" id="modalHeaderAudit"></div>
-                <div class="modal-body" id="modalBodyAudit"></div>
-            </div>
-        </div>
-    </div>`
-
-
      
     }
     return template;
@@ -298,8 +278,8 @@ function editAltContact(participant, adminSubjectAudit) {
 }
 
 function altContactHandler(participant, adminSubjectAudit) {
-    const header = document.getElementById('modalHeaderAltContact');
-    const body = document.getElementById('modalBodyAltContact');
+    const header = document.getElementById('modalHeader');
+    const body = document.getElementById('modalBody');
     header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     template += `
@@ -496,8 +476,8 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
 }
 
  function buttonAuditHandler(adminSubjectAudit) {
-        const header = document.getElementById('modalHeaderAudit');
-        const body = document.getElementById('modalBodyAudit');
+        const header = document.getElementById('modalHeader');
+        const body = document.getElementById('modalBody');
         header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
         let template = '<div>'
         adminSubjectAudit.length === 0 ? (
