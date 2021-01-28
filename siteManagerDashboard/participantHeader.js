@@ -1,15 +1,15 @@
 
-import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { getCurrentTimeStamp } from './utils.js';
+import fieldMapping from './fieldToConceptIdMapping.js';
 
 export const headerImportantColumns = [
     // { field: 'Connect_ID' },
     { field: fieldMapping.fName },
+    { field: fieldMapping.lName },
     { field: fieldMapping.birthYear },
     { field: fieldMapping.consentDate },
     { field: 'Years in Connect' },
 
-]
+];
 
 export function renderParticipantHeader(participant) {
 
@@ -23,21 +23,21 @@ export function renderParticipantHeader(participant) {
 
     template += '</div>'
 
-    return template
+    return template;
 } 
 
 
 function getYearsInConnect(participant) {
-    let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted]
-    let submittedYear = String(timeProfileSubmitted)
-    submittedYear = submittedYear.split("-")
-    submittedYear = parseInt(submittedYear[0])
-    const currentTime = getCurrentTimeStamp()
-    let currentYear = currentTime.split("-")
-    currentYear = parseInt(currentYear[0])
-    let totalYears =  currentYear - submittedYear
-    totalYears === 0 ? totalYears = '< 1' : totalYears
-    let yearsInConnect = `Year(s) in connect: ${totalYears}`
-    return yearsInConnect;  
+    let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted];
+    let submittedYear = String(timeProfileSubmitted);
+    submittedYear = submittedYear.split("-");
+    submittedYear = parseInt(submittedYear[0]);
+    const currentTime = new Date().toISOString();
+    let currentYear = currentTime.split("-");
+    currentYear = parseInt(currentYear[0]);
+    let totalYears =  currentYear - submittedYear;
+    totalYears === 0 ? totalYears = '< 1' : totalYears;
+    let yearsInConnect = `Year(s) in connect: ${totalYears}`;
+    return yearsInConnect;
 }
 
