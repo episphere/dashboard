@@ -1,9 +1,9 @@
 
 export function getCurrentTimeStamp() {
 
-const month = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+    const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
     const currentDate = new Date();
-    const currentMonth = month[currentDate.getMonth()];
+    const currentMonth = monthList[currentDate.getMonth()];
     const currentDayOfMonth = currentDate.getDate();
     const currentYear = currentDate.getFullYear();
     const currentHour = currentDate.getHours();
