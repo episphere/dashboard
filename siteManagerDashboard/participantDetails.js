@@ -406,9 +406,7 @@ function showSaveAlert() {
     a.addEventListener('click', e => {
         counter++;
         const modalClose = document.getElementById('modalShowMoreData')
-        console.log('Changes Submitted', modalClose);
         const closeButton = modalClose.querySelector('#closeModal').click()
-        console.log('closeButton', closeButton)
     })
    
 }
