@@ -24,6 +24,10 @@ export default
     "healthcareProvider":827220437,
     "suffix":480305327,
     "ssnOnFile": 454067894,
-    "timeProfileSubmitted": 430551721
+    "timeProfileSubmitted": 430551721,
+    "consentFlag": 454205108,
+    "verifiedFlag": 821247024,
+    "verficationDate": 914594314
+
 
 }

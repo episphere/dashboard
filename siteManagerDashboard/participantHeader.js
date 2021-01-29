@@ -1,5 +1,6 @@
 
 import fieldMapping from './fieldToConceptIdMapping.js';
+import { humanReadableFromISO } from './utils.js';
 
 export const headerImportantColumns = [
     { field: 'Connect_ID' },
@@ -31,7 +32,7 @@ export function renderParticipantHeader(participant) {
         }
 
         else if (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') {
-            template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadbaleFromISO(participant)} &nbsp;`
+            template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadableFromISO(participant[fieldMapping.consentDate])} &nbsp;`
         }
 
         else {
@@ -60,7 +61,7 @@ function getYearsInConnect(participant) {
     return yearsInConnect;
 }
 
-//  02-July-1966  
+
 
 function concatDOB(participant){
     const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -68,21 +69,6 @@ function concatDOB(participant){
     const participantBirthDate = monthList[parseInt(participant[fieldMapping.birthDay])];
     const participantBirthYear = participant[fieldMapping.birthYear];
     const dateofBirth = participantBirthMonth + '-' + participantBirthDate + '-' + participantBirthYear;
-    return dateofBirth;
+    return dateofBirth; //  02-July-1966  
 
-}
-
-// October 30, 2020
-function humanReadbaleFromISO(participant) {
-    const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    let consentTimeSubmitted = participant[fieldMapping.consentDate];
-    let submittedDate = String(consentTimeSubmitted);
-    submittedDate = submittedDate.split("T");
-    submittedDate = submittedDate[0];
-    submittedDate = submittedDate.split("-");
-    const consentYear = submittedDate[0];
-    const consentMonth = monthList[parseInt(submittedDate[1])];
-    const consentDate = submittedDate[2];
-    const readableConsentDate = consentMonth + " " + consentDate + ", " + consentYear;
-    return readableConsentDate;
 }

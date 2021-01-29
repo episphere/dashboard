@@ -200,6 +200,7 @@ const addEventShowMoreInfo = data => {
             let adminSubjectAudit = []
             let changedOption = {}
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
+            
         });
     });
 
