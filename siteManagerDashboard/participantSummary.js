@@ -57,16 +57,16 @@ export function render(participant) {
                             <td>
                             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr;  grid-gap: 20px;">
                                 <div class="grid-child">
-                                    ${module1Handler(participant)}   
+                                    ${moduleHandler(participant.Module1, 1)}   
                                 </div>
                                 <div class="grid-child">
-                                    ${module2Handler(participant)} 
+                                    ${moduleHandler(participant.Module2, 2)} 
                                 </div>
                                 <div class="grid-child">
-                                    ${module2Handler(participant)} 
+                                    ${moduleHandler(participant.Module3, 3)} 
                                 </div>
                                 <div class="grid-child">
-                                    ${module2Handler(participant)} 
+                                    ${moduleHandler(participant.Module4, 4)} 
                                 </div>
                             </div>
                             </td>
@@ -138,30 +138,38 @@ function verifiedHandler(participant) {
         template += `<span>Verified</span>
         <br />
         <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-       <span>${participant[fieldMapping.verficationDate] && humanReadableMDY(participant[fieldMapping.verficationDate])}</span>
         </div>`
     )
     return template;
 }
 
-function module1Handler(participant) {
+function moduleHandler(participantModule, module) {
     let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant.Module1?
-    ( template += `<span>Module 1</span>
+
+    !participantModule ?  
+    (
+        template += `<span>Module ${module}</span>
+        <br />
+        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
+        </div>`
+    ) :
+    ( participantModule && !participantModule.COMPLETED) ?
+    ( template += `<span>Module ${module}</span>
+        <br />
+        <i class="fa fa-circle" style="color: orange; font-size: 15px;"></i>
+        <br />
+        <span>In Progress</span>
+        </div>
+    ` ) : 
+    ( participantModule && participantModule.COMPLETED) ?
+    ( template += `<span>Module ${module}</span>
         <br />
         <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
         <br />
-        <span>${participant.Module1.COMPLETED && humanReadableMDY(participant.Module1.COMPLETED_TS)}</span>
+        <span>${humanReadableMDY(participantModule.COMPLETED_TS)}</span>
         </div>
-    ` ) : 
-    (
-        template += `<span>Module 1</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-       <span>${participant.Module1.COMPLETED && humanReadableMDY(participant[fieldMapping.verficationDate])}</span>
-        </div>`
-    )
+    ` ) :
+    ''
     return template;
 }
 
@@ -188,12 +196,12 @@ function module2Handler(participant) {
 
 function ssnHandler(participant) {
     let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.ssn] ?
+    participant.ModuleSsn && 
+    participant.ModuleSsn.COMPLETED ?
     ( template += `<span>SSN Entered</span>
         <br />
         <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant[fieldMapping.ssn] && humanReadableMDY(participant[fieldMapping.verficationDate])}</span>
+        <span>${humanReadableMDY(participant.ModuleSsn.COMPLETED_TS)}</span>
         </div>
     ` ) : 
     (

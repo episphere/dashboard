@@ -1,5 +1,8 @@
+import fieldMapping from './fieldToConceptIdMapping.js';
+import { humanReadableMDYwithTime } from './utils.js';
 
 export function summaryTable(participant) {
+
     let template = `<div class="container-fluid">`
     template += `
             <table class="table">
@@ -89,7 +92,7 @@ export function summaryTable(participant) {
                 <tr>
                     <td></td>
                     <td></td>
-                    <td>[Yes/No]</td>
+                    <td>${ participant[fieldMapping.incentive] ? `Yes` : `No`}</td>
                     <td>[Yes/No]</td>
                     <td>[Yes/No
                         Date, if "Yes"]</td>
@@ -112,7 +115,7 @@ export function summaryTable(participant) {
                 <tr>
                     <td></td>
                     <td></td>
-                    <td>[Yes/No]</td>
+                    <td>${ participant[fieldMapping.mouthwash] ? `Yes` : `No`}</td>
                     <td>[Yes/No]</td>
                     <td>Research Collection, Clinical Collection, Home Collection</td>
                     <td>[Yes/No
@@ -168,7 +171,7 @@ export function summaryTable(participant) {
             <thead>
             <tr class="table-primary">
                 <th scope="col">Baseline Modules</th>
-                <th scope="col">[Data Available]</th>
+                <th scope="col">Date Available</th>
                 <th scope="col">Refused Activity</th>
                 <th scope="col">Module 1</th>
                 <th scope="col">Module 2</th>
@@ -179,11 +182,13 @@ export function summaryTable(participant) {
             <tbody>
             <tr>
                 <td></td>
-                <td></td>
+                <td>${participant[fieldMapping.consentDate] && 
+                    humanReadableMDYwithTime(participant[fieldMapping.consentDate])}</td>
                 <td>[Yes/No]</td>
-                <td>[Status Date/Time completed]</td>
-                <td>[Status Date/Time completed]</td>
-                <td>[Status Date/Time completed]</td>
+                <td>${summaryTableModuleHandler(participant.Module1)}</td>
+                    <td>${summaryTableModuleHandler(participant.Module2)}</td>
+                        <td>${summaryTableModuleHandler(participant.Module3)}</td>
+                            <td>${summaryTableModuleHandler(participant.Module4)}</td>
             </tr>
             </tbody>
             </table>
@@ -191,7 +196,8 @@ export function summaryTable(participant) {
             <thead>
             <tr class="table-warning">
                 <th scope="col">Identitiy Verification</th>
-                <th scope="col">[Data Completed]</th>
+                <th scope="col"> ${participant[fieldMapping.verifiedFlag] && 
+                    humanReadableMDYwithTime(participant[fieldMapping.verficationDate])}</th>
             </tr>
             </thead>
                 </table>
@@ -199,7 +205,8 @@ export function summaryTable(participant) {
                 <thead>
                 <tr class="table-warning">
                 <th scope="col">Study Consent</th>
-                <th scope="col">[Data Signed]</th>
+                <th scope="col">     <span>${participant[fieldMapping.consentDate] && 
+                    humanReadableMDYwithTime(participant[fieldMapping.consentDate])}</span></th>
                 <th scope="col">Consent</th>
                 </tr>
                 </thead>
@@ -209,4 +216,12 @@ export function summaryTable(participant) {
 
 return template;
 
+}
+
+function summaryTableModuleHandler(participantModule) {
+    let template = ``;
+    !participantModule ? template += `<span> Not Completed </span>` :
+    (participantModule && !participantModule.COMPLETED) ? template += `<span> In Progress</span>` :
+    (participantModule && participantModule.COMPLETED) ? template += `<span> ${humanReadableMDYwithTime(participantModule.COMPLETED_TS)} </span>` : ''
+    return template;            
 }

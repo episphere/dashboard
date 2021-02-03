@@ -19,25 +19,22 @@ export function renderParticipantHeader(participant) {
 
     for (let x in headerImportantColumns) {
 
-        if (headerImportantColumns[x].field === 'Connect_ID' ) {
+        (headerImportantColumns[x].field === 'Connect_ID' ) ?
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${participant[headerImportantColumns[x].field] !== undefined ?  participant[headerImportantColumns[x].field] : ""} &nbsp;`
-        }
-
-        else if (headerImportantColumns[x].field === 'Year(s) in Connect' ) {
+        :
+        
+        (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${getYearsInConnect(participant)} &nbsp;`
-        }
-
-        else if (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Birth Year') {
+        :
+        
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Birth Year') ?
             template += `<span><b> DoB </b></span> : ${concatDOB(participant)} &nbsp;`
-        }
+        :
 
-        else if (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') {
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
             template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadableFromISO(participant[fieldMapping.consentDate])} &nbsp;`
-        }
-
-        else {
+        :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
-        }
     }
 
     template += '</div>'
