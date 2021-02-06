@@ -1,8 +1,14 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { humanReadableMDYwithTime } from './utils.js';
+import { humanReadableMDYwithTime, getCurrentTimeStamp } from './utils.js';
 
-export function summaryTable(participant) {
+export const headerImportantColumns = [
+    { field: fieldMapping.fName },
+    { field: fieldMapping.lName }
+];
+const { degrees, PDFDocument, rgb, StandardFonts } = PDFLib
 
+export function summaryTable(participant, incentiveResult) {
+    
     let template = `<div class="container-fluid">`
     template += `
             <table class="table">
@@ -81,7 +87,7 @@ export function summaryTable(participant) {
                 <thead>
                 <tr class="table-success">
                     <th scope="col">Baseline Incentive</th>
-                    <th scope="col">[Data Issued]</th>
+                    <th scope="col">[Date Issued]</th>
                     <th scope="col">Incentive Eligible</th>
                     <th scope="col">Incentive Offered</th>
                     <th scope="col">Incentive Claimed</th>
@@ -90,13 +96,7 @@ export function summaryTable(participant) {
                 </thead>
                 <tbody>
                 <tr>
-                    <td></td>
-                    <td></td>
-                    <td>${ participant[fieldMapping.incentive] ? `Yes` : `No`}</td>
-                    <td>[Yes/No]</td>
-                    <td>[Yes/No
-                        Date, if "Yes"]</td>
-                    <td>[Issued by NORC/issued by site]</td>
+                    ${summaryTableIncentiveHandler(participant, incentiveResult)}
                 </tr>
                 </tbody>
             </table>
@@ -112,15 +112,7 @@ export function summaryTable(participant) {
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>${ participant[fieldMapping.mouthwash] ? `Yes` : `No`}</td>
-                    <td>[Yes/No]</td>
-                    <td>Research Collection, Clinical Collection, Home Collection</td>
-                    <td>[Yes/No
-                        Date, if "Yes"]</td>
-                </tr>
+                    ${summaryTableBaselineMouthwashHandler(participant, incentiveResult)}
                 </tbody>
             </table>
             <table class="table">
@@ -135,15 +127,7 @@ export function summaryTable(participant) {
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>[Yes/No]</td>
-                    <td>[Yes/No]</td>
-                    <td>Research Collection, Clinical Collection, Home Collection</td>
-                    <td>[Yes/No
-                        Date, if "Yes"]</td>
-                </tr>
+                    ${summaryTableBaselineUrineHandler(participant, incentiveResult)}
                 </tbody>
             </table>
             <table class="table">
@@ -157,14 +141,7 @@ export function summaryTable(participant) {
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td></td>
-                    <td></td>
-                    <td>[Yes/No]</td>
-                    <td>Research Collection, Clinical Collection, Home Collection</td>
-                    <td>[Yes/No
-                        Date, if "Yes"]</td>
-                </tr>
+                    ${summaryTableBaselineBloodHandler(participant, incentiveResult)}
                 </tbody>
             </table>
             <table class="table">
@@ -210,6 +187,14 @@ export function summaryTable(participant) {
                 <th scope="col">Consent</th>
                 </tr>
                 </thead>
+                <tbody>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td><a  target="_blank" id="downloadCopy1" >Download Copy</a></td>
+                
+                </tr>
+                </tbody>
                 </table>
             </div>`
 
@@ -218,10 +203,154 @@ return template;
 
 }
 
-function summaryTableModuleHandler(participantModule) {
+export function downloadCopyHandler (participant)  {
+    const a = document.getElementById('downloadCopy1');
+    a.addEventListener('click',  () => {  
+         renderDownloadConsentCopy(participant)
+    })
+
+}
+
+async function renderDownloadConsentCopy (participant)  {
+    let seekLastPage;
+    const pdfLocation = './consent.pdf'
+    const existingPdfBytes = await fetch(pdfLocation).then(res => res.arrayBuffer())
+    const pdfConsentDoc = await PDFDocument.load(existingPdfBytes)
+    const pages = pdfConsentDoc.getPages()
+    for (let i = 0; i <= pages.length; i++) {seekLastPage = i}
+    const editPage = pages[seekLastPage-1]
+    const currentTime = getCurrentTimeStamp() 
+    editPage.drawText(
+        `Name: ${participant[headerImportantColumns[0].field]} ${participant[headerImportantColumns[1].field]} 
+         Signed at: ${currentTime}`, {
+        x: 15,
+        y: 30,
+        size: 24,
+      })
+    
+    // Serialize the PDFDocument to bytes (a Uint8Array)
+    const pdfBytes = await pdfConsentDoc.save()
+
+    // Trigger the browser to download the PDF document
+    download(pdfBytes, "consent.pdf", "application/pdf");
+
+}
+
+
+const summaryTableModuleHandler = (participantModule) => {
     let template = ``;
     !participantModule ? template += `<span> Not Completed </span>` :
     (participantModule && !participantModule.COMPLETED) ? template += `<span> In Progress</span>` :
     (participantModule && participantModule.COMPLETED) ? template += `<span> ${humanReadableMDYwithTime(participantModule.COMPLETED_TS)} </span>` : ''
     return template;            
 }
+
+const summaryTableIncentiveHandler = (participant, incentiveResult) => {
+    let template = ``;
+    participant[fieldMapping.fName] === 'Abhinav' ? 
+
+    (
+        template += `<td></td>
+                     <td></td>
+                     <td>${incentiveResult[0].dateBaselineIncentiveEligible ? 'Yes': 'No'}</td>
+                     <td>${incentiveResult[0].dateIssuedFlag? 'Yes <br/>' + incentiveResult[0].dateIssued : 'No'}</td>
+                     <td>${!incentiveResult[0].dateRefusedFlag? 'Yes' : 'No'}</td>
+                     <td>${incentiveResult[0].source}</td>`
+
+    )
+    :
+    (
+        template += `<td></td>
+                     <td></td>
+                     <td>${incentiveResult[1].dateBaselineIncentiveEligible ? 'Yes': 'No'}</td>
+                     <td>${incentiveResult[1].dateIssuedFlag? 'Yes <br/>' + incentiveResult[1].dateIssued : 'No'}</td>
+                     <td>${!incentiveResult[1].dateRefusedFlag? 'Yes' : 'No'}</td>
+                     <td>${incentiveResult[1].source}</td>`
+    )
+
+    return template;
+}
+
+
+const summaryTableBaselineMouthwashHandler = (participant, incentiveResult) => {
+    let template = ``;
+    participant[fieldMapping.fName] === 'Abhinav' ? 
+
+    (
+        incentiveResult[0].baselineMouthwash.forEach(x => 
+            template += `<tr><td></td>
+                     <td></td>
+                     <td>${x.refusedActivity ? 'Yes': 'No'}</td>
+                     <td>${x.kitSent? 'Yes' : 'No'}</td>
+                     <td>${x.method}</td>
+                     <td>${x.questionnaire}</td></tr>`
+        )
+    )
+    :
+    (
+        incentiveResult[1].baselineMouthwash.forEach(x => 
+            template += `<tr><td></td>
+                        <td></td>
+                        <td>${x.refusedActivity ? 'Yes': 'No'}</td>
+                        <td>${x.kitSent? 'Yes' : 'No'}</td>
+                        <td>${x.method}</td>
+                        <td>${x.questionnaire}</td></tr>`
+    )
+)
+    return template;
+}
+
+const summaryTableBaselineUrineHandler = (participant, incentiveResult) => {
+    let template = ``;
+    participant[fieldMapping.fName] === 'Abhinav' ? 
+
+    (
+        incentiveResult[0].baselineUrine.forEach(x => 
+            template += `<tr><td></td>
+                     <td></td>
+                     <td>${x.refusedActivity ? 'Yes': 'No'}</td>
+                     <td>${x.kitSent? 'Yes' : 'No'}</td>
+                     <td>${x.method}</td>
+                     <td>${x.questionnaire}</td></tr>`
+        )
+    )
+    :
+    (
+        incentiveResult[1].baselineUrine.forEach(x => 
+            template += `<tr><td></td>
+                        <td></td>
+                        <td>${x.refusedActivity ? 'Yes': 'No'}</td>
+                        <td>${x.kitSent? 'Yes' : 'No'}</td>
+                        <td>${x.method}</td>
+                        <td>${x.questionnaire}</td></tr>`
+    )
+)
+    return template;
+}
+
+const summaryTableBaselineBloodHandler = (participant, incentiveResult) => {
+    let template = ``;
+    participant[fieldMapping.fName] === 'Abhinav' ? 
+
+    (
+        incentiveResult[0].baselineBlood.forEach(x => 
+            template += `<tr><td></td>
+                     <td></td>
+                     <td>${x.refusedActivity ? 'Yes': 'No'}</td>
+                     <td>${x.method}</td>
+                     <td>${x.questionnaire}</td></tr>`
+        )
+    )
+    :
+    (
+        incentiveResult[1].baselineBlood.forEach(x => 
+            template += `<tr><td></td>
+                        <td></td>
+                        <td>${x.refusedActivity ? 'Yes': 'No'}</td>
+                        <td>${x.method}</td>
+                        <td>${x.questionnaire}</td></tr>`
+    )
+)
+    return template;
+}
+

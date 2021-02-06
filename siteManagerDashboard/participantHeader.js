@@ -12,7 +12,7 @@ export const headerImportantColumns = [
 
 ];
 
-export function renderParticipantHeader(participant) {
+export const renderParticipantHeader = (participant) => {
 
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     let template = `<div class="alert alert-light" role="alert">`
@@ -44,7 +44,7 @@ export function renderParticipantHeader(participant) {
 
 // Year(s) in Connect : 1  
 
-function getYearsInConnect(participant) {
+const getYearsInConnect = (participant) => {
     let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted];
     let submittedYear = String(timeProfileSubmitted);
     submittedYear = submittedYear.split("-");
@@ -60,7 +60,7 @@ function getYearsInConnect(participant) {
 
 
 
-function concatDOB(participant){
+const concatDOB = (participant) => {
     const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const participantBirthMonth = participant[fieldMapping.birthMonth];
     const participantBirthDate = monthList[parseInt(participant[fieldMapping.birthDay])];

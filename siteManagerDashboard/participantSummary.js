@@ -3,6 +3,7 @@ import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { humanReadableMDY } from './utils.js';
 import { summaryTable } from './particpantSummaryTable.js';
+import { downloadCopyHandler } from './particpantSummaryTable.js';
 
 export function renderParticipantSummary(participant){
 
@@ -10,6 +11,7 @@ export function renderParticipantSummary(participant){
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantSummaryBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
+    downloadCopyHandler(participant)
 }
 
 
@@ -94,10 +96,43 @@ export function render(participant) {
                         </tbody>
                         </table>
                     </div>`
-        template += summaryTable(participant);
+
+                    let users = [];
+                    let incentiveElgible1 = { dateBaselineIncentiveEligible: true, dateRefusedFlag: true,
+                        dateRefused: '2/3/2021',  dateIssuedFlag: true, dateIssued:'11/1/2020', source: 'NORC',
+                        baselineMouthwash: [ {refusedActivity: false, kitSent: true, method: 'Home Collection', questionnaire: 'No' },
+                                              {refusedActivity: false, kitSent: false, method: 'Research Collection', questionnaire: 'Yes' }],
+                        baselineUrine: [ {refusedActivity: false, kitSent: false, method: 'Clinical Collection', questionnaire: 'Yes' }],
+                        baselineBlood: [ {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
+                                {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
+                                {refusedActivity: false, method: 'Home Collection', questionnaire: 'No' },
+                                ]
+                    
+                    };
+                    users.push(incentiveElgible1);
+
+                    localStorage.setItem("users", JSON.stringify(users));
+                    let incentiveElgible2 = { dateBaselineIncentiveEligible: true, dateRefusedFlag: false,  
+                        dateIssuedFlag: true, dateIssued:'08/10/2020', source: 'NORC',
+                        baselineMouthwash: [ {refusedActivity: false, kitSent: true, method: 'Home Collection', Questionnaire: 'No' }],
+                        baselineUrine: [ {refusedActivity: false, kitSent: false, method: 'Clinical Collection', questionnaire: 'Yes' },
+                                    {refusedActivity: false, kitSent: false, method: 'Clinical Collection', questionnaire: 'Yes' }],
+                        baselineBlood: [ {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
+                                    {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
+                                    {refusedActivity: false, method: 'Home Collection', questionnaire: 'No' },
+                                    ]
+                      };
+                    users.push(incentiveElgible2);
+
+                    localStorage.setItem("users", JSON.stringify(users));
+                    let incentiveResult = JSON.parse(localStorage.getItem("users"));
+                   
+        template += summaryTable(participant, incentiveResult);
         template +=`</div></div>`
+
     }
     return template;
+
 
 }
 
@@ -170,27 +205,6 @@ function moduleHandler(participantModule, module) {
         </div>
     ` ) :
     ''
-    return template;
-}
-
-function module2Handler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant.Module2?
-    ( template += `<span>Module 2</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.Module2.COMPLETED && humanReadableMDY(participant.Module2.COMPLETED_TS)}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Module 2</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        <br />
-       <span>${participant[fieldMapping.verficationDate] && humanReadableMDY(participant[fieldMapping.verficationDate])}</span>
-        </div>`
-    )
     return template;
 }
 
