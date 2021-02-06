@@ -191,7 +191,7 @@ export function summaryTable(participant, incentiveResult) {
                 <tr>
                     <td></td>
                     <td></td>
-                    <td><a  target="_blank" id="downloadCopy1" >Download Copy</a></td>
+                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy1" >Download Copy</a></td>
                 
                 </tr>
                 </tbody>
