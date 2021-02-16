@@ -32,371 +32,155 @@ export function render(participant) {
                 <div id="root"> `
         template += renderParticipantHeader(participant);
         template += `<div class="table-responsive">
-                        <h4>Baseline activity summary</h4>
+                        <span> <h4 style="text-align: center;"><i style="float: left;" class="fa fa-sort fa-lg"></i> 
+                        <i style="float: left;" class="fa fa-filter fa-lg"></i> Participant Summary </h4> </span>
                         <table class="table table-borderless">
                         <thead>
                             <tr>
-                            <th scope="col">Consent</th>
-                            <th scope="col">Modules</th>
-                            <th scope="col">SSN</th>
-                            <th scope="col">Biospecimen Collection</th>
-                            <th scope="col">Incentive</th>
-                            <th scope="col">EMR Push</th>
-                            <th scope="col">Surveys</th>
+                                <th scope="col">Icon</th>
+                                <th scope="col">Timeline</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">Item</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Setting</th>
+                                <th scope="col">Refused</th>
+                                <th scope="col">Extra</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                            <td>
-                                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr;  grid-gap: 20px;">
-                                    <div class="grid-child">
-                                        ${consentHandler(participant)}   
-                                    </div>
-                                    <div class="grid-child">
-                                        ${verifiedHandler(participant)} 
-                                    </div>
-                                    <div class="grid-child">
-                                        ${hipaaHandler(participant)} 
-                                </div>
-                              </div>
-                            </td>
-                            <td>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr;  grid-gap: 20px;">
-                                <div class="grid-child">
-                                    ${moduleHandler(participant.Module1, 1)}   
-                                </div>
-                                <div class="grid-child">
-                                    ${moduleHandler(participant.Module2, 2)} 
-                                </div>
-                                <div class="grid-child">
-                                    ${moduleHandler(participant.Module3, 3)} 
-                                </div>
-                                <div class="grid-child">
-                                    ${moduleHandler(participant.Module4, 4)} 
-                                </div>
-                            </div>
-                            </td>
-                            <td>
-                                <div>
-                                    ${ssnHandler(participant)} 
-                                </div>
-                            </td>
-                            <td>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr;  grid-gap: 20px;">
-                            <div class="grid-child">
-                                ${baselineBloodHandler(participant)}   
-                            </div>
-                            <div class="grid-child">
-                                ${baselineMouthwashHandler(participant)} 
-                            </div>
-                            <div class="grid-child">
-                                ${baselineUrineHandler(participant)} 
-                            </div>
-                        </div>
-                            </td>
-                            <td>${baselineIncentiveHandler(participant)}</td>
-                            <td>${baselineEMRPushHandler(participant)}</td>
-                            <td>
-                            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr;  grid-gap: 20px;">
-                                <div class="grid-child">
-                                    ${baselineSurvey1(participant)}   
-                                </div>
-                                <div class="grid-child">
-                                    ${baselineSurvey2(participant)} 
-                                </div>
-                                <div class="grid-child">
-                                    ${baselineSurvey3(participant)} 
-                                </div>
-                            </div>
-                            </td>
+                                <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                                <td>Baseline</td>
+                                <td>Survey</td>
+                                <td>BOH</td>
+                                <td>Not Started</td>
+                                <td>Date Started</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
                             </tr>
+                            <tr>
+                                <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                                <td>Baseline</td>
+                                <td>Sample</td>
+                                <td>MRE</td>
+                                <td>Started</td>
+                                <td>Date Started</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                                <td>Baseline</td>
+                                <td>Sample</td>
+                                <td>SAS</td>
+                                <td>Submitted</td>
+                                <td>Date Started</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                                <td>Baseline</td>
+                                <td>EMR</td>
+                                <td>Law</td>
+                                <td>Submitted</td>
+                                <td>Date Started</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                                <td>Baseline</td>
+                                <td>Survey</td>
+                                <td>SSN</td>
+                                <td>None 4 9</td>
+                                <td>Date Started</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                                <td>Baseline</td>
+                                <td>Sample</td>
+                                <td>Blood</td>
+                                <td>(NOT) Collected</td>
+                                <td>Date collected</td>
+                                <td>Clinical</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                                <td>Baseline</td>
+                                <td>Sample</td>
+                                <td>Urine</td>
+                                <td>(NOT) Collected</td>
+                                <td>Date collected</td>
+                                <td>Clinical</td>
+                                <td>Y/N</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                                <td>Baseline</td>
+                                <td>Sample</td>
+                                <td>Mouthwash</td>
+                                <td>(NOT) Collected</td>
+                                <td>Date collected</td>
+                                <td>Research OR Home</td>
+                                <td>Y/N</td>
+                                <td>Kit Sent</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                                <td>Baseline</td>
+                                <td>Survey</td>
+                                <td>Blood/Urine</td>
+                                <td>(Not) started</td>
+                                <td>Date Started</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>Kit Sent</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                                <td>6 months</td>
+                                <td>Survey</td>
+                                <td>DHQ</td>
+                                <td>Submitted</td>
+                                <td>Date submitted</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>Kit Sent</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                                <td>Annual</td>
+                                <td>EMR</td>
+                                <td>N/A</td>
+                                <td>(NOT) Pushed</td>
+                                <td>Date Pushed</td>
+                                <td>N/A</td>
+                                <td>Y/N</td>
+                                <td>Kit Sent</td>
+                        </tr>
                         </tbody>
                         </table>
                     </div>`
 
    
-
-                    let users = [];
-                    let incentiveElgible1 = { dateBaselineIncentiveEligible: true, dateRefusedFlag: true,
-                        dateRefused: '2/3/2021',  dateIssuedFlag: true, dateIssued:'11/1/2020', source: 'NORC',
-                        baselineMouthwash: [ {refusedActivity: false, kitSent: true, method: 'Home Collection', questionnaire: 'No' },
-                                              {refusedActivity: false, kitSent: false, method: 'Research Collection', questionnaire: 'Yes' }],
-                        baselineUrine: [ {refusedActivity: false, kitSent: false, method: 'Clinical Collection', questionnaire: 'Yes' }],
-                        baselineBlood: [ {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
-                                {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
-                                {refusedActivity: false, method: 'Home Collection', questionnaire: 'No' },
-                                ]
-                    
-                    };
-                    users.push(incentiveElgible1);
-
-                    localStorage.setItem("users", JSON.stringify(users));
-                    let incentiveElgible2 = { dateBaselineIncentiveEligible: true, dateRefusedFlag: false,  
-                        dateIssuedFlag: true, dateIssued:'08/10/2020', source: 'NORC',
-                        baselineMouthwash: [ {refusedActivity: false, kitSent: true, method: 'Home Collection', Questionnaire: 'No' }],
-                        baselineUrine: [ {refusedActivity: false, kitSent: false, method: 'Clinical Collection', questionnaire: 'Yes' },
-                                    {refusedActivity: false, kitSent: false, method: 'Clinical Collection', questionnaire: 'Yes' }],
-                        baselineBlood: [ {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
-                                    {refusedActivity: false, method: 'Research Collection', questionnaire: 'Yes' },
-                                    {refusedActivity: false, method: 'Home Collection', questionnaire: 'No' },
-                                    ]
-                      };
-                    users.push(incentiveElgible2);
-
-                    localStorage.setItem("users", JSON.stringify(users));
-                    let incentiveResult = JSON.parse(localStorage.getItem("users"));
                    
-        // template += summaryTable(participant, incentiveResult);
         template +=`</div></div>`
 
     }
     return template;
 
 
-}
-
-function consentHandler(participant) {
-    
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.consentFlag] ?
-    ( template += `<span>Consent</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant[fieldMapping.consentDate] && humanReadableMDY(participant[fieldMapping.consentDate])}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Consent</span>
-        <br />
-        <i class="fa fa-times style="color: red; font-size: 15px;"></i>
-        <span>${participant[fieldMapping.consentDate] && humanReadableMDY(participant[fieldMapping.consentDate])}</span>
-        </div>`
-    )
-    return template;
-
-}
-
-function verifiedHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.verifiedFlag] ?
-    ( template += `<span>Verified</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <br />
-        <span>${participant[fieldMapping.verficationDate] && humanReadableMDY(participant[fieldMapping.verficationDate])}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Verified</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function hipaaHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.hipaaFlag] ?
-    ( template += `<span>Verified</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <br />
-        <span>${participant[fieldMapping.verficationDate] && humanReadableMDY(participant[fieldMapping.verficationDate])}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>HIPAA authorization</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 11px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-
-function moduleHandler(participantModule, module) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-
-    !participantModule ?  
-    (
-        template += `<span>Module ${module}</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    ) :
-    ( participantModule && !participantModule.COMPLETED) ?
-    ( template += `<span>Module ${module}</span>
-        <br />
-        <i class="fa fa-circle" style="color: orange; font-size: 15px;"></i>
-        <br />
-        <span>In Progress</span>
-        </div>
-    ` ) : 
-    ( participantModule && participantModule.COMPLETED) ?
-    ( template += `<span>Module ${module}</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <br />
-        <span>${humanReadableMDY(participantModule.COMPLETED_TS)}</span>
-        </div>
-    ` ) :
-    ''
-    return template;
-}
-
-function ssnHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant.ModuleSsn && 
-    participant.ModuleSsn.COMPLETED ?
-    ( template += `<span>SSN Entered</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${humanReadableMDY(participant.ModuleSsn.COMPLETED_TS)}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>SSN Entered</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineBloodHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.blood] ?
-    ( template += `<span>Baseline Blood</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.BLOOD_URINE && humanReadableMDY(participant[fieldMapping.bloodDateTime])}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Baseline Blood</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineUrineHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.urine] ?
-    ( template += `<span>Baseline Urine</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.BLOOD_URINE && humanReadableMDY(participant[fieldMapping.urineDateTime])}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Baseline Urine</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineMouthwashHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.mouthwash] ?
-    ( template += `<span>Baseline Mouthwash</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.BLOOD_URINE && humanReadableMDY(participant[fieldMapping.mouthwashDateTime])}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Baseline Mouthwash</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineIncentiveHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.incentive] ?
-    ( template += `<span>Baseline Mouthwash</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.BLOOD_URINE && humanReadableMDY(participant.BLOOD_URINE.BIOBUQ_SAMPLETIME_VLR0)}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Baseline Incentive</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineEMRPushHandler(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    participant[fieldMapping.incentive] ?
-    ( template += `<span>Baseline EMR Push</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.BLOOD_URINE && humanReadableMDY(participant.BLOOD_URINE.BIOBUQ_SAMPLETIME_VLR0)}</span>
-        </div>
-    ` ) : 
-    (
-        template += `<span>Baseline EMR Push</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineSurvey1(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    ( template += `<span>Survey 1</span>
-        <br />
-        <i class="fa fa-check" style="color: green; font-size: 15px;"></i>
-        <span>${participant.BLOOD_URINE && humanReadableMDY(participant.BLOOD_URINE.BIOBUQ_SAMPLETIME_VLR0)}</span>
-        </div>
-    ` ) 
-    return template;
-}
-
-function baselineSurvey2(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    (
-        template += `<span>Survey 2</span>
-        <br />
-        <i class="fa fa-times" style="color: red; font-size: 15px;"></i>
-        </div>`
-    )
-    return template;
-}
-
-function baselineSurvey3(participant) {
-    let template = `<div style="font-size: 10px; width: 65px; height: 75px; border: 1px solid;">`;
-    participant && 
-    (
-        template += `<span>Survey 3</span>
-        <br />
-        <i class="fa fa-circle" style="color: orange; font-size: 15px;"></i>
-        <br />
-        <span>In Progress</span>
-        </div>`
-    )
-    return template;
 }
 
