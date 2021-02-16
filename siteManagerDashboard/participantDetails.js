@@ -2,6 +2,7 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getCurrentTimeStamp } from './utils.js';
+import {renderParticipantSummary} from './participantSummary.js'
 
 export const importantColumns = [ 
     { field: fieldMapping.lName,
@@ -92,9 +93,11 @@ export function renderParticipantDetails(participant, adminSubjectAudit, changed
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
     let originalHTML =  mainContent.innerHTML;
+    localStorage.setItem("participant", JSON.stringify(participant));
     viewAuditHandler(adminSubjectAudit);
     changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
     editAltContact(participant, adminSubjectAudit);
+    viewParticipantSummary(participant);
   
 }
 
@@ -109,8 +112,7 @@ export function render(participant) {
          `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        template += `
-                <div id="root"> `
+        template += ` <div id="root"> `
         template += renderParticipantHeader(participant);
         template += `<table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4><tbody class="participantDetailTable">`
      
@@ -157,7 +159,9 @@ export function render(participant) {
                                         <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-success">Audit History</button>
                                             &nbsp;
                                         <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
-                                        &nbsp;
+                                            &nbsp;
+                                        <button type="button" id="viewSummary" class="btn btn-info">View Participant Summary</button>
+                                            &nbsp;
                                         <b>Last Modified by: <span id="modifiedId"></span></b>
                                     </div>
                             </div>
@@ -213,7 +217,8 @@ function changeParticipantDetail(participant, adminSubjectAudit, changedOption, 
                 postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
                 viewAuditHandler(adminSubjectAudit);
                 showSaveAlert();
-                resetChanges(participant, originalHTML, siteKey);            
+                resetChanges(participant, originalHTML, siteKey);  
+               // viewParticipantSummary(participant);          
             });
 
         })
@@ -307,6 +312,7 @@ function altContactHandler(participant, adminSubjectAudit) {
     body.innerHTML = template;
     saveAltResponse(adminSubjectAudit, participant);
     viewAuditHandler(adminSubjectAudit);
+ //   viewParticipantSummary(participant)
 } 
 
 function saveAltResponse(adminSubjectAudit, participant) {
@@ -495,3 +501,9 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         body.innerHTML = template;
     } 
 
+const viewParticipantSummary = (participant) => {
+    const a = document.getElementById('viewSummary');
+    a.addEventListener('click',  () => {  
+    renderParticipantSummary(participant);
+    })
+}

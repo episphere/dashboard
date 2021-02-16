@@ -15,3 +15,16 @@ const month = ["January", "February", "March", "April", "May", "June", "July", "
     return timeStamp;
   }
                     
+// remove this
+  export const humanReadableMDY = (participantDate) => {
+    let consentTimeSubmitted = participantDate;
+    let submittedDate = String(consentTimeSubmitted);
+    submittedDate = submittedDate.split("T");
+    submittedDate = submittedDate[0];
+    submittedDate = submittedDate.split("-");
+    const readableYear = submittedDate[0];
+    const readableMonth = parseInt(submittedDate[1])-1
+    const readableDate = submittedDate[2];
+    const readableConsentDate = readableMonth + "/" + readableDate + "/" + readableYear;
+    return readableConsentDate; // 10/30/2020
+  }
