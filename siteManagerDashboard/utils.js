@@ -58,6 +58,7 @@ export const humanReadableMDYwithTime = (participantDate) => {
   return readableConsentDateTime; // 10/30/2020 20:30:22
 }
 
+// Function prevents the user from internal navigation if unsaved changes are present
 export const internalNavigatorHandler = (counter) => {
   setTimeout(() => {
     document.getElementById('navBarLinks').addEventListener('click', function(e) {

@@ -83,7 +83,7 @@ const renderDashboard = async () => {
             mainContent.innerHTML = '';
             renderCharts(siteKey);
         }
-        internalNavigatorHandler(counter)
+        internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
         if (isAuthorized.code === 401) {
             clearLocalStroage();
         }        

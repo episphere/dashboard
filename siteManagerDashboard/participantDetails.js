@@ -77,7 +77,7 @@ window.addEventListener('beforeunload',  (e) => {
 })
 
 
-export function renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey){
+export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
@@ -91,7 +91,7 @@ export function renderParticipantDetails(participant, adminSubjectAudit, changed
   
 }
 
-export function render(participant) {
+export const render = (participant) => {
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
@@ -175,7 +175,7 @@ export function render(participant) {
 }
 
 
-function changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey){
+const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, originalHTML, siteKey) => {
 
     const a = Array.from(document.getElementsByClassName('detailedRow'))
     if (a) {
@@ -219,7 +219,7 @@ function changeParticipantDetail(participant, adminSubjectAudit, changedOption, 
     }
 }
 // creates payload to be sent to backend and update the UI. Remaps the field name back to concept id along with new responses.
-function saveResponses(participant, adminSubjectAudit, changedOption, editedElement) {
+const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement) => {
    
     let displayAuditHistory = {};
     let conceptId = [];
@@ -266,14 +266,14 @@ function saveResponses(participant, adminSubjectAudit, changedOption, editedElem
 
 // For alternate contact details. Would be updates once concept ids for alt details are ready
 
-function editAltContact(participant, adminSubjectAudit) {
+const editAltContact = (participant, adminSubjectAudit) => {
     const a = document.getElementById('altContact');
     a.addEventListener('click',  () => {
        altContactHandler(participant, adminSubjectAudit);
    })
 }
 
-function altContactHandler(participant, adminSubjectAudit) {
+const altContactHandler = (participant, adminSubjectAudit) => {
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
     header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -306,7 +306,7 @@ function altContactHandler(participant, adminSubjectAudit) {
     viewParticipantSummary(participant)
 } 
 
-function saveAltResponse(adminSubjectAudit, participant) {
+const saveAltResponse = (adminSubjectAudit, participant) => {
     const a = document.getElementById('altDetailsSubmit')
     a.addEventListener('click', (e) => {
         e.preventDefault()
@@ -386,7 +386,7 @@ function saveAltResponse(adminSubjectAudit, participant) {
 
 /////// Helper Functions /////////
 
-function getDataAttributes(el) {
+const getDataAttributes = (el) => {
     let data = {};
     [].forEach.call(el.attributes, function(attr) {
         if (/^data-/.test(attr.name)) {
@@ -399,7 +399,7 @@ function getDataAttributes(el) {
     return data;
 }
 
-function showSaveAlert() {
+const showSaveAlert = () => {
     const a = document.getElementById('disableEditModal');
     a.addEventListener('click', e => {
         counter++;
@@ -412,7 +412,7 @@ function showSaveAlert() {
    
 }
 
-function resetChanges(participant, originalHTML, siteKey) {
+const resetChanges = (participant, originalHTML, siteKey) => {
     const a = document.getElementById("cancelChanges");
     let template = '';
     a.addEventListener("click", () => {
@@ -422,6 +422,7 @@ function resetChanges(participant, originalHTML, siteKey) {
             counter = 0;
             localStorage.setItem("counters", JSON.stringify(counter));
             let alertList = document.getElementById('alert_placeholder');
+            // throws an alert when canncel changes button is clicked
             template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
                             Changes cancelled.
                             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -439,7 +440,7 @@ function resetChanges(participant, originalHTML, siteKey) {
 }
 
 
-function postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey) {
+const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteKey) => {
 
     const a = document.getElementById('sendResponse');
     a.addEventListener('click', () => {
@@ -454,7 +455,7 @@ function postEditedResponse(participant, adminSubjectAudit, changedOption, siteK
 // async-await function to make HTTP POST request
 async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
     showAnimation();
-   const idToken = siteKey;
+    const idToken = siteKey;
    
     const updateParticpantPayload = {
         "data": updatedOptions
@@ -486,6 +487,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
  }
 
 
+// shows a spinner when HTTP request is made
 export const showAnimation = () => {
     if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
 }
@@ -496,14 +498,16 @@ export const hideAnimation = () => {
 
 
 // Admin audit displaying logs
- function viewAuditHandler(adminSubjectAudit) {
+ const viewAuditHandler = (adminSubjectAudit) => {
     const a = document.getElementById('adminAudit');
-    a.addEventListener('click',  () => {
-        buttonAuditHandler(adminSubjectAudit);
+    if (a) {
+        a.addEventListener('click',  () => {
+            buttonAuditHandler(adminSubjectAudit);
     })
 }
+}
 
- function buttonAuditHandler(adminSubjectAudit) {
+ const buttonAuditHandler = (adminSubjectAudit) => {
         const header = document.getElementById('modalHeader');
         const body = document.getElementById('modalBody');
         header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -520,6 +524,6 @@ export const hideAnimation = () => {
         }))
        
         body.innerHTML = template;
-    } 
+} 
 
 
