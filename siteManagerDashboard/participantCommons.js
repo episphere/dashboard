@@ -11,6 +11,7 @@ export const renderTable = (data, source) => {
         array = array.concat(Object.keys(dt))
     });
     array = array.filter((item, index) => array.indexOf(item) === index);
+    localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     if(array.length > 0) {
         template += `<div class="row">
@@ -200,6 +201,7 @@ const addEventShowMoreInfo = data => {
             let adminSubjectAudit = []
             let changedOption = {}
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
+           // renderParticipantSummary(filteredData[0])
             
         });
     });

@@ -1,5 +1,5 @@
 
-export function getCurrentTimeStamp() {
+export const getCurrentTimeStamp = () => {
 
     const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const currentDate = new Date();
@@ -15,7 +15,7 @@ export function getCurrentTimeStamp() {
     
   }
                   
-export function humanReadableFromISO(participantDate) {
+export const humanReadableFromISO = (participantDate) => {
     const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let consentTimeSubmitted = participantDate;
     let submittedDate = String(consentTimeSubmitted);
@@ -29,7 +29,7 @@ export function humanReadableFromISO(participantDate) {
     return readableConsentDate; // October 30, 2020
 }
 
-export function humanReadableMDY(participantDate) {
+export const humanReadableMDY = (participantDate) => {
   let consentTimeSubmitted = participantDate;
   let submittedDate = String(consentTimeSubmitted);
   submittedDate = submittedDate.split("T");
@@ -42,7 +42,7 @@ export function humanReadableMDY(participantDate) {
   return readableConsentDate; // 10/30/2020
 }
 
-export function humanReadableMDYwithTime(participantDate) {
+export const humanReadableMDYwithTime = (participantDate) => {
   let consentTimeSubmitted = participantDate;
   let submittedDate = String(consentTimeSubmitted);
   submittedDate = submittedDate.split("T");
@@ -56,4 +56,27 @@ export function humanReadableMDYwithTime(participantDate) {
   const readableDate = submittedDate[2];
   const readableConsentDateTime = readableMonth + "/" + readableDate + "/" + readableYear + " " + submittedTime;
   return readableConsentDateTime; // 10/30/2020 20:30:22
+}
+
+export const internalNavigatorHandler = (counter) => {
+  setTimeout(() => {
+    document.getElementById('navBarLinks').addEventListener('click', function(e) {
+        let getSaveFlag = JSON.parse(localStorage.getItem("flags"));
+        let getCounter = JSON.parse(localStorage.getItem("counters"));
+        if (getCounter > 0 && getSaveFlag === false) {
+            // Cancel the event and show alert that the unsaved changes would be lost 
+            let confirmFlag = !confirm("Unsaved changes detected. Navigate away?");
+            if (confirmFlag) {
+              // when user decides to stay on the page
+                e.preventDefault();
+                return;
+            } 
+            else {
+                counter = 0;
+                localStorage.setItem("counters", JSON.stringify(counter));
+            }
+            return;
+        }
+    })
+  }, 50);
 }

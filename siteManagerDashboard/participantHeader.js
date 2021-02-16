@@ -32,7 +32,7 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
-            template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadableFromISO(participant[fieldMapping.consentDate])} &nbsp;`
+            template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadableFromISO(participant[fieldMapping.consentDate])} &nbsp; <br />`
         :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
@@ -63,9 +63,9 @@ const getYearsInConnect = (participant) => {
 const concatDOB = (participant) => {
     const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const participantBirthMonth = participant[fieldMapping.birthMonth];
-    const participantBirthDate = monthList[parseInt(participant[fieldMapping.birthDay])];
+    const participantBirthDate = participant[fieldMapping.birthDay];
     const participantBirthYear = participant[fieldMapping.birthYear];
     const dateofBirth = participantBirthMonth + '-' + participantBirthDate + '-' + participantBirthYear;
-    return dateofBirth; //  02-July-1966  
+    return dateofBirth; //  07-02-1966  
 
 }

@@ -1,13 +1,16 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
+import { internalNavigatorHandler } from './utils.js'
 
 export function renderParticipantLookup(){
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantLookupBtn').classList.add('active');
+    localStorage.removeItem("participant");
+    let counter = 0;
+    internalNavigatorHandler(counter)
     mainContent.innerHTML = rederParticipantSearch();
-
     addEventSearch();
     addEventSearchConnectId();
 }

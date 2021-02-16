@@ -2,7 +2,6 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getCurrentTimeStamp } from './utils.js';
-import {renderParticipantSummary} from './participantSummary.js'
 
 export const importantColumns = [ 
     { field: fieldMapping.lName,
@@ -67,6 +66,8 @@ export const importantColumns = [
 // Would be updated soon: Prevents unsaved changes to be lost when hit referesh
 let saveFlag = false;
 let counter = 0;
+// const saveFlag = JSON.parse(localStorage.getItem("flags"));
+
 window.addEventListener('beforeunload',  (e) => {
     if (saveFlag === false && counter > 0) { 
     // Cancel the event and show alert that the unsaved changes would be lost 
@@ -74,14 +75,6 @@ window.addEventListener('beforeunload',  (e) => {
         e.returnValue = ''; 
     } 
 })
-
-// window.addEventListener('popstate', function (e) {
-//     // The URL changed...
-//     if (window.location.hash !== "#participantLookup") {
-//         alert('Unsave changes detected')
-//         // add a modal
-//     }
-// });
 
 
 export function renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey){
@@ -91,8 +84,8 @@ export function renderParticipantDetails(participant, adminSubjectAudit, changed
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
     let originalHTML =  mainContent.innerHTML;
+    localStorage.setItem("participant", JSON.stringify(participant));
     viewAuditHandler(adminSubjectAudit);
-    viewParticipantSummary(participant)
     changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
     editAltContact(participant, adminSubjectAudit);
   
@@ -109,9 +102,12 @@ export function render(participant) {
          `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        template += `<div id="root"> `
+        template += `<div id="root"> 
+                    <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
-        template += `<table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4><tbody class="participantDetailTable">`
+        template += `
+                    <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
+                    <tbody class="participantDetailTable">`
      
         importantColumns.forEach(x => template += `<tr class="detailedRow"><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
@@ -157,8 +153,7 @@ export function render(participant) {
                                             &nbsp;
                                         <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
                                             &nbsp;
-                                        <button type="button" id="viewSummary" class="btn btn-info">View Participant Summary</button>
-                                            &nbsp;
+                                        <br />
                                         <b>Last Modified by: <span id="modifiedId"></span></b>
                                     </div>
                             </div>
@@ -213,7 +208,6 @@ function changeParticipantDetail(participant, adminSubjectAudit, changedOption, 
                 saveResponses(participant, adminSubjectAudit, changedOption, element);
                 postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
                 viewAuditHandler(adminSubjectAudit);
-                viewParticipantSummary(participant)
                 showSaveAlert();
                 resetChanges(participant, originalHTML, siteKey);            
             });
@@ -282,7 +276,7 @@ function editAltContact(participant, adminSubjectAudit) {
 function altContactHandler(participant, adminSubjectAudit) {
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
-    header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+    header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     template += `
 
@@ -336,7 +330,6 @@ function saveAltResponse(adminSubjectAudit, participant) {
         changedModuleOption['Home'] = newHome;
 
         let altCurrentMobile = getDataAttributes(document.getElementById('newMobile'));
-        console.log('altCurrentMobile',altCurrentMobile);
         let newMobile = document.getElementById('newMobile').value;
         changedModuleOption['Mobile'] = newMobile;
 
@@ -356,7 +349,9 @@ function saveAltResponse(adminSubjectAudit, participant) {
 
         const module1 = {'token': participant.token, 'Module': changedModuleOption, 'timeStamp': timeStampData, 'userId': userIdData};
         adminSubjectAudit.push(module1);
-        alert('Changes Submitted');
+        const modalClose = document.getElementById('modalShowMoreData')
+        const closeButton = modalClose.querySelector('#closeModal').click()
+      
         let editedElement;
         const a = Array.from(document.getElementsByClassName('detaileAltRow'))
         a.forEach(element =>
@@ -408,6 +403,9 @@ function showSaveAlert() {
     const a = document.getElementById('disableEditModal');
     a.addEventListener('click', e => {
         counter++;
+        saveFlag = false
+        localStorage.setItem("counters", JSON.stringify(counter));
+        localStorage.setItem("flags", JSON.stringify(saveFlag));
         const modalClose = document.getElementById('modalShowMoreData')
         const closeButton = modalClose.querySelector('#closeModal').click()
     })
@@ -416,14 +414,25 @@ function showSaveAlert() {
 
 function resetChanges(participant, originalHTML, siteKey) {
     const a = document.getElementById("cancelChanges");
+    let template = '';
     a.addEventListener("click", () => {
-        if (saveFlag === false) {
-            alert('Changes cancelled');
+        if (saveFlag === false) {  
             mainContent.innerHTML = originalHTML;
             renderParticipantDetails(participant, [], {}, siteKey);
+            counter = 0;
+            localStorage.setItem("counters", JSON.stringify(counter));
+            let alertList = document.getElementById('alert_placeholder');
+            template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            Changes cancelled.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                         </div>`
+            alertList.innerHTML = template;
         }
         else {  
             alert('No changes to save or cancel');
+          
         }
     })
     
@@ -444,7 +453,7 @@ function postEditedResponse(participant, adminSubjectAudit, changedOption, siteK
 
 // async-await function to make HTTP POST request
 async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
-
+    showAnimation();
    const idToken = siteKey;
    
     const updateParticpantPayload = {
@@ -459,8 +468,13 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
             "Content-Type": "application/json"
             }
         }))
+        hideAnimation();
         if (response.status === 200) {
+            document.getElementById('loadingAnimation').style.display = 'none';
             saveFlag = true
+            localStorage.setItem("flags", JSON.stringify(saveFlag));
+            counter = 0
+            localStorage.setItem("counters", JSON.stringify(counter));
             let lastModifiedHolder;
             adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
             let a = document.getElementById('modifiedId')
@@ -470,6 +484,16 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
                (alert('Error'))
         }
  }
+
+
+export const showAnimation = () => {
+    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
+}
+
+export const hideAnimation = () => {
+    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
+}
+
 
 // Admin audit displaying logs
  function viewAuditHandler(adminSubjectAudit) {
@@ -498,11 +522,4 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         body.innerHTML = template;
     } 
 
-// View Participant Summary
-function viewParticipantSummary(participant) {
-    const a = document.getElementById('viewSummary');
-    a.addEventListener('click',  () => {  
-    renderParticipantSummary(participant);
-    })
-}
 
