@@ -2,14 +2,10 @@ import {renderParticipantLookup} from './participantLookup.js';
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
-<<<<<<< HEAD
-import { renderParticipantSummary } from './participantSummary.js';
-=======
 import { internalNavigatorHandler } from './utils.js'
 
 let saveFlag = false;
 let counter = 0;
->>>>>>> master
 
 window.onload = async () => {
     router();

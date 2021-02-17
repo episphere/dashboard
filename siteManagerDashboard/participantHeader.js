@@ -1,6 +1,6 @@
 
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { humanReadableFromISO } from './utils.js';
+import { humanReadableMDYFromISO } from './utils.js';
 
 export const headerImportantColumns = [
     { field: 'Connect_ID' },
@@ -8,7 +8,11 @@ export const headerImportantColumns = [
     { field: fieldMapping.lName },
     { field: fieldMapping.birthYear },
     { field: fieldMapping.consentDate },
+    { field: fieldMapping.verficationDate },
     { field: 'Year(s) in Connect' },
+    { field: 'Status' },
+
+
 
 ];
 
@@ -23,6 +27,10 @@ export const renderParticipantHeader = (participant) => {
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${participant[headerImportantColumns[x].field] !== undefined ?  participant[headerImportantColumns[x].field] : ""} &nbsp;`
         :
         
+        (headerImportantColumns[x].field === 'Status' ) ?
+            template += `<span><b> Status </b></span> : Active &nbsp;`
+        :
+
         (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${getYearsInConnect(participant)} &nbsp;`
         :
@@ -32,7 +40,11 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
-            template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadableFromISO(participant[fieldMapping.consentDate])} &nbsp; <br />`
+            template += `<span><b> Consented</b></span> : ${humanReadableMDYFromISO(participant[fieldMapping.consentDate])} &nbsp;`
+        :
+
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
+            template += `<span><b> Verified</b></span> : ${humanReadableMDYFromISO(participant[fieldMapping.verficationDate])} &nbsp; <br />`
         :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
