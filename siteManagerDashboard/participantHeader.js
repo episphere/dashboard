@@ -1,6 +1,6 @@
 
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { humanReadableMDYFromISO } from './utils.js';
+import { humanReadableMDY } from './utils.js';
 
 export const headerImportantColumns = [
     { field: 'Connect_ID' },
@@ -10,10 +10,7 @@ export const headerImportantColumns = [
     { field: fieldMapping.consentDate },
     { field: fieldMapping.verficationDate },
     { field: 'Year(s) in Connect' },
-    { field: 'Status' },
-
-
-
+    { field: 'Status' }
 ];
 
 export const renderParticipantHeader = (participant) => {
@@ -40,11 +37,11 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
-            template += `<span><b> Consented</b></span> : ${humanReadableMDYFromISO(participant[fieldMapping.consentDate])} &nbsp;`
+            template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
-            template += `<span><b> Verified</b></span> : ${humanReadableMDYFromISO(participant[fieldMapping.verficationDate])} &nbsp; <br />`
+            template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp; <br />`
         :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
@@ -77,7 +74,7 @@ const concatDOB = (participant) => {
     const participantBirthMonth = participant[fieldMapping.birthMonth];
     const participantBirthDate = participant[fieldMapping.birthDay];
     const participantBirthYear = participant[fieldMapping.birthYear];
-    const dateofBirth = participantBirthMonth + '-' + participantBirthDate + '-' + participantBirthYear;
-    return dateofBirth; //  07-02-1966  
+    const dateofBirth = participantBirthMonth + '/' + participantBirthDate + '/' + participantBirthYear;
+    return dateofBirth; //  07/02/1966  
 
 }

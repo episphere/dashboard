@@ -1,34 +1,3 @@
-// Year(s) in Connect : 1  
-
-const getYearsInConnect = (participant) => {
-  let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted];
-  let submittedYear = String(timeProfileSubmitted);
-  submittedYear = submittedYear.split("-");
-  submittedYear = parseInt(submittedYear[0]);
-  const currentTime = new Date().toISOString();
-  let currentYear = currentTime.split("-");
-  currentYear = parseInt(currentYear[0]);
-  let totalYears =  currentYear - submittedYear;
-  totalYears <= 0 ? totalYears = '< 1' : totalYears;
-  let yearsInConnect = totalYears;
-  return yearsInConnect;
-}
-
-
-
-const concatDOB = (participant) => {
-  const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const participantBirthMonth = participant[fieldMapping.birthMonth];
-  const participantBirthDate = participant[fieldMapping.birthDay];
-  const participantBirthYear = participant[fieldMapping.birthYear];
-  const dateofBirth = participantBirthMonth + '-' + participantBirthDate + '-' + participantBirthYear;
-  return dateofBirth; //  07-02-1966  
-
-}
-
-
-
-
 export const getCurrentTimeStamp = () => {
 
   const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -59,20 +28,6 @@ export const humanReadableFromISO = (participantDate) => {
   return readableConsentDate; // October 30, 2020
 }
 
-export const humanReadableMDYFromISO = (participantDate) => {
-let consentTimeSubmitted = participantDate;
-let submittedDate = String(consentTimeSubmitted);
-submittedDate = submittedDate.split("T");
-console.log('submittedDate1', submittedDate)
-submittedDate = submittedDate[0];
-submittedDate = submittedDate.split("-");
-const readableYear = submittedDate[0];
-const readableMonth = submittedDate[1];
-const readableDate = submittedDate[2];
-const readableConsentDate = readableMonth + "-" + readableDate + "-" + readableYear;
-return readableConsentDate; // 10-30-2020
-}
-
 export const humanReadableMDY = (participantDate) => {
 let consentTimeSubmitted = participantDate;
 let submittedDate = String(consentTimeSubmitted);
@@ -80,7 +35,7 @@ submittedDate = submittedDate.split("T");
 submittedDate = submittedDate[0];
 submittedDate = submittedDate.split("-");
 const readableYear = submittedDate[0];
-const readableMonth = parseInt(submittedDate[1])-1
+const readableMonth = submittedDate[1];
 const readableDate = submittedDate[2];
 const readableConsentDate = readableMonth + "/" + readableDate + "/" + readableYear;
 return readableConsentDate; // 10/30/2020

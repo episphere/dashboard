@@ -532,7 +532,9 @@ export const hideAnimation = () => {
 
 const viewParticipantSummary = (participant) => {
     const a = document.getElementById('viewSummary');
-    a.addEventListener('click',  () => {  
-    renderParticipantSummary(participant);
-    })
+    if (a) {
+        a.addEventListener('click',  () => {  
+            renderParticipantSummary(participant);
+        })
+    }
 }
