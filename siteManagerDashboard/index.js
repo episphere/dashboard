@@ -2,11 +2,20 @@ import {renderParticipantLookup} from './participantLookup.js';
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
+<<<<<<< HEAD
 import { renderParticipantSummary } from './participantSummary.js';
+=======
+import { internalNavigatorHandler } from './utils.js'
+
+let saveFlag = false;
+let counter = 0;
+>>>>>>> master
 
 window.onload = async () => {
     router();
     await getMappings();
+    localStorage.setItem("flags", JSON.stringify(saveFlag));
+    localStorage.setItem("counters", JSON.stringify(counter));
 }
 
 window.onhashchange = () => {
@@ -80,16 +89,17 @@ const renderDashboard = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
-        if(isAuthorized && isAuthorized.code === 200){
+        if (isAuthorized && isAuthorized.code === 200) {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             removeActiveClass('nav-link', 'active');
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
             renderCharts(siteKey);
         }
-        if(isAuthorized.code === 401){
+        internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
+        if (isAuthorized.code === 401) {
             clearLocalStroage();
-        }
+        }        
     }else{
         animation(false);
         window.location.hash = '#';
@@ -242,7 +252,7 @@ const renderCharts = async (siteKey) => {
         renderAllCharts(stats.data);
         animation(false);
     }
-    if(stats.code === 401){
+    if (stats.code === 401) {
         clearLocalStroage();
     }
 }
@@ -271,17 +281,17 @@ const addEventSiteSelection = (data) => {
     const select = document.getElementById('selectSites');
     select.addEventListener('change', () => {
         let filteredData = '';
-        if(select.value === 'all') filteredData = data;
+        if (select.value === 'all') filteredData = data;
         else filteredData = data.filter(dt => dt['siteCode'] === parseInt(select.value));
         renderAllCharts(filteredData);
     })
 }
 
 const renderFunnelChart = (participants, id, decider) => {
-    const UPSubmitted = participants.map(dt => dt[decider]).map(dt => dt['profileSubmitted']).reduce((a,b) => a+b);
-    const consented = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
-    const signedIn = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
-    
+    const UPSubmitted = participants.map(dt => dt[decider]).map(dt => dt['profileSubmitted']).reduce((a, b) => a + b);
+    const consented = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a, b) => a + b);
+    const signedIn = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a, b) => a + b);
+
     const data = [{
         x: [signedIn, consented, UPSubmitted],
         y: ['Sign-on', 'Consent', 'User Profile'],
@@ -295,18 +305,18 @@ const renderFunnelChart = (participants, id, decider) => {
         plot_bgcolor: 'rgba(0,0,0,0)',
         title: `${decider === 486306141 ? 'Active' : 'Passive'} Recruits`
     };
-    
-    Plotly.newPlot(id, data, layout, {responsive: true, displayModeBar: false});
+
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
 }
 
 const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider} recruits <br><h3>${participants.map(dt => dt[`${decider.toLowerCase()}`]).map(dt => dt['count']).reduce((a,b) => a+b)}</h3>`
+    document.getElementById(id).innerHTML = `${decider} recruits <br><h3>${participants.map(dt => dt[`${decider.toLowerCase()}`]).map(dt => dt['count']).reduce((a, b) => a + b)}</h3>`
 }
 
 const renderBarChart = (participants, id, decider) => {
-    const accountCreated = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a,b) => a+b);
-    const consent = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a,b) => a+b);
-    const participantData = participants.map(dt => dt[decider]).map(dt => dt['count']).reduce((a,b) => a+b);
+    const accountCreated = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a, b) => a + b);
+    const consent = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a, b) => a + b);
+    const participantData = participants.map(dt => dt[decider]).map(dt => dt['count']).reduce((a, b) => a + b);
     const trace1 = {
         x: [accountCreated, consent],
         y: ['Accounts created', '  Consent complete'],
@@ -322,7 +332,7 @@ const renderBarChart = (participants, id, decider) => {
         orientation: 'h'
     };
     const data = [trace1, trace2];
-      
+
     const layout = {
         barmode: 'stack',
         showlegend: false,
@@ -336,27 +346,29 @@ const renderBarChart = (participants, id, decider) => {
             automargin: true,
             fixedrange: true
         },
-        colorway : ['#7f7fcc', '#0C1368'],
+        colorway: ['#7f7fcc', '#0C1368'],
         title: 'Participant Progress'
     };
-      
-    Plotly.newPlot(id, data, layout, {responsive: true, displayModeBar: false});
+
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
 }
 
 const clearLocalStroage = () => {
+    internalNavigatorHandler(counter);
     animation(false);
     delete localStorage.dashboard;
     window.location.hash = '#';
+   
 }
 
 const renderParticipantsNotVerified = async () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'notyetverified');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if(response.code === 200){
+        if (response.code === 200) {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
             removeActiveClass('dropdown-item', 'dd-item-active')
@@ -371,10 +383,11 @@ const renderParticipantsNotVerified = async () => {
             eventNotVerifiedButton(siteKey);
             animation(false);
         }
-        if(response.code === 401){
+        internalNavigatorHandler(counter)
+        if (response.code === 401) {
             clearLocalStroage();
         }
-    }else{
+    } else {
         animation(false);
         window.location.hash = '#';
     }
@@ -387,7 +400,7 @@ const renderParticipantsCanNotBeVerified = async () => {
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'cannotbeverified');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if(response.code === 200){
+        if (response.code === 200) {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
             removeActiveClass('dropdown-item', 'dd-item-active')
@@ -395,7 +408,7 @@ const renderParticipantsCanNotBeVerified = async () => {
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
             const filteredData = filterdata(response.data);
-            if(filteredData.length === 0) {
+            if (filteredData.length === 0) {
                 mainContent.innerHTML = 'No Data Found!'
                 animation(false);
                 return;
@@ -407,23 +420,24 @@ const renderParticipantsCanNotBeVerified = async () => {
             eventVerifiedButton(siteKey);
             animation(false);
         }
-        if(response.code === 401){
+        internalNavigatorHandler(counter);
+        if (response.code === 401) {
             clearLocalStroage();
         }
-    }else{
+    } else {
         animation(false);
         window.location.hash = '#';
     }
 }
 
 const renderParticipantsVerified = async () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'verified');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if(response.code === 200){
+        if (response.code === 200) {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
             removeActiveClass('dropdown-item', 'dd-item-active')
@@ -437,23 +451,24 @@ const renderParticipantsVerified = async () => {
             eventVerifiedButton(siteKey);
             animation(false);
         }
-        if(response.code === 401){
+        internalNavigatorHandler(counter);
+        if (response.code === 401) {
             clearLocalStroage();
         }
-    }else{
+    } else {
         animation(false);
         window.location.hash = '#';
     }
 }
 
 const renderParticipantsAll = async () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'all');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if(response.code === 200){
+        if (response.code === 200) {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
             removeActiveClass('dropdown-item', 'dd-item-active');
@@ -467,10 +482,11 @@ const renderParticipantsAll = async () => {
             eventVerifiedButton(siteKey);
             animation(false);
         }
-        if(response.code === 401){
+        internalNavigatorHandler(counter);
+        if (response.code === 401) {
             clearLocalStroage();
         }
-    }else{
+    } else {
         animation(false);
         window.location.hash = '#';
     }
@@ -487,7 +503,7 @@ const eventNotVerifiedButton = (siteKey) => {
             animation(true);
             const token = elem.dataset.token;
             const response = await participantVerification(token, false, siteKey);
-            if(response.code === 200){
+            if (response.code === 200) {
                 // animation(false);
                 // const dataTable = document.getElementById('dataTable');
                 // const elements = dataTable.querySelectorAll(`[data-token="${token}"]`);

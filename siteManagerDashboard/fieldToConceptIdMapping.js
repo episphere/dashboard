@@ -8,6 +8,7 @@ export default
     "birthDay":795827569,
     "birthYear":544150384,
     "consentDate":454445267,
+    "consentFlag": 454205108,
     "status":"NEED TO BE DEFINED",
     "suffix":506826178,
     "homePhone":438643922,
@@ -24,6 +25,19 @@ export default
     "healthcareProvider":827220437,
     "suffix":480305327,
     "ssnOnFile": 454067894,
-    "timeProfileSubmitted": 430551721
+    "timeProfileSubmitted": 430551721,
+    "verifiedFlag": 821247024,
+    "verficationDate": 914594314,
+    "ssn": 311580100,
+    "blood": 878865966,
+    "bloodDateTime": 561681068,
+    "urine": 167958071,
+    "urineDateTime": 847159717,
+    "mouthwash": 684635302,
+    "mouthwashDateTime": 448660695,
+    "incentive": 862774033,
+    "userProfileFlag": 699625233,
+    "userProfileDateTime": 430551721
+
 
 }
