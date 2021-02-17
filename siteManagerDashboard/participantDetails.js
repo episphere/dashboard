@@ -66,39 +66,32 @@ export const importantColumns = [
 // Would be updated soon: Prevents unsaved changes to be lost when hit referesh
 let saveFlag = false;
 let counter = 0;
+// const saveFlag = JSON.parse(localStorage.getItem("flags"));
+
 window.addEventListener('beforeunload',  (e) => {
     if (saveFlag === false && counter > 0) { 
     // Cancel the event and show alert that the unsaved changes would be lost 
         e.preventDefault(); 
         e.returnValue = ''; 
     } 
-
 })
 
-// window.addEventListener('popstate', function (e) {
-//     // The URL changed...
-//     if (window.location.hash !== "#participantLookup") {
-//         alert('Unsave changes detected')
-//         // add a modal
-        
-//     }
-// });
 
-
-export function renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey){
+export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
     let originalHTML =  mainContent.innerHTML;
+    localStorage.setItem("participant", JSON.stringify(participant));
     viewAuditHandler(adminSubjectAudit);
     changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
     editAltContact(participant, adminSubjectAudit);
   
 }
 
-export function render(participant) {
+export const render = (participant) => {
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
@@ -109,10 +102,12 @@ export function render(participant) {
          `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        template += `
-                <div id="root"> `
+        template += `<div id="root"> 
+                    <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
-        template += `<table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4><tbody class="participantDetailTable">`
+        template += `
+                    <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
+                    <tbody class="participantDetailTable">`
      
         importantColumns.forEach(x => template += `<tr class="detailedRow"><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
@@ -157,7 +152,8 @@ export function render(participant) {
                                         <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-success">Audit History</button>
                                             &nbsp;
                                         <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
-                                        &nbsp;
+                                            &nbsp;
+                                        <br />
                                         <b>Last Modified by: <span id="modifiedId"></span></b>
                                     </div>
                             </div>
@@ -179,7 +175,7 @@ export function render(participant) {
 }
 
 
-function changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey){
+const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, originalHTML, siteKey) => {
 
     const a = Array.from(document.getElementsByClassName('detailedRow'))
     if (a) {
@@ -223,7 +219,7 @@ function changeParticipantDetail(participant, adminSubjectAudit, changedOption, 
     }
 }
 // creates payload to be sent to backend and update the UI. Remaps the field name back to concept id along with new responses.
-function saveResponses(participant, adminSubjectAudit, changedOption, editedElement) {
+const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement) => {
    
     let displayAuditHistory = {};
     let conceptId = [];
@@ -270,17 +266,17 @@ function saveResponses(participant, adminSubjectAudit, changedOption, editedElem
 
 // For alternate contact details. Would be updates once concept ids for alt details are ready
 
-function editAltContact(participant, adminSubjectAudit) {
+const editAltContact = (participant, adminSubjectAudit) => {
     const a = document.getElementById('altContact');
     a.addEventListener('click',  () => {
        altContactHandler(participant, adminSubjectAudit);
    })
 }
 
-function altContactHandler(participant, adminSubjectAudit) {
+const altContactHandler = (participant, adminSubjectAudit) => {
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
-    header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+    header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     template += `
 
@@ -307,9 +303,10 @@ function altContactHandler(participant, adminSubjectAudit) {
     body.innerHTML = template;
     saveAltResponse(adminSubjectAudit, participant);
     viewAuditHandler(adminSubjectAudit);
+    viewParticipantSummary(participant)
 } 
 
-function saveAltResponse(adminSubjectAudit, participant) {
+const saveAltResponse = (adminSubjectAudit, participant) => {
     const a = document.getElementById('altDetailsSubmit')
     a.addEventListener('click', (e) => {
         e.preventDefault()
@@ -333,7 +330,6 @@ function saveAltResponse(adminSubjectAudit, participant) {
         changedModuleOption['Home'] = newHome;
 
         let altCurrentMobile = getDataAttributes(document.getElementById('newMobile'));
-        console.log('altCurrentMobile',altCurrentMobile);
         let newMobile = document.getElementById('newMobile').value;
         changedModuleOption['Mobile'] = newMobile;
 
@@ -353,7 +349,9 @@ function saveAltResponse(adminSubjectAudit, participant) {
 
         const module1 = {'token': participant.token, 'Module': changedModuleOption, 'timeStamp': timeStampData, 'userId': userIdData};
         adminSubjectAudit.push(module1);
-        alert('Changes Submitted');
+        const modalClose = document.getElementById('modalShowMoreData')
+        const closeButton = modalClose.querySelector('#closeModal').click()
+      
         let editedElement;
         const a = Array.from(document.getElementsByClassName('detaileAltRow'))
         a.forEach(element =>
@@ -388,7 +386,7 @@ function saveAltResponse(adminSubjectAudit, participant) {
 
 /////// Helper Functions /////////
 
-function getDataAttributes(el) {
+const getDataAttributes = (el) => {
     let data = {};
     [].forEach.call(el.attributes, function(attr) {
         if (/^data-/.test(attr.name)) {
@@ -401,33 +399,48 @@ function getDataAttributes(el) {
     return data;
 }
 
-function showSaveAlert() {
+const showSaveAlert = () => {
     const a = document.getElementById('disableEditModal');
     a.addEventListener('click', e => {
         counter++;
+        saveFlag = false
+        localStorage.setItem("counters", JSON.stringify(counter));
+        localStorage.setItem("flags", JSON.stringify(saveFlag));
         const modalClose = document.getElementById('modalShowMoreData')
         const closeButton = modalClose.querySelector('#closeModal').click()
     })
    
 }
 
-function resetChanges(participant, originalHTML, siteKey) {
+const resetChanges = (participant, originalHTML, siteKey) => {
     const a = document.getElementById("cancelChanges");
+    let template = '';
     a.addEventListener("click", () => {
-        if (saveFlag === false) {
-            alert('Changes cancelled');
+        if (saveFlag === false) {  
             mainContent.innerHTML = originalHTML;
             renderParticipantDetails(participant, [], {}, siteKey);
+            counter = 0;
+            localStorage.setItem("counters", JSON.stringify(counter));
+            let alertList = document.getElementById('alert_placeholder');
+            // throws an alert when canncel changes button is clicked
+            template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                            Changes cancelled.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                         </div>`
+            alertList.innerHTML = template;
         }
         else {  
             alert('No changes to save or cancel');
+          
         }
     })
     
 }
 
 
-function postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey) {
+const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteKey) => {
 
     const a = document.getElementById('sendResponse');
     a.addEventListener('click', () => {
@@ -441,8 +454,8 @@ function postEditedResponse(participant, adminSubjectAudit, changedOption, siteK
 
 // async-await function to make HTTP POST request
 async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
-
-   const idToken = siteKey;
+    showAnimation();
+    const idToken = siteKey;
    
     const updateParticpantPayload = {
         "data": updatedOptions
@@ -456,8 +469,13 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
             "Content-Type": "application/json"
             }
         }))
+        hideAnimation();
         if (response.status === 200) {
+            document.getElementById('loadingAnimation').style.display = 'none';
             saveFlag = true
+            localStorage.setItem("flags", JSON.stringify(saveFlag));
+            counter = 0
+            localStorage.setItem("counters", JSON.stringify(counter));
             let lastModifiedHolder;
             adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
             let a = document.getElementById('modifiedId')
@@ -468,15 +486,28 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         }
  }
 
-// Admin audit displaying logs
- function viewAuditHandler(adminSubjectAudit) {
-    const a = document.getElementById('adminAudit');
-    a.addEventListener('click',  () => {
-        buttonAuditHandler(adminSubjectAudit);
-    })
+
+// shows a spinner when HTTP request is made
+export const showAnimation = () => {
+    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
 }
 
- function buttonAuditHandler(adminSubjectAudit) {
+export const hideAnimation = () => {
+    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
+}
+
+
+// Admin audit displaying logs
+ const viewAuditHandler = (adminSubjectAudit) => {
+    const a = document.getElementById('adminAudit');
+    if (a) {
+        a.addEventListener('click',  () => {
+            buttonAuditHandler(adminSubjectAudit);
+    })
+}
+}
+
+ const buttonAuditHandler = (adminSubjectAudit) => {
         const header = document.getElementById('modalHeader');
         const body = document.getElementById('modalBody');
         header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -493,5 +524,6 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         }))
        
         body.innerHTML = template;
-    } 
+} 
+
 

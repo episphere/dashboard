@@ -1,3 +1,6 @@
+# remove hidden mac files
+.DS_Store
+
 # Logs
 logs
 *.log
