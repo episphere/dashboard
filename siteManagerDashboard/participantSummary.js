@@ -2,6 +2,9 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import { getCurrentTimeStamp } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
+import { baselineSurvey, baselineBloodSample, baselineUrineSample, baselineMouthwashSample, 
+        baselineBloodUrineSurvey, biAnnualSurvey } from './participantSummaryRow.js';
+import { humanReadableMDY } from './utils.js';
 
 const headerImportantColumns = [
     { field: fieldMapping.fName },
@@ -57,103 +60,31 @@ export const render = (participant) => {
                                 </thead>
                             <tbody>
                                 <tr>
-                                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Survey</td>
-                                    <td>BOH</td>
-                                    <td>Not Started</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineSurvey(participant.Module1, "BOH")}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Survey</td>
-                                    <td>MRE</td>
-                                    <td>Started</td>
-                                    <td>Date Started</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineSurvey(participant.Module2, "MRE")}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Survey</td>
-                                    <td>SAS</td>
-                                    <td>Submitted</td>
-                                    <td>Date Submitted</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineSurvey(participant.Module3, "SAS")}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Survey</td>
-                                    <td>Law</td>
-                                    <td>Submitted</td>
-                                    <td>Date Submitted</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineSurvey(participant.Module4, "LAW")}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Survey</td>
-                                    <td>SSN</td>
-                                    <td>9</td>
-                                    <td>Date Submitted</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineSurvey(participant.ModuleSsn, "SSN")}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Sample</td>
-                                    <td>Blood</td>
-                                    <td>Collected</td>
-                                    <td>Date Submitted</td>
-                                    <td>Clinical</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineBloodSample(participant)}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Sample</td>
-                                    <td>Urine</td>
-                                    <td>Collected</td>
-                                    <td>Date Submitted</td>
-                                    <td>Clinical</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineUrineSample(participant)}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Sample</td>
-                                    <td>Mouthwash</td>
-                                    <td>Not Collected</td>
-                                    <td>N/A</td>
-                                    <td>Home</td>
-                                    <td>Y/N</td>
-                                    <td>Kit Sent</td>
+                                    ${baselineMouthwashSample(participant)}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Survey</td>
-                                    <td>Blood/Urine</td>
-                                    <td>Submitted</td>
-                                    <td>Date Submitted</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselineBloodUrineSurvey(participant)}
                                 </tr>
                                 <tr>
                                     <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
@@ -178,15 +109,7 @@ export const render = (participant) => {
                                     <td>N/A</td>
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Agreement</td>
-                                    <td>Consent</td>
-                                    <td>Submitted</td>
-                                    <td>Date submitted</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy">Download Link</a></td>
+                                    ${consentHandler(participant)}
                                 </tr>
                                 <tr>
                                     <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
@@ -264,4 +187,34 @@ const createSignature = (participant) => {
     lastInitial = lastInitial.split('')[0]
     const createParticipantSignature = participant[headerImportantColumns[0].field]+"."+lastInitial
     return createParticipantSignature;
+}
+
+const consentHandler = (participant) => {
+    
+    let template = ``;
+    participant && 
+    participant[fieldMapping.consentFlag] ?
+    ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                    <td>Baseline</td>
+                    <td>Agreement</td>
+                    <td>Consent</td>
+                    <td>Submitted</td>
+                    <td>${participant[fieldMapping.consentDate] && humanReadableMDY(participant[fieldMapping.consentDate])}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy">Download Link</a></td>
+    ` ) : 
+    (
+        template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                    <td>Baseline</td>
+                    <td>Agreement</td>
+                    <td>Consent</td>
+                    <td>Not Submitted</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>Y</td>
+                    <td style="color: grey; text-decoration: underline;">Download Link</td>`
+    )
+    return template;
+
 }

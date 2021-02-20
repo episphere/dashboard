@@ -63,6 +63,7 @@ setTimeout(() => {
   document.getElementById('navBarLinks').addEventListener('click', function(e) {
       let getSaveFlag = JSON.parse(localStorage.getItem("flags"));
       let getCounter = JSON.parse(localStorage.getItem("counters"));
+      
       if (getCounter > 0 && getSaveFlag === false) {
           // Cancel the event and show alert that the unsaved changes would be lost 
           let confirmFlag = !confirm("Unsaved changes detected. Navigate away?");
@@ -80,3 +81,29 @@ setTimeout(() => {
   })
 }, 50);
 }
+
+
+
+
+
+
+// console.log('heloo4')
+// Fnon.Ask.Dark('Unsaved changes detected. Navigate away?','Unsaved Changes','Yes', 'No', (result)=>{
+//   // callback
+//   e.preventDefault();
+//   console.log('dialogue', e)
+//   if (result) {
+//     console.log('heloo')
+//     // when user decides to stay on the page
+//       e.preventDefault();
+//       console.log('heloo1')
+//       return;
+    
+//   } 
+//   else {
+//     console.log('heloo3')
+//       counter = 0;
+//       localStorage.setItem("counters", JSON.stringify(counter));
+      
+// }
+// });
