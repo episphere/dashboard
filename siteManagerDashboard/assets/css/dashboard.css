@@ -215,3 +215,29 @@ table {
     color:red;
     margin-bottom: .75rem;
 }
+
+#root-margin {
+    margin-top: 30px; 
+    margin-bottom: 30px;
+}
+
+.sticky-header {
+    height: 600px; 
+    overflow-y: auto; 
+    position: sticky; 
+    top: 0;
+}
+
+.sticky-header .sticky-row{
+    position: sticky; 
+    top: 0;
+}
+
+.table-striped>tbody>tr:nth-child(2n+1)>td{
+   background-color: rgb(220, 247, 255); 
+ }
+
+ .table-striped>tbody>tr:nth-child(2n)>td{
+    background-color: rgb(253, 255, 219); 
+  }
+ 

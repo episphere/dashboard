@@ -13,6 +13,7 @@ export const headerImportantColumns = [
     { field: 'Status' }
 ];
 
+
 export const renderParticipantHeader = (participant) => {
 
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -41,12 +42,12 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
-            template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp; <br />`
+            template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`
         :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
 
-    template += '</div>'
+    template += '</div></div>'
 
     return template;
 } 

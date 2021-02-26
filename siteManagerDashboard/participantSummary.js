@@ -2,8 +2,9 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import { getCurrentTimeStamp } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { baselineSurvey, baselineBloodSample, baselineUrineSample, baselineMouthwashSample, 
-        baselineBloodUrineSurvey, biAnnualSurvey } from './participantSummaryRow.js';
+// import participantInfoResponse from './participantInfoResponse.js';
+import { userProfile, verificationStatus, baselineSurvey, baselineBOHSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineMouthwashSample, 
+        baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY } from './utils.js';
 
 const headerImportantColumns = [
@@ -11,7 +12,7 @@ const headerImportantColumns = [
     { field: fieldMapping.lName },
 ];
 
-const { degrees, PDFDocument, StandardFonts } = PDFLib
+const { PDFDocument, StandardFonts } = PDFLib
 
 export const renderParticipantSummary = (participant) => {
 
@@ -25,7 +26,7 @@ export const renderParticipantSummary = (participant) => {
 }
 
 export const render = (participant) => {
-    let template = `<div class="container">`
+    let template = `<div class="container-fluid">`
     if (!participant) {
         template +=` 
             <div id="root">
@@ -34,33 +35,47 @@ export const render = (participant) => {
         </div>
          `
     } else {
-        console.log('participantSummaryBtn', participant)
-        let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        console.log("conceptIdMapping", conceptIdMapping)
         template += `
-                <div id="root"> `
+                <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
+
+        // testing
+        // let participantInfo = [];
+        //             participantInfo.push(participantInfoResponse);
+
+        //             localStorage.setItem("participantInfo", JSON.stringify(participantInfo));
+        //             let participantInfoResult = JSON.parse(localStorage.getItem("participantInfo"));
+        //             participantInfoResult = participantInfoResult[0];
+
         template += `<div class="table-responsive">
+
                         <span> <h4 style="text-align: center;"><i style="float: left;" class="fa fa-sort fa-lg"></i> 
                         <i style="float: left;" class="fa fa-filter fa-lg"></i> Participant Summary </h4> </span>
-                        <div style="height: 600px; overflow: scroll;">
-                            <table class="table table-borderless">
-                                <thead style="position: sticky;" class="thead-dark"> 
+
+                        <div class="sticky-header">
+                            <table class="table table-striped">
+                                <thead class="thead-dark sticky-row"> 
                                     <tr>
-                                        <th scope="col">Icon</th>
-                                        <th scope="col">Timeline</th>
-                                        <th scope="col">Category</th>
-                                        <th scope="col">Item</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">Setting</th>
-                                        <th scope="col">Refused</th>
-                                        <th scope="col">Extra</th>
+                                        <th class="sticky-row" scope="col">Icon</th>
+                                        <th class="sticky-row" scope="col">Timeline</th>
+                                        <th class="sticky-row" scope="col">Category</th>
+                                        <th class="sticky-row" scope="col">Item</th>
+                                        <th class="sticky-row" scope="col">Status</th>
+                                        <th class="sticky-row" scope="col">Date</th>
+                                        <th class="sticky-row" scope="col">Setting</th>
+                                        <th class="sticky-row" scope="col">Refused</th>
+                                        <th class="sticky-row" scope="col">Extra</th>
                                     </tr>
                                 </thead>
                             <tbody>
                                 <tr>
-                                    ${baselineSurvey(participant.Module1, "BOH")}
+                                    ${userProfile(participant[fieldMapping.userProfile])}
+                                </tr>
+                                <tr>
+                                    ${verificationStatus(participant[fieldMapping.ifVeriffied])}
+                                </tr>
+                                <tr>
+                                    ${baselineBOHSurvey(participant[fieldMapping.boh], "BOH")}
                                 </tr>
                                 <tr>
                                     ${baselineSurvey(participant.Module2, "MRE")}
@@ -72,11 +87,17 @@ export const render = (participant) => {
                                     ${baselineSurvey(participant.Module4, "LAW")}
                                 </tr>
                                 <tr>
-                                    ${baselineSurvey(participant.ModuleSsn, "SSN")}
+                                    ${baselineSSN(participant.ModuleSSN)}
+                                </tr>
+                                <tr>
+                                    ${baselineBloodUrineSurvey(participant[fieldMapping.bloodUrineSurvey])}
+                                </tr>
+                                <tr>
+                                    ${baselineMouthwashSurvey(participant[fieldMapping.mouthwashSurvey])}
                                 </tr>
                                 <tr>
                                     ${baselineBloodSample(participant)}
-                                </tr>
+                                </tr>                           
                                 <tr>
                                     ${baselineUrineSample(participant)}
                                 </tr>
@@ -84,43 +105,17 @@ export const render = (participant) => {
                                     ${baselineMouthwashSample(participant)}
                                 </tr>
                                 <tr>
-                                    ${baselineBloodUrineSurvey(participant)}
+                                    ${baselineEMR(participant)}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>6 months</td>
-                                    <td>Survey</td>
-                                    <td>DHQ</td>
-                                    <td>Submitted</td>
-                                    <td>Date submitted</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
+                                    ${baselinePayment(participant)}
                                 </tr>
-                                <tr>
-                                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-                                    <td>Annual</td>
-                                    <td>EMR</td>
-                                    <td>N/A</td>
-                                    <td>Not Pushed</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>Y/N</td>
-                                    <td>N/A</td>
-                                </tr>
+                                
                                 <tr>
                                     ${consentHandler(participant)}
                                 </tr>
                                 <tr>
-                                    <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                                    <td>Baseline</td>
-                                    <td>Agreement</td>
-                                    <td>HIPAA</td>
-                                    <td>Submitted</td>
-                                    <td>Date submitted</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>Download link</td>
+                                   ${hippaHandler(participant)}
                                 </tr>
                             </tbody>
                             </table>
@@ -190,26 +185,25 @@ const createSignature = (participant) => {
 }
 
 const consentHandler = (participant) => {
-    
     let template = ``;
     participant && 
-    participant[fieldMapping.consentFlag] ?
+    participant[fieldMapping.consentFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Baseline</td>
+                    <td>Timeline</td>
                     <td>Agreement</td>
                     <td>Consent</td>
-                    <td>Submitted</td>
+                    <td>Signed</td>
                     <td>${participant[fieldMapping.consentDate] && humanReadableMDY(participant[fieldMapping.consentDate])}</td>
-                    <td>N/A</td>
+                    <td>${participant[fieldMapping.consentVersion]}</td>
                     <td>N/A</td>
                     <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy">Download Link</a></td>
     ` ) : 
     (
         template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Baseline</td>
+                    <td>Timeline</td>
                     <td>Agreement</td>
                     <td>Consent</td>
-                    <td>Not Submitted</td>
+                    <td>Not Signed</td>
                     <td>N/A</td>
                     <td>N/A</td>
                     <td>Y</td>
@@ -217,4 +211,33 @@ const consentHandler = (participant) => {
     )
     return template;
 
+}
+
+
+const hippaHandler = (participant) => {
+    let template = ``;
+    participant && 
+    participant[fieldMapping.hippaFlag] === (fieldMapping.yes)?
+    ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                    <td>Timeline</td>
+                    <td>Agreement</td>
+                    <td>HIPPA</td>
+                    <td>Signed</td>
+                    <td>${participant[fieldMapping.hippaDate] && humanReadableMDY(participant[fieldMapping.hippaDate])}</td>
+                    <td>${participant[fieldMapping.hippaVersion]}</td>
+                    <td>N/A</td>
+                    <td style="color: grey; text-decoration: underline;">Download Link</td>
+    ` ) : 
+    (
+        template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Timeline</td>
+                    <td>Agreement</td>
+                    <td>HIPPA</td>
+                    <td>Not Signed</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td style="color: grey; text-decoration: underline;">Download Link</td>`
+    )
+    return template;
 }
