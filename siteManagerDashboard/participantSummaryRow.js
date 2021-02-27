@@ -218,7 +218,7 @@ export const baselineBloodSample = (participantModule) => {
                         <td>N/A</td>`
             : (
                 template += `
-                        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                        <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                         <td>Baseline</td>
                         <td>Sample</td>
                         <td>Blood</td>
@@ -275,7 +275,7 @@ export const baselineUrineSample = (participantModule) => {
                         <td>N/A</td>`
             : (
                 template += `
-                        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                        <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                         <td>Baseline</td>
                         <td>Sample</td>
                         <td>Urine</td>
@@ -333,7 +333,7 @@ export const baselineMouthwashSample = (participantModule) => {
                         <td>Kit Sent</td>`
             : (
                 template += `
-                        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                        <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                         <td>Baseline</td>
                         <td>Sample</td>
                         <td>Mouthwash</td>
@@ -418,8 +418,220 @@ export const baselineBOHSurvey = (participantModule, surveyName) => {
     
 }
 
+
+export const baselineMRESurvey = (participantModule, surveyName) => {
+    let template = ``;
+    !participantModule ?  
+    (
+        template += `
+                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N</td>
+                    <td>N/A</td>`
+    ) : 
+    participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
+    (
+        template += `
+                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>Y</td>
+                    <td>N/A</td>`
+    ) :
+    (
+        (participantModule[fieldMapping.mreStatusFlag] === fieldMapping.submitted) ?
+        (
+            template += `
+                        <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                        <td>Baseline</td>
+                        <td>Survey</td> 
+                        <td>${surveyName}</td>
+                        <td>Completed</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.mreCompletedDate])}</td>
+                        <td>N/A</td>
+                        <td>N</td>
+                        <td>N/A</td>`
+
+        ) :
+        (participantModule[fieldMapping.mreStatusFlag] === fieldMapping.started) ?
+        (
+            template += `
+                        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                        <td>Baseline</td>
+                        <td>Survey</td>
+                        <td>${surveyName}</td>
+                        <td>Started</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.mreStartDate])}</td>
+                        <td>N/A</td>
+                        <td>N</td>
+                        <td>N/A</td>`
+        ) : 
+        ( template += `
+                    <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>Not Started</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N</td>
+                    <td>N/A</td>`
+        ))
+    return template;
+    
+}
+
+export const baselineSASSurvey = (participantModule, surveyName) => {
+    let template = ``;
+    !participantModule ?  
+    (
+        template += `
+                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N</td>
+                    <td>N/A</td>`
+    ) : 
+    participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
+    (
+        template += `
+                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>Y</td>
+                    <td>N/A</td>`
+    ) :
+    (
+        (participantModule[fieldMapping.sasStatusFlag] === fieldMapping.submitted) ?
+        (
+            template += `
+                        <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                        <td>Baseline</td>
+                        <td>Survey</td> 
+                        <td>${surveyName}</td>
+                        <td>Completed</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.sasCompletedDate])}</td>
+                        <td>N/A</td>
+                        <td>N</td>
+                        <td>N/A</td>`
+
+        ) :
+        (participantModule[fieldMapping.sasStatusFlag] === fieldMapping.started) ?
+        (
+            template += `
+                        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                        <td>Baseline</td>
+                        <td>Survey</td>
+                        <td>${surveyName}</td>
+                        <td>Started</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.sasStartDate])}</td>
+                        <td>N/A</td>
+                        <td>N</td>
+                        <td>N/A</td>`
+        ) : 
+        ( template += `
+                    <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>Not Started</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N</td>
+                    <td>N/A</td>`
+        ))
+    return template;
+    
+}
+
+export const baselineLAWSurvey = (participantModule, surveyName) => {
+    let template = ``;
+    !participantModule ?  
+    (
+        template += `
+                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N</td>
+                    <td>N/A</td>`
+    ) : 
+    participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
+    (
+        template += `
+                    <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>Y</td>
+                    <td>N/A</td>`
+    ) :
+    (
+        (participantModule[fieldMapping.lawStausFlag] === fieldMapping.submitted) ?
+        (
+            template += `
+                        <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                        <td>Baseline</td>
+                        <td>Survey</td> 
+                        <td>${surveyName}</td>
+                        <td>Completed</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.lawCompletedDate])}</td>
+                        <td>N/A</td>
+                        <td>N</td>
+                        <td>N/A</td>`
+
+        ) :
+        (participantModule[fieldMapping.lawStausFlag] === fieldMapping.started) ?
+        (
+            template += `
+                        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                        <td>Baseline</td>
+                        <td>Survey</td>
+                        <td>${surveyName}</td>
+                        <td>Started</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.lawStartDate])}</td>
+                        <td>N/A</td>
+                        <td>N</td>
+                        <td>N/A</td>`
+        ) : 
+        ( template += `
+                    <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
+                    <td>Baseline</td>
+                    <td>Survey</td>
+                    <td>${surveyName}</td>
+                    <td>Not Started</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                    <td>N</td>
+                    <td>N/A</td>`
+        ))
+    return template;
+    
+}
 export const baselineSSN = (participantModule) => {
-    console.log('sss', participantModule)
         let template = ``;
         !participantModule ?  
         (

@@ -234,10 +234,32 @@ table {
 }
 
 .table-striped>tbody>tr:nth-child(2n+1)>td{
-   background-color: rgb(220, 247, 255); 
+   background-color: rgb(109, 218, 252); 
  }
 
  .table-striped>tbody>tr:nth-child(2n)>td{
-    background-color: rgb(253, 255, 219); 
+    background-color: rgb(201, 236, 247); 
   }
+
+  .table-striped>tbody>tr:nth-child(n+10)>td{
+    background-color: rgb(246, 252, 173); 
+  }
+
+  .table-striped>tbody>tr:nth-child(11)>td{
+    background-color: rgb(253, 255, 223); 
+  }
+
  
+
+  .table-striped>tbody>tr:nth-child(13)>td{
+    background-color: rgb(153, 250, 197); 
+  }
+
+  .table-striped>tbody>tr:nth-child(14)>td{
+    background-color: rgb(214, 179, 247); 
+  }
+
+
+  .table-striped>tbody>tr:nth-child(n+15)>td{
+    background-color: rgb(245, 181, 218); 
+  }

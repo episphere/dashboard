@@ -2,9 +2,10 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import { getCurrentTimeStamp } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-// import participantInfoResponse from './participantInfoResponse.js';
-import { userProfile, verificationStatus, baselineSurvey, baselineBOHSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineMouthwashSample, 
-        baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
+import participantInfoResponse from './participantInfoResponse.js';
+import { userProfile, verificationStatus, baselineSurvey, baselineBOHSurvey, baselineMRESurvey,
+    baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, 
+    baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY } from './utils.js';
 
 const headerImportantColumns = [
@@ -39,13 +40,13 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
 
-        // testing
-        // let participantInfo = [];
-        //             participantInfo.push(participantInfoResponse);
+        // testing ${baselineSurvey(participant.Module2, "MRE")}
+        let participantInfo = [];
+                    participantInfo.push(participantInfoResponse);
 
-        //             localStorage.setItem("participantInfo", JSON.stringify(participantInfo));
-        //             let participantInfoResult = JSON.parse(localStorage.getItem("participantInfo"));
-        //             participantInfoResult = participantInfoResult[0];
+                    localStorage.setItem("participantInfo", JSON.stringify(participantInfo));
+                    let participantInfoResult = JSON.parse(localStorage.getItem("participantInfo"));
+                    participantInfoResult = participantInfoResult[0];
 
         template += `<div class="table-responsive">
 
@@ -69,46 +70,46 @@ export const render = (participant) => {
                                 </thead>
                             <tbody>
                                 <tr>
-                                    ${userProfile(participant[fieldMapping.userProfile])}
+                                    ${userProfile(participantInfoResult[fieldMapping.userProfile])}
                                 </tr>
                                 <tr>
-                                    ${verificationStatus(participant[fieldMapping.ifVeriffied])}
+                                    ${verificationStatus(participantInfoResult[fieldMapping.ifVeriffied])}
                                 </tr>
                                 <tr>
-                                    ${baselineBOHSurvey(participant[fieldMapping.boh], "BOH")}
+                                    ${baselineBOHSurvey(participantInfoResult[fieldMapping.boh], "BOH")}
                                 </tr>
                                 <tr>
-                                    ${baselineSurvey(participant.Module2, "MRE")}
+                                    ${baselineMRESurvey(participantInfoResult[fieldMapping.mre], "MRE")}
                                 </tr>
                                 <tr>
-                                    ${baselineSurvey(participant.Module3, "SAS")}
+                                    ${baselineSASSurvey(participantInfoResult[fieldMapping.sas], "SAS")}
                                 </tr>
                                 <tr>
-                                    ${baselineSurvey(participant.Module4, "LAW")}
+                                    ${baselineLAWSurvey(participantInfoResult[fieldMapping.law], "LAW")}
                                 </tr>
                                 <tr>
-                                    ${baselineSSN(participant.ModuleSSN)}
+                                    ${baselineSSN(participantInfoResult)}
                                 </tr>
                                 <tr>
-                                    ${baselineBloodUrineSurvey(participant[fieldMapping.bloodUrineSurvey])}
+                                    ${baselineBloodUrineSurvey(participantInfoResult[fieldMapping.bloodUrineSurvey])}
                                 </tr>
                                 <tr>
-                                    ${baselineMouthwashSurvey(participant[fieldMapping.mouthwashSurvey])}
+                                    ${baselineMouthwashSurvey(participantInfoResult[fieldMapping.mouthwashSurvey])}
                                 </tr>
-                                <tr>
-                                    ${baselineBloodSample(participant)}
+                                <tr class="sample-row">
+                                    ${baselineBloodSample(participantInfoResult)}
                                 </tr>                           
                                 <tr>
-                                    ${baselineUrineSample(participant)}
+                                    ${baselineUrineSample(participantInfoResult)}
                                 </tr>
                                 <tr>
-                                    ${baselineMouthwashSample(participant)}
+                                    ${baselineMouthwashSample(participantInfoResult)}
                                 </tr>
                                 <tr>
-                                    ${baselineEMR(participant)}
+                                    ${baselineEMR(participantInfoResult)}
                                 </tr>
                                 <tr>
-                                    ${baselinePayment(participant)}
+                                    ${baselinePayment(participantInfoResult)}
                                 </tr>
                                 
                                 <tr>
@@ -219,7 +220,7 @@ const hippaHandler = (participant) => {
     participant && 
     participant[fieldMapping.hippaFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Timeline</td>
+                    <td>N/A</td>
                     <td>Agreement</td>
                     <td>HIPPA</td>
                     <td>Signed</td>
@@ -230,7 +231,7 @@ const hippaHandler = (participant) => {
     ` ) : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-                    <td>Timeline</td>
+                    <td>N/A</td>
                     <td>Agreement</td>
                     <td>HIPPA</td>
                     <td>Not Signed</td>
