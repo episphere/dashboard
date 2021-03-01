@@ -85,7 +85,6 @@ export default
     "verficationDate": 914594314,
 
 
-    // "blood": 104913069,
     "bloodFlag": 878865966,
     "bloodDateTime": 561681068,
     "refusedBlood": 194410742,
