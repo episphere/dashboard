@@ -83,14 +83,16 @@ export default
     "duplicate": 922622075,
     "outreachTimedOut": 160161595,
     "verficationDate": 914594314,
-    "ssn": 311580100,
 
-    "blood": 878865966,
+
+    // "blood": 104913069,
+    "bloodFlag": 878865966,
     "bloodDateTime": 561681068,
     "refusedBlood": 194410742,
-    //"biospecimenBlood": 878865966,
+    "biospecimenBlood": 878865966,
 
-    "urine": 167958071,
+
+    "urineFlag": 167958071,
     "urineDateTime": 847159717,
     "refusedUrine": 949501163,
 
@@ -116,6 +118,7 @@ export default
     "baselineEMRflag": 101170406,
     "baselineEMRpushDate": 143523420,
 
+    "baselinePaymentFlag": 117044491,
     "baslinePayment": 731498909,
     "baselinePaymentDate": 787567527,
     "refusedBaselinePayment": 648228701,

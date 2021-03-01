@@ -40,10 +40,10 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
 
-        // testing ${baselineSurvey(participant.Module2, "MRE")}
+        // participant info displayed is from MOCK DATA & would be swapped once
+        // real data is  active
         let participantInfo = [];
                     participantInfo.push(participantInfoResponse);
-
                     localStorage.setItem("participantInfo", JSON.stringify(participantInfo));
                     let participantInfoResult = JSON.parse(localStorage.getItem("participantInfo"));
                     participantInfoResult = participantInfoResult[0];
@@ -53,7 +53,7 @@ export const render = (participant) => {
                         <span> <h4 style="text-align: center;"><i style="float: left;" class="fa fa-sort fa-lg"></i> 
                         <i style="float: left;" class="fa fa-filter fa-lg"></i> Participant Summary </h4> </span>
 
-                        <div class="sticky-header">
+                        <div >
                             <table class="table table-striped">
                                 <thead class="thead-dark sticky-row"> 
                                     <tr>
@@ -88,7 +88,7 @@ export const render = (participant) => {
                                     ${baselineLAWSurvey(participantInfoResult[fieldMapping.law], "LAW")}
                                 </tr>
                                 <tr>
-                                    ${baselineSSN(participantInfoResult)}
+                                    ${baselineSSN(participantInfoResult[fieldMapping.ssn])}
                                 </tr>
                                 <tr>
                                     ${baselineBloodUrineSurvey(participantInfoResult[fieldMapping.bloodUrineSurvey])}
@@ -96,7 +96,7 @@ export const render = (participant) => {
                                 <tr>
                                     ${baselineMouthwashSurvey(participantInfoResult[fieldMapping.mouthwashSurvey])}
                                 </tr>
-                                <tr class="sample-row">
+                                <tr>
                                     ${baselineBloodSample(participantInfoResult)}
                                 </tr>                           
                                 <tr>
@@ -106,10 +106,10 @@ export const render = (participant) => {
                                     ${baselineMouthwashSample(participantInfoResult)}
                                 </tr>
                                 <tr>
-                                    ${baselineEMR(participantInfoResult)}
+                                    ${baselineEMR(participantInfoResult[fieldMapping.baselineEMR])}
                                 </tr>
                                 <tr>
-                                    ${baselinePayment(participantInfoResult)}
+                                    ${baselinePayment(participantInfoResult[fieldMapping.baselinePaymentFlag])}
                                 </tr>
                                 
                                 <tr>

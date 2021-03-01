@@ -7,8 +7,8 @@ export const userProfile = (participant) => {
     !participant ?
     (template += `
         <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
+        <td>Enrollment</td>
+        <td>N/A</td>
         <td>User Profile</td>
         <td>N/A</td>
         <td>N/A</td>
@@ -21,8 +21,8 @@ export const userProfile = (participant) => {
 
     ( template += `
         <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
+        <td>Enrollment</td>
+        <td>N/A</td>
         <td>User Profile</td>
         <td>Submitted</td>
         <td>${humanReadableMDY(participant[fieldMapping.userProfileDateTime])}</td>
@@ -33,8 +33,8 @@ export const userProfile = (participant) => {
     ( 
         template += `
         <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
+        <td>Enrollment</td>
+        <td>N/A</td>
         <td>User Profile</td>
         <td>Not Submitted</td>
         <td>N/A</td>
@@ -54,8 +54,8 @@ export const verificationStatus = (participant) => {
     !participant ?
     (template += `
         <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
+        <td>Enrollment</td>
+        <td>N/A</td>
         <td>Verification</td>
         <td>N/A</td>
         <td>N/A</td>
@@ -67,8 +67,8 @@ export const verificationStatus = (participant) => {
     (participant[fieldMapping.verifiedFlag] === fieldMapping.verified) ?
             (template += `
             <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-            <td>Baseline</td>
-            <td>Survey</td>
+            <td>Enrollment</td>
+            <td>N/A</td>
             <td>Verification Status</td>
             <td>Verified</td>
             <td>${humanReadableMDY(participant[fieldMapping.verficationDate])}</td>
@@ -80,8 +80,8 @@ export const verificationStatus = (participant) => {
     (participant[fieldMapping.verifiedFlag] === fieldMapping.cannotBeVerified) ?
         ( template += `
             <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
-            <td>Baseline</td>
-            <td>Survey</td>
+            <td>Enrollment</td>
+            <td>N/A</td>
             <td>Verification Status</td>
             <td>Cann't Be Verified</td>
             <td>N/A</td>
@@ -92,8 +92,8 @@ export const verificationStatus = (participant) => {
     (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) ?
         ( template += `
             <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
-            <td>Baseline</td>
-            <td>Survey</td>
+            <td>Enrollment</td>
+            <td>N/A</td>
             <td>Verification Status</td>
             <td>Not Yet Verified</td>
             <td>N/A</td>
@@ -104,8 +104,8 @@ export const verificationStatus = (participant) => {
     (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) ?
         ( template += `
             <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-            <td>Baseline</td>
-            <td>Survey</td>
+            <td>Enrollment</td>
+            <td>N/A</td>
             <td>Verification Status</td>
             <td>Duplicate</td>
             <td>N/A</td>
@@ -115,8 +115,8 @@ export const verificationStatus = (participant) => {
         ` ) :
         ( template += `
             <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
-            <td>Baseline</td>
-            <td>Survey</td>
+            <td>Enrollment</td>
+            <td>N/A</td>
             <td>Verification Status</td>
             <td>Outreach Timed Out</td>
             <td>N/A</td>
@@ -176,8 +176,9 @@ export const baselineSurvey = (participantModule, surveyName) => {
 
 
 export const baselineBloodSample = (participantModule) => {
+
     let template = ``;
-    !participantModule[fieldMapping.blood] ?  
+    !participantModule[fieldMapping.bloodFlag] ?  
     (
         template += `
                     <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
@@ -205,7 +206,7 @@ export const baselineBloodSample = (participantModule) => {
         )
     :   
     (
-        ( participantModule[fieldMapping.blood] === (fieldMapping.yes)) ?
+        ( participantModule[fieldMapping.bloodFlag] === (fieldMapping.yes)) ?
             template += `
                         <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
                         <td>Baseline</td>
@@ -213,7 +214,7 @@ export const baselineBloodSample = (participantModule) => {
                         <td>Blood</td>
                         <td>Collected</td>
                         <td>${humanReadableMDY(participantModule[fieldMapping.bloodDateTime])}</td>
-                        <td>${biospecimenStatus(participantModule[fieldMapping.biospecimenBlood])}</td>
+                        <td>${biospecimenStatus(participantModule)}</td>
                         <td>N</td>
                         <td>N/A</td>`
             : (
@@ -224,7 +225,7 @@ export const baselineBloodSample = (participantModule) => {
                         <td>Blood</td>
                         <td>Not Collected</td>
                         <td>N/A</td>
-                        <td>${biospecimenStatus(participantModule[fieldMapping.biospecimenBlood])}</td>
+                        <td>${biospecimenStatus(participantModule)}</td>
                         <td>N</td>
                         <td>N/A</td>`
             )
@@ -235,7 +236,7 @@ export const baselineBloodSample = (participantModule) => {
 
 export const baselineUrineSample = (participantModule) => {
     let template = ``;
-    !participantModule[fieldMapping.urine] ?  
+    !participantModule[fieldMapping.urineFlag] ?  
     (
         template += `
                     <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
@@ -262,7 +263,7 @@ export const baselineUrineSample = (participantModule) => {
             <td>N/A</td>`
     ) :
     (
-        ( participantModule[fieldMapping.urine] === (fieldMapping.yes)) ?
+        ( participantModule[fieldMapping.urineFlag] === (fieldMapping.yes)) ?
             template += `
                         <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
                         <td>Baseline</td>
@@ -398,7 +399,7 @@ export const baselineBOHSurvey = (participantModule, surveyName) => {
                         <td>Survey</td>
                         <td>${surveyName}</td>
                         <td>Started</td>
-                        <td>${humanReadableMDY(participant[fieldMapping.bohStartDate])}</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.bohStartDate])}</td>
                         <td>N/A</td>
                         <td>N</td>
                         <td>N/A</td>`
@@ -654,7 +655,7 @@ export const baselineSSN = (participantModule) => {
                 <td>Baseline</td>
                 <td>Survey</td>
                 <td>SSN</td>
-                <td>10 digits</td>
+                <td>9 digits</td>
                 <td>${humanReadableMDY(participantModule[fieldMapping.ssnFulldate])}</td>
                 <td>N/A</td>
                 <td>N/A</td>
@@ -726,7 +727,7 @@ export const baselineBloodUrineSurvey = (participantModule) => {
                         <td>Survey</td>
                         <td>Blood/Urine</td>
                         <td>Started</td>
-                        <td>${humanReadableMDY(participant[fieldMapping.bloodUrineSurveyStartedDate])}</td>
+                        <td>${humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyStartedDate])}</td>
                         <td>N/A</td>
                         <td>N</td>
                         <td>N/A</td>`
@@ -820,7 +821,7 @@ export const baselineMouthwashSurvey = (participantModule) => {
 
 export const baselineEMR = (participantModule) => {
     let template = ``;
-    !(participantModule[fieldMapping.baselineEMR]) ?  
+    !(participantModule) ?  
     (
         template += `
                     <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
@@ -841,7 +842,7 @@ export const baselineEMR = (participantModule) => {
                     <td>EMR</td>
                     <td>N/A</td>
                     <td>Pushed</td>
-                    <td>${humanReadableMDY(participant[fieldMapping.baselineEMRpushDate])}</td>
+                    <td>${humanReadableMDY(participantModule[fieldMapping.baselineEMRpushDate])}</td>
                     <td>N/A</td>
                     <td>N/A</td>
                     <td>N/A</td>`
@@ -864,13 +865,13 @@ export const baselineEMR = (participantModule) => {
 
 export const baselinePayment = (participantModule) => {
     let template = ``;
-    !participantModule[fieldMapping.payment] ?  
+    !participantModule ?  
     (
         template += `
                     <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Baseline</td>
+                    <td>Payment</td>f
                     <td>N/A</td>
-                    <td>Payment</td>
                     <td>N/A</td>
                     <td>N/A</td>
                     <td>N/A</td>
@@ -882,8 +883,8 @@ export const baselinePayment = (participantModule) => {
         template += `
                     <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Baseline</td>
-                    <td>N/A</td>
                     <td>Payment</td>
+                    <td>N/A</td>
                     <td>N/A</td>
                     <td>${humanReadableMDY(participantModule[fieldMapping.refusedBaselinePaymentDate])}</td>
                     <td>N/A</td>
@@ -896,8 +897,8 @@ export const baselinePayment = (participantModule) => {
         template += `
             <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
             <td>Baseline</td>
-            <td>N/A</td>
             <td>Payment</td>
+            <td>N/A</td>
             <td>Issued</td>
             <td>${humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate])}</td>
             <td>N/A</td>
@@ -909,8 +910,8 @@ export const baselinePayment = (participantModule) => {
 
             <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
             <td>Baseline</td>
-            <td>N/A</td>
             <td>Payment</td>
+            <td>N/A</td>
             <td>Not Issued</td>
             <td>N/A</td>
             <td>N/A</td>
