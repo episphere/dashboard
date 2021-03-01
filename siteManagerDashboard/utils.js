@@ -81,29 +81,3 @@ setTimeout(() => {
   })
 }, 50);
 }
-
-
-
-
-
-
-// console.log('heloo4')
-// Fnon.Ask.Dark('Unsaved changes detected. Navigate away?','Unsaved Changes','Yes', 'No', (result)=>{
-//   // callback
-//   e.preventDefault();
-//   console.log('dialogue', e)
-//   if (result) {
-//     console.log('heloo')
-//     // when user decides to stay on the page
-//       e.preventDefault();
-//       console.log('heloo1')
-//       return;
-    
-//   } 
-//   else {
-//     console.log('heloo3')
-//       counter = 0;
-//       localStorage.setItem("counters", JSON.stringify(counter));
-      
-// }
-// });
