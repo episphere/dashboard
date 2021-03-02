@@ -233,33 +233,30 @@ table {
     top: 0;
 }
 
-.table-striped>tbody>tr:nth-child(2n+1)>td{
-   background-color: rgb(109, 218, 252); 
- }
+.row-color-enrollment-dark td{
+    background-color: rgb(239, 185, 250); 
+}
 
- .table-striped>tbody>tr:nth-child(2n)>td{
+.row-color-enrollment-light td{
+    background-color: rgb(243, 207, 250); 
+}
+
+.row-color-payment td{
+    background-color: rgb(176, 230, 192); 
+}
+
+.row-color-survey-dark td {
+    background-color: rgb(109, 218, 252);
+}
+
+.row-color-survey-light td {
     background-color: rgb(201, 236, 247); 
-  }
+}
 
-  .table-striped>tbody>tr:nth-child(n+10)>td{
+.row-color-sample-dark td {
     background-color: rgb(246, 252, 173); 
-  }
+}
 
-  .table-striped>tbody>tr:nth-child(11)>td{
-    background-color: rgb(253, 255, 223); 
-  }
-
- 
-
-  .table-striped>tbody>tr:nth-child(13)>td{
-    background-color: rgb(153, 250, 197); 
-  }
-
-  .table-striped>tbody>tr:nth-child(14)>td{
-    background-color: rgb(214, 179, 247); 
-  }
-
-
-  .table-striped>tbody>tr:nth-child(n+15)>td{
-    background-color: rgb(245, 181, 218); 
-  }
+.row-color-sample-light td {
+    background-color: rgb(252, 255, 217); 
+}

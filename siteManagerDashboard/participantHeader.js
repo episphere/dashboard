@@ -17,7 +17,7 @@ export const headerImportantColumns = [
 export const renderParticipantHeader = (participant) => {
 
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    let template = `<div class="alert alert-light" role="alert">`
+    let template = `<div class="alert alert-light .sticky-participant-header" role="alert">`
 
     for (let x in headerImportantColumns) {
 
@@ -47,7 +47,7 @@ export const renderParticipantHeader = (participant) => {
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
 
-    template += '</div></div>'
+    template += '</div>'
 
     return template;
 } 

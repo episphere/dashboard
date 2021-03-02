@@ -53,7 +53,7 @@ export const render = (participant) => {
                         <span> <h4 style="text-align: center;"><i style="float: left;" class="fa fa-sort fa-lg"></i> 
                         <i style="float: left;" class="fa fa-filter fa-lg"></i> Participant Summary </h4> </span>
 
-                        <div >
+                        <div class="sticky-header">
                             <table class="table table-striped">
                                 <thead class="thead-dark sticky-row"> 
                                     <tr>
@@ -69,53 +69,53 @@ export const render = (participant) => {
                                     </tr>
                                 </thead>
                             <tbody>
-                                <tr>
+                                <tr class="row-color-enrollment-dark">
                                     ${userProfile(participantInfoResult[fieldMapping.userProfile])}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-enrollment-light">
                                     ${verificationStatus(participantInfoResult[fieldMapping.ifVeriffied])}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-dark">
                                     ${baselineBOHSurvey(participantInfoResult[fieldMapping.boh], "BOH")}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-light">
                                     ${baselineMRESurvey(participantInfoResult[fieldMapping.mre], "MRE")}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-dark">
                                     ${baselineSASSurvey(participantInfoResult[fieldMapping.sas], "SAS")}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-light">
                                     ${baselineLAWSurvey(participantInfoResult[fieldMapping.law], "LAW")}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-dark">
                                     ${baselineSSN(participantInfoResult[fieldMapping.ssn])}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-light">
                                     ${baselineBloodUrineSurvey(participantInfoResult[fieldMapping.bloodUrineSurvey])}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-survey-dark">
                                     ${baselineMouthwashSurvey(participantInfoResult[fieldMapping.mouthwashSurvey])}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-sample-dark">
                                     ${baselineBloodSample(participantInfoResult)}
                                 </tr>                           
-                                <tr>
+                                <tr class="row-color-sample-light">
                                     ${baselineUrineSample(participantInfoResult)}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-sample-dark">
                                     ${baselineMouthwashSample(participantInfoResult)}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-sample-light">
                                     ${baselineEMR(participantInfoResult[fieldMapping.baselineEMR])}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-payment">
                                     ${baselinePayment(participantInfoResult[fieldMapping.baselinePaymentFlag])}
                                 </tr>
                                 
-                                <tr>
+                                <tr class="row-color-enrollment-dark">
                                     ${consentHandler(participant)}
                                 </tr>
-                                <tr>
+                                <tr class="row-color-enrollment-light">
                                    ${hippaHandler(participant)}
                                 </tr>
                             </tbody>
@@ -190,7 +190,7 @@ const consentHandler = (participant) => {
     participant && 
     participant[fieldMapping.consentFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Timeline</td>
+                    <td>Enrollment</td>
                     <td>Agreement</td>
                     <td>Consent</td>
                     <td>Signed</td>
@@ -201,7 +201,7 @@ const consentHandler = (participant) => {
     ` ) : 
     (
         template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Timeline</td>
+                    <td>Enrollment</td>
                     <td>Agreement</td>
                     <td>Consent</td>
                     <td>Not Signed</td>
@@ -220,7 +220,7 @@ const hippaHandler = (participant) => {
     participant && 
     participant[fieldMapping.hippaFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>N/A</td>
+                    <td>Enrollment</td>
                     <td>Agreement</td>
                     <td>HIPPA</td>
                     <td>Signed</td>
@@ -231,7 +231,7 @@ const hippaHandler = (participant) => {
     ` ) : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-                    <td>N/A</td>
+                    <td>Enrollment</td>
                     <td>Agreement</td>
                     <td>HIPPA</td>
                     <td>Not Signed</td>
