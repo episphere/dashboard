@@ -2,6 +2,7 @@ import {renderParticipantLookup} from './participantLookup.js';
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
+import { renderParticipantSummary } from './participantSummary.js'
 import { internalNavigatorHandler } from './utils.js'
 
 let saveFlag = false;
@@ -29,6 +30,15 @@ const router = () => {
     else if(route === '#participants/all') renderParticipantsAll();
     else if(route === '#participantLookup') renderParticipantLookup();
     else if(route === '#participantDetails') renderParticipantDetails();
+    else if (route === '#participantSummary') {
+        if (JSON.parse(localStorage.getItem("participant")) === null ) {
+            renderParticipantSummary();
+        }
+        else {
+            let participant = JSON.parse(localStorage.getItem("participant"))
+            renderParticipantSummary(participant);
+        }
+    }
     else if(route === '#logout') clearLocalStroage();
     else window.location.hash = '#';
 }

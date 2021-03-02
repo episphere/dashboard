@@ -1,6 +1,6 @@
 
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { humanReadableFromISO } from './utils.js';
+import { humanReadableMDY } from './utils.js';
 
 export const headerImportantColumns = [
     { field: 'Connect_ID' },
@@ -8,14 +8,16 @@ export const headerImportantColumns = [
     { field: fieldMapping.lName },
     { field: fieldMapping.birthYear },
     { field: fieldMapping.consentDate },
+    { field: fieldMapping.verficationDate },
     { field: 'Year(s) in Connect' },
-
+    { field: 'Status' }
 ];
+
 
 export const renderParticipantHeader = (participant) => {
 
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    let template = `<div class="alert alert-light" role="alert">`
+    let template = `<div class="alert alert-light .sticky-participant-header" role="alert">`
 
     for (let x in headerImportantColumns) {
 
@@ -23,6 +25,10 @@ export const renderParticipantHeader = (participant) => {
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${participant[headerImportantColumns[x].field] !== undefined ?  participant[headerImportantColumns[x].field] : ""} &nbsp;`
         :
         
+        (headerImportantColumns[x].field === 'Status' ) ?
+            template += `<span><b> Status </b></span> : Active &nbsp;`
+        :
+
         (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${getYearsInConnect(participant)} &nbsp;`
         :
@@ -32,7 +38,11 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
-            template += `<span><b> ${ conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${humanReadableFromISO(participant[fieldMapping.consentDate])} &nbsp; <br />`
+            template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
+        :
+
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
+            template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`
         :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
@@ -65,7 +75,7 @@ const concatDOB = (participant) => {
     const participantBirthMonth = participant[fieldMapping.birthMonth];
     const participantBirthDate = participant[fieldMapping.birthDay];
     const participantBirthYear = participant[fieldMapping.birthYear];
-    const dateofBirth = participantBirthMonth + '-' + participantBirthDate + '-' + participantBirthYear;
-    return dateofBirth; //  07-02-1966  
+    const dateofBirth = participantBirthMonth + '/' + participantBirthDate + '/' + participantBirthYear;
+    return dateofBirth; //  07/02/1966  
 
 }

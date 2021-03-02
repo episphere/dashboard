@@ -2,6 +2,7 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getCurrentTimeStamp } from './utils.js';
+import {renderParticipantSummary} from './participantSummary.js'
 
 export const importantColumns = [ 
     { field: fieldMapping.lName,
@@ -88,6 +89,7 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
     viewAuditHandler(adminSubjectAudit);
     changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
     editAltContact(participant, adminSubjectAudit);
+    viewParticipantSummary(participant);
   
 }
 
@@ -99,20 +101,26 @@ export const render = (participant) => {
             Please select a participant first!
             </div>
         </div>
-         `
+        `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        template += `<div id="root"> 
+        template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
         template += `
                     <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
+                        <thead style="position: sticky;" class="thead-dark"> 
+                        <tr>
+                            <th scope="col">Field</th>
+                            <th scope="col">Value</th>
+                            <th scope="col"></th>
+                        </thead>
                     <tbody class="participantDetailTable">`
      
-        importantColumns.forEach(x => template += `<tr class="detailedRow"><th scope="row"><div class="mb-3"><label class="form-label">
+        importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
-            <td>${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> <td> 
-            <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
+            <td style="text-align: left;">${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> 
+            <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                 data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
                 data-participantconceptid=${x.field} data-participantValue=${participant[x.field]} name="modalParticipantData" >
                 ${x.editable ? `<button type="button" class="btn btn-primary">Edit</button>`
@@ -209,7 +217,8 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                 postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
                 viewAuditHandler(adminSubjectAudit);
                 showSaveAlert();
-                resetChanges(participant, originalHTML, siteKey);            
+                resetChanges(participant, originalHTML, siteKey);  
+               // viewParticipantSummary(participant);          
             });
 
         })
@@ -527,3 +536,11 @@ export const hideAnimation = () => {
 } 
 
 
+const viewParticipantSummary = (participant) => {
+    const a = document.getElementById('viewSummary');
+    if (a) {
+        a.addEventListener('click',  () => {  
+            renderParticipantSummary(participant);
+        })
+    }
+}
