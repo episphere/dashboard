@@ -571,7 +571,7 @@ const filterTotalRecruitsFunnel = (data) => {
 const filterCurrentWorkflow = (data, recruit) => {
     let recruitType = fieldMapping[recruit]
     let currentWorflowObj = {}
-    let notSignedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.no))
+    let notSignedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.no ))
     let signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.no))
     let consented = data.filter(i => (i.recruitType === recruitType && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.no))
     let submittedProfile = data.filter(i => 
@@ -579,11 +579,11 @@ const filterCurrentWorkflow = (data, recruit) => {
     let verification = data.filter(i => 
                             (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
-    else currentWorflowObj.notSignedIn = notSignedIn[0].signedCount
-    currentWorflowObj.signedIn = signedIn[0].signedCount
-    currentWorflowObj.consented = consented[0].consentCount
-    currentWorflowObj.submittedProfile = submittedProfile[0].submittedCount
-    currentWorflowObj.verification = verification[0].verificationCount
+    else currentWorflowObj.notSignedIn = ( (notSignedIn[0] !== undefined) ? (notSignedIn[0].signedCount): (0))
+    currentWorflowObj.signedIn = ( (signedIn[0] !== undefined) ? (signedIn[0].signedCount): (0))
+    currentWorflowObj.consented = ( (consented[0] !== undefined) ? (consented[0].consentCount): (0)) 
+    currentWorflowObj.submittedProfile = ( (submittedProfile[0] !== undefined) ? (submittedProfile[0].submittedCount): (0))
+    currentWorflowObj.verification = ( (verification[0] !== undefined) ? (verification[0].verificationCount): (0) )
     return currentWorflowObj;
 }
 
@@ -596,11 +596,11 @@ const filterTotalCurrentWorkflow = (data) => {
         ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout) ))
     let verification = data.filter(i => 
         ((i.recruitType === fieldMapping.active || fieldMapping.passive) && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
-    currentWorflowObj.notSignedIn = notSignedIn[0].signedCount
-    currentWorflowObj.signedIn = signedIn[0].signedCount
-    currentWorflowObj.consented = consented[0].consentCount
-    currentWorflowObj.submittedProfile = submittedProfile[0].submittedCount
-    currentWorflowObj.verification = verification[0].verificationCount       
+    currentWorflowObj.notSignedIn = ( (notSignedIn[0] !== undefined) ? (notSignedIn[0].signedCount): (0))
+    currentWorflowObj.signedIn = ( (signedIn[0] !== undefined) ? (signedIn[0].signedCount): (0))
+    currentWorflowObj.consented = ( (consented[0] !== undefined) ? (consented[0].consentCount): (0)) 
+    currentWorflowObj.submittedProfile = ( (submittedProfile[0] !== undefined) ? (submittedProfile[0].submittedCount): (0))
+    currentWorflowObj.verification = ( (verification[0] !== undefined) ? (verification[0].verificationCount): (0) )   
     return currentWorflowObj;
 }
 
@@ -942,10 +942,26 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
 
 const renderStackBarChart = (participantGenderResponse, participantRaceResponse, participantAgeRangeResponse, id) => {
 
-    const totalGenderResponse = participantGenderResponse[0].sexCount + participantGenderResponse[1].sexCount + participantGenderResponse[2].sexCount
-    const totalRaceResponse = participantRaceResponse[0].raceCount + participantRaceResponse[1].raceCount + participantRaceResponse[2].raceCount
+    const participantGenderResponseF = ( (participantGenderResponse[0] !== undefined) ? (participantGenderResponse[0].sexCount): (0));
+    const participantGenderResponseM = ( (participantGenderResponse[1] !== undefined) ? (participantGenderResponse[1].sexCount): (0));
+    const participantGenderResponseI = ( (participantGenderResponse[2] !== undefined) ? (participantGenderResponse[2].sexCount): (0));
+    const participantGenderResponseU = ( (participantGenderResponse[3] !== undefined) ? (participantGenderResponse[3].sexCount): (0));
+    
+    const totalGenderResponse = participantGenderResponseF + participantGenderResponseM + participantGenderResponseI + participantGenderResponseU
 
-    const totalAgeRangeResponse = participantAgeRangeResponse[0].ageCount + participantAgeRangeResponse[1].ageCount
+    const participantRaceResponseW = ( (participantRaceResponse[0] !== undefined) ? (participantRaceResponse[0].raceCount): (0));
+    const participantRaceResponseO = ( (participantRaceResponse[1] !== undefined) ? (participantRaceResponse[1].raceCount): (0));
+    const participantRaceResponseU = ( (participantRaceResponse[2] !== undefined) ? (participantRaceResponse[2].raceCount): (0));
+        
+    const totalRaceResponse = participantRaceResponseW + participantRaceResponseO + participantRaceResponseU
+
+    const participantAgeRangeResponse1 = ( (participantAgeRangeResponse[0] !== undefined) ? (participantAgeRangeResponse[0].ageCount): (0));
+    const participantAgeRangeResponse2 = ( (participantAgeRangeResponse[1] !== undefined) ? (participantAgeRangeResponse[1].ageCount): (0));
+    const participantAgeRangeResponse3 = ( (participantAgeRangeResponse[2] !== undefined) ? (participantAgeRangeResponse[2].ageCount): (0));
+    const participantAgeRangeResponse4 = ( (participantAgeRangeResponse[3] !== undefined) ? (participantAgeRangeResponse[3].ageCount): (0));
+    const participantAgeRangeResponse5 = ( (participantAgeRangeResponse[4] !== undefined) ? (participantAgeRangeResponse[4].ageCount): (0));
+
+    const totalAgeRangeResponse = participantAgeRangeResponse1 + participantAgeRangeResponse2 + participantAgeRangeResponse3 + participantAgeRangeResponse4 + participantAgeRangeResponse5
                                     
     const totalVerifiedParticipants = totalGenderResponse + totalRaceResponse + totalAgeRangeResponse
     const genderPercent = Math.round((totalGenderResponse / totalVerifiedParticipants) * 100)
@@ -955,7 +971,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let ageTrace1 = {
         y: ['Age'],
-        x: [participantAgeRangeResponse[0].ageCount],
+        x: [participantAgeRangeResponse1],
         type: 'bar',
         name: '40-45',
         text: `Total: ${ageRangePercent}%`,
@@ -964,44 +980,44 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let ageTrace11 = {
         y: ['Age'],
-        x: [participantAgeRangeResponse[1].ageCount],
+        x: [participantAgeRangeResponse2],
         type: 'bar',
         name: '46-50',
         text: `Total: ${ageRangePercent}%`,
         orientation: 'h'
     };
 
-    // let ageTrace12 = {
-    //     y: ['Age'],
-    //     x: [participantAgeRangeResponse[2].ageCount],
-    //     type: 'bar',
-    //     name: '51-55',
-    //     text: `Total: ${ageRangePercent}%`,
-    //     orientation: 'h'
-    // };
+    let ageTrace12 = {
+        y: ['Age'],
+        x: [participantAgeRangeResponse3],
+        type: 'bar',
+        name: '51-55',
+        text: `Total: ${ageRangePercent}%`,
+        orientation: 'h'
+    };
 
-    // let ageTrace13 = {
-    //     y: ['Age'],
-    //     x: [participantAgeRangeResponse[3].ageCount],
-    //     type: 'bar',
-    //     name: '56-60',
-    //     text: `Total: ${ageRangePercent}%`,
-    //     orientation: 'h'
-    // };
+    let ageTrace13 = {
+        y: ['Age'],
+        x: [participantAgeRangeResponse4],
+        type: 'bar',
+        name: '56-60',
+        text: `Total: ${ageRangePercent}%`,
+        orientation: 'h'
+    };
 
-    // let ageTrace14 = {
-    //     y: ['Age'],
-    //     x: [participantAgeRangeResponse[3].ageCount],
-    //     type: 'bar',
-    //     name: '61-66',
-    //     text: `Total: ${ageRangePercent}%`,
-    //     orientation: 'h'
-    // };
+    let ageTrace14 = {
+        y: ['Age'],
+        x: [participantAgeRangeResponse5],
+        type: 'bar',
+        name: '61-66',
+        text: `Total: ${ageRangePercent}%`,
+        orientation: 'h'
+    };
 
 
     let raceTrace = {
         y: ['Race Binary'],
-        x: [participantRaceResponse[0].raceCount],
+        x: [participantRaceResponseW],
         xaxis: 'x2',
         yaxis: 'y2',
         type: 'bar',
@@ -1012,7 +1028,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let raceTrace2 = {
         y: ['Race Binary'],
-        x: [participantRaceResponse[1].raceCount],
+        x: [participantRaceResponseU],
         xaxis: 'x2',
         yaxis: 'y2',
         type: 'bar',
@@ -1022,7 +1038,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
     };
     let raceTrace3 = {
         y: ['Race Binary'],
-        x: [participantRaceResponse[2].raceCount],
+        x: [participantRaceResponseO],
         xaxis: 'x2',
         yaxis: 'y2',
         type: 'bar',
@@ -1033,7 +1049,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let genderTrace = {
         y: ['Sex'],
-        x: [participantGenderResponse[0].sexCount],
+        x: [participantGenderResponseF],
         xaxis: 'x3',
         yaxis: 'y3',
         type: 'bar',
@@ -1044,7 +1060,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let genderTrace2 = {
         y: ['Sex'],
-        x: [participantGenderResponse[1].sexCount],
+        x: [participantGenderResponseM],
         xaxis: 'x3',
         yaxis: 'y3',
         type: 'bar',
@@ -1055,7 +1071,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let genderTrace3 = {
         y: ['Sex'],
-        x: [participantGenderResponse[2].sexCount],
+        x: [participantGenderResponseI],
         xaxis: 'x3',
         yaxis: 'y3',
         type: 'bar',
@@ -1064,21 +1080,21 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
         orientation: 'h'
     };
 
-    // let genderTrace4 = {
-    //     y: ['Sex'],
-    //     x: [participantGenderResponse[3]],
-    //     xaxis: 'x3',
-    //     yaxis: 'y3',
-    //     type: 'bar',
-    //     name: 'Unknown',
-    //     text: `Total: ${genderPercent}%`,
-    //     orientation: 'h'
-    // };
+    let genderTrace4 = {
+        y: ['Sex'],
+        x: [participantGenderResponseU],
+        xaxis: 'x3',
+        yaxis: 'y3',
+        type: 'bar',
+        name: 'Unknown',
+        text: `Total: ${genderPercent}%`,
+        orientation: 'h'
+    };
 
     let data = [
-        ageTrace1, ageTrace11,
+        ageTrace1, ageTrace11, ageTrace12, ageTrace13, ageTrace14,
         raceTrace, raceTrace2, raceTrace3,
-        genderTrace, genderTrace2, genderTrace3
+        genderTrace, genderTrace2, genderTrace3, genderTrace4
     ];
 
 
