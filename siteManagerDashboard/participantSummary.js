@@ -67,8 +67,15 @@ export const render = (participant) => {
                                         <th class="sticky-row" scope="col">Refused</th>
                                         <th class="sticky-row" scope="col">Extra</th>
                                     </tr>
-                                </thead>
+                                </thead>   
+                            
                             <tbody>
+                                <tr class="row-color-enrollment-dark">
+                                    ${consentHandler(participant)}
+                                </tr>
+                                <tr class="row-color-enrollment-light">
+                                    ${hippaHandler(participant)}
+                                </tr>
                                 <tr class="row-color-enrollment-dark">
                                     ${userProfile(participantInfoResult[fieldMapping.userProfile])}
                                 </tr>
@@ -105,18 +112,11 @@ export const render = (participant) => {
                                 <tr class="row-color-sample-dark">
                                     ${baselineMouthwashSample(participantInfoResult)}
                                 </tr>
-                                <tr class="row-color-sample-light">
-                                    ${baselineEMR(participantInfoResult[fieldMapping.baselineEMR])}
-                                </tr>
                                 <tr class="row-color-payment">
                                     ${baselinePayment(participantInfoResult[fieldMapping.baselinePaymentFlag])}
                                 </tr>
-                                
-                                <tr class="row-color-enrollment-dark">
-                                    ${consentHandler(participant)}
-                                </tr>
-                                <tr class="row-color-enrollment-light">
-                                   ${hippaHandler(participant)}
+                                <tr class="row-color-sample-light">
+                                    ${baselineEMR(participantInfoResult[fieldMapping.baselineEMR])}
                                 </tr>
                             </tbody>
                             </table>
@@ -222,7 +222,7 @@ const hippaHandler = (participant) => {
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
                     <td>Enrollment</td>
                     <td>Agreement</td>
-                    <td>HIPPA</td>
+                    <td>HIPAA</td>
                     <td>Signed</td>
                     <td>${participant[fieldMapping.hippaDate] && humanReadableMDY(participant[fieldMapping.hippaDate])}</td>
                     <td>${participant[fieldMapping.hippaVersion]}</td>
@@ -233,7 +233,7 @@ const hippaHandler = (participant) => {
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Enrollment</td>
                     <td>Agreement</td>
-                    <td>HIPPA</td>
+                    <td>HIPAA</td>
                     <td>Not Signed</td>
                     <td>N/A</td>
                     <td>N/A</td>

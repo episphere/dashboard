@@ -77,12 +77,15 @@ export default
 
     "ifVeriffied": 218595434,
     "verifiedFlag": 821247024,
-    "verified": 197316935,
-    "cannotBeVerified": 219863910,
-    "notYetVerified": 875007964,
-    "duplicate": 922622075,
-    "outreachTimedOut": 160161595,
+
     "verficationDate": 914594314,
+
+    'notYetVerified': 875007964,
+    'outreachTimedout': 160161595,
+    'verified': 197316935,
+    'cannotBeVerified': 219863910,
+    'duplicate': 922622075,
+
 
 
     "bloodFlag": 878865966,
@@ -121,6 +124,28 @@ export default
     "baslinePayment": 731498909,
     "baselinePaymentDate": 787567527,
     "refusedBaselinePayment": 648228701,
-    "refusedBaselinePaymentDate": 438636757
+    "refusedBaselinePaymentDate": 438636757,
+
+    "ageRange1": 124276120,
+    "ageRange2": 450985724,
+    "ageRange3": 363147933,
+    "ageRange4": 636706443,
+    "ageRange5": 771230670,
+
+    "female": 536341288,
+    "male": 654207589,
+    "intersex": 830573274,
+    "unavailable": 178420302,
+
+    "white": 768826601,
+    "other": 438483626,
+    "unavailable": 178420302,
+    "signOn": 230663853,
+  'active': 486306141,
+  'passive': 854703046
+
+
+
+
 
 }

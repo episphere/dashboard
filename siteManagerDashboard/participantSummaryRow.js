@@ -413,6 +413,7 @@ export const baselineMouthwashSurvey = (participantModule) => {
     
 }
 
+
 export const baselineEMR = (participantModule) => {
     let template = ``;
     !(participantModule) ?  
@@ -423,8 +424,8 @@ export const baselineEMR = (participantModule) => {
     (participantModule[fieldMapping.baselineEMRflag]) === (fieldMapping.yes) ?  
     (
         template += `
-                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "EMR", "N/A",
-                "Pushed", humanReadableMDY(participantModule[fieldMapping.baselineEMRpushDate]), "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "EMR", "N/A","Pushed", 
+                humanReadableMDY(participantModule[fieldMapping.baselineEMRpushDate]), "N/A", "N/A", "N/A")}`
     ) : (
         template += `
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "EMR", "N/A", "Not Pushed", "N/A", "N/A", "N/A", "N/A")}`
@@ -453,15 +454,16 @@ export const baselinePayment = (participantModule) => {
     (
         template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Issued", 
-                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", "N/A")}`
+                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", "Eligible")}`
     ) :
     (
         template += `
-                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Not Issued", 
-                "N/A", "N/A", "N", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Issued", 
+                "N/A", "N/A", "N", "Not Eligible")}`
     )
     return template;
 }
+
 
 const biospecimenStatus = (biospecimenRow) => {
     let template = ``;
