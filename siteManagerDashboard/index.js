@@ -1,9 +1,31 @@
-import {renderParticipantLookup} from './participantLookup.js'; 
-import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
+import { renderParticipantLookup } from './participantLookup.js';
+import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
+import { renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js'
 import { internalNavigatorHandler } from './utils.js'
+import fieldMapping from './fieldToConceptIdMapping.js';
+
+const genderFields = [
+    { field: fieldMapping.female },
+    { field: fieldMapping.male },
+    { field: fieldMapping.intersex },
+    { field: fieldMapping.unavailable }
+]
+
+const ageRangeFields = [
+    { field: fieldMapping.ageRange1 },
+    { field: fieldMapping.ageRange2 },
+    { field: fieldMapping.ageRange3 },
+    { field: fieldMapping.ageRange4 },
+    { field: fieldMapping.ageRange5 }
+]
+
+const raceFields = [
+    { field: fieldMapping.white },
+    { field: fieldMapping.other },
+    { field: fieldMapping.unavailable }
+]
 
 let saveFlag = false;
 let counter = 0;
@@ -21,17 +43,17 @@ window.onhashchange = () => {
 
 const router = () => {
     const hash = decodeURIComponent(window.location.hash);
-    const route =  hash || '#';
-    if(route === '#') homePage();
-    else if(route === '#dashboard') renderDashboard();
-    else if(route === '#participants/notyetverified') renderParticipantsNotVerified();
-    else if(route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
-    else if(route === '#participants/verified') renderParticipantsVerified();
-    else if(route === '#participants/all') renderParticipantsAll();
-    else if(route === '#participantLookup') renderParticipantLookup();
-    else if(route === '#participantDetails') renderParticipantDetails();
+    const route = hash || '#';
+    if (route === '#') homePage();
+    else if (route === '#dashboard') renderDashboard();
+    else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
+    else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
+    else if (route === '#participants/verified') renderParticipantsVerified();
+    else if (route === '#participants/all') renderParticipantsAll();
+    else if (route === '#participantLookup') renderParticipantLookup();
+    else if (route === '#participantDetails') renderParticipantDetails();
     else if (route === '#participantSummary') {
-        if (JSON.parse(localStorage.getItem("participant")) === null ) {
+        if (JSON.parse(localStorage.getItem("participant")) === null) {
             renderParticipantSummary();
         }
         else {
@@ -39,15 +61,15 @@ const router = () => {
             renderParticipantSummary(participant);
         }
     }
-    else if(route === '#logout') clearLocalStroage();
+    else if (route === '#logout') clearLocalStroage();
     else window.location.hash = '#';
 }
 
 const homePage = async () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         window.location.hash = '#dashboard';
     }
-    else{
+    else {
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderLogin();
@@ -56,24 +78,24 @@ const homePage = async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
             const rememberMe = document.getElementById('rememberMe');
-            if(siteKey.trim() === '') return;
-            if(rememberMe.checked){
+            if (siteKey.trim() === '') return;
+            if (rememberMe.checked) {
                 const dashboard = { siteKey }
                 localStorage.dashboard = JSON.stringify(dashboard);
             }
-            else{
+            else {
                 const dashboard = {
                     siteKey,
                     expires: new Date(Date.now() + 3600000)
                 }
                 localStorage.dashboard = JSON.stringify(dashboard);
             }
-    
+
             const isAuthorized = await authorize(siteKey);
-            if(isAuthorized.code === 200){
+            if (isAuthorized.code === 200) {
                 window.location.hash = '#dashboard';
             }
-            if(isAuthorized.code === 401){
+            if (isAuthorized.code === 401) {
                 clearLocalStroage();
             }
         });
@@ -81,56 +103,142 @@ const homePage = async () => {
 }
 
 const renderDashboard = async () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
         if (isAuthorized && isAuthorized.code === 200) {
+
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
             removeActiveClass('nav-link', 'active');
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
+
             renderCharts(siteKey);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
         if (isAuthorized.code === 401) {
             clearLocalStroage();
-        }        
-    }else{
+        }
+    } else {
         animation(false);
         window.location.hash = '#';
     }
 }
 
+// const reRenderDashboard = async (siteKey) => {
+//     if (siteKey) {
+//         animation(true);
+//         const isAuthorized = await authorize(siteKey);
+//         if (isAuthorized && isAuthorized.code === 200) {
 
+//             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+//             removeActiveClass('nav-link', 'active');
+//             document.getElementById('dashboardBtn').classList.add('active');
+//             mainContent.innerHTML = '';
+
+//             renderCharts(siteKey);
+//         }
+//         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
+//         if (isAuthorized.code === 401) {
+//             clearLocalStroage();
+//         }
+//     } else {
+//         animation(false);
+//         window.location.hash = '#';
+//     }
+// }
+
+// const renderSiteKeyList = (siteKey) => {
+//     let template = ``;
+//     if (siteKey === fieldMapping['nci'] || fieldMapping['norc']) {
+  
+//     template += `
+//             <div style="margin-top:10px; padding:15px;" class="dropdown">
+//                 <button class="btn btn-secondary dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+//                 Change Site Preference 
+//                 </button>
+//             <div class="dropdown-menu" id="dropdownMenuButton" aria-labelledby="dropdownMenuButton">
+//                 <a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a>
+//                 <a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a>
+//                 <a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a>
+//                 <a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a>
+//                 <a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a>
+//                 <a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a>
+//             </div>
+//         </div>
+//             `}
+//     return template;
+// }
+
+// const dropdownTrigger = () => {
+
+//     const dropdownMenuButton = document.getElementById('dropdownMenuButton')
+//     if (dropdownMenuButton) {
+//         dropdownMenuButton.addEventListener('click', (e) => {
+//             const t = getDataAttributes(e.target)
+//             reRenderDashboard(fieldMapping[t.sitekey]);
+//         })
+//     }
+// }
+
+// const getDataAttributes = (el) => {
+//     let data = {};
+//     [].forEach.call(el.attributes, function(attr) {
+//         if (/^data-/.test(attr.name)) {
+//             var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
+//                 return $1.toUpperCase();
+//             });
+//             data[camelCaseName] = attr.value;
+//         }
+//     });
+//     return data;
+// }
 
 const fetchData = async (siteKey, type) => {
-    if(!checkSession()){
+    if (!checkSession()) {
         alert('Session expired!');
         clearLocalStroage();
     }
-    else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/getParticipants?type=${type}`,{
-            method:'GET',
-            headers:{
-                Authorization:"Bearer "+siteKey
+    else {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/getParticipants?type=${type}`, {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + siteKey
             }
         });
         return response.json();
     }
 }
 
-export const participantVerification = async (token, verified, siteKey) => {
-    if(!checkSession()){
+const fetchStats = async (siteKey, type) => {
+    if (!checkSession()) {
         alert('Session expired!');
         clearLocalStroage();
     }
-    else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/identifyParticipant?type=${verified? `verified`:`cannotbeverified`}&token=${token}`, {
-            method:'GET',
-            headers:{
-                Authorization:"Bearer "+siteKey
+    else {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/stats?type=${type}`, {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + siteKey
+            }
+        });
+        return response.json();
+    }
+}
+
+
+export const participantVerification = async (token, verified, siteKey) => {
+    if (!checkSession()) {
+        alert('Session expired!');
+        clearLocalStroage();
+    }
+    else {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/identifyParticipant?type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + siteKey
             }
         });
         return response.json();
@@ -138,25 +246,25 @@ export const participantVerification = async (token, verified, siteKey) => {
 }
 
 const authorize = async (siteKey) => {
-    if(!checkSession()){
+    if (!checkSession()) {
         alert('Session expired!');
         clearLocalStroage();
         return false;
     }
-    else{
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/validateSiteUsers`,{
-            method:'GET',
-            headers:{
-                Authorization:"Bearer "+siteKey
+    else {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/validateSiteUsers`, {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + siteKey
             }
         });
         return await response.json();
     }
-    
+
 }
 
 const checkSession = () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         const localStr = JSON.parse(localStorage.dashboard);
         const expires = localStr.expires ? new Date(localStr.expires) : undefined;
         const currentDateTime = new Date(Date.now());
@@ -165,38 +273,60 @@ const checkSession = () => {
 }
 
 export const animation = (status) => {
-    if(status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
-    if(!status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
+    if (status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
+    if (!status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
 
 const renderCharts = async (siteKey) => {
+
     const stats = await fetchData(siteKey, 'stats');
-    
-    if(stats.code === 200){
+
+    const filterWorkflowResults = await fetchStats(siteKey, 'participants_workflow');
+    const filterVerificationResults = await fetchStats(siteKey, 'participants_verification');
+    const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
+   
+    const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active')
+    const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive')
+    const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
+
+    const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
+    const passiveCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'passive')
+    const totalCurrentWorkflow = filterTotalCurrentWorkflow(filterWorkflowResults.stats)
+
+    const participantsGenderMetric = await fetchStats(siteKey, 'sex');
+    const participantsRaceMetric = await fetchStats(siteKey, 'race');
+    const participantsAgeMetric = await fetchStats(siteKey, 'age');
+
+    const activeVerificationStatus = filterVerification(filterVerificationResults.stats, 'active')
+    const passiveVerificationStatus = filterVerification(filterVerificationResults.stats, 'passive')
+    const denominatorVerificationStatus = filterDenominatorVerificationStatus(filterWorkflowResults.stats)
+
+
+    const recruitsCount = filterRecruits(recruitsCountResults.stats)
+
+    if (stats.code === 200) {
         const siteSelectionRow = document.createElement('div');
         siteSelectionRow.classList = ['row'];
         siteSelectionRow.id = 'siteSelection';
-        if(stats.data.length > 1) {
-            mainContent.appendChild(siteSelectionRow);
-            renderSiteSelection(stats.data);
+        if (stats.data.length > 1) {
+            //mainContent.appendChild(siteSelectionRow);
+            //renderSiteSelection(stats.data);
         }
+        // const rowHeader = document.createElement('div');
+        // rowHeader.classList = ['rowHeader'];
+        // rowHeader.innerHTML = renderSiteKeyList(siteKey)
+        // mainContent.appendChild(rowHeader);
+        // dropdownTrigger();
 
         const row = document.createElement('div');
         row.classList = ['row'];
-
-        let activeCounts = document.createElement('div');
-        activeCounts.classList = ['col-lg-4 charts'];
-
-        let subActiveCounts = document.createElement('div');
-        subActiveCounts.classList = ['col-lg-12 sub-div-shadow viz-div'];
-        subActiveCounts.setAttribute('id', 'activeCounts');
-        activeCounts.appendChild(subActiveCounts);
 
         let funnelChart = document.createElement('div');
         funnelChart.classList = ['col-lg-4 charts'];
 
         let subFunnelChart = document.createElement('div');
         subFunnelChart.classList = ['col-lg-12 sub-div-shadow viz-div'];
+        subFunnelChart.innerHTML = renderLabel(recruitsCount.activeCount, 'Active');
         subFunnelChart.setAttribute('id', 'funnelChart');
         funnelChart.appendChild(subFunnelChart);
 
@@ -205,31 +335,34 @@ const renderCharts = async (siteKey) => {
 
         let subBarChart = document.createElement('div');
         subBarChart.classList = ['col-lg-12 sub-div-shadow viz-div'];
+        subBarChart.innerHTML = renderLabel(recruitsCount.activeCount, 'Active');
         subBarChart.setAttribute('id', 'barChart');
         barChart.appendChild(subBarChart);
 
-        row.appendChild(activeCounts);
+        let activeOptouts = document.createElement('div');
+        activeOptouts.classList = ['col-lg-4 charts'];
+
+        let subactiveOptouts = document.createElement('div');
+        subactiveOptouts.classList = ['col-lg-12 sub-div-shadow viz-div'];
+    //    activeOptouts.innerHTML = renderLabel(recruitsCount.activeCount, 'Active')
+        subactiveOptouts.setAttribute('id', 'activeOptouts');
+        activeOptouts.appendChild(subactiveOptouts);
+
         row.appendChild(funnelChart);
         row.appendChild(barChart);
-        
-        mainContent.appendChild(row);
+        row.appendChild(activeOptouts);
+
+        mainContent.appendChild(row); // active 
 
         const row1 = document.createElement('div');
         row1.classList = ['row'];
-
-        let activeCounts1 = document.createElement('div');
-        activeCounts1.classList = ['col-lg-4 charts'];
-
-        let subActiveCounts1 = document.createElement('div');
-        subActiveCounts1.classList = ['col-lg-12 viz-div sub-div-shadow'];
-        subActiveCounts1.setAttribute('id', 'passiveCounts');
-        activeCounts1.appendChild(subActiveCounts1);
 
         let funnelChart1 = document.createElement('div');
         funnelChart1.classList = ['col-lg-4 charts'];
 
         let subFunnelChart1 = document.createElement('div');
         subFunnelChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subFunnelChart1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
         subFunnelChart1.setAttribute('id', 'passiveFunnelChart');
         funnelChart1.appendChild(subFunnelChart1);
 
@@ -238,15 +371,109 @@ const renderCharts = async (siteKey) => {
 
         let subBarChart1 = document.createElement('div');
         subBarChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subBarChart1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
         subBarChart1.setAttribute('id', 'passiveBarChart');
         barChart1.appendChild(subBarChart1);
 
-        row1.appendChild(activeCounts1);
+        let activeCounts1 = document.createElement('div');
+        activeCounts1.classList = ['col-lg-4 charts'];
+        let subActiveCounts1 = document.createElement('div');
+        subActiveCounts1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+       // subActiveCounts1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
+        subActiveCounts1.setAttribute('id', 'passiveCounts');
+        activeCounts1.appendChild(subActiveCounts1);
+
+
         row1.appendChild(funnelChart1);
         row1.appendChild(barChart1);
-        mainContent.appendChild(row1);
+        row1.appendChild(activeCounts1);
 
-        renderAllCharts(stats.data);
+        mainContent.appendChild(row1); // passive
+
+        const row2 = document.createElement('div');
+        row2.classList = ['row'];
+
+        let funnelChart2 = document.createElement('div');
+        funnelChart2.classList = ['col-lg-4 charts'];
+
+        let subFunnelChart2 = document.createElement('div');
+        subFunnelChart2.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subFunnelChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');
+        subFunnelChart2.setAttribute('id', 'totalFunnelChart');
+        funnelChart2.appendChild(subFunnelChart2);
+        row2.appendChild(funnelChart2)
+
+        let barChart2 = document.createElement('div');
+        barChart2.classList = ['col-lg-4 charts'];
+
+        let subBarChart2 = document.createElement('div');
+        subBarChart2.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subBarChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
+        subBarChart2.setAttribute('id', 'totalBarChart');
+        barChart2.appendChild(subBarChart2);
+        row2.appendChild(barChart2);
+
+        let totalCounts = document.createElement('div');
+        totalCounts.classList = ['col-lg-4 charts'];
+
+        let subTotalCounts = document.createElement('div');
+        subTotalCounts.classList = ['col-lg-12 sub-div-shadow viz-div'];
+      //  subTotalCounts.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
+        subTotalCounts.setAttribute('id', 'totalCounts');
+        totalCounts.appendChild(subTotalCounts);
+        row2.appendChild(totalCounts);
+
+        mainContent.appendChild(row2); // total
+
+        const row3 = document.createElement('div');
+        row3.classList = ['row'];
+
+        let stackedBarChart = document.createElement('div');
+        stackedBarChart.classList = ['col-lg-4 charts'];
+
+        let subStackedBarChart = document.createElement('div');
+        subStackedBarChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subStackedBarChart.setAttribute('id', 'metrics');
+        stackedBarChart.appendChild(subStackedBarChart);
+        row3.appendChild(stackedBarChart);
+
+        let pieChart = document.createElement('div');
+        pieChart.classList = ['col-lg-4 charts'];
+
+        let subPieChart = document.createElement('div');
+        subPieChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subPieChart.setAttribute('id', 'activeVerificationStatus');
+        pieChart.appendChild(subPieChart);
+        row3.appendChild(pieChart);
+
+        let pieChart1 = document.createElement('div');
+        pieChart1.classList = ['col-lg-4 charts'];
+
+        let subPieChart1 = document.createElement('div');
+        subPieChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
+        subPieChart1.setAttribute('id', 'passiveVerificationStatus');
+        pieChart1.appendChild(subPieChart1);
+        row3.appendChild(pieChart1);
+
+        mainContent.appendChild(row3); // Misc.
+
+
+
+        renderAllMetricCharts(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric)
+
+        renderActiveFunnelChart(activeRecruitsFunnel, 'funnelChart')
+        renderActiveBarChart(activeCurrentWorkflow, 'barChart');
+        renderActiveOptouts('activeOptouts');
+
+        renderPassiveFunnelChart(passiveRecruitsFunnel, 'passiveFunnelChart');
+        renderPassiveBarChart(passiveCurrentWorkflow, 'passiveBarChart');
+
+        renderTotalFunnelChart(totalRecruitsFunnel, 'totalFunnelChart');
+        renderTotalCurrentWorkflow(totalCurrentWorkflow, 'totalBarChart');
+
+        renderActiveVerificationStatus(activeVerificationStatus, denominatorVerificationStatus, 'activeVerificationStatus');
+        renderPassiveVerificationStatus(passiveVerificationStatus, denominatorVerificationStatus, 'passiveVerificationStatus');
+
         animation(false);
     }
     if (stats.code === 401) {
@@ -254,81 +481,249 @@ const renderCharts = async (siteKey) => {
     }
 }
 
-const renderAllCharts = (stats) => {
-    renderFunnelChart(stats, 'funnelChart', 'active');
-    renderBarChart(stats, 'barChart', 'active');
-    renderCounts(stats, 'activeCounts', 'Active')
-    renderCounts(stats, 'passiveCounts', 'Passive')
-    renderFunnelChart(stats, 'passiveFunnelChart', 'passive');
-    renderBarChart(stats, 'passiveBarChart', 'passive');
+const filterRecruitsFunnel = (data, recruit) => {
+    let recruitType = fieldMapping[recruit]
+    let currentWorflowObj = {}
+    let signedInCount = 0
+    let consentedCount = 0
+    let submittedProfileCount = 0
+    let verificationCount = 0
+    let verifiedCount = 0
+  
+    let signedIn = data.filter(i => 
+        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes))
+        signedIn.forEach((i) => {
+            signedInCount += i.signedCount
+        })
+    let consented = data.filter(i => 
+        (i.recruitType === recruitType && i.consentStatus === fieldMapping.yes))
+        consented.forEach((i) => {
+            consentedCount += i.consentCount
+        })
+    let submittedProfile = data.filter(i => 
+        (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes))
+        submittedProfile.forEach((i) => {
+            submittedProfileCount += i.submittedCount
+        })
+    let verification = data.filter(i => 
+        (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
+        verification.forEach((i) => {
+            verificationCount += i.verificationCount
+        })
+    
+    let verified = data.filter(i => 
+        (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified ) ))
+        verified.forEach((i) => {
+            verifiedCount += i.verificationCount
+        })
+    
+    currentWorflowObj.signedIn = signedInCount
+    currentWorflowObj.consented = consentedCount
+    currentWorflowObj.submittedProfile = submittedProfileCount
+    currentWorflowObj.verification = verificationCount
+    currentWorflowObj.verified = verifiedCount
+    return currentWorflowObj;
 }
 
-const renderSiteSelection = (data) => {
-    let template = `<label class="col-md-1 col-form-label" for="selectSites">Select IHCS</label><div class="col-md-4 form-group"><select id="selectSites" class="form-control">`
-    template += `<option value="all">All</option>`
-    data.map(dt => dt['siteCode']).forEach(siteCode => {
-        template += `<option value="${siteCode}">${JSON.parse(localStorage.conceptIdMapping)[siteCode]['Variable Name']}</option>`
+const filterTotalRecruitsFunnel = (data) => {
+    let currentWorflowObj = {}
+    let signedInCount = 0
+    let consentedCount = 0
+    let submittedProfileCount = 0
+    let verificationCount = 0
+    let verifiedCount = 0
+
+    let signedIn = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes))
+          signedIn.forEach((i) => {
+            signedInCount += i.signedCount
+        })
+    let consented = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.consentStatus === fieldMapping.yes))
+         consented.forEach((i) => {
+            consentedCount += i.consentCount
+        })
+    let submittedProfile = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes))
+         submittedProfile.forEach((i) => {
+            submittedProfileCount += i.submittedCount
+        })
+    let verification = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
+         verification.forEach((i) => {
+            verificationCount += i.verificationCount
+        })
+    
+    let verified = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && (i.verificationStatus === fieldMapping.verified ) ))
+        verified.forEach((i) => {
+            verifiedCount += i.verificationCount
+        })
+    currentWorflowObj.signedIn = signedInCount
+    currentWorflowObj.consented = consentedCount
+    currentWorflowObj.submittedProfile = submittedProfileCount
+    currentWorflowObj.verification = verificationCount
+    currentWorflowObj.verified = verifiedCount
+
+    return currentWorflowObj;    
+}
+
+const filterCurrentWorkflow = (data, recruit) => {
+    let recruitType = fieldMapping[recruit]
+    let currentWorflowObj = {}
+    let notSignedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.no))
+    let signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.no))
+    let consented = data.filter(i => (i.recruitType === recruitType && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.no))
+    let submittedProfile = data.filter(i => 
+                            (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout) ))
+    let verification = data.filter(i => 
+                            (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
+    if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
+    else currentWorflowObj.notSignedIn = notSignedIn[0].signedCount
+    currentWorflowObj.signedIn = signedIn[0].signedCount
+    currentWorflowObj.consented = consented[0].consentCount
+    currentWorflowObj.submittedProfile = submittedProfile[0].submittedCount
+    currentWorflowObj.verification = verification[0].verificationCount
+    return currentWorflowObj;
+}
+
+const filterTotalCurrentWorkflow = (data) => {
+    let currentWorflowObj = {}
+    let notSignedIn = data.filter(i => ((i.recruitType === fieldMapping.active) && i.signedStatus === fieldMapping.no))
+    let signedIn = data.filter(i => ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.no))
+    let consented = data.filter(i => ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.no))
+    let submittedProfile = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout) ))
+    let verification = data.filter(i => 
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
+    currentWorflowObj.notSignedIn = notSignedIn[0].signedCount
+    currentWorflowObj.signedIn = signedIn[0].signedCount
+    currentWorflowObj.consented = consented[0].consentCount
+    currentWorflowObj.submittedProfile = submittedProfile[0].submittedCount
+    currentWorflowObj.verification = verification[0].verificationCount       
+    return currentWorflowObj;
+}
+
+const filterVerification = (data, recruit) =>{
+    let currentVerificationObj = {};
+    let recruitType = fieldMapping[recruit]
+    let filteredData = data.filter(i => i.recruitType === recruitType);
+    data = filterVerificationStatus(filteredData, currentVerificationObj);
+    return data;
+}
+
+const filterVerificationStatus = (stats, currentVerificationObj) => {
+    stats.forEach((i) => {
+        
+    if (i.verificationStatus === fieldMapping.notYetVerified) {
+        currentVerificationObj.notYetVerified = i.verificationCount
+    }
+    else if (i.verificationStatus === fieldMapping.outreachTimedout) {
+        currentVerificationObj.outreachTimedout = i.verificationCount
+    }
+    else if (i.verificationStatus === fieldMapping.verified) {
+        currentVerificationObj.verified = i.verificationCount
+    }
+    else if (i.verificationStatus === fieldMapping.cannotBeVerified) {
+        currentVerificationObj.cannotBeVerified = i.verificationCount
+    }
+    else {
+        currentVerificationObj.duplicate = i.verificationCount
+    }
+    });
+    return currentVerificationObj;
+}
+
+const filterDenominatorVerificationStatus = (data) => {
+    let currentObj = {};
+    let activeConsentCount = 0
+    let passiveConsentCount = 0
+    let activeDenominator = data.filter(i => i.recruitType === fieldMapping.active 
+        && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes);
+        activeDenominator.forEach((i) => {
+            activeConsentCount += i.consentCount
+        })
+   let passiveDenominator = data.filter(i => i.recruitType === fieldMapping.passive 
+        && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes);
+        passiveDenominator.forEach((i) => {
+            passiveConsentCount += i.consentCount
     })
-    template += '</select></div>'
-    document.getElementById('siteSelection').innerHTML = template;
-    addEventSiteSelection(data);
+
+    currentObj.activeDenominator = activeConsentCount
+    currentObj.passiveDenominator = passiveConsentCount
+    return currentObj; 
 }
 
-const addEventSiteSelection = (data) => {
-    const select = document.getElementById('selectSites');
-    select.addEventListener('change', () => {
-        let filteredData = '';
-        if (select.value === 'all') filteredData = data;
-        else filteredData = data.filter(dt => dt['siteCode'] === parseInt(select.value));
-        renderAllCharts(filteredData);
+const filterRecruits = (data) => {
+    let currentObj = {};
+
+    data.forEach((i) => {
+        currentObj.activeCount = i.activeCount;
+        currentObj.passiveCount = i.passiveCount;
     })
+    
+
+    return currentObj;
 }
 
-const renderFunnelChart = (participants, id, decider) => {
-    const UPSubmitted = participants.map(dt => dt[decider]).map(dt => dt['profileSubmitted']).reduce((a, b) => a + b);
-    const consented = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a, b) => a + b);
-    const signedIn = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a, b) => a + b);
+const renderLabel = (count, recruitType) => {
+    let template = ``;
+    (recruitType === 'Active') ?
+        (template += `<span class="badge bg-primary" style="color:white"> ${recruitType} Recruits: ${count}</span>`)
+        :
+    (recruitType === 'Passive') ?
+        (template += `<span class="badge bg-primary" style="color:white"> ${recruitType} Recruits: ${count}</span>`)
+        :
+    (recruitType === 'Total') ?
+        (template += `<span class="badge bg-primary" style="color:white"> ${recruitType} Recruits: ${count}</span>`)
+        :
+        ''
 
-    const data = [{
-        x: [signedIn, consented, UPSubmitted],
-        y: ['Sign-on', 'Consent', 'User Profile'],
-        type: 'funnel',
-        marker: {
-            color: ["#0C1368", "#242C8F", "#525DE9"]
-        }
-    }];
-    const layout = {
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `${decider === 486306141 ? 'Active' : 'Passive'} Recruits`
-    };
+    return template;
 
-    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
 }
 
-const renderCounts = (participants, id, decider) => {
-    document.getElementById(id).innerHTML = `${decider} recruits <br><h3>${participants.map(dt => dt[`${decider.toLowerCase()}`]).map(dt => dt['count']).reduce((a, b) => a + b)}</h3>`
-}
+const renderActiveFunnelChart = (activeRecruitsFunnel, id) => {
+    const signOn =  activeRecruitsFunnel.signedIn
+    const consent = activeRecruitsFunnel.consented;
+    const userProfile =  activeRecruitsFunnel.submittedProfile
+    const verification = activeRecruitsFunnel.verification
+    const verified = activeRecruitsFunnel.verified
+    
+        const data = [{
+            x: [signOn, consent, userProfile, verification, verified],
+            y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
+            type: 'funnel',
+            textinfo: 'hello ${23}', 
+            marker: {
+                color: ["#0C1368", "#242C8F", "#525DE9", '#008ECC', '#6593F5']
+            }
+        }];
+    
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+            title: `Cumulative Status`
+        };
+    
+        Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+    }
 
-const renderBarChart = (participants, id, decider) => {
-    const accountCreated = participants.map(dt => dt[decider]).map(dt => dt['signedIn']).reduce((a, b) => a + b);
-    const consent = participants.map(dt => dt[decider]).map(dt => dt['consented']).reduce((a, b) => a + b);
-    const participantData = participants.map(dt => dt[decider]).map(dt => dt['count']).reduce((a, b) => a + b);
+
+const renderActiveBarChart = (activeCurrentWorkflow, id) => {
+    const notSignedIn = activeCurrentWorkflow.notSignedIn;
+    const signedInNotConsented = activeCurrentWorkflow.signedIn;
+    const consentedNotSubmitted = activeCurrentWorkflow.consented;
+    const submittedVerificationNotCompleted = activeCurrentWorkflow.submittedProfile;
+    const verificationCompleted = activeCurrentWorkflow.verification;
     const trace1 = {
-        x: [accountCreated, consent],
-        y: ['Accounts created', '  Consent complete'],
+        x: ['Never Signed In', 'Signed In, No Consent', 'Consented, No Profile', 'Profile, Verified Not Complete', 'Verification Complete'],
+        y: [notSignedIn, signedInNotConsented, consentedNotSubmitted, submittedVerificationNotCompleted, verificationCompleted],
         name: 'Completed',
-        type: 'bar',
-        orientation: 'h'
+        type: 'bar'
     };
-    const trace2 = {
-        x: [participantData - accountCreated, participantData - consent],
-        y: ['Accounts created', '  Consent complete'],
-        name: 'Pending',
-        type: 'bar',
-        orientation: 'h'
-    };
-    const data = [trace1, trace2];
+
+    const data = [trace1];
 
     const layout = {
         barmode: 'stack',
@@ -343,19 +738,403 @@ const renderBarChart = (participants, id, decider) => {
             automargin: true,
             fixedrange: true
         },
-        colorway: ['#7f7fcc', '#0C1368'],
-        title: 'Participant Progress'
+       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
+        title: 'Current Status in Workflow'
     };
 
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
 }
+
+const renderPassiveFunnelChart = (passiveRecruitsFunnel, id) => {
+    
+    const signOn =  passiveRecruitsFunnel.signedIn
+    const consent = passiveRecruitsFunnel.consented;
+    const userProfile =  passiveRecruitsFunnel.submittedProfile
+    const verification = passiveRecruitsFunnel.verification
+    const verified = passiveRecruitsFunnel.verified
+
+        const data = [{
+            x: [signOn, consent, userProfile, verification, verified],
+            y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
+            type: 'funnel',
+            marker: {
+                color: ["#0C1368", "#242C8F", "#525DE9", '#008ECC', '#6593F5']
+            }
+        }];
+    
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)'
+        };
+    
+        Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+};
+
+const renderActiveOptouts = (id) => {
+    let template = ``;
+    template += `
+        <span style="text-align: center;"><h5>Opt Outs</h5></span>`
+    document.getElementById(id).innerHTML = template
+}
+
+const renderPassiveBarChart = (passiveCurrentWorkflow, id) => {
+    const notSignedIn = passiveCurrentWorkflow.notSignedIn;
+    const signedInNotConsented = passiveCurrentWorkflow.signedIn;
+    const consentedNotSubmitted = passiveCurrentWorkflow.consented;
+    const submittedVerificationNotCompleted = passiveCurrentWorkflow.submittedProfile;
+    const verificationCompleted = passiveCurrentWorkflow.verification;
+    const trace1 = {
+        x: ['Not signed in ', 'Signed in not consent ', ' Consented User Profile not Submitted', 'Submitted Verification Not Completed', 'Verification'],
+        y: [notSignedIn, signedInNotConsented, consentedNotSubmitted, submittedVerificationNotCompleted, verificationCompleted],
+        name: 'Completed',
+        type: 'bar'
+    };
+
+    const data = [trace1];
+
+    const layout = {
+        barmode: 'stack',
+        showlegend: false,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        yaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+        xaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
+    };
+
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+
+}
+
+const renderTotalFunnelChart = (totalRecruitsFunnel, id) => {
+
+    const signOn =  totalRecruitsFunnel.signedIn
+    const consent = totalRecruitsFunnel.consented;
+    const userProfile =  totalRecruitsFunnel.submittedProfile
+    const verified = totalRecruitsFunnel.verified
+    const verification = totalRecruitsFunnel.verification
+    
+        const data = [{
+            x: [signOn, consent, userProfile, verification, verified],
+            y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
+            type: 'funnel',
+            marker: {
+                color: ["#0C1368", "#242C8F", "#525DE9", '#008ECC', '#6593F5']
+            }
+        }];
+    
+        const layout = {
+            paper_bgcolor: 'rgba(0,0,0,0)',
+            plot_bgcolor: 'rgba(0,0,0,0)',
+        };
+    
+        Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+};
+
+
+const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
+    const notSignedIn = totalCurrentWorkflow.notSignedIn;
+    const signedInNotConsented = totalCurrentWorkflow.signedIn;
+    const consentedNotSubmitted = totalCurrentWorkflow.consented;
+    const submittedVerificationNotCompleted = totalCurrentWorkflow.submittedProfile;
+    const verificationCompleted = totalCurrentWorkflow.verification;
+    const trace1 = {
+        x: ['Not signed in ', 'Signed in not consent ', ' Consented User Profile not Submitted', 'Submitted Verification Not Completed', 'Verification'],
+        y: [notSignedIn, signedInNotConsented, consentedNotSubmitted, submittedVerificationNotCompleted, verificationCompleted],
+        name: 'Completed',
+        type: 'bar'
+    };
+
+    const data = [trace1];
+
+    const layout = {
+        barmode: 'stack',
+        showlegend: false,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        yaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+        xaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
+    };
+
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+
+}
+
+const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVerificationStatus, id) => {
+    const notYetVerified =  activeVerificationStatus.notYetVerified 
+                            && ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+    const verified = activeVerificationStatus.verified 
+                        && ((activeVerificationStatus.verified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+    const cannotBeVerified =  activeVerificationStatus.cannotBeVerified 
+                        && ((activeVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+    const duplicate = activeVerificationStatus.duplicate 
+                        && ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+    const outreachTimedOut = activeVerificationStatus.outreachTimedOut 
+                        && ((activeVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+
+    var data = [{
+        values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
+        labels: [ 'Not Verified', 'Verified', 'Cannot be Verified','Duplicate', 'Outreach Maxed Out'],
+        type: 'pie'
+      }];
+      
+      const layout = {
+
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
+        title: 'Active Recruits Verification Status'
+    };
+      
+
+  
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderPassiveVerificationStatus = (passiveVerificationStatus, denominatorVerificationStatus, id) => {
+    const notYetVerified =  passiveVerificationStatus.notYetVerified 
+                            && ((passiveVerificationStatus.notYetVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+    const verified = passiveVerificationStatus.verified 
+                        && ((passiveVerificationStatus.verified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+    const cannotBeVerified =  passiveVerificationStatus.cannotBeVerified 
+                        && ((passiveVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+    const duplicate = passiveVerificationStatus.duplicate 
+                        && ((passiveVerificationStatus.duplicate)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+     const outreachTimedOut = passiveVerificationStatus.outreachTimedOut 
+                        && ((passiveVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+    var data = [{
+        values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
+        labels: [ 'Not Verified', 'Verified', 'Cannot be Verified','Duplicate', 'Outreach Maxed Out'],
+        type: 'pie'
+      }];
+
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
+        title: 'Passive Recruits Verification Status'
+    };
+      
+
+  
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderAllMetricCharts = (participantsGenderMetric, participantsRaceMetric, participantsAgeMetric) => {
+    
+    renderStackBarChart(participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats, 'metrics')
+}
+
+const renderStackBarChart = (participantGenderResponse, participantRaceResponse, participantAgeRangeResponse, id) => {
+
+    const totalGenderResponse = participantGenderResponse[0].sexCount + participantGenderResponse[1].sexCount + participantGenderResponse[2].sexCount
+    const totalRaceResponse = participantRaceResponse[0].raceCount + participantRaceResponse[1].raceCount + participantRaceResponse[2].raceCount
+
+    const totalAgeRangeResponse = participantAgeRangeResponse[0].ageCount + participantAgeRangeResponse[1].ageCount
+                                    
+    const totalVerifiedParticipants = totalGenderResponse + totalRaceResponse + totalAgeRangeResponse
+    const genderPercent = Math.round((totalGenderResponse / totalVerifiedParticipants) * 100)
+    const racePercent = Math.round((totalRaceResponse / totalVerifiedParticipants) * 100)
+    const ageRangePercent = Math.round((totalAgeRangeResponse / totalVerifiedParticipants) * 100)
+
+
+    let ageTrace1 = {
+        y: ['Age'],
+        x: [participantAgeRangeResponse[0].ageCount],
+        type: 'bar',
+        name: '40-45',
+        text: `Total: ${ageRangePercent}%`,
+        orientation: 'h'
+    };
+
+    let ageTrace11 = {
+        y: ['Age'],
+        x: [participantAgeRangeResponse[1].ageCount],
+        type: 'bar',
+        name: '46-50',
+        text: `Total: ${ageRangePercent}%`,
+        orientation: 'h'
+    };
+
+    // let ageTrace12 = {
+    //     y: ['Age'],
+    //     x: [participantAgeRangeResponse[2].ageCount],
+    //     type: 'bar',
+    //     name: '51-55',
+    //     text: `Total: ${ageRangePercent}%`,
+    //     orientation: 'h'
+    // };
+
+    // let ageTrace13 = {
+    //     y: ['Age'],
+    //     x: [participantAgeRangeResponse[3].ageCount],
+    //     type: 'bar',
+    //     name: '56-60',
+    //     text: `Total: ${ageRangePercent}%`,
+    //     orientation: 'h'
+    // };
+
+    // let ageTrace14 = {
+    //     y: ['Age'],
+    //     x: [participantAgeRangeResponse[3].ageCount],
+    //     type: 'bar',
+    //     name: '61-66',
+    //     text: `Total: ${ageRangePercent}%`,
+    //     orientation: 'h'
+    // };
+
+
+    let raceTrace = {
+        y: ['Race Binary'],
+        x: [participantRaceResponse[0].raceCount],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'White',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+
+    let raceTrace2 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponse[1].raceCount],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'Other',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+    let raceTrace3 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponse[2].raceCount],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'Unknown',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+
+    let genderTrace = {
+        y: ['Sex'],
+        x: [participantGenderResponse[0].sexCount],
+        xaxis: 'x3',
+        yaxis: 'y3',
+        type: 'bar',
+        name: 'Female',
+        text: `Total: ${genderPercent}%`,
+        orientation: 'h'
+    };
+
+    let genderTrace2 = {
+        y: ['Sex'],
+        x: [participantGenderResponse[1].sexCount],
+        xaxis: 'x3',
+        yaxis: 'y3',
+        type: 'bar',
+        name: 'Male',
+        text: `Total: ${genderPercent}%`,
+        orientation: 'h'
+    };
+
+    let genderTrace3 = {
+        y: ['Sex'],
+        x: [participantGenderResponse[2].sexCount],
+        xaxis: 'x3',
+        yaxis: 'y3',
+        type: 'bar',
+        name: 'Intersex',
+        text: `Total: ${genderPercent}%`,
+        orientation: 'h'
+    };
+
+    // let genderTrace4 = {
+    //     y: ['Sex'],
+    //     x: [participantGenderResponse[3]],
+    //     xaxis: 'x3',
+    //     yaxis: 'y3',
+    //     type: 'bar',
+    //     name: 'Unknown',
+    //     text: `Total: ${genderPercent}%`,
+    //     orientation: 'h'
+    // };
+
+    let data = [
+        ageTrace1, ageTrace11,
+        raceTrace, raceTrace2, raceTrace3,
+        genderTrace, genderTrace2, genderTrace3
+    ];
+
+
+    let layout = {
+        barmode: 'stack',
+        showlegend: false,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+
+
+        // colorway: ['#111E6C', '#1D2951', '#0E4D92', '#0080FF', '#008ECC', '#6593F5'],  
+        autosize: false,
+        width: 600,
+        height: 300,
+        title: 'Demographics of Verified Participants',
+        yaxis: { domain: [0, 0.266], automargin: true },
+        xaxis: { showgrid: false, automargin: true, showticklabels: false, title: { text: `Total number of verified participants: ${totalVerifiedParticipants}` } },
+        xaxis3: { anchor: 'y3', showticklabels: false, automargin: true },
+        xaxis2: { anchor: 'y2', showticklabels: false, automargin: true },
+        yaxis2: { domain: [0.366, 0.633], automargin: true },
+        yaxis3: { domain: [0.733, 1], automargin: true },
+
+    };
+
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+}
+
+
+// const renderSiteSelection = (data) => {
+//     let template = `<label class="col-md-1 col-form-label" for="selectSites">Select IHCS</label><div class="col-md-4 form-group"><select id="selectSites" class="form-control">`
+//     template += `<option value="all">All</option>`
+//     data.map(dt => dt['siteCode']).forEach(siteCode => {
+//         template += `<option value="${siteCode}">${JSON.parse(localStorage.conceptIdMapping)[siteCode] && [siteCode]['Variable Name'] || [siteCode]['Variable Label']}</option>`
+//     })
+//     template += '</select></div>'
+//     document.getElementById('siteSelection').innerHTML = template;
+//     addEventSiteSelection(data);
+// }
+
+// const addEventSiteSelection = (data) => {
+//     const select = document.getElementById('selectSites');
+//     select.addEventListener('change', () => {
+//         let filteredData = '';
+//         if (select.value === 'all') filteredData = data;
+//         else filteredData = data.filter(dt => dt['siteCode'] === parseInt(select.value));
+//         renderAllCharts(filteredData);
+//     })
+// }
+
 
 const clearLocalStroage = () => {
     internalNavigatorHandler(counter);
     animation(false);
     delete localStorage.dashboard;
     window.location.hash = '#';
-   
+
 }
 
 const renderParticipantsNotVerified = async () => {
@@ -391,7 +1170,7 @@ const renderParticipantsNotVerified = async () => {
 }
 
 const renderParticipantsCanNotBeVerified = async () => {
-    if(localStorage.dashboard){
+    if (localStorage.dashboard) {
         animation(true);
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;

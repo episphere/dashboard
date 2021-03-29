@@ -9,6 +9,7 @@ export const headerImportantColumns = [
     { field: fieldMapping.birthYear },
     { field: fieldMapping.consentDate },
     { field: fieldMapping.verficationDate },
+    {field: fieldMapping.healthcareProvider },
     { field: 'Year(s) in Connect' },
     { field: 'Status' }
 ];
@@ -38,12 +39,18 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
-            template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
+            (participant[fieldMapping.consentDate] ? 
+                template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
+                :
+                template += `<span><b> Not Consented</b></span> : N/A &nbsp;`)
         :
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
-            template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`
-        :
+            (participant[fieldMapping.verficationDate] ? 
+                    template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`
+                    :
+                    template += `<span><b> Not Verified</b></span> : N/A &nbsp;`)
+            :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }
 

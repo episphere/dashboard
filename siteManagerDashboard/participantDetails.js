@@ -5,6 +5,7 @@ import { getCurrentTimeStamp } from './utils.js';
 import {renderParticipantSummary} from './participantSummary.js'
 
 export const importantColumns = [ 
+
     { field: fieldMapping.lName,
         editable: true,
         display: true } ,
@@ -21,13 +22,13 @@ export const importantColumns = [
     editable: true,
     display: true } ,
      { field: fieldMapping.birthMonth,
-    editable: false,
+    editable: true,
     display: true } ,
      { field: fieldMapping.birthDay,
-    editable: false,
+    editable: true,
     display: true } ,
      { field: fieldMapping.birthYear,
-    editable: false,
+    editable: true,
     display: true } ,
      { field: fieldMapping.homePhone,
     editable: true,
@@ -104,6 +105,7 @@ export const render = (participant) => {
         `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+       
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
@@ -116,6 +118,8 @@ export const render = (participant) => {
                             <th scope="col"></th>
                         </thead>
                     <tbody class="participantDetailTable">`
+
+
      
         importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3"><label class="form-label">
             ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
@@ -123,7 +127,8 @@ export const render = (participant) => {
             <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                 data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
                 data-participantconceptid=${x.field} data-participantValue=${participant[x.field]} name="modalParticipantData" >
-                ${x.editable ? `<button type="button" class="btn btn-primary">Edit</button>`
+                ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
+                    `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-primary" disabled>Edit</button>`
                 }
             </a></td></tr>&nbsp;`) 
@@ -150,7 +155,12 @@ export const render = (participant) => {
                                         <td>${participant.Module1  && participant.Module1.ALTCONTACT2 ? participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME : ""}</td>
                                         <td>${participant.Module1  && participant.Module1.ALTCONTACT2 ? participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE : ""}</td>
                                         <td>${participant.Module1  && participant.Module1.ALTCONTACT2 ? participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL : ""}</td>
-                                        <td> <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-primary">Edit</button> </td>
+                                        ${(participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate) )? 
+                                        `<td> 
+                                            <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-primary">Edit</button> </td>`
+                                            :
+                                            `<td> <button type="button" class="btn btn-primary" disabled>Edit</button> </td>`
+                                        }
                                         </tr>
                                     </tbody>
                                     </table>
@@ -277,9 +287,11 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
 
 const editAltContact = (participant, adminSubjectAudit) => {
     const a = document.getElementById('altContact');
-    a.addEventListener('click',  () => {
-       altContactHandler(participant, adminSubjectAudit);
-   })
+    if (a) {
+        a.addEventListener('click',  () => {
+        altContactHandler(participant, adminSubjectAudit);
+    })
+}
 }
 
 const altContactHandler = (participant, adminSubjectAudit) => {
