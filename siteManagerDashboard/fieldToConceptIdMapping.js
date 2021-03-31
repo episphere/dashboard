@@ -8,13 +8,29 @@ export default
     "birthDay":795827569,
     "birthYear":544150384,
 
+    // consent
     "consentDate":454445267,
     "consentFlag": 919254129,
     "consentVersion": 454205108,
 
+    // hipaa
     "hippaDate": 262613359,
     "hippaFlag": 558435199,
     "hippaVersion": 412000022,
+
+    // user profile
+    "userProfileFlag": 699625233,
+    "userProfileDateTime": 430551721,
+
+    // verification
+    "verifiedFlag": 821247024,
+    "verficationDate": 914594314,
+    'notYetVerified': 875007964,
+    'outreachTimedout': 160161595,
+    'verified': 197316935,
+    'cannotBeVerified': 219863910,
+    'duplicate': 922622075,
+
 
     "status":"NEED TO BE DEFINED",
     "suffix":506826178,
@@ -34,9 +50,9 @@ export default
     "ssnOnFile": 454067894,
     "timeProfileSubmitted": 430551721,
 
-    "notStarted": 972455046,
-    "started": 615768760,
-    "submitted": 231311385,
+    "notStarted": 0,
+    "started": 1,
+    "submitted": 2,
 
     "yes": 353358909,
     "no": 104430631,
@@ -47,46 +63,33 @@ export default
     "biospecimenResearch": 534621077,
     "biospecimenClinical": 664882224,
     "biospecimenHome": 103209024,
-   
-    "boh": 726699695,
-    "bohStatusFlag": 949302066,
-    "bohCompletedDate": 517311251,
-    "bohStartDate": 205553981,
 
-    "mre": 745268907,
-    "mreStatusFlag": 536735468,
-    "mreCompletedDate": 832139544,
-    "mreStartDate": 541836531,
+    "boh": "D_726699695",
+    "bohStatusFlag": "D_949302066",
+    "bohCompletedDate": "D_517311251",
+    "bohStartDate": "D_205553981",
 
-    "sas": 965707586,
-    "sasStatusFlag": 976570371,
-    "sasCompletedDate": 770257102,
-    "sasStartDate": 386488297,
+    "mre": "D_745268907",
+    "mreStatusFlag": "D_536735468",
+    "mreCompletedDate": "D_832139544",
+    "mreStartDate": "D_541836531",
 
-    "law": 716117817,
-    "lawStausFlag": 663265240,
-    "lawCompletedDate": 264644252,
-    "lawStartDate": 452942800,
+    "sas": "D_965707586",
+    "sasStatusFlag": "D_976570371",
+    "sasCompletedDate": "D_770257102",
+    "sasStartDate": "D_386488297",
 
-    "ssn": 166676176,
+    "law": "D_716117817",
+    "lawStausFlag": "D_663265240",
+    "lawCompletedDate": "D_264644252",
+    "lawStartDate": "D_452942800",
+
+    "ssn": "D_716117818",
     "ssnFullflag": 311580100,
     "ssnFulldate": 454067894,
 
     "ssnPartialFlag": 914639140,
     "ssnPartialDate": 598680838,
-
-    "ifVeriffied": 218595434,
-    "verifiedFlag": 821247024,
-
-    "verficationDate": 914594314,
-
-    'notYetVerified': 875007964,
-    'outreachTimedout': 160161595,
-    'verified': 197316935,
-    'cannotBeVerified': 219863910,
-    'duplicate': 922622075,
-
-
 
     "bloodFlag": 878865966,
     "bloodDateTime": 561681068,
@@ -112,9 +115,7 @@ export default
     "mouthwashSurveyStartedDate": 534669573,
     "mouthwashSurveyCompletedDate": 286191859,
 
-    "userProfile": 332759827,
-    "userProfileFlag": 699625233,
-    "userProfileDateTime": 430551721,
+
 
     "baselineEMR": 209454331,
     "baselineEMRflag": 101170406,
@@ -132,17 +133,37 @@ export default
     "ageRange4": 636706443,
     "ageRange5": 771230670,
 
-    "female": 536341288,
+    "female": 576796184,
     "male": 654207589,
     "intersex": 830573274,
-    "unavailable": 178420302,
+    "unknow": 178420302,
 
-    "white": 768826601,
-    "other": 438483626,
-    "unavailable": 178420302,
-    "signOn": 230663853,
-  'active': 486306141,
-  'passive': 854703046
+    // "white": 768826601,
+    // "other": 438483626,
+    // "unavailable": 178420302,
+
+    "americanIndian": 583826374, 
+    "asian": 636411467, 
+    "africanAmerican": 458435048, 
+    "latino": 706998638, 
+    "middleEastern": 973565052, 
+    "nativeHawaiian": 586825330,
+    "white": 412790539, 
+    "none": 807835037, 
+    "other": 116984232,
+    
+    'active': 486306141,
+    'passive': 854703046,
+
+    // "D_726699695" : "Module1",
+    // "D_745268907" : "Module2",
+    // "D_965707586" : "Module3",
+    // "D_716117817" : "Module4",
+    // "Module1": {"conceptId":"D_726699695","startTs":"D_205553981", "completeTs": "D_517311251", "completeFlag":"D_949302066"},
+    // "Module2": {"conceptId":"D_745268907","startTs":"D_541836531", "completeTs": "D_832139544", "completeFlag":"D_536735468"},
+    // "Module3": {"conceptId":"D_965707586","startTs":"D_386488297", "completeTs": "D_770257102", "completeFlag":"D_976570371"},
+    // "Module4": {"conceptId":"D_716117817","startTs":"D_452942800", "completeTs": "D_264644252", "completeFlag":"D_663265240"},
+    // "ModuleSsn": {"conceptId":"D_716117818","startTs":"D_452942802"} // Temporary assigning concepts
 
 
 

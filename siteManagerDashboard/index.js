@@ -1,31 +1,10 @@
 import { renderParticipantLookup } from './participantLookup.js';
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
-import { renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
+import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js'
-import { internalNavigatorHandler } from './utils.js'
+import { internalNavigatorHandler, humanReadableY } from './utils.js'
 import fieldMapping from './fieldToConceptIdMapping.js';
-
-const genderFields = [
-    { field: fieldMapping.female },
-    { field: fieldMapping.male },
-    { field: fieldMapping.intersex },
-    { field: fieldMapping.unavailable }
-]
-
-const ageRangeFields = [
-    { field: fieldMapping.ageRange1 },
-    { field: fieldMapping.ageRange2 },
-    { field: fieldMapping.ageRange3 },
-    { field: fieldMapping.ageRange4 },
-    { field: fieldMapping.ageRange5 }
-]
-
-const raceFields = [
-    { field: fieldMapping.white },
-    { field: fieldMapping.other },
-    { field: fieldMapping.unavailable }
-]
 
 let saveFlag = false;
 let counter = 0;
@@ -228,7 +207,6 @@ const fetchStats = async (siteKey, type) => {
     }
 }
 
-
 export const participantVerification = async (token, verified, siteKey) => {
     if (!checkSession()) {
         alert('Session expired!');
@@ -284,7 +262,7 @@ const renderCharts = async (siteKey) => {
     const filterWorkflowResults = await fetchStats(siteKey, 'participants_workflow');
     const filterVerificationResults = await fetchStats(siteKey, 'participants_verification');
     const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
-   
+
     const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active')
     const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive')
     const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
@@ -655,11 +633,12 @@ const filterDenominatorVerificationStatus = (data) => {
 }
 
 const filterRecruits = (data) => {
-    let currentObj = {};
-
+    let currentObj = {'activeCount': 0, 'passiveCount': 0};
     data.forEach((i) => {
-        currentObj.activeCount = i.activeCount;
-        currentObj.passiveCount = i.passiveCount;
+        i.recruitType === fieldMapping.active ?
+            currentObj.activeCount = i.counter
+        :
+        currentObj.passiveCount = i.counter;
     })
     
 
@@ -684,14 +663,14 @@ const renderLabel = (count, recruitType) => {
 }
 
 const renderActiveFunnelChart = (activeRecruitsFunnel, id) => {
-    const signOn =  activeRecruitsFunnel.signedIn
+    const signIn =  activeRecruitsFunnel.signedIn
     const consent = activeRecruitsFunnel.consented;
     const userProfile =  activeRecruitsFunnel.submittedProfile
     const verification = activeRecruitsFunnel.verification
     const verified = activeRecruitsFunnel.verified
     
         const data = [{
-            x: [signOn, consent, userProfile, verification, verified],
+            x: [signIn, consent, userProfile, verification, verified],
             y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
             type: 'funnel',
             textinfo: 'hello ${23}', 
@@ -747,14 +726,14 @@ const renderActiveBarChart = (activeCurrentWorkflow, id) => {
 
 const renderPassiveFunnelChart = (passiveRecruitsFunnel, id) => {
     
-    const signOn =  passiveRecruitsFunnel.signedIn
+    const signIn =  passiveRecruitsFunnel.signedIn
     const consent = passiveRecruitsFunnel.consented;
     const userProfile =  passiveRecruitsFunnel.submittedProfile
     const verification = passiveRecruitsFunnel.verification
     const verified = passiveRecruitsFunnel.verified
 
         const data = [{
-            x: [signOn, consent, userProfile, verification, verified],
+            x: [signIn, consent, userProfile, verification, verified],
             y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
             type: 'funnel',
             marker: {
@@ -814,14 +793,14 @@ const renderPassiveBarChart = (passiveCurrentWorkflow, id) => {
 
 const renderTotalFunnelChart = (totalRecruitsFunnel, id) => {
 
-    const signOn =  totalRecruitsFunnel.signedIn
+    const signIn =  totalRecruitsFunnel.signedIn
     const consent = totalRecruitsFunnel.consented;
     const userProfile =  totalRecruitsFunnel.submittedProfile
     const verified = totalRecruitsFunnel.verified
     const verification = totalRecruitsFunnel.verification
     
         const data = [{
-            x: [signOn, consent, userProfile, verification, verified],
+            x: [signIn, consent, userProfile, verification, verified],
             y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
             type: 'funnel',
             marker: {
@@ -930,40 +909,132 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         title: 'Passive Recruits Verification Status'
     };
       
-
-  
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
 
   const renderAllMetricCharts = (participantsGenderMetric, participantsRaceMetric, participantsAgeMetric) => {
+     
+    let genderObject = {female: 0, male: 0, intersex: 0, unknown: 0}
+    filterGenderMetrics(participantsGenderMetric.stats, genderObject)
+    let raceObject = {americanIndian: 0, asian: 0, africanAmerican: 0, latino: 0, nativeHawaiian: 0, middleEastern: 0, white: 0, none: 0, other: 0}
+    filterRaceMetrics(participantsRaceMetric.stats, raceObject)
+    console.log('participantsGenderMetric', participantsAgeMetric)
+    let ageObject = {'40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0}
+    filterAgeMetrics(participantsAgeMetric.stats, ageObject)
+
+    renderStackBarChart(genderObject, raceObject, ageObject, 'metrics')
+   
+}
+
+const filterGenderMetrics = (participantsGenderMetrics, genderObject) => {
+        participantsGenderMetrics.forEach( i => {
+        (parseInt(i.sex) === fieldMapping['male']) ?
+            genderObject['male'] = parseInt(i.sexCount)
+        :
+        (parseInt(i.sex) === fieldMapping['female']) ?
+            genderObject['female'] = parseInt(i.sexCount)
+        :
+        (parseInt(i.sex) === fieldMapping['intersex']) ?
+            genderObject['intersex'] = parseInt(i.sexCount)
+        :
+            genderObject['unknown'] = parseInt(i.sexCount)
+        return genderObject;
+        }
+    )}
+
+
+const filterRaceMetrics = (participantsRaceMetrics, raceObject) => {
+    participantsRaceMetrics.forEach( i => {
+            (parseInt(i.race) === fieldMapping['americanIndian']) ? 
+                raceObject['americanIndian'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['asian']) ?
+                raceObject['asian'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['africanAmerican']) ?
+                raceObject['africanAmerican'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['latino']) ?
+                raceObject['latino'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['middleEastern']) ?
+                raceObject['middleEastern'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['nativeHawaiian']) ?
+                raceObject['nativeHawaiian'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['white']) ?
+                raceObject['white'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['none']) ?
+                raceObject['none'] = parseInt(i.raceCount)
+            :
+                raceObject['other'] = parseInt(i.raceCount)
+            return raceObject;
+            
+    })}
+
+const filterAgeMetrics = (participantsAgeMetrics, ageRange) => {
+    participantsAgeMetrics.forEach( i => {
+        let participantYear = humanReadableY() - parseInt(i.birthYear)
+        sortAgeRange(participantYear, ageRange)
+        return ageRange;
+        }
+    )
+}
+
+const sortAgeRange = (participantYear, ageRange) => {
     
-    renderStackBarChart(participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats, 'metrics')
+        (participantYear >= 40 && participantYear <= 45) ? 
+                ageRange['40-45']++
+        : 
+        (participantYear >= 46 && participantYear <= 50) ?
+                ageRange['46-50']++
+        : 
+        (participantYear >= 51 && participantYear <= 55) ?
+                ageRange['51-55']++
+        :
+        (participantYear >= 56 && participantYear <= 60) ?
+                ageRange['56-60']++
+        : 
+        (participantYear >= 61 && participantYear <= 65) ?
+                ageRange['61-65']++
+        : ""
 }
 
 const renderStackBarChart = (participantGenderResponse, participantRaceResponse, participantAgeRangeResponse, id) => {
 
-    const participantGenderResponseF = ( (participantGenderResponse[0] !== undefined) ? (participantGenderResponse[0].sexCount): (0));
-    const participantGenderResponseM = ( (participantGenderResponse[1] !== undefined) ? (participantGenderResponse[1].sexCount): (0));
-    const participantGenderResponseI = ( (participantGenderResponse[2] !== undefined) ? (participantGenderResponse[2].sexCount): (0));
-    const participantGenderResponseU = ( (participantGenderResponse[3] !== undefined) ? (participantGenderResponse[3].sexCount): (0));
-    
+    const participantGenderResponseF = participantGenderResponse.female;
+    const participantGenderResponseM = participantGenderResponse.male;
+    const participantGenderResponseI = participantGenderResponse.intersex;
+    const participantGenderResponseU = participantGenderResponse.unknown;
+ 
     const totalGenderResponse = participantGenderResponseF + participantGenderResponseM + participantGenderResponseI + participantGenderResponseU
 
-    const participantRaceResponseW = ( (participantRaceResponse[0] !== undefined) ? (participantRaceResponse[0].raceCount): (0));
-    const participantRaceResponseO = ( (participantRaceResponse[1] !== undefined) ? (participantRaceResponse[1].raceCount): (0));
-    const participantRaceResponseU = ( (participantRaceResponse[2] !== undefined) ? (participantRaceResponse[2].raceCount): (0));
+    const participantRaceResponseAI = participantRaceResponse.americanIndian;
+    const participantRaceResponseA = participantRaceResponse.asian;
+    const participantRaceResponseAA = participantRaceResponse.africanAmerican;
+    const participantRaceResponseL = participantRaceResponse.latino;
+    const participantRaceResponseME = participantRaceResponse.middleEastern;
+    const participantRaceResponseNH = participantRaceResponse.nativeHawaiian;
+    const participantRaceResponseW = participantRaceResponse.white;
+    const participantRaceResponseO = participantRaceResponse.none;
+    const participantRaceResponseU = participantRaceResponse.other;
         
-    const totalRaceResponse = participantRaceResponseW + participantRaceResponseO + participantRaceResponseU
+    const totalRaceResponse = participantRaceResponseAI + participantRaceResponseA + participantRaceResponseAA +
+                                participantRaceResponseL + participantRaceResponseME + participantRaceResponseNH +
+                            participantRaceResponseW + participantRaceResponseO + participantRaceResponseU
+                            
 
-    const participantAgeRangeResponse1 = ( (participantAgeRangeResponse[0] !== undefined) ? (participantAgeRangeResponse[0].ageCount): (0));
-    const participantAgeRangeResponse2 = ( (participantAgeRangeResponse[1] !== undefined) ? (participantAgeRangeResponse[1].ageCount): (0));
-    const participantAgeRangeResponse3 = ( (participantAgeRangeResponse[2] !== undefined) ? (participantAgeRangeResponse[2].ageCount): (0));
-    const participantAgeRangeResponse4 = ( (participantAgeRangeResponse[3] !== undefined) ? (participantAgeRangeResponse[3].ageCount): (0));
-    const participantAgeRangeResponse5 = ( (participantAgeRangeResponse[4] !== undefined) ? (participantAgeRangeResponse[4].ageCount): (0));
+    const participantAgeRangeResponse1 = participantAgeRangeResponse['40-45'];
+    const participantAgeRangeResponse2 = participantAgeRangeResponse['46-50'];
+    const participantAgeRangeResponse3 = participantAgeRangeResponse['51-55'];
+    const participantAgeRangeResponse4 = participantAgeRangeResponse['56-60'];
+    const participantAgeRangeResponse5 = participantAgeRangeResponse['61-65'];
 
     const totalAgeRangeResponse = participantAgeRangeResponse1 + participantAgeRangeResponse2 + participantAgeRangeResponse3 + participantAgeRangeResponse4 + participantAgeRangeResponse5
-                                    
     const totalVerifiedParticipants = totalGenderResponse + totalRaceResponse + totalAgeRangeResponse
+
     const genderPercent = Math.round((totalGenderResponse / totalVerifiedParticipants) * 100)
     const racePercent = Math.round((totalRaceResponse / totalVerifiedParticipants) * 100)
     const ageRangePercent = Math.round((totalAgeRangeResponse / totalVerifiedParticipants) * 100)
@@ -1014,8 +1085,69 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
         orientation: 'h'
     };
 
-
     let raceTrace = {
+        y: ['Race Binary'],
+        x: [participantRaceResponseAI],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'American Indian',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+    let raceTrace1 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponseA],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'Asian',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+    let raceTrace2 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponseAA],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'African American',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+    let raceTrace3 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponseL],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'Latino',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+    let raceTrace4 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponseME],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'Middle Eastern',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+    let raceTrace5 = {
+        y: ['Race Binary'],
+        x: [participantRaceResponseNH],
+        xaxis: 'x2',
+        yaxis: 'y2',
+        type: 'bar',
+        name: 'Native Hawaiian',
+        text: `Total: ${racePercent}%`,
+        orientation: 'h'
+    };
+
+
+    let raceTrace6 = {
         y: ['Race Binary'],
         x: [participantRaceResponseW],
         xaxis: 'x2',
@@ -1026,9 +1158,9 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
         orientation: 'h'
     };
 
-    let raceTrace2 = {
+    let raceTrace7 = {
         y: ['Race Binary'],
-        x: [participantRaceResponseU],
+        x: [participantRaceResponseO],
         xaxis: 'x2',
         yaxis: 'y2',
         type: 'bar',
@@ -1036,9 +1168,9 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
         text: `Total: ${racePercent}%`,
         orientation: 'h'
     };
-    let raceTrace3 = {
+    let raceTrace8 = {
         y: ['Race Binary'],
-        x: [participantRaceResponseO],
+        x: [participantRaceResponseU],
         xaxis: 'x2',
         yaxis: 'y2',
         type: 'bar',
@@ -1093,7 +1225,7 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
 
     let data = [
         ageTrace1, ageTrace11, ageTrace12, ageTrace13, ageTrace14,
-        raceTrace, raceTrace2, raceTrace3,
+        raceTrace, raceTrace1, raceTrace2, raceTrace3, raceTrace4, raceTrace5, raceTrace6, raceTrace7, raceTrace8,
         genderTrace, genderTrace2, genderTrace3, genderTrace4
     ];
 
