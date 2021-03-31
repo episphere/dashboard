@@ -913,10 +913,12 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
   }
 
   const renderAllMetricCharts = (participantsGenderMetric, participantsRaceMetric, participantsAgeMetric) => {
+     
     let genderObject = {female: 0, male: 0, intersex: 0, unknown: 0}
     filterGenderMetrics(participantsGenderMetric.stats, genderObject)
     let raceObject = {americanIndian: 0, asian: 0, africanAmerican: 0, latino: 0, nativeHawaiian: 0, middleEastern: 0, white: 0, none: 0, other: 0}
     filterRaceMetrics(participantsRaceMetric.stats, raceObject)
+    console.log('participantsGenderMetric', participantsAgeMetric)
     let ageObject = {'40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0}
     filterAgeMetrics(participantsAgeMetric.stats, ageObject)
 
@@ -926,16 +928,16 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
 
 const filterGenderMetrics = (participantsGenderMetrics, genderObject) => {
         participantsGenderMetrics.forEach( i => {
-        (parseInt(i.gender) === fieldMapping['male']) ?
-            genderObject['male']++
+        (parseInt(i.sex) === fieldMapping['male']) ?
+            genderObject['male'] = parseInt(i.sexCount)
         :
-        (parseInt(i.gender) === fieldMapping['female']) ?
-            genderObject['female']++
+        (parseInt(i.sex) === fieldMapping['female']) ?
+            genderObject['female'] = parseInt(i.sexCount)
         :
-        (parseInt(i.gender) === fieldMapping['intersex']) ?
-            genderObject['intersex']++
+        (parseInt(i.sex) === fieldMapping['intersex']) ?
+            genderObject['intersex'] = parseInt(i.sexCount)
         :
-            genderObject['unknown']++
+            genderObject['unknown'] = parseInt(i.sexCount)
         return genderObject;
         }
     )}
@@ -943,39 +945,31 @@ const filterGenderMetrics = (participantsGenderMetrics, genderObject) => {
 
 const filterRaceMetrics = (participantsRaceMetrics, raceObject) => {
     participantsRaceMetrics.forEach( i => {
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['americanIndian']) ? 
-                raceObject['americanIndian']++
+            (parseInt(i.race) === fieldMapping['americanIndian']) ? 
+                raceObject['americanIndian'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['asian']) ?
-                raceObject['asian']++
+            (parseInt(i.race) === fieldMapping['asian']) ?
+                raceObject['asian'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['africanAmerican']) ?
-                raceObject['africanAmerican']++
+            (parseInt(i.race) === fieldMapping['africanAmerican']) ?
+                raceObject['africanAmerican'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['latino']) ?
-                raceObject['latino']++
+            (parseInt(i.race) === fieldMapping['latino']) ?
+                raceObject['latino'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['middleEastern']) ?
-                raceObject['middleEastern']++
+            (parseInt(i.race) === fieldMapping['middleEastern']) ?
+                raceObject['middleEastern'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['nativeHawaiian']) ?
-                raceObject['nativeHawaiian']++
+            (parseInt(i.race) === fieldMapping['nativeHawaiian']) ?
+                raceObject['nativeHawaiian'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['white']) ?
-                raceObject['white']++
+            (parseInt(i.race) === fieldMapping['white']) ?
+                raceObject['white'] = parseInt(i.raceCount)
             :
-            i.Race && 
-            (parseInt(i.Race[0]) === fieldMapping['none']) ?
-                raceObject['none']++
+            (parseInt(i.race) === fieldMapping['none']) ?
+                raceObject['none'] = parseInt(i.raceCount)
             :
-                raceObject['other']++;
+                raceObject['other'] = parseInt(i.raceCount)
             return raceObject;
             
     })}
