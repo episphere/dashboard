@@ -3,7 +3,7 @@ import { getCurrentTimeStamp } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import participantInfoResponse from './participantInfoResponse.js';
-import { userProfile, verificationStatus, baselineSurvey, baselineBOHSurvey, baselineMRESurvey,
+import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,
     baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, 
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY } from './utils.js';
@@ -39,7 +39,7 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
-
+        console.log('participant', participant )
         // participant info displayed is from MOCK DATA & would be swapped once
         // real data is  active
         let participantInfo = [];
@@ -77,25 +77,25 @@ export const render = (participant) => {
                                     ${hippaHandler(participant)}
                                 </tr>
                                 <tr class="row-color-enrollment-dark">
-                                    ${userProfile(participantInfoResult[fieldMapping.userProfile])}
+                                    ${userProfile(participant)}
                                 </tr>
                                 <tr class="row-color-enrollment-light">
-                                    ${verificationStatus(participantInfoResult[fieldMapping.ifVeriffied])}
+                                    ${verificationStatus(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineBOHSurvey(participantInfoResult[fieldMapping.boh], "BOH")}
+                                    ${baselineBOHSurvey(participant[fieldMapping.boh], "BOH")}
                                 </tr>
                                 <tr class="row-color-survey-light">
-                                    ${baselineMRESurvey(participantInfoResult[fieldMapping.mre], "MRE")}
+                                    ${baselineMRESurvey(participant[fieldMapping.mre], "MRE")}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineSASSurvey(participantInfoResult[fieldMapping.sas], "SAS")}
+                                    ${baselineSASSurvey(participant[fieldMapping.sas], "SAS")}
                                 </tr>
                                 <tr class="row-color-survey-light">
-                                    ${baselineLAWSurvey(participantInfoResult[fieldMapping.law], "LAW")}
+                                    ${baselineLAWSurvey(participant[fieldMapping.law], "LAW")}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineSSN(participantInfoResult[fieldMapping.ssn])}
+                                    ${baselineSSN(participant[fieldMapping.ssn])}
                                 </tr>
                                 <tr class="row-color-survey-light">
                                     ${baselineBloodUrineSurvey(participantInfoResult[fieldMapping.bloodUrineSurvey])}
@@ -115,7 +115,7 @@ export const render = (participant) => {
                                 <tr class="row-color-payment">
                                     ${baselinePayment(participantInfoResult[fieldMapping.baselinePaymentFlag])}
                                 </tr>
-                                <tr class="row-color-sample-light">
+                                <tr class="row-color-emr-light">
                                     ${baselineEMR(participantInfoResult[fieldMapping.baselineEMR])}
                                 </tr>
                             </tbody>

@@ -28,7 +28,6 @@ export const userProfile = (participant) => {
 
 export const verificationStatus = (participant) => {
     let template = ``;
-
     !participant ?
     (template += `
         ${getTemplateRow("fa fa-times fa-2x", "color: red", "Enrollment", "N/A", "Verification", "N/A", "N/A", "N/A", "N/A", "N/A")}
@@ -56,59 +55,13 @@ export const verificationStatus = (participant) => {
                     "N/A", "N/A", "N", "N/A")}
             ` ) :
         ( template += `
-                ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "utreach Timed Out", 
+                ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "Uutreach Timed Out", 
                 "N/A", "N/A", "N", "N/A")}
     ` ) 
     )
 
     return template;
 }
-
-export const baselineSurvey = (participantModule, surveyName) => {
-    let template = ``;
-
-    !participantModule ?  
-    (
-        template += `
-        <td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
-        <td>${surveyName}</td>
-        <td>Not Started</td>
-        <td>N/A</td>
-        <td>N/A</td>
-        <td>Y</td>
-        <td>N/A</td>
-        `
-    ) :
-    ( participantModule && !participantModule.COMPLETED) ?
-    ( template += `
-        <td><i class="fa fa-hashtag fa-2x" style="color: orange;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
-        <td>${surveyName}</td>
-        <td>Started</td>
-        <td>${humanReadableMDY(participantModule.START_TS)}</td>
-        <td>N/A</td>
-        <td>N</td>
-        <td>N/A</td>
-    ` ) : 
-    ( participantModule && participantModule.COMPLETED) ?
-    ( template += `
-        <td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-        <td>Baseline</td>
-        <td>Survey</td>
-        <td>${surveyName}</td>
-        <td>${participantModule.SOCIALSECUR1 ? ((participantModule.SOCIALSECUR1).length <= 4 ? '4' : '9') : 'Submitted'}</td>
-        <td>${humanReadableMDY(participantModule.COMPLETED_TS)}</td>
-        <td>N/A</td>
-        <td>N</td>
-        <td>N/A</td>
-    ` ) :
-    ''
-    return template;
-}
-
 
 export const baselineBloodSample = (participantModule) => {
 
@@ -226,7 +179,7 @@ export const baselineBOHSurvey = (participantModule) => {
 }
 
 
-export const baselineMRESurvey = (participantModule, surveyName) => {
+export const baselineMRESurvey = (participantModule) => {
     let template = ``;
     !participantModule ?  
     (
