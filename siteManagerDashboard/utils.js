@@ -87,3 +87,11 @@ setTimeout(() => {
 }, 50);
 }
 
+import { keyToNameObj } from './siteKeysToName.js';
+
+export const siteKeyToName = (key) => {
+  
+  console.log('key', key, keyToNameObj[key])
+  return keyToNameObj[key];
+
+}

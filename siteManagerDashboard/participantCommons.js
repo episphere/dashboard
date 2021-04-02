@@ -1,6 +1,7 @@
 import {renderParticipantDetails} from './participantDetails.js';
 import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
+import { siteKeyToName } from './utils.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.prefEmail, 'Connect_ID', fieldMapping.healthcareProvider];
 
 export const renderTable = (data, source) => {
@@ -13,6 +14,7 @@ export const renderTable = (data, source) => {
     array = array.filter((item, index) => array.indexOf(item) === index);
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+    
     if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
