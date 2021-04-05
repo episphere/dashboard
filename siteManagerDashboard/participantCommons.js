@@ -2,6 +2,7 @@ import {renderParticipantDetails} from './participantDetails.js';
 import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { siteKeyToName } from './utils.js';
+import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.prefEmail, 'Connect_ID', fieldMapping.healthcareProvider];
 
 export const renderTable = (data, source) => {
@@ -16,6 +17,7 @@ export const renderTable = (data, source) => {
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
     if(array.length > 0) {
+        console.log('array', array)
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</button>`)}
@@ -155,6 +157,9 @@ const tableTemplate = (data, showButtons) => {
         importantColumns.forEach(x => {
             if(participant[x] && typeof participant[x] === 'object'){
                 template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`
+            }
+            else if ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined ) {
+                template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`
             }
             else {
                 template += `<td>${participant[x] ? participant[x] : ''}</td>`

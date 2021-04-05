@@ -1,6 +1,7 @@
 
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { humanReadableMDY } from './utils.js';
+import { keyToNameObj } from './siteKeysToName.js';
 
 export const headerImportantColumns = [
     { field: 'Connect_ID' },
@@ -9,7 +10,7 @@ export const headerImportantColumns = [
     { field: fieldMapping.birthYear },
     { field: fieldMapping.consentDate },
     { field: fieldMapping.verficationDate },
-    {field: fieldMapping.healthcareProvider },
+    { field: 'Site' },
     { field: 'Year(s) in Connect' },
     { field: 'Status' }
 ];
@@ -32,6 +33,10 @@ export const renderParticipantHeader = (participant) => {
 
         (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${getYearsInConnect(participant)} &nbsp;`
+        :
+
+        (headerImportantColumns[x].field === 'Site' ) ?
+            template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${renderSiteLocation(participant)} &nbsp;`
         :
         
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Birth Year') ?
@@ -85,4 +90,9 @@ const concatDOB = (participant) => {
     const dateofBirth = participantBirthMonth + '/' + participantBirthDate + '/' + participantBirthYear;
     return dateofBirth; //  07/02/1966  
 
+}
+
+const renderSiteLocation = (participant) => {
+    const siteHealthcareProvider = participant[fieldMapping.healthcareProvider];
+    return keyToNameObj[siteHealthcareProvider];
 }

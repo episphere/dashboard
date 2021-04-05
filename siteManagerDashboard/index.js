@@ -138,7 +138,6 @@ const dropdownTrigger = (filterWorkflowResults, participantsGenderMetric, partic
     if (dropdownMenuButton) {
         dropdownMenuButton.addEventListener('click', (e) => {
             const t = getDataAttributes(e.target)
-            console.log('t', t)
            reRenderDashboard(t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, recruitsCountResults);
         })
     }
@@ -182,22 +181,6 @@ const fetchStats = async (siteKey, type) => {
     }
     else {
         const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/stats?type=${type}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
-}
-
-const localFetchStats = async (siteKey, type) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`http://localhost:5001/nih-nci-dceg-connect-dev/us-central1/stats?type=${type}`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + siteKey
@@ -273,7 +256,13 @@ const renderCharts = async (siteKey) => {
 
     const participantsGenderMetric = await fetchStats(siteKey, 'sex');
     const participantsRaceMetric = await fetchStats(siteKey, 'race');
-    const participantsAgeMetric = await localFetchStats(siteKey, 'age');
+    const participantsAgeMetric = await fetchStats(siteKey, 'age');
+
+
+    const genderStats = filterGenderMetrics(participantsGenderMetric.stats)
+    const raceStats = filterRaceMetrics(participantsRaceMetric.stats)
+    const ageStats = filterAgeMetrics(participantsAgeMetric.stats)
+
 
     const activeVerificationStatus = filterVerification(filterVerificationResults.stats, 'active')
     const passiveVerificationStatus = filterVerification(filterVerificationResults.stats, 'passive')
@@ -291,13 +280,13 @@ const renderCharts = async (siteKey) => {
               if (index !== 0 && (objSiteCode !== i.siteCode)) {
                 siteSelectionRow.innerHTML = renderSiteKeyList(siteKey)
                 mainContent.appendChild(siteSelectionRow);
-                dropdownTrigger(filterWorkflowResults.stats, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 
+                dropdownTrigger(filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats, 
                     filterVerificationResults.stats, recruitsCountResults.stats);
               }
         }) 
 
     renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow, 
-        participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, 
+        genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, 
         denominatorVerificationStatus, recruitsCount )
 
         animation(false);
@@ -305,6 +294,94 @@ const renderCharts = async (siteKey) => {
     if (stats.code === 401) {
         clearLocalStroage();
     }
+}
+
+
+const filterGenderMetrics = (participantsGenderMetrics) => {
+ 
+    let genderObject = {female: 0, male: 0, intersex: 0, unknown: 0}
+    participantsGenderMetrics && participantsGenderMetrics.forEach( i => {
+        (parseInt(i.sex) === fieldMapping['male']) ?
+            genderObject['male'] = parseInt(i.sexCount)
+        :
+        (parseInt(i.sex) === fieldMapping['female']) ?
+            genderObject['female'] = parseInt(i.sexCount)
+        :
+        (parseInt(i.sex) === fieldMapping['intersex']) ?
+            genderObject['intersex'] = parseInt(i.sexCount)
+        :
+            genderObject['unknown'] = parseInt(i.sexCount)
+        
+        }
+    )
+
+    return genderObject;
+
+
+}
+
+
+const filterRaceMetrics = (participantsRaceMetrics) => {
+
+    let raceObject = {americanIndian: 0, asian: 0, africanAmerican: 0, latino: 0, nativeHawaiian: 0, middleEastern: 0, white: 0, none: 0, other: 0}
+    participantsRaceMetrics && participantsRaceMetrics.forEach( i => {
+            (parseInt(i.race) === fieldMapping['americanIndian']) ? 
+                raceObject['americanIndian'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['asian']) ?
+                raceObject['asian'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['africanAmerican']) ?
+                raceObject['africanAmerican'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['latino']) ?
+                raceObject['latino'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['middleEastern']) ?
+                raceObject['middleEastern'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['nativeHawaiian']) ?
+                raceObject['nativeHawaiian'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['white']) ?
+                raceObject['white'] = parseInt(i.raceCount)
+            :
+            (parseInt(i.race) === fieldMapping['none']) ?
+                raceObject['none'] = parseInt(i.raceCount)
+            :
+                raceObject['other'] = parseInt(i.raceCount)            
+    })
+    return raceObject;
+
+}
+
+const filterAgeMetrics = (participantsAgeMetrics) => {
+    let ageObject = {'40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0}
+    participantsAgeMetrics && participantsAgeMetrics.forEach( i => {
+        let participantYear = humanReadableY() - parseInt(i.birthYear)
+        sortAgeRange(participantYear, ageObject)
+        }
+    )
+    return ageObject;
+}
+
+const sortAgeRange = (participantYear, ageRange) => {
+    
+        (participantYear >= 40 && participantYear <= 45) ? 
+                ageRange['40-45']++
+        : 
+        (participantYear >= 46 && participantYear <= 50) ?
+                ageRange['46-50']++
+        : 
+        (participantYear >= 51 && participantYear <= 55) ?
+                ageRange['51-55']++
+        :
+        (participantYear >= 56 && participantYear <= 60) ?
+                ageRange['56-60']++
+        : 
+        (participantYear >= 61 && participantYear <= 65) ?
+                ageRange['61-65']++
+        : ""
 }
 
 const filterRecruitsFunnel = (data, recruit) => {
@@ -434,12 +511,7 @@ const filterVerification = (data, recruit) =>{
     let currentVerificationObj = {};
     let recruitType = fieldMapping[recruit]
     let filteredData = data.filter(i => i.recruitType === recruitType);
-    data = filterVerificationStatus(filteredData, currentVerificationObj);
-    return data;
-}
-
-const filterVerificationStatus = (stats, currentVerificationObj) => {
-    stats.forEach((i) => {
+    filteredData.forEach((i) => {
         
     if (i.verificationStatus === fieldMapping.notYetVerified) {
         currentVerificationObj.notYetVerified = i.verificationCount
@@ -457,7 +529,9 @@ const filterVerificationStatus = (stats, currentVerificationObj) => {
         currentVerificationObj.duplicate = i.verificationCount
     }
     });
+
     return currentVerificationObj;
+
 }
 
 const filterDenominatorVerificationStatus = (data) => {
@@ -497,68 +571,60 @@ const filterRecruits = (data) => {
 const reRenderDashboard = async (siteKey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, 
     participantsAgeMetric, filterVerificationResults, recruitsCountResults) => {
 
-console.log('sk',participantsGenderMetric )
-const siteKeyFilter = nameToKeyObj[siteKey]
+    const siteKeyFilter = nameToKeyObj[siteKey];
 
-// filterDatabySiteCode(siteKeyFilter, filterWorkflowResults)
-let resultWorkflow = []
-filterDatabySiteCode(resultWorkflow, filterWorkflowResults, siteKeyFilter)
+    let resultWorkflow = []
+    filterDatabySiteCode(resultWorkflow, filterWorkflowResults, siteKeyFilter);
 
-let resultGender = []
-participantsGenderMetric.stats.filter(i => {
-    if(i.siteCode === siteKeyFilter) {
-        resultGender.push(i)
-}});
-let resultRace = []
-participantsRaceMetric.stats.filter(i => {
-    if(i.siteCode === siteKeyFilter) {
-        resultRace.push(i)
-}});
-let resultAge = []
-participantsAgeMetric.stats.filter(i => {
-    if(i.siteCode === siteKeyFilter) {
-        resultAge.push(i)
-}});
-let resultVerification = []
-filterVerificationResults.filter(i => {
-    if(i.siteCode === siteKeyFilter) {
-        resultVerification.push(i)
-}});
-let resultRecruitsCount = []
-recruitsCountResults.filter(i => {
-    if(i.siteCode === siteKeyFilter) {
-        resultRecruitsCount.push(i)
-}});
+    let resultGender = []
+    filterDatabySiteCode(resultGender, participantsGenderMetric, siteKeyFilter);
 
-mainContent.innerHTML = '';
+    let resultRace = []
+    filterDatabySiteCode(resultRace, participantsRaceMetric, siteKeyFilter);
 
-const activeRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'active')
-const passiveRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'passive')
-const totalRecruitsFunnel = filterTotalRecruitsFunnel(resultWorkflow)
+    let resultAge = []
+    filterDatabySiteCode(resultAge, participantsAgeMetric, siteKeyFilter);
 
-const activeCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'active')
-const passiveCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'passive')
-const totalCurrentWorkflow = filterTotalCurrentWorkflow(resultWorkflow)
+    let resultVerification = []
+    filterDatabySiteCode(resultVerification, filterVerificationResults, siteKeyFilter);
 
-const activeVerificationStatus = filterVerification(resultVerification, 'active')
-const passiveVerificationStatus = filterVerification(resultVerification, 'passive')
-const denominatorVerificationStatus = filterDenominatorVerificationStatus(resultVerification)
+    let resultRecruitsCount = []
+    filterDatabySiteCode(resultRecruitsCount, recruitsCountResults, siteKeyFilter);
 
-//renderAllMetricCharts(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric)
-const recruitsCount = filterRecruits(resultRecruitsCount)
 
-const siteSelectionRow = document.createElement('div');
-siteSelectionRow.classList = ['row'];
-siteSelectionRow.id = 'siteSelection';
+    mainContent.innerHTML = '';
 
-siteSelectionRow.innerHTML = renderSiteKeyList(siteKey)
-mainContent.appendChild(siteSelectionRow);
-dropdownTrigger(filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, 
-    participantsAgeMetric, filterVerificationResults, recruitsCountResults)
+    const activeRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'active')
+    const passiveRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'passive')
+    const totalRecruitsFunnel = filterTotalRecruitsFunnel(resultWorkflow)
 
-renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow, resultGender, resultRace, resultAge, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount )
+    const activeCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'active')
+    const passiveCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'passive')
+    const totalCurrentWorkflow = filterTotalCurrentWorkflow(resultWorkflow)
 
- animation(false);
+    const activeVerificationStatus = filterVerification(resultVerification, 'active')
+    const passiveVerificationStatus = filterVerification(resultVerification, 'passive')
+    const denominatorVerificationStatus = filterDenominatorVerificationStatus(resultWorkflow)
+
+    const genderStats = filterGenderMetrics(resultGender)
+    const raceStats = filterRaceMetrics(resultRace)
+    const ageStats = filterAgeMetrics(resultAge)
+
+    const recruitsCount = filterRecruits(resultRecruitsCount)
+
+    const siteSelectionRow = document.createElement('div');
+    siteSelectionRow.classList = ['row'];
+    siteSelectionRow.id = 'siteSelection';
+
+    siteSelectionRow.innerHTML = renderSiteKeyList(siteKey)
+    mainContent.appendChild(siteSelectionRow);
+    dropdownTrigger(filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, 
+        participantsAgeMetric, filterVerificationResults, recruitsCountResults)
+
+    renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow, 
+        genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount )
+
+    animation(false);
 }
 
 

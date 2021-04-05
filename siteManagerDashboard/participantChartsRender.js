@@ -1,6 +1,4 @@
-import fieldMapping from './fieldToConceptIdMapping.js';
 
-import { humanReadableY } from './utils.js'
 
 export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
     participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount ) => {
@@ -144,7 +142,7 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    mainContent.appendChild(row3); // Misc.
 
-   renderAllMetricCharts(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric)
+   renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
 
    renderActiveFunnelChart(activeRecruitsFunnel, 'funnelChart')
    renderActiveBarChart(activeCurrentWorkflow, 'barChart');
@@ -426,95 +424,6 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
       
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
-
-  const renderAllMetricCharts = (participantsGenderMetric, participantsRaceMetric, participantsAgeMetric) => {
-     
-    let genderObject = {female: 0, male: 0, intersex: 0, unknown: 0}
-    filterGenderMetrics(participantsGenderMetric.stats, genderObject)
-    let raceObject = {americanIndian: 0, asian: 0, africanAmerican: 0, latino: 0, nativeHawaiian: 0, middleEastern: 0, white: 0, none: 0, other: 0}
-    filterRaceMetrics(participantsRaceMetric.stats, raceObject)
-    let ageObject = {'40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0}
-    filterAgeMetrics(participantsAgeMetric.stats, ageObject)
-
-    renderStackBarChart(genderObject, raceObject, ageObject, 'metrics')
-   
-}
-
-const filterGenderMetrics = (participantsGenderMetrics, genderObject) => {
-    participantsGenderMetrics && participantsGenderMetrics.forEach( i => {
-        (parseInt(i.sex) === fieldMapping['male']) ?
-            genderObject['male'] = parseInt(i.sexCount)
-        :
-        (parseInt(i.sex) === fieldMapping['female']) ?
-            genderObject['female'] = parseInt(i.sexCount)
-        :
-        (parseInt(i.sex) === fieldMapping['intersex']) ?
-            genderObject['intersex'] = parseInt(i.sexCount)
-        :
-            genderObject['unknown'] = parseInt(i.sexCount)
-        return genderObject;
-        }
-    )}
-
-
-const filterRaceMetrics = (participantsRaceMetrics, raceObject) => {
-    participantsRaceMetrics && participantsRaceMetrics.forEach( i => {
-            (parseInt(i.race) === fieldMapping['americanIndian']) ? 
-                raceObject['americanIndian'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['asian']) ?
-                raceObject['asian'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['africanAmerican']) ?
-                raceObject['africanAmerican'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['latino']) ?
-                raceObject['latino'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['middleEastern']) ?
-                raceObject['middleEastern'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['nativeHawaiian']) ?
-                raceObject['nativeHawaiian'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['white']) ?
-                raceObject['white'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['none']) ?
-                raceObject['none'] = parseInt(i.raceCount)
-            :
-                raceObject['other'] = parseInt(i.raceCount)
-            return raceObject;
-            
-    })}
-
-const filterAgeMetrics = (participantsAgeMetrics, ageRange) => {
-    participantsAgeMetrics && participantsAgeMetrics.forEach( i => {
-        let participantYear = humanReadableY() - parseInt(i.birthYear)
-        sortAgeRange(participantYear, ageRange)
-        return ageRange;
-        }
-    )
-}
-
-const sortAgeRange = (participantYear, ageRange) => {
-    
-        (participantYear >= 40 && participantYear <= 45) ? 
-                ageRange['40-45']++
-        : 
-        (participantYear >= 46 && participantYear <= 50) ?
-                ageRange['46-50']++
-        : 
-        (participantYear >= 51 && participantYear <= 55) ?
-                ageRange['51-55']++
-        :
-        (participantYear >= 56 && participantYear <= 60) ?
-                ageRange['56-60']++
-        : 
-        (participantYear >= 61 && participantYear <= 65) ?
-                ageRange['61-65']++
-        : ""
-}
 
 const renderStackBarChart = (participantGenderResponse, participantRaceResponse, participantAgeRangeResponse, id) => {
 
