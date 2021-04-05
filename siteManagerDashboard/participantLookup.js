@@ -1,6 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
-import { internalNavigatorHandler } from './utils.js'
+import { internalNavigatorHandler } from './utils.js';
+
 
 export function renderParticipantLookup(){
 
