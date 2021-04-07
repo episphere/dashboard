@@ -17,7 +17,6 @@ export const renderTable = (data, source) => {
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
     if(array.length > 0) {
-        console.log('array', array)
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</button>`)}

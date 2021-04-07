@@ -61,6 +61,9 @@ export default
     'second': 643664527,
     'third': 537892528,
 
+    'prefPhone': 127547625,
+    'prefEmail': 357184057,
+
     "notStarted": 0,
     "started": 1,
     "submitted": 2,
