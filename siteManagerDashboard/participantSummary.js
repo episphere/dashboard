@@ -200,7 +200,7 @@ const consentHandler = (participant) => {
                     <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy">Download Link</a></td>
     ` ) : 
     (
-        template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+        template += `<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Enrollment</td>
                     <td>Agreement</td>
                     <td>Consent</td>
