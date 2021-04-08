@@ -17,7 +17,6 @@ export const renderTable = (data, source) => {
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
     if(array.length > 0) {
-        console.log('array', array)
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</button>`)}
@@ -37,7 +36,7 @@ export const renderTable = (data, source) => {
                         </div>
                     </div>
                 <div class="row allow-overflow">
-                    <div class="col">
+                    <div class="col sticky-header">
                         <table id="dataTable" class="table table-hover table-bordered table-borderless sub-div-shadow no-wrap"></table>
                         <div id="paginationContainer"></div>
                     </div>
@@ -146,10 +145,10 @@ const paginationTemplate = (array) => {
 const tableTemplate = (data, showButtons) => {
     let template = '';
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    template += `<thead class="thead-dark"><tr><th>Select</th>`
-    importantColumns.forEach(x => template += `<th>${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</th>`)
-    template += `<th class="no-wrap">Show all info</th>
-            ${showButtons ? `<th>Verify / Not Verify</th>`: ``}
+    template += `<thead class="thead-dark sticky-row"><tr><th class="sticky-row">Select</th>`
+    importantColumns.forEach(x => template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</th>`)
+    template += `<th class="no-wrap sticky-row">Show all info</th>
+            ${showButtons ? `<th class="sticky-row">Verify / Not Verify</th>`: ``}
         </tr>
     </thead>`;
     data.forEach(participant => {

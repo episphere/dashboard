@@ -27,5 +27,6 @@ export const nameToKeyObj =
     "uChiM": 809703864,
     "nci": 13,
     "kpHI": 300267574,
-    "kpGA": 327912200 
+    "kpGA": 327912200,
+    "allResults": 1000
 }

@@ -52,9 +52,9 @@ export const renderParticipantHeader = (participant) => {
 
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
             (participant[fieldMapping.verficationDate] ? 
-                    template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`
+                    template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp; <br />`
                     :
-                    template += `<span><b> Not Verified</b></span> : N/A &nbsp;`)
+                    template += `<span><b> Not Yet Verified</b></span> : N/A &nbsp; <br />`)
             :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }

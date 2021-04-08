@@ -21,6 +21,7 @@ export function rederParticipantSearch() {
     return `
         <div class="container">
         <div id="root">
+        <div id="alert_placeholder"></div>
                 <div class="row">
                 <div class="col-lg">
                     <h5>Participant Lookup</h5>
@@ -119,6 +120,20 @@ export const addEventSearchConnectId = () => {
     })
 };
 
+const alertTrigger = () => {
+    let alertList = document.getElementById('alert_placeholder');
+    let template = ``;
+    template += `
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        The participant with entered search criteria not found!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`
+    alertList.innerHTML = template;
+    return template;
+}
+
 export const performSearch = async (query, failedElem) => {
     showAnimation();
     const response = await findParticipant(query);
@@ -134,7 +149,10 @@ export const performSearch = async (query, failedElem) => {
             renderParticipantLookup();
         });
     }
-    else if(response.code === 200 && response.data.length === 0) document.getElementById(failedElem).hidden = false;
+    else if(response.code === 200 && response.data.length === 0) {
+        document.getElementById(failedElem).hidden = false;
+        alertTrigger();
+    }
 }
 
 export const showAnimation = () => {

@@ -40,6 +40,9 @@ export default
     "otherPhone":793072415,
     "prefContact":524461170,
     "canWeText":646873644,
+    "voicemailHome": 187894482,
+    "voicemailMobile": 271757434,
+    "voicemailOther": 983278853,
     "address1":521824358,
     "address2":442166669,
     "city":703385619,    
@@ -49,6 +52,17 @@ export default
     "suffix":480305327,
     "ssnOnFile": 454067894,
     "timeProfileSubmitted": 430551721,
+
+    'jr': 612166858,
+    'sr': 255907182,
+    'one': 226924545,
+    'two': 270793412,
+    'three': 959021713,
+    'second': 643664527,
+    'third': 537892528,
+
+    'prefPhone': 127547625,
+    'prefEmail': 357184057,
 
     "notStarted": 0,
     "started": 1,

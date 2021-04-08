@@ -30,34 +30,46 @@ export const importantColumns = [
      { field: fieldMapping.birthYear,
     editable: true,
     display: true } ,
+    { field: fieldMapping.cellPhone,
+        editable: true,
+        display: true },
+    { field: fieldMapping.canWeText,
+        editable: true,
+        display: true },
+    { field: fieldMapping.voicemailMobile,
+        editable: true,
+        display: true },
      { field: fieldMapping.homePhone,
     editable: true,
     display: true } ,
-    { field: fieldMapping.cellPhone,
-    editable: true,
-    display: true },
+    { field: fieldMapping.voicemailHome,
+        editable: true,
+        display: true },
     { field: fieldMapping.otherPhone,
     editable: true,
     display: true },
+    { field: fieldMapping.voicemailOther,
+        editable: true,
+        display: true },
     { field: fieldMapping.prefEmail,
     editable: true,
     display: true },
     { field: fieldMapping.prefContact,
     editable: true,
     display: true },
-    { field: fieldMapping.canWeText,
-    editable: true,
-    display: true },
-    { field: fieldMapping.ssnOnFile,
-    editable: true,
-    display: true },
     { field: fieldMapping.address1,
+    editable: true,
+    display: true },
+    { field: fieldMapping.address2,
     editable: true,
     display: true },
     { field: fieldMapping.city,
     editable: true,
     display: true },
     { field: fieldMapping.state,
+    editable: true,
+    display: true },
+    { field: fieldMapping.zip,
     editable: true,
     display: true },
     { field: 'Connect_ID',
@@ -105,7 +117,7 @@ export const render = (participant) => {
         `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-       
+        console.log('conceptIdMapping', conceptIdMapping)
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
@@ -113,23 +125,54 @@ export const render = (participant) => {
                     <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
                         <thead style="position: sticky;" class="thead-dark"> 
                         <tr>
-                            <th scope="col">Field</th>
-                            <th scope="col">Value</th>
-                            <th scope="col"></th>
+                            <th style="text-align: left; scope="col">Field</th>
+                            <th style="text-align: left; scope="col">Value</th>
+                            <th style="text-align: left; scope="col"></th>
                         </thead>
                     <tbody class="participantDetailTable">`
 
 
      
-        importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3"><label class="form-label">
-            ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'] : x.field}</label></div></th>
-            <td style="text-align: left;">${participant[x.field] !== undefined ?  participant[x.field] : ""}</td> 
+        importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
+            <label class="form-label">
+            ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? 
+                (   
+                    ((conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name']) === 'Text') ? 
+                            'Do we have permission to text this number ?'
+                    : conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'])
+                    : x.field}</label></div></th>
+
+            <td style="text-align: left;">${participant[x.field] !== undefined ?  
+                                            ( (participant[x.field] === fieldMapping.yes) ? 'Yes' 
+                                            :
+                                            (participant[x.field] === fieldMapping.no) ? 'No' 
+                                            :
+                                            (participant[x.field] === fieldMapping.jr) ? 'Jr.' 
+                                            :
+                                            (participant[x.field] === fieldMapping.sr) ? 'Sr.' 
+                                            :
+                                            (participant[x.field] === fieldMapping.one) ? 'I' 
+                                            :
+                                            (participant[x.field] === fieldMapping.two) ? 'II' 
+                                            :
+                                            (participant[x.field] === fieldMapping.three) ? 'III' 
+                                            :
+                                            (participant[x.field] === fieldMapping.second) ? '2nd' 
+                                            :
+                                            (participant[x.field] === fieldMapping.third) ? '3rd' 
+                                            :
+                                            (participant[x.field] === fieldMapping.prefPhone) ? 'Phone' 
+                                            :
+                                            (participant[x.field] === fieldMapping.prefEmail) ? 'Email' 
+                                            :
+                                            participant[x.field]  )
+                                            : ""}</td> 
             <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
-                data-participantkey=${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
+                data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
                 data-participantconceptid=${x.field} data-participantValue=${participant[x.field]} name="modalParticipantData" >
                 ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
                     `<button type="button" class="btn btn-primary">Edit</button>`
-                 : `<button type="button" class="btn btn-primary" disabled>Edit</button>`
+                 : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
                 }
             </a></td></tr>&nbsp;`) 
         
@@ -159,7 +202,7 @@ export const render = (participant) => {
                                         `<td> 
                                             <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-primary">Edit</button> </td>`
                                             :
-                                            `<td> <button type="button" class="btn btn-primary" disabled>Edit</button> </td>`
+                                            `<td> <button type="button" class="btn btn-secondary" disabled>Edit</button> </td>`
                                         }
                                         </tr>
                                     </tbody>

@@ -86,7 +86,7 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subFunnelChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');
    subFunnelChart2.setAttribute('id', 'totalFunnelChart');
    funnelChart2.appendChild(subFunnelChart2);
-   row2.appendChild(funnelChart2)
+  
 
    let barChart2 = document.createElement('div');
    barChart2.classList = ['col-lg-4 charts'];
@@ -96,7 +96,7 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subBarChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
    subBarChart2.setAttribute('id', 'totalBarChart');
    barChart2.appendChild(subBarChart2);
-   row2.appendChild(barChart2);
+
 
    let totalCounts = document.createElement('div');
    totalCounts.classList = ['col-lg-4 charts'];
@@ -106,6 +106,9 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
  //  subTotalCounts.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
    subTotalCounts.setAttribute('id', 'totalCounts');
    totalCounts.appendChild(subTotalCounts);
+
+   row2.appendChild(funnelChart2)
+   row2.appendChild(barChart2);
    row2.appendChild(totalCounts);
 
    mainContent.appendChild(row2); // total
@@ -114,13 +117,19 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    row3.classList = ['row'];
 
    let stackedBarChart = document.createElement('div');
-   stackedBarChart.classList = ['col-lg-4 charts'];
+   stackedBarChart.classList = ['col-lg-12 charts'];
 
    let subStackedBarChart = document.createElement('div');
    subStackedBarChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
    subStackedBarChart.setAttribute('id', 'metrics');
    stackedBarChart.appendChild(subStackedBarChart);
+
    row3.appendChild(stackedBarChart);
+
+   mainContent.appendChild(row3); // Misc.
+
+   const row4 = document.createElement('div');
+   row4.classList = ['row'];
 
    let pieChart = document.createElement('div');
    pieChart.classList = ['col-lg-4 charts'];
@@ -129,7 +138,7 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subPieChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
    subPieChart.setAttribute('id', 'activeVerificationStatus');
    pieChart.appendChild(subPieChart);
-   row3.appendChild(pieChart);
+  
 
    let pieChart1 = document.createElement('div');
    pieChart1.classList = ['col-lg-4 charts'];
@@ -138,9 +147,22 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subPieChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
    subPieChart1.setAttribute('id', 'passiveVerificationStatus');
    pieChart1.appendChild(subPieChart1);
-   row3.appendChild(pieChart1);
 
-   mainContent.appendChild(row3); // Misc.
+   let placeHolder = document.createElement('div');
+   placeHolder.classList = ['col-lg-4 charts'];
+   let subPlaceHolder = document.createElement('div');
+   subPlaceHolder.classList = ['col-lg-12 viz-div sub-div-shadow'];
+  // subActiveCounts1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
+   subPlaceHolder.setAttribute('id', 'placeHolder');
+   placeHolder.appendChild(subPlaceHolder);
+
+
+   row4.appendChild(pieChart);
+   row4.appendChild(pieChart1);
+   row4.appendChild(placeHolder);
+
+   mainContent.appendChild(row4); // Misc.
+
 
    renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
 
@@ -184,7 +206,7 @@ const renderActiveFunnelChart = (activeRecruitsFunnel, id) => {
     
         const data = [{
             x: [signIn, consent, userProfile, verification, verified],
-            y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
+            y: ['Signed In', 'Consented', 'Profile Done', 'Verification', 'Verified'],
             type: 'funnel',
             textinfo: 'hello ${23}', 
             marker: {
@@ -247,7 +269,7 @@ const renderPassiveFunnelChart = (passiveRecruitsFunnel, id) => {
 
         const data = [{
             x: [signIn, consent, userProfile, verification, verified],
-            y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
+            y: ['Signed In', 'Consented', 'Profile Done', 'Verification', 'Verified'],
             type: 'funnel',
             marker: {
                 color: ["#0C1368", "#242C8F", "#525DE9", '#008ECC', '#6593F5']
@@ -276,7 +298,7 @@ const renderPassiveBarChart = (passiveCurrentWorkflow, id) => {
     const submittedVerificationNotCompleted = passiveCurrentWorkflow.submittedProfile;
     const verificationCompleted = passiveCurrentWorkflow.verification;
     const trace1 = {
-        x: ['Not signed in ', 'Signed in not consent ', ' Consented User Profile not Submitted', 'Submitted Verification Not Completed', 'Verification'],
+        x: ['Never Signed In', 'Signed In, No Consent', 'Consented, No Profile', 'Profile, Verified Not Complete', 'Verification Complete'],
         y: [notSignedIn, signedInNotConsented, consentedNotSubmitted, submittedVerificationNotCompleted, verificationCompleted],
         name: 'Completed',
         type: 'bar'
@@ -314,7 +336,7 @@ const renderTotalFunnelChart = (totalRecruitsFunnel, id) => {
     
         const data = [{
             x: [signIn, consent, userProfile, verification, verified],
-            y: ['Signed In', 'Consented', 'Submitted', 'Verification', 'Verified'],
+            y: ['Signed In', 'Consented', 'Profile Done', 'Verification', 'Verified'],
             type: 'funnel',
             marker: {
                 color: ["#0C1368", "#242C8F", "#525DE9", '#008ECC', '#6593F5']
@@ -659,11 +681,9 @@ const renderStackBarChart = (participantGenderResponse, participantRaceResponse,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
 
-
-        // colorway: ['#111E6C', '#1D2951', '#0E4D92', '#0080FF', '#008ECC', '#6593F5'],  
-        autosize: false,
-        width: 600,
-        height: 300,
+        autosize: true,
+        width: 1750,
+        height: 350,
         title: 'Demographics of Verified Participants',
         yaxis: { domain: [0, 0.266], automargin: true },
         xaxis: { showgrid: false, automargin: true, showticklabels: false, title: { text: `Total number of verified participants: ${totalVerifiedParticipants}` } },
