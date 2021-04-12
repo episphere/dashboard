@@ -33,13 +33,21 @@ const router = () => {
     else if (route === '#participants/verified') renderParticipantsVerified();
     else if (route === '#participants/all') renderParticipantsAll();
     else if (route === '#participantLookup') renderParticipantLookup();
-    else if (route === '#participantDetails') renderParticipantDetails();
+    else if (route === '#participantDetails') {
+        if (JSON.parse(localStorage.getItem("participant")) === null) {
+            renderParticipantDetails();
+        }
+        else {
+            const participant = JSON.parse(localStorage.getItem("participant"))
+            renderParticipantDetails(participant);
+        }
+    }
     else if (route === '#participantSummary') {
         if (JSON.parse(localStorage.getItem("participant")) === null) {
             renderParticipantSummary();
         }
         else {
-            let participant = JSON.parse(localStorage.getItem("participant"))
+            const participant = JSON.parse(localStorage.getItem("participant"))
             renderParticipantSummary(participant);
         }
     }

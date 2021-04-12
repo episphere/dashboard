@@ -131,8 +131,6 @@ export default
     "mouthwashSurveyStartedDate": 534669573,
     "mouthwashSurveyCompletedDate": 286191859,
 
-
-
     "baselineEMR": 209454331,
     "baselineEMRflag": 101170406,
     "baselineEMRpushDate": 143523420,
