@@ -46,7 +46,7 @@ export function renderParticipantSearch() {
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Phone number</label>
-                                <input class="form-control" id="phone" placeholder="Enter Phone Number without dashes & parenthesis"/>
+                                <input class="form-control" id="phone" placeholder="Enter phone number without dashes & parenthesis"/>
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Email</label>
