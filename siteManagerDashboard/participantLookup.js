@@ -53,9 +53,8 @@ export function renderParticipantSearch() {
                                 <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
                             </div>
                             <div class="form-group dropdown" id="siteDropdownLookup" hidden>
-                                <label class="col-form-label search-label">Site Preference </label>
-                                <br />
-                                <button class="btn btn-secondary btn-lg" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <label class="col-form-label search-label">Site Preference </label> &nbsp;
+                                <button class="btn btn-primary btn-lg" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     Change Site Preference
                                 </button>
                                 <ul class="dropdown-menu" id="dropdownMenuLookupSites" aria-labelledby="dropdownMenuButton">
