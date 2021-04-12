@@ -15,6 +15,8 @@ const headerImportantColumns = [
 
 const { PDFDocument, StandardFonts } = PDFLib
 
+document.body.scrollTop = document.documentElement.scrollTop = 0;
+
 export const renderParticipantSummary = (participant) => {
 
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();

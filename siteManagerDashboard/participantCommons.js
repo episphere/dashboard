@@ -157,7 +157,7 @@ const tableTemplate = (data, showButtons) => {
             if(participant[x] && typeof participant[x] === 'object'){
                 template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`
             }
-            else if ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined ) {
+            else if ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined && x === fieldMapping.healthcareProvider ) {
                 template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`
             }
             else {
@@ -230,6 +230,18 @@ export const addEventFilterData = (data, showButtons) => {
 export const filterdata = (data) => {
     return data.filter(participant => participant['699625233'] !== undefined);
 }
+
+export const filterBySiteKey = (data, sitePref) => {
+    let filteredData = [];
+    data.filter(participant => 
+        {
+            if (participant['827220437'] === sitePref) {
+                filteredData.push(participant);
+            }
+        })
+    return filteredData;
+}
+
 export const activeColumns = (data, showButtons) => {
     const btns = document.getElementsByName('column-filter');
     Array.from(btns).forEach(btn => {

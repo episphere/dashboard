@@ -1,7 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
-import { internalNavigatorHandler } from './utils.js';
-
+import {renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
+import { internalNavigatorHandler, getDataAttributes } from './utils.js';
+import { nameToKeyObj } from './siteKeysToName.js';
 
 export function renderParticipantLookup(){
 
@@ -11,13 +11,14 @@ export function renderParticipantLookup(){
     localStorage.removeItem("participant");
     let counter = 0;
     internalNavigatorHandler(counter)
-    mainContent.innerHTML = rederParticipantSearch();
+    mainContent.innerHTML = renderParticipantSearch();
+    renderLookupSiteDropdown();
     addEventSearch();
     addEventSearchConnectId();
+    dropdownTrigger();
 }
 const api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/';
-export function rederParticipantSearch() {
-
+export function renderParticipantSearch() {
     return `
         <div class="container">
         <div id="root">
@@ -45,11 +46,31 @@ export function rederParticipantSearch() {
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Phone number</label>
-                                <input class="form-control" id="phone" placeholder="Enter Phone Number"/>
+                                <input class="form-control" id="phone" placeholder="Enter Phone Number without dashes & parenthesis"/>
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Email</label>
                                 <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
+                            </div>
+                            <div class="form-group dropdown" id="siteDropdownLookup" hidden>
+                                <label class="col-form-label search-label">Site Preference </label>
+                                <br />
+                                <button class="btn btn-secondary btn-lg" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Change Site Preference
+                                </button>
+                                <ul class="dropdown-menu" id="dropdownMenuLookupSites" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
+                                </ul>
                             </div>
                             <div id="search-failed" class="search-not-found" hidden>
                                 The participant with entered search criteria not found!
@@ -84,6 +105,20 @@ export function rederParticipantSearch() {
 
 }
 
+
+const dropdownTrigger = () => {
+    let dropdownMenuButton = document.getElementById('dropdownMenuLookupSites');
+    let a = document.getElementById('dropdownSites');
+    if (dropdownMenuButton) {
+        dropdownMenuButton.addEventListener('click', (e) => {
+            a.innerHTML = e.target.textContent;
+            const t = getDataAttributes(e.target)
+            const att = document.getElementById('dropdownSites').setAttribute("data-siteKey", t.sitekey);
+        })
+       
+    }
+}
+
 const addEventSearch = () => {
     const form = document.getElementById('search');
 
@@ -96,14 +131,16 @@ const addEventSearch = () => {
         const dob = document.getElementById('dob').value;
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
-        if(!firstName && !lastName && !dob && !phone && !email) return;
+        const sitePref = document.getElementById('dropdownSites').getAttribute('data-siteKey');
+        if(!firstName && !lastName && !dob && !phone && !email && !sitePref) return;
         let query = '';
         if(firstName) query += `firstName=${firstName}&`;
         if(lastName) query += `lastName=${lastName}&`;
         if(dob) query += `dob=${dob.replace(/-/g,'')}&`;
         if(phone) query += `phone=${phone}&`;
         if(email) query += `email=${email}&`;
-        performSearch(query, "search-failed");
+        if(sitePref) query += `sitePref=${sitePref}`;
+        performSearch(query, sitePref, "search-failed");
     })
 };
 
@@ -134,16 +171,28 @@ const alertTrigger = () => {
     return template;
 }
 
-export const performSearch = async (query, failedElem) => {
+export const performSearch = async (query, sitePref, failedElem) => {
     showAnimation();
     const response = await findParticipant(query);
     hideAnimation();
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
-        mainContent.innerHTML = renderTable(filterdata(response.data), 'participantLookup');
-        addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
-        activeColumns(filterdata(response.data));
+        let filterRawData = filterdata(response.data);
+        if (sitePref !== undefined && sitePref != null) {
+            const sitePrefId = nameToKeyObj[sitePref];
+            const tempFilterRawData = filterBySiteKey(filterRawData, sitePrefId);
+            if (tempFilterRawData.length !== 0 ) {
+                filterRawData = tempFilterRawData;
+            }
+            else if (tempFilterRawData.length === 0) {
+                document.getElementById(failedElem).hidden = false;
+                return alertTrigger();
+            }
+        }
+        mainContent.innerHTML = renderTable(filterRawData, 'participantLookup');
+        addEventFilterData(filterRawData);
+        renderData(filterRawData);
+        activeColumns(filterRawData);
         const element = document.getElementById('back-to-search');
         element.addEventListener('click', () => { 
             renderParticipantLookup();
@@ -169,7 +218,6 @@ export const showNotifications = (data, error) => {
 
 
 
-
 export const findParticipant = async (query) => {
     const localStr = JSON.parse(localStorage.dashboard);
     const siteKey = localStr.siteKey;
@@ -182,3 +230,8 @@ export const findParticipant = async (query) => {
     return await response.json();
 }
 
+const renderLookupSiteDropdown = () => {
+    let dropDownstatusFlag = localStorage.getItem('dropDownstatusFlag');
+    if (dropDownstatusFlag === 'true') {
+        document.getElementById("siteDropdownLookup").hidden = false }
+}

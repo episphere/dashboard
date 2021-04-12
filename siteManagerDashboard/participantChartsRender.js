@@ -359,7 +359,7 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
     const submittedVerificationNotCompleted = totalCurrentWorkflow.submittedProfile;
     const verificationCompleted = totalCurrentWorkflow.verification;
     const trace1 = {
-        x: ['Not signed in ', 'Signed in not consent ', ' Consented User Profile not Submitted', 'Submitted Verification Not Completed', 'Verification'],
+        x: ['Never Signed In', 'Signed In, No Consent', 'Consented, No Profile', 'Profile, Verified Not Complete', 'Verification Complete'],
         y: [notSignedIn, signedInNotConsented, consentedNotSubmitted, submittedVerificationNotCompleted, verificationCompleted],
         name: 'Completed',
         type: 'bar'
