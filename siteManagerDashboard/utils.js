@@ -95,3 +95,18 @@ export const siteKeyToName = (key) => {
   return keyToNameObj[key];
 
 }
+
+export const getDataAttributes = (el) => {
+  let data = {};
+  [].forEach.call(el.attributes, function(attr) {
+      if (/^data-/.test(attr.name)) {
+          var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
+              return $1.toUpperCase();
+          });
+          data[camelCaseName] = attr.value;
+      }
+  });
+  return data;
+}
+
+

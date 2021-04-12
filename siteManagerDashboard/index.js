@@ -2,14 +2,15 @@ import { renderParticipantLookup } from './participantLookup.js';
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
 import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
-import { renderParticipantSummary } from './participantSummary.js'
-import { internalNavigatorHandler, humanReadableY } from './utils.js'
+import { renderParticipantSummary } from './participantSummary.js';
+import { internalNavigatorHandler, humanReadableY, getDataAttributes } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
-import { renderAllCharts } from './participantChartsRender.js'
+import { renderAllCharts } from './participantChartsRender.js';
 
 let saveFlag = false;
 let counter = 0;
+
 
 window.onload = async () => {
     router();
@@ -140,15 +141,17 @@ const renderCharts = async (siteKey) => {
 
     const recruitsCount = filterRecruits(recruitsCountResults.stats)
 
-    const objSiteCode = recruitsCount[0] && recruitsCount[0].siteCode
+    const objSiteCode = recruitsCountResults.stats[0] && recruitsCountResults.stats[0].siteCode
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
     siteSelectionRow.id = 'siteSelection';
     let dropDownstatusFlag = false;
+    localStorage.setItem('dropDownstatusFlag', dropDownstatusFlag);
     if (recruitsCountResults.code === 200) {    
         recruitsCountResults && recruitsCountResults.stats.forEach((i, index) => {
               if (index !== 0 && (objSiteCode !== i.siteCode)) {
                 dropDownstatusFlag = true;
+                localStorage.setItem('dropDownstatusFlag', dropDownstatusFlag);
               }
         }) 
     if (dropDownstatusFlag === true) {
@@ -212,20 +215,6 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
        
     }
 }
-
-const getDataAttributes = (el) => {
-    let data = {};
-    [].forEach.call(el.attributes, function(attr) {
-        if (/^data-/.test(attr.name)) {
-            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
-                return $1.toUpperCase();
-            });
-            data[camelCaseName] = attr.value;
-        }
-    });
-    return data;
-}
-
 
 
 const fetchData = async (siteKey, type) => {

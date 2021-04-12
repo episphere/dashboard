@@ -8,8 +8,8 @@ export const headerImportantColumns = [
     { field: fieldMapping.fName },
     { field: fieldMapping.lName },
     { field: fieldMapping.birthYear },
-    { field: fieldMapping.consentDate },
-    { field: fieldMapping.verficationDate },
+    { field: fieldMapping.consentFlag },
+    { field: fieldMapping.verifiedFlag },
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
     { field: 'Status' }
@@ -42,19 +42,30 @@ export const renderParticipantHeader = (participant) => {
         (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Birth Year') ?
             template += `<span><b> DoB </b></span> : ${concatDOB(participant)} &nbsp;`
         :
-
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Time consent submitted') ?
-            (participant[fieldMapping.consentDate] ? 
+        
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Consent submitted') ?
+            (participant[fieldMapping.consentFlag] === (fieldMapping.yes) ? 
                 template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
                 :
                 template += `<span><b> Not Consented</b></span> : N/A &nbsp;`)
         :
 
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status time') ?
-            (participant[fieldMapping.verficationDate] ? 
-                    template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp; <br />`
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status') ?
+            (
+                (participant[fieldMapping.verifiedFlag] === fieldMapping.verified) ? 
+                    (template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
                     :
-                    template += `<span><b> Not Yet Verified</b></span> : N/A &nbsp; <br />`)
+                (participant[fieldMapping.verifiedFlag] === fieldMapping.cannotBeVerified) ? 
+                    (template += `<span><b>Can't be Verified</b></span> : N/A &nbsp;`)
+                    :
+                (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) ? 
+                    (template += `<span><b>Not yet Verified</b></span> : N/A &nbsp;`)
+                    :
+                (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) ? 
+                    (template += `<span><b>Duplicate</b></span> : N/A &nbsp;`)
+                    :
+                    (template += `<span><b>Outreach Timed Out</b></span> : N/A &nbsp;`)
+            )
             :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
     }

@@ -1,7 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getCurrentTimeStamp } from './utils.js';
+import { getCurrentTimeStamp, getDataAttributes } from './utils.js';
 import {renderParticipantSummary} from './participantSummary.js'
 
 export const importantColumns = [ 
@@ -31,27 +31,33 @@ export const importantColumns = [
     editable: true,
     display: true } ,
     { field: fieldMapping.cellPhone,
-        editable: true,
-        display: true },
+    editable: true,
+    display: true },
     { field: fieldMapping.canWeText,
-        editable: true,
-        display: true },
+    editable: true,
+    display: true },
     { field: fieldMapping.voicemailMobile,
-        editable: true,
-        display: true },
+    editable: true,
+    display: true },
      { field: fieldMapping.homePhone,
     editable: true,
     display: true } ,
     { field: fieldMapping.voicemailHome,
-        editable: true,
-        display: true },
+    editable: true,
+    display: true },
     { field: fieldMapping.otherPhone,
     editable: true,
     display: true },
     { field: fieldMapping.voicemailOther,
-        editable: true,
-        display: true },
-    { field: fieldMapping.prefEmail,
+    editable: true,
+    display: true },
+    { field: fieldMapping.email,
+    editable: true,
+    display: true },
+    { field: fieldMapping.email1,
+    editable: true,
+    display: true },
+    { field: fieldMapping.email2,
     editable: true,
     display: true },
     { field: fieldMapping.prefContact,
@@ -82,6 +88,7 @@ let saveFlag = false;
 let counter = 0;
 // const saveFlag = JSON.parse(localStorage.getItem("flags"));
 
+document.body.scrollTop = document.documentElement.scrollTop = 0;
 window.addEventListener('beforeunload',  (e) => {
     if (saveFlag === false && counter > 0) { 
     // Cancel the event and show alert that the unsaved changes would be lost 
@@ -89,6 +96,14 @@ window.addEventListener('beforeunload',  (e) => {
         e.returnValue = ''; 
     } 
 })
+
+// Prevents from scrolling to bottom or middle of the page
+window.addEventListener('onload', (e) => {
+    setTimeout(function() {
+        document.body.scrollTop = document.documentElement.scrollTop = 0;
+    }, 15);
+})
+
 
 
 export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
@@ -449,19 +464,6 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
 }
 
 /////// Helper Functions /////////
-
-const getDataAttributes = (el) => {
-    let data = {};
-    [].forEach.call(el.attributes, function(attr) {
-        if (/^data-/.test(attr.name)) {
-            var camelCaseName = attr.name.substr(5).replace(/-(.)/g, function ($0, $1) {
-                return $1.toUpperCase();
-            });
-            data[camelCaseName] = attr.value;
-        }
-    });
-    return data;
-}
 
 const showSaveAlert = () => {
     const a = document.getElementById('disableEditModal');

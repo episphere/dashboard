@@ -2,7 +2,6 @@ import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass}
 import { getCurrentTimeStamp } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import participantInfoResponse from './participantInfoResponse.js';
 import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,
     baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, 
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
@@ -14,6 +13,8 @@ const headerImportantColumns = [
 ];
 
 const { PDFDocument, StandardFonts } = PDFLib
+
+document.body.scrollTop = document.documentElement.scrollTop = 0;
 
 export const renderParticipantSummary = (participant) => {
 
@@ -39,14 +40,6 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
-        console.log('participant', participant )
-        // participant info displayed is from MOCK DATA & would be swapped once
-        // real data is  active
-        let participantInfo = [];
-                    participantInfo.push(participantInfoResponse);
-                    localStorage.setItem("participantInfo", JSON.stringify(participantInfo));
-                    let participantInfoResult = JSON.parse(localStorage.getItem("participantInfo"));
-                    participantInfoResult = participantInfoResult[0];
 
         template += `<div class="table-responsive">
 
@@ -98,25 +91,25 @@ export const render = (participant) => {
                                     ${baselineSSN(participant[fieldMapping.ssn])}
                                 </tr>
                                 <tr class="row-color-survey-light">
-                                    ${baselineBloodUrineSurvey(participantInfoResult[fieldMapping.bloodUrineSurvey])}
+                                    ${baselineBloodUrineSurvey(participant[fieldMapping.bloodUrineSurvey])}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineMouthwashSurvey(participantInfoResult[fieldMapping.mouthwashSurvey])}
+                                    ${baselineMouthwashSurvey(participant[fieldMapping.mouthwashSurvey])}
                                 </tr>
                                 <tr class="row-color-sample-dark">
-                                    ${baselineBloodSample(participantInfoResult)}
+                                    ${baselineBloodSample(participant)}
                                 </tr>                           
                                 <tr class="row-color-sample-light">
-                                    ${baselineUrineSample(participantInfoResult)}
+                                    ${baselineUrineSample(participant)}
                                 </tr>
                                 <tr class="row-color-sample-dark">
-                                    ${baselineMouthwashSample(participantInfoResult)}
+                                    ${baselineMouthwashSample(participant)}
                                 </tr>
                                 <tr class="row-color-payment">
-                                    ${baselinePayment(participantInfoResult[fieldMapping.baselinePaymentFlag])}
+                                    ${baselinePayment(participant[fieldMapping.baselinePaymentFlag])}
                                 </tr>
                                 <tr class="row-color-emr-light">
-                                    ${baselineEMR(participantInfoResult[fieldMapping.baselineEMR])}
+                                    ${baselineEMR(participant[fieldMapping.baselineEMR])}
                                 </tr>
                             </tbody>
                             </table>

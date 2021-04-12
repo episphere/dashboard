@@ -55,7 +55,7 @@ export const verificationStatus = (participant) => {
                     "N/A", "N/A", "N", "N/A")}
             ` ) :
         ( template += `
-                ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "Uutreach Timed Out", 
+                ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "Outreach Timed Out", 
                 "N/A", "N/A", "N", "N/A")}
     ` ) 
     )
