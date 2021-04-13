@@ -208,7 +208,7 @@ const addEventShowMoreInfo = data => {
             let changedOption = {}
             const loadDetailsPage = '#participantDetails'
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
-            location.replace("http://127.0.0.1:5500/siteManagerDashboard/index.html" + loadDetailsPage);        
+            location.replace(window.location.origin + window.location.pathname + loadDetailsPage);        
         });
     });
 
