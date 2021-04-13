@@ -206,7 +206,9 @@ const addEventShowMoreInfo = data => {
             console.log("select clicked", filteredData );
             let adminSubjectAudit = []
             let changedOption = {}
-            renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);            
+            const loadDetailsPage = '#participantDetails'
+            renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
+            location.replace("http://127.0.0.1:5500/siteManagerDashboard/index.html" + loadDetailsPage);        
         });
     });
 
