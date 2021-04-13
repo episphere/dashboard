@@ -76,6 +76,21 @@ export const  renderLogin = () => {
                 <button class="btn btn-primary" id="submit">Log In</button>
             </div>
         </div>
+        </br></br>
+        <h4>SSO (beta)</h4>
+        <form method="post" id="ssoLogin">
+            <div class="row">
+                <div class="col">
+                    <label for="ssoEmail">Institutional email</label>
+                    <input type="email" required id="ssoEmail" class="form-control">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col">
+                    <button type="submit" class="btn btn-primary">Log in</button>
+                </div>
+            </div>
+        </form>
     `;
 }
 

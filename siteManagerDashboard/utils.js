@@ -109,4 +109,37 @@ export const getDataAttributes = (el) => {
   return data;
 }
 
+export const userLoggedIn = () => {
+  return new Promise((resolve, reject) => {
+      const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+          unsubscribe();
+          if (user) {
+              resolve(true);
+          } else {
+              resolve(false);
+          }
+      });
+  });
+}
 
+export const firebaseConfig =  {
+  apiKey: "AIzaSyCoz1UxNYE53ujAkXysPTSEA-IDU9utcNQ",
+  authDomain: "nih-nci-dceg-connect-dev.firebaseapp.com"
+};
+
+export const getIdToken = () => {
+  return new Promise((resolve, reject) => {
+      const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+          unsubscribe();
+          if (user) {
+              user.getIdToken().then((idToken) => {
+                  resolve(idToken);
+          }, (error) => {
+              resolve(null);
+          });
+          } else {
+              resolve(null);
+          }
+      });
+  });
+};
