@@ -297,7 +297,6 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
 }
 // creates payload to be sent to backend and update the UI. Remaps the field name back to concept id along with new responses.
 const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement) => {
-   
     let displayAuditHistory = {};
     let conceptId = [];
     const a = document.getElementById('formResponse')
