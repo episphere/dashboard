@@ -206,9 +206,9 @@ const addEventShowMoreInfo = data => {
             console.log("select clicked", filteredData );
             let adminSubjectAudit = []
             let changedOption = {}
+            const loadDetailsPage = '#participantDetails'
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
-           // renderParticipantSummary(filteredData[0])
-            
+            location.replace(window.location.origin + window.location.pathname + loadDetailsPage);        
         });
     });
 

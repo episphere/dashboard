@@ -39,8 +39,10 @@ const router = () => {
             renderParticipantDetails();
         }
         else {
-            const participant = JSON.parse(localStorage.getItem("participant"))
-            renderParticipantDetails(participant);
+            let participant = JSON.parse(localStorage.getItem("participant"));
+            let adminSubjectAudit = [];
+            let changedOption = {};
+            renderParticipantDetails(participant, adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
         }
     }
     else if (route === '#participantSummary') {
@@ -48,7 +50,7 @@ const router = () => {
             renderParticipantSummary();
         }
         else {
-            const participant = JSON.parse(localStorage.getItem("participant"))
+            let participant = JSON.parse(localStorage.getItem("participant"))
             renderParticipantSummary(participant);
         }
     }
