@@ -1,7 +1,6 @@
-import {renderParticipantDetails} from './participantDetails.js';
+import { renderParticipantDetails } from './participantDetails.js';
 import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { siteKeyToName } from './utils.js';
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.prefEmail, 'Connect_ID', fieldMapping.healthcareProvider];
 
@@ -204,11 +203,11 @@ const addEventShowMoreInfo = data => {
         element.addEventListener('click', () => {
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
             console.log("select clicked", filteredData );
-            let adminSubjectAudit = []
-            let changedOption = {}
+            let adminSubjectAudit = [];
+            let changedOption = {};
             const loadDetailsPage = '#participantDetails'
+            location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
-            location.replace(window.location.origin + window.location.pathname + loadDetailsPage);        
         });
     });
 

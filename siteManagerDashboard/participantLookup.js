@@ -1,5 +1,5 @@
-import {renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass} from './navigationBar.js';
-import {renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton} from './participantCommons.js';
+import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
+import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { internalNavigatorHandler, getDataAttributes } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
@@ -188,6 +188,7 @@ export const performSearch = async (query, sitePref, failedElem) => {
                 return alertTrigger();
             }
         }
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         mainContent.innerHTML = renderTable(filterRawData, 'participantLookup');
         addEventFilterData(filterRawData);
         renderData(filterRawData);
@@ -233,4 +234,16 @@ const renderLookupSiteDropdown = () => {
     let dropDownstatusFlag = localStorage.getItem('dropDownstatusFlag');
     if (dropDownstatusFlag === 'true') {
         document.getElementById("siteDropdownLookup").hidden = false }
+}
+
+export const renderLookupResultsTable = () => {
+    let filterRawData = JSON.parse(localStorage.getItem('filterRawData'));
+    mainContent.innerHTML = renderTable(filterRawData, 'participantLookup');
+    addEventFilterData(filterRawData);
+    renderData(filterRawData);
+    activeColumns(filterRawData);
+    const element = document.getElementById('back-to-search');
+    element.addEventListener('click', () => { 
+        renderParticipantLookup();
+    });
 }
