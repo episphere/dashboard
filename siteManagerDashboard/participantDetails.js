@@ -1,8 +1,9 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getCurrentTimeStamp, getDataAttributes } from './utils.js';
-import {renderParticipantSummary} from './participantSummary.js'
+import { renderParticipantSummary } from './participantSummary.js';
+import { renderLookupResultsTable } from './participantLookup.js';
 
 export const importantColumns = [ 
 
@@ -118,6 +119,7 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
     changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
     editAltContact(participant, adminSubjectAudit);
     viewParticipantSummary(participant);
+    renderReturnSearchResults();
   
 }
 
@@ -137,6 +139,9 @@ export const render = (participant) => {
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
         template += `
+                    <div class="float-left">
+                        <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
+                    </div>
                     <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
                         <thead style="position: sticky;" class="thead-dark"> 
                         <tr>
@@ -600,3 +605,11 @@ const viewParticipantSummary = (participant) => {
         })
     }
 }
+
+const renderReturnSearchResults = () => {
+    const a = document.getElementById('displaySearchResultsBtn');
+    if (a) {
+        a.addEventListener('click', () => {
+            renderLookupResultsTable();
+        })
+}}
