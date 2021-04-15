@@ -2,7 +2,8 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
-export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.prefEmail, 'Connect_ID', fieldMapping.healthcareProvider];
+export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
+import { humanReadableMDYwithTime } from './utils.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -12,6 +13,12 @@ export const renderTable = (data, source) => {
         array = array.concat(Object.keys(dt))
     });
     array = array.filter((item, index) => array.indexOf(item) === index);
+    array = array.filter( i => 
+        (i !== '142654897' && i !== '266600170' && i !== '303552867' && i !== '452166062' && i !== '471168198'
+            && i !== '496823485' && i !== '650465111' && i !== '996038075' && i !== '8272206437' && i !== 'state' 
+            && i !== 'D_965707586' && i !== 'D_716117818' && i !== 'query' && i !== 'D_726699695' && i !== 'D_716117817' 
+            && i !== 'D_745268907' && i !== '506826178' && i !== 'Questionnaire' && i !== 'state.875549268' && i!== 'pin'
+            && i !== '436680969' && i !== '827220437' && i !== '231676651' && i !== '399159511' && i !== '736251808') )  // filter out columns with json response & duplicate columms 
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
@@ -151,17 +158,43 @@ const tableTemplate = (data, showButtons) => {
         </tr>
     </thead>`;
     data.forEach(participant => {
+        // mapping from concept id to variable name
         template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
         importantColumns.forEach(x => {
-            if(participant[x] && typeof participant[x] === 'object'){
-                template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`
-            }
-            else if ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined && x === fieldMapping.healthcareProvider ) {
-                template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`
-            }
-            else {
-                template += `<td>${participant[x] ? participant[x] : ''}</td>`
-            }
+            (participant[x] && typeof participant[x] === 'object') ?
+                (template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`)
+            : 
+            ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined && x === fieldMapping.healthcareProvider ) ? 
+               ( template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`)
+            : (participant[x] && participant[x] === fieldMapping.no) ?
+               ( template += `<td>${participant[x] ? 'No' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.yes) ?
+               ( template += `<td>${participant[x] ? 'Yes' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.active) ?
+               ( template += `<td>${participant[x] ? 'Active' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.passive) ?
+                ( template += `<td>${participant[x] ? 'Passive' : ''}</td>`)
+            : (participant[x] && participant[x] === fieldMapping.prefPhone) ?
+               ( template += `<td>${participant[x] ? 'Text Message' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.prefEmail) ?
+               ( template += `<td>${participant[x] ? 'Email' : ''}</td>` )
+            : ((x === (fieldMapping.signinDate).toString()) || (x === (fieldMapping.userProfileDateTime).toString()) || (x === (fieldMapping.consentDate).toString())
+             || (x === (fieldMapping.recruitmentDate).toString()) || (x === (fieldMapping.verficationDate).toString())) ? 
+               ( template += `<td>${participant[x] ? humanReadableMDYwithTime(participant[x]) : ''}</td>`) // human readable time date
+            : (x === (fieldMapping.verifiedFlag).toString()) ?
+            (
+                (participant[x] === fieldMapping.notYetVerified) ?
+                    template += `<td>${participant[x] ? 'Not Yet Verified'  : ''}</td>`
+                : (participant[x] === fieldMapping.outreachTimedout) ?
+                    template += `<td>${participant[x] ? 'Out Reach Timed Out'  : ''}</td>`
+                : (participant[x] === fieldMapping.verified) ?
+                    template += `<td>${participant[x] ? 'Verified'  : ''}</td>`
+                : (participant[x] === fieldMapping.cannotBeVerified) ?
+                    template += `<td>${participant[x] ? 'Can Not Be Verified '  : ''}</td>`
+                : (
+                    template += `<td>${participant[x] ? 'Duplicate'  : ''}</td>` )
+            )
+            : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
         template += `<td><a data-toggle="modal" data-target="#modalShowMoreData" name="modalParticipantData" class="change-pointer showMoreInfo" data-token="${participant.token}"><i class="fas fa-info-circle"></i></a></td>
         ${showButtons ? `<td class="no-wrap"><button class="btn btn-primary participantVerified" data-token="${participant.token}"><i class="fas fa-user-check"></i> Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}"><i class="fas fa-user-times"></i> Can't Verify</button></td>`: ``}
