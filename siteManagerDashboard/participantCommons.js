@@ -2,7 +2,8 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
-export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.prefEmail, 'Connect_ID', fieldMapping.healthcareProvider];
+export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
+import { humanReadableMDYwithTime } from './utils.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -12,6 +13,12 @@ export const renderTable = (data, source) => {
         array = array.concat(Object.keys(dt))
     });
     array = array.filter((item, index) => array.indexOf(item) === index);
+    array = array.filter( i => 
+        (i !== '142654897' && i !== '266600170' && i !== '303552867' && i !== '452166062' && i !== '471168198'
+            && i !== '496823485' && i !== '650465111' && i !== '996038075' && i !== '8272206437' && i !== 'state' 
+            && i !== 'D_965707586' && i !== 'D_716117818' && i !== 'query' && i !== 'D_726699695' && i !== 'D_716117817' 
+            && i !== 'D_745268907' && i !== '506826178' && i !== 'Questionnaire' && i !== 'state.875549268' && i!== 'pin'
+            && i !== '436680969' && i !== '827220437' && i !== '231676651' && i !== '399159511' && i !== '736251808') )  // filter out columns with json response & duplicate columms 
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
@@ -151,6 +158,7 @@ const tableTemplate = (data, showButtons) => {
         </tr>
     </thead>`;
     data.forEach(participant => {
+        // mapping from concept id to variable name
         template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
         importantColumns.forEach(x => {
             if(participant[x] && typeof participant[x] === 'object'){
@@ -158,6 +166,41 @@ const tableTemplate = (data, showButtons) => {
             }
             else if ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined && x === fieldMapping.healthcareProvider ) {
                 template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`
+            }
+            else if (participant[x] && participant[x] === fieldMapping.no) {
+                template += `<td>${participant[x] ? 'No' : ''}</td>`
+            }
+            else if (participant[x] && participant[x] === fieldMapping.yes) {
+                template += `<td>${participant[x] ? 'Yes' : ''}</td>`
+            }
+            else if (participant[x] && participant[x] === fieldMapping.active) {
+                template += `<td>${participant[x] ? 'Active' : ''}</td>`
+            }
+            else if (participant[x] && participant[x] === fieldMapping.passive) {
+                template += `<td>${participant[x] ? 'Passive' : ''}</td>`
+            }
+            else if (participant[x] && participant[x] === fieldMapping.prefPhone) {
+                template += `<td>${participant[x] ? 'Text Message' : ''}</td>`
+            }
+            else if (participant[x] && participant[x] === fieldMapping.prefEmail) {
+                template += `<td>${participant[x] ? 'Email' : ''}</td>`
+            }
+            else if ((x === (fieldMapping.signinDate).toString()) || (x === (fieldMapping.userProfileDateTime).toString()) || (x === (fieldMapping.consentDate).toString())
+             || (x === (fieldMapping.recruitmentDate).toString()) || (x === (fieldMapping.verficationDate).toString())) {
+                template += `<td>${participant[x] ? humanReadableMDYwithTime(participant[x]) : ''}</td>` // human readable time date
+            }
+            else if (x === (fieldMapping.verifiedFlag).toString()) {
+                if (participant[x] === fieldMapping.notYetVerified) {
+                    template += `<td>${participant[x] ? 'Not Yet Verified'  : ''}</td>`
+                } else if (participant[x] === fieldMapping.outreachTimedout) {
+                    template += `<td>${participant[x] ? 'Out Reach Timed Out'  : ''}</td>`
+                } else if (participant[x] === fieldMapping.verified) {
+                    template += `<td>${participant[x] ? 'Verified'  : ''}</td>`
+                } else if (participant[x] === fieldMapping.cannotBeVerified) {
+                    template += `<td>${participant[x] ? 'Can Not Be Verified '  : ''}</td>`
+                } else {
+                    template += `<td>${participant[x] ? 'Duplicate'  : ''}</td>`
+                }
             }
             else {
                 template += `<td>${participant[x] ? participant[x] : ''}</td>`

@@ -168,6 +168,9 @@ export default
     
     'active': 486306141,
     'passive': 854703046,
+    'recruitmentDate': 471593703,
+
+    'signinDate': 335767902
 
     // "D_726699695" : "Module1",
     // "D_745268907" : "Module2",
