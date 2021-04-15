@@ -27,7 +27,7 @@ const formSubmit = () => {
         obj['notificationType'] = Array.from(document.getElementsByName('notification-checkbox')).filter(dt => dt.checked).map(dt => dt.dataset.type);
         obj['emailField'] = document.getElementById('emailconcept0').value;
         obj['firstNameField'] = document.getElementById('firstnameconcept0').value;
-        obj['preferredNameField'] = document.getElementById('preferrednameconcept0').value;
+        if(document.getElementById('preferrednameconcept0').value) obj['preferredNameField'] = document.getElementById('preferrednameconcept0').value;
         obj['phoneField'] = document.getElementById('phoneconcept0').value;
         obj['time'] = {}
         obj['time']['day'] = parseInt(document.getElementById('days').value);
