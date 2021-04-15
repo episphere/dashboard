@@ -161,50 +161,40 @@ const tableTemplate = (data, showButtons) => {
         // mapping from concept id to variable name
         template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
         importantColumns.forEach(x => {
-            if(participant[x] && typeof participant[x] === 'object'){
-                template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`
-            }
-            else if ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined && x === fieldMapping.healthcareProvider ) {
-                template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`
-            }
-            else if (participant[x] && participant[x] === fieldMapping.no) {
-                template += `<td>${participant[x] ? 'No' : ''}</td>`
-            }
-            else if (participant[x] && participant[x] === fieldMapping.yes) {
-                template += `<td>${participant[x] ? 'Yes' : ''}</td>`
-            }
-            else if (participant[x] && participant[x] === fieldMapping.active) {
-                template += `<td>${participant[x] ? 'Active' : ''}</td>`
-            }
-            else if (participant[x] && participant[x] === fieldMapping.passive) {
-                template += `<td>${participant[x] ? 'Passive' : ''}</td>`
-            }
-            else if (participant[x] && participant[x] === fieldMapping.prefPhone) {
-                template += `<td>${participant[x] ? 'Text Message' : ''}</td>`
-            }
-            else if (participant[x] && participant[x] === fieldMapping.prefEmail) {
-                template += `<td>${participant[x] ? 'Email' : ''}</td>`
-            }
-            else if ((x === (fieldMapping.signinDate).toString()) || (x === (fieldMapping.userProfileDateTime).toString()) || (x === (fieldMapping.consentDate).toString())
-             || (x === (fieldMapping.recruitmentDate).toString()) || (x === (fieldMapping.verficationDate).toString())) {
-                template += `<td>${participant[x] ? humanReadableMDYwithTime(participant[x]) : ''}</td>` // human readable time date
-            }
-            else if (x === (fieldMapping.verifiedFlag).toString()) {
-                if (participant[x] === fieldMapping.notYetVerified) {
+            (participant[x] && typeof participant[x] === 'object') ?
+                (template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`)
+            : 
+            ( keyToNameObj[participant[x]] && keyToNameObj[participant[x]] !== undefined && x === fieldMapping.healthcareProvider ) ? 
+               ( template += `<td>${keyToNameObj[participant[x]] ? keyToNameObj[participant[x]] : ''}</td>`)
+            : (participant[x] && participant[x] === fieldMapping.no) ?
+               ( template += `<td>${participant[x] ? 'No' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.yes) ?
+               ( template += `<td>${participant[x] ? 'Yes' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.active) ?
+               ( template += `<td>${participant[x] ? 'Active' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.passive) ?
+                ( template += `<td>${participant[x] ? 'Passive' : ''}</td>`)
+            : (participant[x] && participant[x] === fieldMapping.prefPhone) ?
+               ( template += `<td>${participant[x] ? 'Text Message' : ''}</td>` )
+            : (participant[x] && participant[x] === fieldMapping.prefEmail) ?
+               ( template += `<td>${participant[x] ? 'Email' : ''}</td>` )
+            : ((x === (fieldMapping.signinDate).toString()) || (x === (fieldMapping.userProfileDateTime).toString()) || (x === (fieldMapping.consentDate).toString())
+             || (x === (fieldMapping.recruitmentDate).toString()) || (x === (fieldMapping.verficationDate).toString())) ? 
+               ( template += `<td>${participant[x] ? humanReadableMDYwithTime(participant[x]) : ''}</td>`) // human readable time date
+            : (x === (fieldMapping.verifiedFlag).toString()) ?
+            (
+                (participant[x] === fieldMapping.notYetVerified) ?
                     template += `<td>${participant[x] ? 'Not Yet Verified'  : ''}</td>`
-                } else if (participant[x] === fieldMapping.outreachTimedout) {
+                : (participant[x] === fieldMapping.outreachTimedout) ?
                     template += `<td>${participant[x] ? 'Out Reach Timed Out'  : ''}</td>`
-                } else if (participant[x] === fieldMapping.verified) {
+                : (participant[x] === fieldMapping.verified) ?
                     template += `<td>${participant[x] ? 'Verified'  : ''}</td>`
-                } else if (participant[x] === fieldMapping.cannotBeVerified) {
+                : (participant[x] === fieldMapping.cannotBeVerified) ?
                     template += `<td>${participant[x] ? 'Can Not Be Verified '  : ''}</td>`
-                } else {
-                    template += `<td>${participant[x] ? 'Duplicate'  : ''}</td>`
-                }
-            }
-            else {
-                template += `<td>${participant[x] ? participant[x] : ''}</td>`
-            }
+                : (
+                    template += `<td>${participant[x] ? 'Duplicate'  : ''}</td>` )
+            )
+            : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
         template += `<td><a data-toggle="modal" data-target="#modalShowMoreData" name="modalParticipantData" class="change-pointer showMoreInfo" data-token="${participant.token}"><i class="fas fa-info-circle"></i></a></td>
         ${showButtons ? `<td class="no-wrap"><button class="btn btn-primary participantVerified" data-token="${participant.token}"><i class="fas fa-user-check"></i> Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}"><i class="fas fa-user-times"></i> Can't Verify</button></td>`: ``}
