@@ -18,7 +18,9 @@ export const renderTable = (data, source) => {
             && i !== '496823485' && i !== '650465111' && i !== '996038075' && i !== '8272206437' && i !== 'state' 
             && i !== 'D_965707586' && i !== 'D_716117818' && i !== 'query' && i !== 'D_726699695' && i !== 'D_716117817' 
             && i !== 'D_745268907' && i !== '506826178' && i !== 'Questionnaire' && i !== 'state.875549268' && i!== 'pin'
-            && i !== '436680969' && i !== '827220437' && i !== '231676651' && i !== '399159511' && i !== '736251808') )  // filter out columns with json response & duplicate columms 
+            && i !== '436680969' && i !== '827220437' && i !== '231676651' && i !== '399159511' && i !== '736251808' 
+            && i !== '544150384' && i !== '564964481' && i !== '795827569') )  // filter out columns with json response & duplicate columms 
+    console.log('array', array)
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
