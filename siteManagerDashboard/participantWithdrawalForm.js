@@ -142,19 +142,26 @@ const optionsHandler = () => {
     let checkboxes = document.getElementsByName('options');
     header.innerHTML = `<h5>Options Selected</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
-    checkboxes.forEach(x => { if (x.checked) {  
-        holdOptions.push(x.value)
-        template += `<span>${x.value}</span> <br />`}
+    //checkboxes.length === 0 && template += `<span>${x.value}</span> <br />`
+    checkboxes.forEach(x => { 
+        if (x.checked) {  
+            holdOptions.push(x.value)
+            template += `<span>${x.value}</span> <br />`}
     })
+    if (holdOptions.length === 0) {template += `<span><b>Select an option before proceeding!</b></span> <br />`}
     template += `
         <div style="display:inline-block; margin-top:20px;">
-            <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>
+            ${(holdOptions.length === 0) ? 
+                ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
+            : ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
+            }
             <button type="button" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
         </div>
     </div>`
     body.innerHTML = template;
     proceedToNextPage(holdOptions)
 } 
+
 
 export const proceedToNextPage = (holdOptions) => {
   
@@ -362,8 +369,9 @@ export const causeOfDeathPage = (holdOptions) => {
             </div>`
     template += `
                 <div>
-                    <span> Date of Death: MM/DD/YYYY​ </span>
-                    <span> Source of Report:​ </span>
+                    <span> Date of Death: <b>MM/DD/YYYY</b>​ </span>
+                    <br />
+                    <span><b> Source of Report:​ </b></span>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="options" value="Spouse/partne" id="defaultCheck2">
                         <label class="form-check-label" for="defaultCheck2">
@@ -414,7 +422,7 @@ export const causeOfDeathPage = (holdOptions) => {
 }
 
 const collectFinalResponse = (holdOptions) => {
-
+    let finalOptions = []
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
     let checkboxes = document.getElementsByName('options');
@@ -424,11 +432,16 @@ const collectFinalResponse = (holdOptions) => {
     holdOptions.forEach(x =>  template += `<span>${x}</span> <br />`)
     checkboxes.forEach(x => { if (x.checked) {  
         holdOptions.push(x.value)
+        finalOptions.push(x.value)
         template += `<span>${x.value}</span> <br />`}
     })
+    if (finalOptions.length === 0) { template += `<span><b>Select a reason/source before submitting</b></span> <br />` }
     template += `
         <div style="display:inline-block; margin-top:20px;">
-            <button type="button" class="btn btn-success" data-dismiss="modal" target="_blank" id="sendResponses">Confirm</button>
+        ${(finalOptions.length === 0) ? 
+            ` <button type="button" class="btn btn-success" data-dismiss="modal" target="_blank" id="sendResponses" disabled>Confirm</button>`
+        : `<button type="button" class="btn btn-success" data-dismiss="modal" target="_blank" id="sendResponses">Confirm</button>`
+        }
             <button type="button" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
         </div>
     </div>`
@@ -444,4 +457,3 @@ const sendResponses = (holdOptions) => {
         })
     }
 }
-   
