@@ -280,7 +280,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                         <br >
 
                     <div style="display:inline-block;">
-                        <button type="submit" class="btn btn-primary" id="disableEditModal" data-toggle="modal">Submit</button>
+                        <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
                         <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
                     </div>
                 </form>
@@ -470,7 +470,7 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
 /////// Helper Functions /////////
 
 const showSaveAlert = () => {
-    const a = document.getElementById('disableEditModal');
+    const a = document.getElementById('editModal');
     a.addEventListener('click', e => {
         counter++;
         saveFlag = false

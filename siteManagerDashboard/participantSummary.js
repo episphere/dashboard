@@ -1,11 +1,10 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
-import { getCurrentTimeStamp } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,
     baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, 
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
-import { humanReadableMDY } from './utils.js';
+import { humanReadableMDY, getCurrentTimeStamp } from './utils.js';
 
 const headerImportantColumns = [
     { field: fieldMapping.fName },
