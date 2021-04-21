@@ -220,7 +220,7 @@ export const showNotifications = (data, error) => {
 export const findParticipant = async (query) => {
     const localStr = JSON.parse(localStorage.dashboard);
     const siteKey = localStr.siteKey;
-    const response = await fetch(`${api}getParticipants?type=filter&${query}`, {
+    const response = await fetch(`${api}dashboard?api=getParticipants&type=filter&${query}`, {
         method: "GET",
         headers: {
             Authorization:"Bearer "+siteKey

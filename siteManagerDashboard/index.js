@@ -3,7 +3,7 @@ import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass
 import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
-import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken } from './utils.js';
+import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -24,36 +24,41 @@ window.onhashchange = () => {
     router();
 }
 
-const router = () => {
+const router = async () => {
     const hash = decodeURIComponent(window.location.hash);
     const route = hash || '#';
-    if (route === '#') homePage();
-    else if (route === '#dashboard') renderDashboard();
-    else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
-    else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
-    else if (route === '#participants/verified') renderParticipantsVerified();
-    else if (route === '#participants/all') renderParticipantsAll();
-    else if (route === '#participantLookup') renderParticipantLookup();
-    else if (route === '#participantDetails') {
-        if (JSON.parse(localStorage.getItem("participant")) === null) {
-            renderParticipantDetails();
+    if(await userLoggedIn()){
+        if (route === '#dashboard') renderDashboard();
+        else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
+        else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
+        else if (route === '#participants/verified') renderParticipantsVerified();
+        else if (route === '#participants/all') renderParticipantsAll();
+        else if (route === '#participantLookup') renderParticipantLookup();
+        else if (route === '#participantDetails') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                renderParticipantDetails();
+            }
+            else {
+                const participant = JSON.parse(localStorage.getItem("participant"))
+                renderParticipantDetails(participant);
+            }
         }
-        else {
-            const participant = JSON.parse(localStorage.getItem("participant"))
-            renderParticipantDetails(participant);
+        else if (route === '#participantSummary') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                renderParticipantSummary();
+            }
+            else {
+                const participant = JSON.parse(localStorage.getItem("participant"))
+                renderParticipantSummary(participant);
+            }
         }
+        else if (route === '#logout') clearLocalStroage();
+        else window.location.hash = '#dashboard';
     }
-    else if (route === '#participantSummary') {
-        if (JSON.parse(localStorage.getItem("participant")) === null) {
-            renderParticipantSummary();
-        }
-        else {
-            const participant = JSON.parse(localStorage.getItem("participant"))
-            renderParticipantSummary(participant);
-        }
+    else {
+        if (route === '#') homePage();
+        else window.location.hash = '#';
     }
-    else if (route === '#logout') clearLocalStroage();
-    else window.location.hash = '#';
 }
 
 const homePage = async () => {
@@ -114,10 +119,11 @@ const homePage = async () => {
 }
 
 const renderDashboard = async () => {
-    if (localStorage.dashboard) {
+    if (localStorage.dashboard || await getIdToken()) {
         animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
         if (isAuthorized && isAuthorized.code === 200) {
 
@@ -252,7 +258,7 @@ const fetchData = async (siteKey, type) => {
         clearLocalStroage();
     }
     else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/getParticipants?type=${type}`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipants&type=${type}`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + siteKey
@@ -268,7 +274,7 @@ const fetchStats = async (siteKey, type) => {
         clearLocalStroage();
     }
     else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/stats?type=${type}`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=stats&type=${type}`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + siteKey
@@ -284,7 +290,7 @@ export const participantVerification = async (token, verified, siteKey) => {
         clearLocalStroage();
     }
     else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/identifyParticipant?type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=identifyParticipant&type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + siteKey
@@ -295,13 +301,14 @@ export const participantVerification = async (token, verified, siteKey) => {
 }
 
 const authorize = async (siteKey) => {
+    console.log(siteKey)
     if (!checkSession()) {
         alert('Session expired!');
         clearLocalStroage();
         return false;
     }
     else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/validateSiteUsers`, {
+        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
             method: 'GET',
             headers: {
                 Authorization: "Bearer " + siteKey
@@ -313,12 +320,7 @@ const authorize = async (siteKey) => {
 }
 
 const checkSession = () => {
-    if (localStorage.dashboard) {
-        const localStr = JSON.parse(localStorage.dashboard);
-        const expires = localStr.expires ? new Date(localStr.expires) : undefined;
-        const currentDateTime = new Date(Date.now());
-        return expires ? expires > currentDateTime : true;
-    }
+    return true;
 }
 
 export const animation = (status) => {
