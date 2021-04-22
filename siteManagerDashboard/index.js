@@ -3,6 +3,7 @@ import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass
 import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
+import { renderParticipantWithdrawal } from './participantWithdrawal.js';
 import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
@@ -52,6 +53,15 @@ const router = () => {
         else {
             let participant = JSON.parse(localStorage.getItem("participant"))
             renderParticipantSummary(participant);
+        }
+    }
+    else if (route === '#participantWithdrawal') {
+        if (JSON.parse(localStorage.getItem("participant")) === null) {
+            renderParticipantWithdrawal();
+        }
+        else {
+            let participant = JSON.parse(localStorage.getItem("participant"))
+            renderParticipantWithdrawal(participant);
         }
     }
     else if (route === '#logout') clearLocalStroage();
