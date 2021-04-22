@@ -29,6 +29,7 @@ const formSubmit = () => {
         obj['firstNameField'] = document.getElementById('firstnameconcept0').value;
         if(document.getElementById('preferrednameconcept0').value) obj['preferredNameField'] = document.getElementById('preferrednameconcept0').value;
         obj['phoneField'] = document.getElementById('phoneconcept0').value;
+        obj['primaryField'] = document.getElementById('primaryfield0').value;
         obj['time'] = {}
         obj['time']['day'] = parseInt(document.getElementById('days').value);
         obj['time']['hour'] = parseInt(document.getElementById('hours').value);
