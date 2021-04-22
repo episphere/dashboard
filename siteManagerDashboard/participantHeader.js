@@ -56,15 +56,15 @@ export const renderParticipantHeader = (participant) => {
                     (template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
                     :
                 (participant[fieldMapping.verifiedFlag] === fieldMapping.cannotBeVerified) ? 
-                    (template += `<span><b>Can't be Verified</b></span> : N/A &nbsp;`)
+                    (template += `<span><b>Can't be Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
                     :
                 (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) ? 
-                    (template += `<span><b>Not yet Verified</b></span> : N/A &nbsp;`)
+                    (template += `<span><b>Not yet Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
                     :
                 (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) ? 
-                    (template += `<span><b>Duplicate</b></span> : N/A &nbsp;`)
+                    (template += `<span><b>Duplicate</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
                     :
-                    (template += `<span><b>Outreach Timed Out</b></span> : N/A &nbsp;`)
+                    (template += `<span><b>Outreach Timed Out</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
             )
             :
             template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
