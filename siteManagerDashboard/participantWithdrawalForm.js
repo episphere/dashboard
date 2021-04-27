@@ -1,3 +1,5 @@
+import fieldMapping from './fieldToConceptIdMapping.js';
+
 export const renderParticipantWithdrawalLandingPage = () => {
     let template = ``;
     template = `        
@@ -10,7 +12,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                 <span><h6>Refusing specific activity or activities (limited participation)</h6></span>
                                 <div style="position:relative; left:80px; top:2px;">
                                     <div class="form-check">
-                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline survey​" id="defaultCheck1">
+                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline survey​" 
+                                        optionKey=${fieldMapping.refusedSurvey} id="defaultCheck1">
                                         <label class="form-check-label" for="defaultCheck1">
                                             Baseline survey​
                                         </label>
@@ -144,8 +147,10 @@ const optionsHandler = () => {
     let template = '<div>'
     //checkboxes.length === 0 && template += `<span>${x.value}</span> <br />`
     checkboxes.forEach(x => { 
+        
         if (x.checked) {  
             holdOptions.push(x.value)
+            console.log('checkboxes', x.value)
             template += `<span>${x.value}</span> <br />`}
     })
     if (holdOptions.length === 0) {template += `<span><b>Select an option before proceeding!</b></span> <br />`}

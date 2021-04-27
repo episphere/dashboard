@@ -402,6 +402,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
     var data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
         labels: [ 'Not Verified', 'Verified', 'Cannot be Verified','Duplicate', 'Outreach Maxed Out'],
+        hoverinfo: 'label+value',
         type: 'pie'
       }];
       
