@@ -156,8 +156,11 @@ const renderCharts = async (siteKey) => {
 
     const filterWorkflowResults = await fetchStats(siteKey, 'participants_workflow');
 
-    const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active')
-    const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive')
+    const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
+    const recruitsCount = filterRecruits(recruitsCountResults.stats);
+
+    const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active', recruitsCount.activeCount)
+    const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive', recruitsCount.passiveCount)
     const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
 
     const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
@@ -177,10 +180,6 @@ const renderCharts = async (siteKey) => {
     const genderStats = filterGenderMetrics(participantsGenderMetric.stats)
     const raceStats = filterRaceMetrics(participantsRaceMetric.stats)
     const ageStats = filterAgeMetrics(participantsAgeMetric.stats)
-
-    const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
-
-    const recruitsCount = filterRecruits(recruitsCountResults.stats)
 
     const objSiteCode = recruitsCountResults.stats[0] && recruitsCountResults.stats[0].siteCode
     const siteSelectionRow = document.createElement('div');
@@ -358,7 +357,6 @@ const filterGenderMetrics = (participantsGenderMetrics) => {
 
     return genderObject;
 
-
 }
 
 
@@ -476,7 +474,6 @@ const filterTotalRecruitsFunnel = (data) => {
     let submittedProfileCount = 0
     let verificationCount = 0
     let verifiedCount = 0
-
     let signedIn = data.filter(i => 
         ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes))
           signedIn.forEach((i) => {
@@ -523,12 +520,26 @@ const filterCurrentWorkflow = (data, recruit) => {
     let verification = data.filter(i => 
                             (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
-    else currentWorflowObj.notSignedIn = ( (notSignedIn[0] !== undefined) ? (notSignedIn[0].signedCount): (0))
-    currentWorflowObj.signedIn = ( (signedIn[0] !== undefined) ? (signedIn[0].signedCount): (0))
-    currentWorflowObj.consented = ( (consented[0] !== undefined) ? (consented[0].consentCount): (0)) 
-    currentWorflowObj.submittedProfile = ( (submittedProfile[0] !== undefined) ? (submittedProfile[0].submittedCount): (0))
-    currentWorflowObj.verification = ( (verification[0] !== undefined) ? (verification[0].verificationCount): (0) )
+    else currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
+    currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
+    currentWorflowObj.consented = getCummulativeCountHandler(consented);
+    currentWorflowObj.submittedProfile = getCummulativeCountHandler(submittedProfile);
+    currentWorflowObj.verification = getCummulativeCountHandler(verification);
+
     return currentWorflowObj;
+}
+
+const getCummulativeCountHandler = (objectHolder) => {
+    let workflowCounter = 0;
+    if (objectHolder[0] !== undefined) {
+        objectHolder.forEach(i => {
+            workflowCounter += i.verificationCount
+        })
+    }
+    else {
+        return workflowCounter;
+    }
+    return workflowCounter;
 }
 
 const filterTotalCurrentWorkflow = (data) => {
@@ -540,11 +551,12 @@ const filterTotalCurrentWorkflow = (data) => {
         ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout) ))
     let verification = data.filter(i => 
         ((i.recruitType === fieldMapping.active || fieldMapping.passive) && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
-    currentWorflowObj.notSignedIn = ( (notSignedIn[0] !== undefined) ? (notSignedIn[0].signedCount): (0))
-    currentWorflowObj.signedIn = ( (signedIn[0] !== undefined) ? (signedIn[0].signedCount): (0))
-    currentWorflowObj.consented = ( (consented[0] !== undefined) ? (consented[0].consentCount): (0)) 
-    currentWorflowObj.submittedProfile = ( (submittedProfile[0] !== undefined) ? (submittedProfile[0].submittedCount): (0))
-    currentWorflowObj.verification = ( (verification[0] !== undefined) ? (verification[0].verificationCount): (0) )   
+    currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
+    currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
+    currentWorflowObj.consented = getCummulativeCountHandler(consented);
+    currentWorflowObj.submittedProfile = getCummulativeCountHandler(submittedProfile);
+    currentWorflowObj.verification = getCummulativeCountHandler(verification);
+    
     return currentWorflowObj;
 }
 
@@ -570,7 +582,6 @@ const filterVerification = (data, recruit) =>{
         currentVerificationObj.duplicate = i.verificationCount
     }
     });
-
     return currentVerificationObj;
 
 }
