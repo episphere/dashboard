@@ -150,7 +150,6 @@ const optionsHandler = () => {
         
         if (x.checked) {  
             holdOptions.push(x.value)
-            console.log('checkboxes', x.value)
             template += `<span>${x.value}</span> <br />`}
     })
     if (holdOptions.length === 0) {template += `<span><b>Select an option before proceeding!</b></span> <br />`}
