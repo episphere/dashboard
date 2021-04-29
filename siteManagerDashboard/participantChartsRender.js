@@ -395,18 +395,17 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
                         && ((activeVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
     const duplicate = activeVerificationStatus.duplicate 
                         && ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
-    const outreachTimedOut = activeVerificationStatus.outreachTimedOut 
-                        && ((activeVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
+    const outreachTimedOut = activeVerificationStatus.outreachTimedout 
+                        && ((activeVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
 
     var data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
-        labels: [ `Not Yet Verified: N=${activeVerificationStatus.notYetVerified}, ${notYetVerified}% `, 
-                    `Verified: N=${activeVerificationStatus.verified}, ${verified}%`, 
-                    `Cannot be Verified: N=${activeVerificationStatus.cannotBeVerified}, ${cannotBeVerified}%`,
-                    `Duplicate: N=${activeVerificationStatus.duplicate}, ${duplicate}%`, 
-                    `Outreach Maxed Out: N=${activeVerificationStatus.outreachTimedOut}, ${outreachTimedOut}%`],
-        hoverinfo: 'label',
-        textinfo: 'value',
+        labels: [ `Not Yet Verified: N=${activeVerificationStatus.notYetVerified} `, 
+                    `Verified: N=${activeVerificationStatus.verified}`, 
+                    `Cannot be Verified: N=${activeVerificationStatus.cannotBeVerified}`,
+                    `Duplicate: N=${activeVerificationStatus.duplicate}`, 
+                    `Outreach Maxed Out: N=${activeVerificationStatus.outreachTimedout}`],
+        hoverinfo: 'label+value',
         type: 'pie'
       }];
       
@@ -417,9 +416,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
        // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
         title: 'Active Recruits Verification Status'
     };
-      
 
-  
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
 
@@ -432,17 +429,18 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
                         && ((passiveVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
     const duplicate = passiveVerificationStatus.duplicate 
                         && ((passiveVerificationStatus.duplicate)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
-     const outreachTimedOut = passiveVerificationStatus.outreachTimedOut 
-                        && ((passiveVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
+    const outreachTimedOut = passiveVerificationStatus.outreachTimedout 
+                        && ((passiveVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
     var data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
-        labels: [ `Not Yet Verified: N=${passiveVerificationStatus.notYetVerified}, ${notYetVerified}% `, 
-                `Verified: N=${passiveVerificationStatus.verified}, ${verified}%`, 
-                `Cannot be Verified: N=${passiveVerificationStatus.cannotBeVerified}, ${cannotBeVerified}%`,
-                `Duplicate: N=${passiveVerificationStatus.duplicate}, ${duplicate}%`, 
-                `Outreach Maxed Out: N=${passiveVerificationStatus.outreachTimedOut}, ${outreachTimedOut}%`],
-        hoverinfo: 'label',
-        textinfo: 'value',
+
+        labels: [ `Not Yet Verified: N=${passiveVerificationStatus.notYetVerified}`, 
+                `Verified: N=${passiveVerificationStatus.verified}`, 
+                `Cannot be Verified: N=${passiveVerificationStatus.cannotBeVerified}`,
+                `Duplicate: N=${passiveVerificationStatus.duplicate}`, 
+                `Outreach Maxed Out: N=${passiveVerificationStatus.outreachTimedout}`],
+        hoverinfo: 'label+value',
+       // textinfo: 'value',
         type: 'pie'
       }];
 
