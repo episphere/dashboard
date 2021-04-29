@@ -327,7 +327,6 @@ const renderPassiveBarChart = (passiveCurrentWorkflow, id) => {
 }
 
 const renderTotalFunnelChart = (totalRecruitsFunnel, id) => {
-
     const signIn =  totalRecruitsFunnel.signedIn
     const consent = totalRecruitsFunnel.consented;
     const userProfile =  totalRecruitsFunnel.submittedProfile

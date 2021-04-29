@@ -169,6 +169,7 @@ export default
     
     'active': 486306141,
     'passive': 854703046,
+    'inactive': 180583933,
     'recruitmentDate': 471593703,
 
     'signinDate': 335767902
