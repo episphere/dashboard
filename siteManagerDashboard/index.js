@@ -519,8 +519,6 @@ const filterCurrentWorkflow = (data, recruit) => {
                             (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout) ))
     let verification = data.filter(i => 
                             (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate ) ))
-    
-    console.log('data', verification)
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
     else currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
