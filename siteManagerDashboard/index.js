@@ -600,7 +600,6 @@ const filterDenominatorVerificationStatus = (data) => {
         passiveDenominator.forEach((i) => {
             passiveConsentCount += i.consentCount
     })
-
     currentObj.activeDenominator = activeConsentCount
     currentObj.passiveDenominator = passiveConsentCount
     return currentObj; 

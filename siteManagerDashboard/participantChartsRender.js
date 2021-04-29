@@ -389,25 +389,29 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
 
 const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVerificationStatus, id) => {
     const notYetVerified =  activeVerificationStatus.notYetVerified 
-                            && ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+                            && ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
     const verified = activeVerificationStatus.verified 
-                        && ((activeVerificationStatus.verified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+                        && ((activeVerificationStatus.verified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
     const cannotBeVerified =  activeVerificationStatus.cannotBeVerified 
-                        && ((activeVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+                        && ((activeVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
     const duplicate = activeVerificationStatus.duplicate 
-                        && ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+                        && ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
     const outreachTimedOut = activeVerificationStatus.outreachTimedOut 
-                        && ((activeVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(2);
+                        && ((activeVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
 
     var data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
-        labels: [ 'Not Verified', 'Verified', 'Cannot be Verified','Duplicate', 'Outreach Maxed Out'],
-        hoverinfo: 'label+value',
+        labels: [ `Not Yet Verified: N=${activeVerificationStatus.notYetVerified}, ${notYetVerified}% `, 
+                    `Verified: N=${activeVerificationStatus.verified}, ${verified}%`, 
+                    `Cannot be Verified: N=${activeVerificationStatus.cannotBeVerified}, ${cannotBeVerified}%`,
+                    `Duplicate: N=${activeVerificationStatus.duplicate}, ${duplicate}%`, 
+                    `Outreach Maxed Out: N=${activeVerificationStatus.outreachTimedOut}, ${outreachTimedOut}%`],
+        hoverinfo: 'label',
+        textinfo: 'value',
         type: 'pie'
       }];
       
       const layout = {
-
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
@@ -422,18 +426,24 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
 
   const renderPassiveVerificationStatus = (passiveVerificationStatus, denominatorVerificationStatus, id) => {
     const notYetVerified =  passiveVerificationStatus.notYetVerified 
-                            && ((passiveVerificationStatus.notYetVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+                            && ((passiveVerificationStatus.notYetVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
     const verified = passiveVerificationStatus.verified 
-                        && ((passiveVerificationStatus.verified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+                        && ((passiveVerificationStatus.verified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);            
     const cannotBeVerified =  passiveVerificationStatus.cannotBeVerified 
-                        && ((passiveVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+                        && ((passiveVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
     const duplicate = passiveVerificationStatus.duplicate 
-                        && ((passiveVerificationStatus.duplicate)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+                        && ((passiveVerificationStatus.duplicate)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
      const outreachTimedOut = passiveVerificationStatus.outreachTimedOut 
-                        && ((passiveVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(2);
+                        && ((passiveVerificationStatus.outreachTimedOut)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
     var data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
-        labels: [ 'Not Verified', 'Verified', 'Cannot be Verified','Duplicate', 'Outreach Maxed Out'],
+        labels: [ `Not Yet Verified: N=${passiveVerificationStatus.notYetVerified}, ${notYetVerified}% `, 
+                `Verified: N=${passiveVerificationStatus.verified}, ${verified}%`, 
+                `Cannot be Verified: N=${passiveVerificationStatus.cannotBeVerified}, ${cannotBeVerified}%`,
+                `Duplicate: N=${passiveVerificationStatus.duplicate}, ${duplicate}%`, 
+                `Outreach Maxed Out: N=${passiveVerificationStatus.outreachTimedOut}, ${outreachTimedOut}%`],
+        hoverinfo: 'label',
+        textinfo: 'value',
         type: 'pie'
       }];
 
