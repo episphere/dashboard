@@ -59,7 +59,7 @@ export const renderParticipantHeader = (participant) => {
                     (template += `<span><b>Can't Be Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
                     :
                 (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) ? 
-                    (template += `<span><b>Not Yet Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
+                    (template += `<span><b>Not Yet Verified</b></span> : N/A &nbsp;`)
                     :
                 (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) ? 
                     (template += `<span><b>Duplicate</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
