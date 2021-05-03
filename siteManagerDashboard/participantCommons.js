@@ -3,7 +3,7 @@ import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { humanReadableMDYwithTime } from './utils.js';
+import { getIdToken, humanReadableMDYwithTime } from './utils.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -84,7 +84,7 @@ export  const renderData = (data, showButtons) => {
 const addEventPageBtns = (pageSize, data, showButtons) => {
     const elements = document.getElementsByClassName('page-link');
     Array.from(elements).forEach(element => {
-        element.addEventListener('click', () => {
+        element.addEventListener('click', async () => {
             const previous = element.dataset.previous;
             const next = element.dataset.next;
             const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
@@ -98,7 +98,10 @@ const addEventPageBtns = (pageSize, data, showButtons) => {
                 document.getElementById('nextPage').dataset.next = pageNumber;
                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
                 addEventShowMoreInfo(data);
-                if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                const access_token = await getIdToken();
+                const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+                const siteKey = access_token ? access_token : localStr.siteKey;
+                eventVerifiedButton(siteKey);
                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
             }
@@ -234,14 +237,17 @@ const addEventShowMoreInfo = data => {
 
     const selectElements = document.getElementsByClassName('select-participant');
     Array.from(selectElements).forEach(element => {
-        element.addEventListener('click', () => {
+        element.addEventListener('click', async () => {
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
             console.log("select clicked", filteredData );
             let adminSubjectAudit = [];
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
             location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
-            renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
+            const access_token = await getIdToken();
+            const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+            const siteKey = access_token ? access_token : localStr.siteKey;
+            renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, siteKey);
         });
     });
 
@@ -249,15 +255,21 @@ const addEventShowMoreInfo = data => {
 export const addEventFilterData = (data, showButtons) => {
     const btn = document.getElementById('filterData');
     if(!btn) return;
-    btn.addEventListener('keyup', () => {
+    btn.addEventListener('keyup', async () => {
         const value = document.getElementById('filterData').value.trim();
         if(value.length < 3) {
             renderData(data, showButtons);
-            if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+            const access_token = await getIdToken();
+            const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+            const siteKey = access_token ? access_token : localStr.siteKey;
+            eventVerifiedButton(siteKey);
             return;
         };
         renderData(searchBy(data, value), showButtons);
-        if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
+        eventVerifiedButton(siteKey);
     });
 }
 export const filterdata = (data) => {
@@ -282,17 +294,23 @@ export const activeColumns = (data, showButtons) => {
         if(importantColumns.indexOf(value) !== -1) {
             btn.classList.add('filter-active');
         }
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', async () => {
             if(!btn.classList.contains('filter-active')){
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                    const access_token = await getIdToken();
+                    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+                    const siteKey = access_token ? access_token : localStr.siteKey;
+                    eventVerifiedButton(siteKey);
                 }
                 else {
                     renderData(data, showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                    const access_token = await getIdToken();
+                    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+                    const siteKey = access_token ? access_token : localStr.siteKey;
+                    eventVerifiedButton(siteKey);
                 }
             }
             else{
@@ -300,11 +318,17 @@ export const activeColumns = (data, showButtons) => {
                 importantColumns.splice(importantColumns.indexOf(value), 1);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                    const access_token = await getIdToken();
+                    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+                    const siteKey = access_token ? access_token : localStr.siteKey;
+                    eventVerifiedButton(siteKey);
                 }
                 else {
                     renderData(data, showButtons);
-                    if(localStorage.dashboard) eventVerifiedButton(JSON.parse(localStorage.dashboard).siteKey);
+                    const access_token = await getIdToken();
+                    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+                    const siteKey = access_token ? access_token : localStr.siteKey;
+                    eventVerifiedButton(siteKey);
                 }
             }
         })

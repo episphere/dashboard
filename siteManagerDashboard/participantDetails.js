@@ -531,7 +531,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         "data": updatedOptions
     }
 
-    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/updateParticipantData`,{
+    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=updateParticipantData`,{
         method:'POST',
         body: JSON.stringify(updateParticpantPayload),
         headers:{

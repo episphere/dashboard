@@ -65,13 +65,6 @@ export const  renderLogin = () => {
             <div class="col">
                 <label for="siteKey">Site Key</label><input type="password" class="form-control" id="siteKey">
             </div>
-            
-        </div>
-        <div class="row">
-            <div class="col">
-                <input id="rememberMe" type="checkbox">
-                <label for="rememberMe" class="form-check-label">Remember Me</label>
-            </div>
         </div>
 
         <div class="row">
