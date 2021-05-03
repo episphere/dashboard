@@ -27,7 +27,7 @@ window.onhashchange = () => {
 const router = async () => {
     const hash = decodeURIComponent(window.location.hash);
     const route = hash || '#';
-    if(await userLoggedIn()){
+    if(await userLoggedIn() || localStorage.dashboard){
         if (route === '#dashboard') renderDashboard();
         else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
         else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
@@ -73,25 +73,16 @@ const homePage = async () => {
         submit.addEventListener('click', async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
-            const rememberMe = document.getElementById('rememberMe');
             if (siteKey.trim() === '') return;
-            if (rememberMe.checked) {
-                const dashboard = { siteKey }
-                localStorage.dashboard = JSON.stringify(dashboard);
-            }
-            else {
-                const dashboard = {
-                    siteKey,
-                    expires: new Date(Date.now() + 3600000)
-                }
-                localStorage.dashboard = JSON.stringify(dashboard);
-            }
+            const dashboard = { siteKey }
+            localStorage.dashboard = JSON.stringify(dashboard);
 
             const isAuthorized = await authorize(siteKey);
             if (isAuthorized.code === 200) {
                 window.location.hash = '#dashboard';
             }
             if (isAuthorized.code === 401) {
+                document.getElementById('mainContent').innerHTML = 'Not Authorized!';
                 clearLocalStroage();
             }
         });
@@ -251,73 +242,44 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
 
 
 const fetchData = async (siteKey, type) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipants&type=${type}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipants&type=${type}`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return response.json();
 }
 
 const fetchStats = async (siteKey, type) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=stats&type=${type}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=stats&type=${type}`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return response.json();
 }
 
 export const participantVerification = async (token, verified, siteKey) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=identifyParticipant&type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=identifyParticipant&type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return response.json();
 }
 
 const authorize = async (siteKey) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-        return false;
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return await response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return await response.json();
 
-}
-
-const checkSession = () => {
-    return true;
 }
 
 export const animation = (status) => {
@@ -679,8 +641,9 @@ const filterDatabySiteCode = (resultHolder, filteredResults, siteKeyFilter) => {
 const renderParticipantsNotVerified = async () => {
     if (localStorage.dashboard) {
         animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
         const response = await fetchData(siteKey, 'notyetverified');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {
@@ -711,8 +674,9 @@ const renderParticipantsNotVerified = async () => {
 const renderParticipantsCanNotBeVerified = async () => {
     if (localStorage.dashboard) {
         animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
         const response = await fetchData(siteKey, 'cannotbeverified');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {
@@ -748,8 +712,9 @@ const renderParticipantsCanNotBeVerified = async () => {
 const renderParticipantsVerified = async () => {
     if (localStorage.dashboard) {
         animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
         const response = await fetchData(siteKey, 'verified');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {
@@ -779,8 +744,9 @@ const renderParticipantsVerified = async () => {
 const renderParticipantsAll = async () => {
     if (localStorage.dashboard) {
         animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
         const response = await fetchData(siteKey, 'all');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {

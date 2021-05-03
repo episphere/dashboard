@@ -46,12 +46,12 @@ const router = () => {
     toggleNavBar();
     const route =  index !== -1 ? hash.slice(0, index) : hash || '#';
     if(route === '#') homePage();
-    else if(route === '#eligibility_screener' && !checkSession()) eligibilityScreener();
-    else if(route === '#eligible' && !checkSession()) eligibleParticipant();
-    else if(route === '#ineligible' && !checkSession()) ineligible();
-    else if(route === '#ineligible_site' && !checkSession()) ineligible_site();
-    else if(route === '#sign_in' && !checkSession()) signIn();
-    else if (route === '#profile' && checkSession()) accountCreated();
+    else if(route === '#eligibility_screener') eligibilityScreener();
+    else if(route === '#eligible') eligibleParticipant();
+    else if(route === '#ineligible') ineligible();
+    else if(route === '#ineligible_site') ineligible_site();
+    else if(route === '#sign_in') signIn();
+    else if (route === '#profile') accountCreated();
     else if (route === '#sign_out') signOut();
     else window.location.hash = '#';
 }
