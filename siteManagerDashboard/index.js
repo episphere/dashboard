@@ -107,8 +107,6 @@ const homePage = async () => {
             firebase.auth().tenantId = tenantID;
             firebase.auth().signInWithPopup(saml)
                 .then(async (result) => {
-                    console.log(result)
-                    console.log(await getIdToken());
                     location.hash = '#dashboard'
                 })
                 .catch((error) => {
@@ -301,7 +299,6 @@ export const participantVerification = async (token, verified, siteKey) => {
 }
 
 const authorize = async (siteKey) => {
-    console.log(siteKey)
     if (!checkSession()) {
         alert('Session expired!');
         clearLocalStroage();
@@ -658,6 +655,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
 
 
 const clearLocalStroage = () => {
+    firebase.auth().signOut();
     internalNavigatorHandler(counter);
     animation(false);
     delete localStorage.dashboard;
