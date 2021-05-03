@@ -1,7 +1,9 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
+import { showAnimation, hideAnimation } from './utils.js';
 
-export const renderParticipantWithdrawalLandingPage = () => {
-    console.log( localStorage.getItem('participationStatus'))
+
+export const renderParticipantWithdrawalLandingPage = (participant) => {
+    localStorage.setItem('token', participant.token)
     let template = ``;
     template = `        
                 <div class="row">
@@ -98,12 +100,12 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 &nbsp;
-                                ${(localStorage.getItem('participationStatus') !== '0') ? 
-                                (`<button type="button" class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:20px;" disabled>Next</button>`)
-                                    :
-                                    (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
-                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:20px;">Next</button>`) 
-                                   }
+                  ${participant[fieldMapping.participationStatus] === fieldMapping.noRefusal ?
+                                (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
+                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:20px;">Next</button>`)
+                                    : 
+                                (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
+                    }    
                                 </div>
                         </div>
                     </div>
@@ -531,13 +533,42 @@ const sendResponses = (finalOptions, retainOptions) => {
                 highestStatus.push(1)
             }
     })
-    console.log('response', sendRefusalData);
+
     let participationStatusScore = Math.max(...highestStatus);
-    fieldMapping.participationStatus = participationStatusScore;
-    localStorage.setItem('participationStatus', fieldMapping.participationStatus = participationStatusScore)
-    
-    const loadDetailsPage = '#participantSummary'
-    location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
-     
-    
+    sendRefusalData[fieldMapping.participationStatus] = fieldMapping[participationStatusScore.toString()];
+    let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
+    if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
+
+    const token = localStorage.getItem("token");
+    sendRefusalData['token'] = token;
+    console.log('sendRefusalData', sendRefusalData)
+    const siteKey = JSON.parse(localStorage.dashboard).siteKey
+    clickHandler(sendRefusalData, siteKey);
 }
+
+async function clickHandler(sendRefusalData, siteKey) {
+    showAnimation();
+    const idToken = siteKey;
+
+    const refusalPayload = {
+        "data": sendRefusalData
+    }
+
+    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/updateParticipantData`, {
+        method:'POST',
+        body: JSON.stringify(refusalPayload),
+        headers:{
+            Authorization:"Bearer "+idToken,
+            "Content-Type": "application/json"
+            }
+    }))
+    hideAnimation();
+    if (response.status === 200) {
+        const loadDetailsPage = '#participantSummary'
+        location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
+     }
+       else { 
+           (alert('Error'))
+    }
+}
+

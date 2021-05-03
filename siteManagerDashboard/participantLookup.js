@@ -1,6 +1,6 @@
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
 import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
-import { internalNavigatorHandler, getDataAttributes } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, showAnimation, hideAnimation } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
 export function renderParticipantLookup(){
@@ -202,14 +202,6 @@ export const performSearch = async (query, sitePref, failedElem) => {
         document.getElementById(failedElem).hidden = false;
         alertTrigger();
     }
-}
-
-export const showAnimation = () => {
-    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
-}
-
-export const hideAnimation = () => {
-    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
 
 export const showNotifications = (data, error) => {

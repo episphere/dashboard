@@ -221,7 +221,23 @@ export default
     'ihcsStaff': 890182396,
     'other': 181769837,
 
-    'participationStatus': 912301837
+    'participationStatus': 912301837,
+
+    "0": 208325815,
+    "1": 622008261,	
+    "2": 134659217,
+    "3": 872012139,
+    "4": 854021266,
+    "5": 241236037,
+
+    "noRefusal": 208325815,
+    "refusedSome": 622008261,	
+    "refusedAll": 134659217,
+    "revokeHIPAA": 872012139,
+    "withdrewConsent": 854021266,
+    "destroyData": 241236037,
+    "deceased": 567870674
+            
 
 
     

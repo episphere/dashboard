@@ -91,7 +91,6 @@ import { keyToNameObj } from './siteKeysToName.js';
 
 export const siteKeyToName = (key) => {
   
-  console.log('key', key, keyToNameObj[key])
   return keyToNameObj[key];
 
 }
@@ -143,3 +142,12 @@ export const getIdToken = () => {
       });
   });
 };
+
+// shows/hides a spinner when HTTP request is made/screen is loading
+export const showAnimation = () => {
+  if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
+}
+
+export const hideAnimation = () => {
+  if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
+}
