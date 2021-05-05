@@ -558,8 +558,7 @@ async function clickHandler(sendRefusalData, siteKey) {
     const refusalPayload = {
         "data": sendRefusalData
     }
-
-    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/updateParticipantData`, {
+    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=updateParticipantData`, {
         method:'POST',
         body: JSON.stringify(refusalPayload),
         headers:{

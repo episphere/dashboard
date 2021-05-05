@@ -4,7 +4,7 @@ import { renderTable, filterdata, renderData, addEventFilterData, activeColumns,
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken } from './utils.js';
+import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -25,46 +25,52 @@ window.onhashchange = () => {
     router();
 }
 
-const router = () => {
+const router = async () => {
     const hash = decodeURIComponent(window.location.hash);
     const route = hash || '#';
-    if (route === '#') homePage();
-    else if (route === '#dashboard') renderDashboard();
-    else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
-    else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
-    else if (route === '#participants/verified') renderParticipantsVerified();
-    else if (route === '#participants/all') renderParticipantsAll();
-    else if (route === '#participantLookup') renderParticipantLookup();
-    else if (route === '#participantDetails') {
-        if (JSON.parse(localStorage.getItem("participant")) === null) {
-            renderParticipantDetails();
+    if(await userLoggedIn() || localStorage.dashboard){
+        if (route === '#dashboard') renderDashboard();
+        else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
+        else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
+        else if (route === '#participants/verified') renderParticipantsVerified();
+        else if (route === '#participants/all') renderParticipantsAll();
+        else if (route === '#participantLookup') renderParticipantLookup();
+        else if (route === '#participantDetails') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                renderParticipantDetails();
+            }
+            else {
+                let participant = JSON.parse(localStorage.getItem("participant"));
+                let adminSubjectAudit = [];
+                let changedOption = {};
+                const access_token = await getIdToken();
+                const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+                const siteKey = access_token ? access_token : localStr.siteKey;
+                renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey);
+            }
         }
-        else {
-            let participant = JSON.parse(localStorage.getItem("participant"));
-            let adminSubjectAudit = [];
-            let changedOption = {};
-            renderParticipantDetails(participant, adminSubjectAudit, changedOption, JSON.parse(localStorage.dashboard).siteKey);
+        else if (route === '#participantSummary') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                renderParticipantSummary();
+            }
+            else {
+                let participant = JSON.parse(localStorage.getItem("participant"))
+                renderParticipantSummary(participant);
+            }
         }
+        else if (route === '#participantWithdrawal') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                renderParticipantWithdrawal();
+            }
+            else {
+                let participant = JSON.parse(localStorage.getItem("participant"))
+                renderParticipantWithdrawal(participant);
+            }
+        }
+        else if (route === '#logout') clearLocalStroage();
+        else window.location.hash = '#dashboard';
     }
-    else if (route === '#participantSummary') {
-        if (JSON.parse(localStorage.getItem("participant")) === null) {
-            renderParticipantSummary();
-        }
-        else {
-            let participant = JSON.parse(localStorage.getItem("participant"))
-            renderParticipantSummary(participant);
-        }
-    }
-    else if (route === '#participantWithdrawal') {
-        if (JSON.parse(localStorage.getItem("participant")) === null) {
-            renderParticipantWithdrawal();
-        }
-        else {
-            let participant = JSON.parse(localStorage.getItem("participant"))
-            renderParticipantWithdrawal(participant);
-        }
-    }
-    else if (route === '#logout') clearLocalStroage();
+    else if (route === '#') homePage();
     else window.location.hash = '#';
 }
 
@@ -80,26 +86,17 @@ const homePage = async () => {
         submit.addEventListener('click', async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
-            const rememberMe = document.getElementById('rememberMe');
             if (siteKey.trim() === '') return;
-            if (rememberMe.checked) {
-                const dashboard = { siteKey }
-                localStorage.dashboard = JSON.stringify(dashboard);
-            }
-            else {
-                const dashboard = {
-                    siteKey,
-                    expires: new Date(Date.now() + 3600000)
-                }
-                localStorage.dashboard = JSON.stringify(dashboard);
-            }
+            const dashboard = { siteKey }
+            localStorage.dashboard = JSON.stringify(dashboard);
 
             const isAuthorized = await authorize(siteKey);
             if (isAuthorized.code === 200) {
                 window.location.hash = '#dashboard';
             }
             if (isAuthorized.code === 401) {
-                clearLocalStroage();
+                document.getElementById('mainContent').innerHTML = 'Not Authorized! <a href="#logout" class="btn btn-primary">Log Out</a>';
+                animation(false)
             }
         });
 
@@ -114,8 +111,6 @@ const homePage = async () => {
             firebase.auth().tenantId = tenantID;
             firebase.auth().signInWithPopup(saml)
                 .then(async (result) => {
-                    console.log(result)
-                    console.log(await getIdToken());
                     location.hash = '#dashboard'
                 })
                 .catch((error) => {
@@ -126,10 +121,11 @@ const homePage = async () => {
 }
 
 const renderDashboard = async () => {
-    if (localStorage.dashboard) {
+    if (localStorage.dashboard || await getIdToken()) {
         animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token ? access_token : localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
         if (isAuthorized && isAuthorized.code === 200) {
 
@@ -258,78 +254,44 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
 
 
 const fetchData = async (siteKey, type) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/getParticipants?type=${type}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipants&type=${type}`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return response.json();
 }
 
 const fetchStats = async (siteKey, type) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/stats?type=${type}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=stats&type=${type}`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return response.json();
 }
 
 export const participantVerification = async (token, verified, siteKey) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/identifyParticipant?type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=identifyParticipant&type=${verified ? `verified` : `cannotbeverified`}&token=${token}`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return response.json();
 }
 
 const authorize = async (siteKey) => {
-    if (!checkSession()) {
-        alert('Session expired!');
-        clearLocalStroage();
-        return false;
-    }
-    else {
-        const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/validateSiteUsers`, {
-            method: 'GET',
-            headers: {
-                Authorization: "Bearer " + siteKey
-            }
-        });
-        return await response.json();
-    }
+    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
+        method: 'GET',
+        headers: {
+            Authorization: "Bearer " + siteKey
+        }
+    });
+    return await response.json();
 
-}
-
-const checkSession = () => {
-    if (localStorage.dashboard) {
-        const localStr = JSON.parse(localStorage.dashboard);
-        const expires = localStr.expires ? new Date(localStr.expires) : undefined;
-        const currentDateTime = new Date(Date.now());
-        return expires ? expires > currentDateTime : true;
-    }
 }
 
 export const animation = (status) => {
@@ -679,6 +641,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
 
 
 const clearLocalStroage = () => {
+    firebase.auth().signOut();
     internalNavigatorHandler(counter);
     animation(false);
     delete localStorage.dashboard;
@@ -700,134 +663,117 @@ const filterDatabySiteCode = (resultHolder, filteredResults, siteKeyFilter) => {
 }
 
 const renderParticipantsNotVerified = async () => {
-    if (localStorage.dashboard) {
-        animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
-        const response = await fetchData(siteKey, 'notyetverified');
-        console
-        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if (response.code === 200) {
-            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
-            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
-            removeActiveClass('dropdown-item', 'dd-item-active')
-            document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
-            removeActiveClass('nav-link', 'active');
-            document.getElementById('participants').classList.add('active');
-            mainContent.innerHTML = renderTable(filterdata(response.data));
-            addEventFilterData(filterdata(response.data), true);
-            renderData(filterdata(response.data), true);
-            activeColumns(filterdata(response.data), true);
-            eventVerifiedButton(siteKey);
-            eventNotVerifiedButton(siteKey);
-            animation(false);
-        }
-        internalNavigatorHandler(counter)
-        if (response.code === 401) {
-            clearLocalStroage();
-        }
-    } else {
+    animation(true);
+    const access_token = await getIdToken();
+    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+    const siteKey = access_token ? access_token : localStr.siteKey;
+    const response = await fetchData(siteKey, 'notyetverified');
+    response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
+    if (response.code === 200) {
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
+        removeActiveClass('dropdown-item', 'dd-item-active')
+        document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
+        removeActiveClass('nav-link', 'active');
+        document.getElementById('participants').classList.add('active');
+        mainContent.innerHTML = renderTable(filterdata(response.data));
+        addEventFilterData(filterdata(response.data), true);
+        renderData(filterdata(response.data), true);
+        activeColumns(filterdata(response.data), true);
+        eventVerifiedButton(siteKey);
+        eventNotVerifiedButton(siteKey);
         animation(false);
-        window.location.hash = '#';
+    }
+    internalNavigatorHandler(counter)
+    if (response.code === 401) {
+        clearLocalStroage();
     }
 }
 
 const renderParticipantsCanNotBeVerified = async () => {
-    if (localStorage.dashboard) {
-        animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
-        const response = await fetchData(siteKey, 'cannotbeverified');
-        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if (response.code === 200) {
-            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
-            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
-            removeActiveClass('dropdown-item', 'dd-item-active')
-            document.getElementById('cannotVerifiedBtn').classList.add('dd-item-active');
-            removeActiveClass('nav-link', 'active');
-            document.getElementById('participants').classList.add('active');
-            const filteredData = filterdata(response.data);
-            if (filteredData.length === 0) {
-                mainContent.innerHTML = 'No Data Found!'
-                animation(false);
-                return;
-            }
-            mainContent.innerHTML = renderTable(filteredData);
-            addEventFilterData(filteredData);
-            renderData(filteredData);
-            activeColumns(filteredData);
-            eventVerifiedButton(siteKey);
+    animation(true);
+    const access_token = await getIdToken();
+    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+    const siteKey = access_token ? access_token : localStr.siteKey;
+    const response = await fetchData(siteKey, 'cannotbeverified');
+    response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
+    if (response.code === 200) {
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
+        removeActiveClass('dropdown-item', 'dd-item-active')
+        document.getElementById('cannotVerifiedBtn').classList.add('dd-item-active');
+        removeActiveClass('nav-link', 'active');
+        document.getElementById('participants').classList.add('active');
+        const filteredData = filterdata(response.data);
+        if (filteredData.length === 0) {
+            mainContent.innerHTML = 'No Data Found!'
             animation(false);
+            return;
         }
-        internalNavigatorHandler(counter);
-        if (response.code === 401) {
-            clearLocalStroage();
-        }
-    } else {
+        mainContent.innerHTML = renderTable(filteredData);
+        addEventFilterData(filteredData);
+        renderData(filteredData);
+        activeColumns(filteredData);
+        eventVerifiedButton(siteKey);
         animation(false);
-        window.location.hash = '#';
+    }
+    internalNavigatorHandler(counter);
+    if (response.code === 401) {
+        clearLocalStroage();
     }
 }
 
 const renderParticipantsVerified = async () => {
-    if (localStorage.dashboard) {
-        animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
-        const response = await fetchData(siteKey, 'verified');
-        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if (response.code === 200) {
-            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
-            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
-            removeActiveClass('dropdown-item', 'dd-item-active')
-            document.getElementById('verifiedBtn').classList.add('dd-item-active');
-            removeActiveClass('nav-link', 'active');
-            document.getElementById('participants').classList.add('active');
-            mainContent.innerHTML = renderTable(filterdata(response.data));
-            addEventFilterData(filterdata(response.data));
-            renderData(filterdata(response.data));
-            activeColumns(filterdata(response.data));
-            eventVerifiedButton(siteKey);
-            animation(false);
-        }
-        internalNavigatorHandler(counter);
-        if (response.code === 401) {
-            clearLocalStroage();
-        }
-    } else {
+    animation(true);
+    const access_token = await getIdToken();
+    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+    const siteKey = access_token ? access_token : localStr.siteKey;
+    const response = await fetchData(siteKey, 'verified');
+    response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
+    if (response.code === 200) {
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
+        removeActiveClass('dropdown-item', 'dd-item-active')
+        document.getElementById('verifiedBtn').classList.add('dd-item-active');
+        removeActiveClass('nav-link', 'active');
+        document.getElementById('participants').classList.add('active');
+        mainContent.innerHTML = renderTable(filterdata(response.data));
+        addEventFilterData(filterdata(response.data));
+        renderData(filterdata(response.data));
+        activeColumns(filterdata(response.data));
+        eventVerifiedButton(siteKey);
         animation(false);
-        window.location.hash = '#';
+    }
+    internalNavigatorHandler(counter);
+    if (response.code === 401) {
+        clearLocalStroage();
     }
 }
 
 const renderParticipantsAll = async () => {
-    if (localStorage.dashboard) {
-        animation(true);
-        const localStr = JSON.parse(localStorage.dashboard);
-        const siteKey = localStr.siteKey;
-        const response = await fetchData(siteKey, 'all');
-        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-        if (response.code === 200) {
-            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
-            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
-            removeActiveClass('dropdown-item', 'dd-item-active');
-            document.getElementById('allBtn').classList.add('dd-item-active');
-            removeActiveClass('nav-link', 'active');
-            document.getElementById('participants').classList.add('active');
-            mainContent.innerHTML = renderTable(filterdata(response.data));
-            addEventFilterData(filterdata(response.data));
-            renderData(filterdata(response.data));
-            activeColumns(filterdata(response.data));
-            eventVerifiedButton(siteKey);
-            animation(false);
-        }
-        internalNavigatorHandler(counter);
-        if (response.code === 401) {
-            clearLocalStroage();
-        }
-    } else {
+    animation(true);
+    const access_token = await getIdToken();
+    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+    const siteKey = access_token ? access_token : localStr.siteKey;
+    const response = await fetchData(siteKey, 'all');
+    response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
+    if (response.code === 200) {
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+        removeActiveClass('dropdown-item', 'dd-item-active');
+        document.getElementById('allBtn').classList.add('dd-item-active');
+        removeActiveClass('nav-link', 'active');
+        document.getElementById('participants').classList.add('active');
+        mainContent.innerHTML = renderTable(filterdata(response.data));
+        addEventFilterData(filterdata(response.data));
+        renderData(filterdata(response.data));
+        activeColumns(filterdata(response.data));
+        eventVerifiedButton(siteKey);
         animation(false);
-        window.location.hash = '#';
+    }
+    internalNavigatorHandler(counter);
+    if (response.code === 401) {
+        clearLocalStroage();
     }
 }
 

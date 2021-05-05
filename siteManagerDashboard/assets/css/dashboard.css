@@ -263,3 +263,7 @@ table {
 .row-color-emr-light td {
     background-color: rgb(192, 224, 228); 
 }
+
+.ws-nowrap {
+    white-space: nowrap;
+}
