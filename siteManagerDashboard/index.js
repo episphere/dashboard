@@ -95,8 +95,8 @@ const homePage = async () => {
                 window.location.hash = '#dashboard';
             }
             if (isAuthorized.code === 401) {
-                document.getElementById('mainContent').innerHTML = 'Not Authorized!';
-                clearLocalStroage();
+                document.getElementById('mainContent').innerHTML = 'Not Authorized! <a href="#logout" class="btn btn-primary">Log Out</a>';
+                animation(false)
             }
         });
 
@@ -284,7 +284,6 @@ export const participantVerification = async (token, verified, siteKey) => {
 }
 
 const authorize = async (siteKey) => {
-    console.log(siteKey)
     const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
         method: 'GET',
         headers: {
