@@ -1,6 +1,6 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { showAnimation, hideAnimation } from './utils.js';
-
+import { getParticipationStatus } from './participantHeader.js';
 
 export const renderParticipantWithdrawalLandingPage = (participant) => {
     localStorage.setItem('token', participant.token)
@@ -102,7 +102,7 @@ export const renderParticipantWithdrawalLandingPage = (participant) => {
                                 &nbsp;
                   ${participant[fieldMapping.participationStatus] === fieldMapping.noRefusal ?
                                 (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
-                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:20px;">Next</button>`)
+                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>`)
                                     : 
                                 (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
                     }    
@@ -146,7 +146,6 @@ export const autoSelectOptions = () => {
     if (b) {
         b.addEventListener('change', function() {
             let checkedValue1 = document.getElementById('defaultCheck9');
-            console.log('checkedValue1', checkedValue1)
             checkedValue1.checked = true;
           });
     }
@@ -207,7 +206,7 @@ const retainPreviouslySetOptions = (retainOptions) => {
 }
 
 export const reasonForRefusalPage = (retainOptions) => {
-
+    let source = 'page1'
     let renderContent = document.getElementById('formMainPage');
     let template = ``;
     template += ` <div class="modal fade" id="modalShowFinalSelectedData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
@@ -279,7 +278,8 @@ export const reasonForRefusalPage = (retainOptions) => {
                     </div>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="I don’t like to do things online" name="options" id="defaultCheck">
+                        <input class="form-check-input" type="checkbox" value="I don’t like to do things online" name="options" 
+                        data-optionKey=${fieldMapping.dontLikeThingsOnline} id="defaultCheck">
                         <label class="form-check-label" for="defaultCheck">
                             I don’t like to do things online
                         </label>
@@ -405,12 +405,13 @@ export const reasonForRefusalPage = (retainOptions) => {
         proceedToNextPage();
     })
     document.getElementById('submit').addEventListener('click', () => {
-        collectFinalResponse(retainOptions)
+        collectFinalResponse(retainOptions, source)
     })
  
 }
 
 export const causeOfDeathPage = (retainOptions) => {
+    let source = 'page2'
     let renderContent = document.getElementById('formMainPage');
     let template = ``;
     template += ` <div class="modal fade" id="modalShowFinalSelectedData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
@@ -476,21 +477,21 @@ export const causeOfDeathPage = (retainOptions) => {
         proceedToNextPage();
     })
     document.getElementById('submit').addEventListener('click', () => {
-        collectFinalResponse(retainOptions)
+        collectFinalResponse(retainOptions, source)
     })
  
 }
 
-const collectFinalResponse = (retainOptions) => {
+const collectFinalResponse = (retainOptions, source) => {
     let finalOptions = []
     let checkboxes = document.getElementsByName('options');
     checkboxes.forEach(x => { if (x.checked) {  
         finalOptions.push(x)}
     })
-    sendResponses(finalOptions, retainOptions);
+    sendResponses(finalOptions, retainOptions, source);
 }
 
-const sendResponses = (finalOptions, retainOptions) => {
+const sendResponses = (finalOptions, retainOptions, source) => {
     let sendRefusalData = {};
     let highestStatus = [];
     sendRefusalData[fieldMapping.refusalOptions] = {};
@@ -509,9 +510,13 @@ const sendResponses = (finalOptions, retainOptions) => {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
     })
+    source === 'page2' ? (
+        finalOptions.forEach(x => {
+            sendRefusalData[fieldMapping.sourceOfDeath] = parseInt(x.dataset.optionkey) })
+    ) : (
     finalOptions.forEach(x => {
         sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
-    })
+    }))
     retainOptions.forEach(x => {
         switch (x.value) {
             case "Refusing all future activities":
@@ -538,7 +543,7 @@ const sendResponses = (finalOptions, retainOptions) => {
     sendRefusalData[fieldMapping.participationStatus] = fieldMapping[participationStatusScore.toString()];
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
-
+    getParticipationStatus(fieldMapping[fieldMapping[participationStatusScore.toString()]])
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
     console.log('sendRefusalData', sendRefusalData)

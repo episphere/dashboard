@@ -195,6 +195,7 @@ export default
     'tooSick': 431428747,
     'noInternet': 121430614,
     'worriedAboutResults': 523768810,
+    'dontLikeThingsOnline': 352891568,
     'concernedAboutResults': 639172801,
     'concernedAboutPrivacy': 175732191,
     'concernedAboutInformationOnline': 637147033,
@@ -208,7 +209,6 @@ export default
     'worriedAboutInformationMisue':  372303208,
     'worriedAboutOtherPrivacyConcerns': 777719027,
     'unableToCompleteOnlineActivites': 620696506,
-    'dontLikeThingsOnline': 352891568,
     'concernedAboutCovid': 958588520,
     'participantUnableToParticipate': 875010152,
     'participantIncarcerated': 404289911,
@@ -229,6 +229,7 @@ export default
     "3": 872012139,
     "4": 854021266,
     "5": 241236037,
+    "6": 987563196,
 
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
@@ -236,11 +237,17 @@ export default
     "revokeHIPAA": 872012139,
     "withdrewConsent": 854021266,
     "destroyData": 241236037,
-    "deceased": 567870674
-            
+    "deceased": 987563196,
 
+    208325815 :  "No refusal",
+    622008261 : "Refused some activities",  
+    134659217 : "Refused all future activities",
+    872012139 : "Revoked HIPAA only",
+    854021266 : "Withdrew Consent",
+    241236037 :  "Destroy Data",
+    987563196 : "Deceased",
 
-    
+    'sourceOfDeath': 764403541
 
 
 

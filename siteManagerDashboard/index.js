@@ -705,6 +705,7 @@ const renderParticipantsNotVerified = async () => {
         const localStr = JSON.parse(localStorage.dashboard);
         const siteKey = localStr.siteKey;
         const response = await fetchData(siteKey, 'notyetverified');
+        console
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
