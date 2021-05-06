@@ -1,11 +1,11 @@
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
 import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, showAnimation, hideAnimation } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
 export function renderParticipantLookup(){
-
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+    const isParent = localStorage.getItem('isParent')
+    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantLookupBtn').classList.add('active');
     localStorage.removeItem("participant");
@@ -54,14 +54,14 @@ export function renderParticipantSearch() {
                             </div>
                             <div class="form-group dropdown" id="siteDropdownLookup" hidden>
                                 <label class="col-form-label search-label">Site Preference </label> &nbsp;
-                                <button class="btn btn-primary btn-lg" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    Change Site Preference
+                                <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Filter by Site
                                 </button>
                                 <ul class="dropdown-menu" id="dropdownMenuLookupSites" aria-labelledby="dropdownMenuButton">
+                                    <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
                                     <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
                                     <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
-                                    <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
@@ -202,14 +202,6 @@ export const performSearch = async (query, sitePref, failedElem) => {
         document.getElementById(failedElem).hidden = false;
         alertTrigger();
     }
-}
-
-export const showAnimation = () => {
-    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
-}
-
-export const hideAnimation = () => {
-    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
 
 export const showNotifications = (data, error) => {

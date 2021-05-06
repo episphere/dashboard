@@ -73,8 +73,6 @@ export default
     "yes": 353358909,
     "no": 104430631,
 
-    "refusedSurvey": 994064239,
-
     "biospecimenFlag": 650516960,
     "biospecimenResearch": 534621077,
     "biospecimenClinical": 664882224,
@@ -172,6 +170,87 @@ export default
     'inactive': 180583933,
     'recruitmentDate': 471593703,
 
-    'signinDate': 335767902
+    'signinDate': 335767902,
+
+    'refusalOptions': 685002411,
+
+    'refusedSurvey': 994064239,
+    // 'refusedBloodSample': 194410742,
+    // 'refusedUrineSample': 949501163,
+    // 'refusedMouthwashSample': 277479354,
+    'refusedSpecimenSurevys': 217367618,
+    'refusedSpecimenSurevys': 867203506,
+    'refusedFutureSamples': 352996056,
+    
+    'refusedAllFutureActivities': 906417725,
+    'revokeHIPAA': 773707518,
+    'withdrawConsent': 747006172,
+    'destroyData': 831041022,
+    'participantDeceased': 987563196,
+
+    'tooBusy': 851245875,
+    'noLongerInterested': 919699172,
+    'participantGreedy': 141450621,
+    'notGreatBenefit': 576083042,
+    'tooSick': 431428747,
+    'noInternet': 121430614,
+    'worriedAboutResults': 523768810,
+    'dontLikeThingsOnline': 352891568,
+    'concernedAboutResults': 639172801,
+    'concernedAboutPrivacy': 175732191,
+    'concernedAboutInformationOnline': 637147033,
+    'doesntTrustGov': 150818546,
+    'doesntTrustResearch': 624030581,
+    'doesntWantInfoWithResearchers': 285488731,
+    'worriedAboutDataBreach': 596510649,
+    'worriedAboutInsurance': 866089092,
+    'worriedAboutEmployer': 990579614,
+    'worriedAboutDiscrimination': 131458944,
+    'worriedAboutInformationMisue':  372303208,
+    'worriedAboutOtherPrivacyConcerns': 777719027,
+    'unableToCompleteOnlineActivites': 620696506,
+    'concernedAboutCovid': 958588520,
+    'participantUnableToParticipate': 875010152,
+    'participantIncarcerated': 404289911,
+    'otherReasons': 715390138,
+    'reasonNotGiven': 538619788,
+
+    'spouse': 817514412,
+    'child': 597175457,
+    'otherRelative': 341709648,
+    'ihcsStaff': 890182396,
+    'other': 181769837,
+
+    'participationStatus': 912301837,
+
+    "0": 208325815,
+    "1": 622008261,	
+    "2": 134659217,
+    "3": 872012139,
+    "4": 854021266,
+    "5": 241236037,
+    "6": 987563196,
+
+    "noRefusal": 208325815,
+    "refusedSome": 622008261,	
+    "refusedAll": 134659217,
+    "revokeHIPAA": 872012139,
+    "withdrewConsent": 854021266,
+    "destroyData": 241236037,
+    "deceased": 987563196,
+
+    208325815 :  "No refusal",
+    622008261 : "Refused some activities",  
+    134659217 : "Refused all future activities",
+    872012139 : "Revoked HIPAA only",
+    854021266 : "Withdrew Consent",
+    241236037 :  "Destroy Data",
+    987563196 : "Deceased",
+
+    'sourceOfDeath': 764403541
+
+
+
+
 
 }

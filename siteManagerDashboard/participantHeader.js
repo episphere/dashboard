@@ -1,4 +1,3 @@
-
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { humanReadableMDY } from './utils.js';
 import { keyToNameObj } from './siteKeysToName.js';
@@ -12,7 +11,7 @@ export const headerImportantColumns = [
     { field: fieldMapping.verifiedFlag },
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
-    { field: 'Status' }
+    { field: 'Participation Status'}
 ];
 
 
@@ -26,9 +25,9 @@ export const renderParticipantHeader = (participant) => {
         (headerImportantColumns[x].field === 'Connect_ID' ) ?
             template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${participant[headerImportantColumns[x].field] !== undefined ?  participant[headerImportantColumns[x].field] : ""} &nbsp;`
         :
-        
-        (headerImportantColumns[x].field === 'Status' ) ?
-            template += `<span><b> Status </b></span> : Active &nbsp;`
+
+        (headerImportantColumns[x].field === 'Participation Status' ) ?
+        template += `<span><b>Participation Status </b></span> : ${getParticipationStatus(participant)}  &nbsp;`
         :
 
         (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
@@ -106,4 +105,14 @@ const concatDOB = (participant) => {
 const renderSiteLocation = (participant) => {
     const siteHealthcareProvider = participant[fieldMapping.healthcareProvider];
     return keyToNameObj[siteHealthcareProvider];
+}
+
+export const getParticipationStatus = (participant) => {
+
+   if (typeof participant !== "string") {
+        const statusValue = participant[fieldMapping.participationStatus];
+        return fieldMapping[statusValue] }
+    {   
+        return participant
+    }
 }

@@ -1,7 +1,7 @@
 import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getCurrentTimeStamp, getDataAttributes } from './utils.js';
+import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation } from './utils.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderLookupResultsTable } from './participantLookup.js';
 
@@ -108,8 +108,8 @@ window.addEventListener('onload', (e) => {
 
 
 export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
-
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+    const isParent = localStorage.getItem('isParent')
+    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
@@ -134,7 +134,6 @@ export const render = (participant) => {
         `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        console.log('conceptIdMapping', conceptIdMapping)
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
@@ -516,6 +515,7 @@ const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteK
     a.addEventListener('click', () => {
         const participantToken = participant.token;
         changedOption['token'] = participantToken;
+        console.log('conol', changedOption)
         clickHandler(adminSubjectAudit, changedOption, siteKey);
     })
 }
@@ -555,17 +555,6 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
                (alert('Error'))
         }
  }
-
-
-// shows a spinner when HTTP request is made
-export const showAnimation = () => {
-    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';
-}
-
-export const hideAnimation = () => {
-    if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
-}
-
 
 // Admin audit displaying logs
  const viewAuditHandler = (adminSubjectAudit) => {

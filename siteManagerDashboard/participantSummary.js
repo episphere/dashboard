@@ -16,8 +16,8 @@ const { PDFDocument, StandardFonts } = PDFLib
 document.body.scrollTop = document.documentElement.scrollTop = 0;
 
 export const renderParticipantSummary = (participant) => {
-
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+    const isParent = localStorage.getItem('isParent')
+    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantSummaryBtn').classList.add('active');
     if (participant !== null) {
@@ -188,7 +188,7 @@ const consentHandler = (participant) => {
                     <td>Signed</td>
                     <td>${participant[fieldMapping.consentDate] && humanReadableMDY(participant[fieldMapping.consentDate])}</td>
                     <td>${participant[fieldMapping.consentVersion]}</td>
-                    <td>N/A</td>
+                    <td>N</td>
                     <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy">Download Link</a></td>
     ` ) : 
     (
@@ -199,7 +199,7 @@ const consentHandler = (participant) => {
                     <td>Not Signed</td>
                     <td>N/A</td>
                     <td>N/A</td>
-                    <td>Y</td>
+                    <td>N</td>
                     <td style="color: grey; text-decoration: underline;">Download Link</td>`
     )
     return template;
@@ -218,7 +218,7 @@ const hippaHandler = (participant) => {
                     <td>Signed</td>
                     <td>${participant[fieldMapping.hippaDate] && humanReadableMDY(participant[fieldMapping.hippaDate])}</td>
                     <td>${participant[fieldMapping.hippaVersion]}</td>
-                    <td>N/A</td>
+                    <td>N</td>
                     <td style="color: grey; text-decoration: underline;">Download Link</td>
     ` ) : 
     (
@@ -229,7 +229,7 @@ const hippaHandler = (participant) => {
                     <td>Not Signed</td>
                     <td>N/A</td>
                     <td>N/A</td>
-                    <td>N/A</td>
+                    <td>N</td>
                     <td style="color: grey; text-decoration: underline;">Download Link</td>`
     )
     return template;

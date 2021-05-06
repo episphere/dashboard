@@ -4,7 +4,8 @@ import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToN
 
 
 export const renderParticipantWithdrawal = (participant) => {
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+    const isParent = localStorage.getItem('isParent')
+    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantWithdrawalBtn').classList.add('active');
     mainContent.innerHTML = render(participant);
@@ -28,7 +29,7 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<div id="formMainPage">
-                    ${renderParticipantWithdrawalLandingPage()}
+                    ${renderParticipantWithdrawalLandingPage(participant)}
                     </div></div>`
 }
 return template;

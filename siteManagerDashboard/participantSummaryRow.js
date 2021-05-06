@@ -6,7 +6,7 @@ export const userProfile = (participant) => {
     let template = ``;
     !participant ?
     (template += `
-            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Enrollment", "N/A", "User Profile", "N/A", "N/A", "N/A", "N/A", "N/A")}
+            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Enrollment", "N/A", "User Profile", "N/A", "N/A", "N/A", "N", "N/A")}
     `)
     :
     (participant[fieldMapping.userProfileFlag] === (fieldMapping.yes) ?
@@ -30,7 +30,7 @@ export const verificationStatus = (participant) => {
     let template = ``;
     !participant ?
     (template += `
-        ${getTemplateRow("fa fa-times fa-2x", "color: red", "Enrollment", "N/A", "Verification", "N/A", "N/A", "N/A", "N/A", "N/A")}
+        ${getTemplateRow("fa fa-times fa-2x", "color: red", "Enrollment", "N/A", "Verification", "N/A", "N/A", "N/A", "N", "N/A")}
     `)
     : (
     (participant[fieldMapping.verifiedFlag] === fieldMapping.verified) ?
@@ -69,7 +69,7 @@ export const baselineBloodSample = (participantModule) => {
     !participantModule[fieldMapping.bloodFlag] ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Not Collected", "N/A", "N/A", "N/A", "N/A")}
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Not Collected", "N/A", "N/A", "N", "N/A")}
             `
     ) : 
     participantModule[fieldMapping.refusedBlood] === (fieldMapping.yes) ?
@@ -98,7 +98,7 @@ export const baselineUrineSample = (participantModule) => {
     !participantModule[fieldMapping.urineFlag] ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedUrine] === (fieldMapping.yes) ?
     (
@@ -125,7 +125,7 @@ export const baselineMouthwashSample = (participantModule) => {
     !participantModule[fieldMapping.mouthwash] ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedMouthwash] === (fieldMapping.yes) ?
     (
@@ -150,7 +150,7 @@ export const baselineBOHSurvey = (participantModule) => {
     !participantModule ?  
     (
         template += `
-            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "BOH", "N/A", "N/A", "N/A", "N/A", "N/A")}`
+            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "BOH", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
     (
@@ -184,7 +184,7 @@ export const baselineMRESurvey = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "MRE", "N/A", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "MRE", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
     (
@@ -217,7 +217,7 @@ export const baselineSASSurvey = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SAS", "N/A", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SAS", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
     (
@@ -250,7 +250,7 @@ export const baselineLAWSurvey = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "LAW", "N/A", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "LAW", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
     (
@@ -283,18 +283,18 @@ export const baselineSSN = (participantModule) => {
         !participantModule ?  
         (
         template += `
-            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "None", "N/A", "N/A", "N/A", "N/A")}`
+            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "None", "N/A", "N/A", "N", "N/A")}`
         ) : 
         (
             (participantModule[fieldMapping.ssnFullflag]) ?
             (
             template += `
                     ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SSN", "All Digits", 
-                    humanReadableMDY(participantModule[fieldMapping.ssnFulldate]), "N/A", "N/A", "N/A")}`
+                    humanReadableMDY(participantModule[fieldMapping.ssnFulldate]), "N/A", "N", "N/A")}`
             ) : 
             ( template += `
                 ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "4 Digits", 
-                humanReadableMDY(participantModule[fieldMapping.ssnPartialDate]), "N/A", "N/A", "N/A")}`
+                humanReadableMDY(participantModule[fieldMapping.ssnPartialDate]), "N/A", "N", "N/A")}`
             ))
     return template;
 }
@@ -304,7 +304,7 @@ export const baselineBloodUrineSurvey = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "N/A", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
     (
@@ -337,7 +337,7 @@ export const baselineMouthwashSurvey = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "N/A", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     participantModule[fieldMapping.refusedSurvey] === (fieldMapping.yes) ?
     (
@@ -372,7 +372,7 @@ export const baselineEMR = (participantModule) => {
     !(participantModule) ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "EMR", "N/A", "Not Pushed", "N/A", "N/A", "N/A", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "EMR", "N/A", "Not Pushed", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (participantModule[fieldMapping.baselineEMRflag]) === (fieldMapping.yes) ?  
     (
@@ -393,7 +393,7 @@ export const baselinePayment = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A")}
+                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N", "N/A")}
                 `
     ) : 
     participantModule[fieldMapping.refusedBaselinePayment] === (fieldMapping.yes) ?
