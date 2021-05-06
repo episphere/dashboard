@@ -28,6 +28,7 @@ window.onhashchange = () => {
 const router = async () => {
     const hash = decodeURIComponent(window.location.hash);
     const route = hash || '#';
+    const isParent = localStorage.getItem('isParent')
     if(await userLoggedIn() || localStorage.dashboard){
         if (route === '#dashboard') renderDashboard();
         else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
@@ -58,7 +59,7 @@ const router = async () => {
                 renderParticipantSummary(participant);
             }
         }
-        else if (route === '#participantWithdrawal') {
+        else if (route === '#participantWithdrawal' && isParent === 'true') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
                 renderParticipantWithdrawal();
             }
@@ -128,8 +129,9 @@ const renderDashboard = async () => {
         const siteKey = access_token ? access_token : localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
         if (isAuthorized && isAuthorized.code === 200) {
-
-            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+            localStorage.setItem('isParent', isAuthorized.isParent)
+            const isParent = localStorage.getItem('isParent')
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
             removeActiveClass('nav-link', 'active');
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
@@ -191,7 +193,7 @@ const renderCharts = async (siteKey) => {
               }
         }) 
     if (dropDownstatusFlag === true) {
-        let sitekeyName = 'Change Site Preference';
+        let sitekeyName = 'Filter by Site';
         siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
         mainContent.appendChild(siteSelectionRow);
         dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats, 
@@ -214,8 +216,8 @@ const renderSiteKeyList = () => {
     let template = ``;
     template += `       
             <div style="margin-top:10px; padding:15px;" class="dropdown">
-                <button class="btn btn-secondary dropdown-toggle-sites" id="dropdownSites" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Change Site Preference
+                <button class="btn btn-secondary dropdown-toggle dropdown-toggle-sites" id="dropdownSites" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Filter by Site
                 </button>
                 <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                     <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
@@ -223,14 +225,12 @@ const renderSiteKeyList = () => {
                     <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
-                    <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
                     <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
                     <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
                     <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                     <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
-             
                 </ul>
             </div>
             `
@@ -243,7 +243,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
     let tempSiteName = a.innerHTML = sitekeyName;
     if (dropdownMenuButton) {
         dropdownMenuButton.addEventListener('click', (e) => {
-            if ( sitekeyName === 'Change Site Preference' || sitekeyName === tempSiteName) {
+            if ( sitekeyName === 'Filter by Site' || sitekeyName === tempSiteName) {
                 a.innerHTML = e.target.textContent;
                 const t = getDataAttributes(e.target)
                 reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, recruitsCountResults);
@@ -645,6 +645,7 @@ const clearLocalStroage = () => {
     internalNavigatorHandler(counter);
     animation(false);
     delete localStorage.dashboard;
+    delete localStorage.participant;
     window.location.hash = '#';
 }
 
@@ -670,7 +671,8 @@ const renderParticipantsNotVerified = async () => {
     const response = await fetchData(siteKey, 'notyetverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
-        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        const isParent = localStorage.getItem('isParent')
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
         document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Verified Participants'
         removeActiveClass('dropdown-item', 'dd-item-active')
         document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
@@ -698,7 +700,8 @@ const renderParticipantsCanNotBeVerified = async () => {
     const response = await fetchData(siteKey, 'cannotbeverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
-        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        const isParent = localStorage.getItem('isParent')
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
         document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Cannot Be Verified Participants'
         removeActiveClass('dropdown-item', 'dd-item-active')
         document.getElementById('cannotVerifiedBtn').classList.add('dd-item-active');
@@ -731,7 +734,8 @@ const renderParticipantsVerified = async () => {
     const response = await fetchData(siteKey, 'verified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
-        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        const isParent = localStorage.getItem('isParent')
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
         document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Verified Participants'
         removeActiveClass('dropdown-item', 'dd-item-active')
         document.getElementById('verifiedBtn').classList.add('dd-item-active');
@@ -758,7 +762,8 @@ const renderParticipantsAll = async () => {
     const response = await fetchData(siteKey, 'all');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
-        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+        const isParent = localStorage.getItem('isParent')
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
         document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
         removeActiveClass('dropdown-item', 'dd-item-active');
         document.getElementById('allBtn').classList.add('dd-item-active');

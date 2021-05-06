@@ -108,8 +108,8 @@ window.addEventListener('onload', (e) => {
 
 
 export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
-
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks();
+    const isParent = localStorage.getItem('isParent')
+    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant);

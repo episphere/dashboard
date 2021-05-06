@@ -118,7 +118,7 @@ export const renderParticipantWithdrawalLandingPage = (participant) => {
                                         </span>
                                     </div>
                 </div>`
-        
+
         template += ` <div class="modal fade" id="modalShowSelectedData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content sub-div-shadow">
