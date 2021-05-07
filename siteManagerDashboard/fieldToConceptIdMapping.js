@@ -136,6 +136,7 @@ export default
     "baselinePaymentFlag": 117044491,
     "baselinePayment": 266600170,
     "eligiblePayment": 731498909,
+    "issuePayment": 648936790,
     "baselinePaymentDate": 297462035,
     "refusedBaselinePayment": 648228701,
     "refusedBaselinePaymentDate": 438636757,
