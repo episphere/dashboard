@@ -403,21 +403,23 @@ export const baselinePayment = (participantModule) => {
                 humanReadableMDY(participantModule[fieldMapping.refusedBaselinePaymentDate]), "N/A", "Y", "N/A")}`
     )
     :
-    participantModule[fieldMapping.eligiblePayment] === (fieldMapping.yes) ?
+    participantModule[fieldMapping.issuePayment] === (fieldMapping.yes) ?
     (
         template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Issued", 
-                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", "Eligible")}`
+                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", checkEligibilty(participantModule[fieldMapping.eligiblePayment]))}`
     ) :
     (
         template += `
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Issued", 
-                "N/A", "N/A", "N", "Not Eligible")}`
+                "N/A", "N/A", "N", checkEligibilty(participantModule[fieldMapping.eligiblePayment]))}`
     )
     return template;
 }
 
-
+const checkEligibilty = (eligiblePayment) => {
+    return eligiblePayment === (fieldMapping.yes) ? 'Eligible' : 'Not Eligible'
+}
 const biospecimenStatus = (biospecimenRow) => {
     let template = ``;
     !(biospecimenRow) ?  
