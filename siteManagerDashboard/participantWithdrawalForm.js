@@ -1,7 +1,5 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { showAnimation, hideAnimation } from './utils.js';
-import { getParticipationStatus } from './participantHeader.js';
-import { renderParticipantSummary } from './participantSummary.js';
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
@@ -101,9 +99,12 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 &nbsp;
-                                <button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
-                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>
- 
+                                ${participant[fieldMapping.participationStatus] === fieldMapping.noRefusal ?
+                                    (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
+                                        class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>`)
+                                        : 
+                                    (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
+                                }    
                                 </div>
                         </div>
                     </div>
@@ -182,34 +183,6 @@ export const addEventMonthSelection = (month, day) => {
 
         document.getElementById(day).innerHTML = template;
     });
-}
-
-export const eventMonthSelection = () => {
-    const UPMonth = document.getElementById('month');
-    if (UPMonth) {
-    UPMonth.addEventListener('change', () => {
-        const value = UPMonth.value;
-        let template = '<option class="option-dark-mode" value="">Select birth day</option>';
-
-        if(value === '02'){
-            for(let i = 1; i < 30; i++){
-                template += `<option class="option-dark-mode" value=${i < 10 ? `0${i}`: `${i}`}>${i}</option>`
-            }
-        }
-        if(value === '01' || value === '03' || value === '05' || value === '07' || value === '08' || value === '10' || value === '12'){
-            for(let i = 1; i < 32; i++){
-                template += `<option class="option-dark-mode" value=${i < 10 ? `0${i}`: `${i}`}>${i}</option>`
-            }
-        }
-        if(value === '04' || value === '06' || value === '09' || value === '11'){
-            for(let i = 1; i < 31; i++){
-                template += `<option class="option-dark-mode" value=${i < 10 ? `0${i}`: `${i}`}>${i}</option>`
-            }
-        }
-
-        document.getElementById('day').innerHTML = template;
-    });
-}
 }
 
 export const autoSelectOptions = () => {

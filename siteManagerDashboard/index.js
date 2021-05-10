@@ -59,7 +59,7 @@ const router = async () => {
                 renderParticipantSummary(participant);
             }
         }
-        else if (route === '#participantWithdrawal' && isParent === 'false') {
+        else if (route === '#participantWithdrawal' && isParent === 'true') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
                 renderParticipantWithdrawal();
             }
@@ -222,7 +222,7 @@ const renderSiteKeyList = () => {
                 <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                     <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
                     <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
-                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
+                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
