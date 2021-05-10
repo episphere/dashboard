@@ -11,7 +11,8 @@ export const headerImportantColumns = [
     { field: fieldMapping.verifiedFlag },
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
-    { field: 'Participation Status'}
+    { field: 'Participation Status'},
+     { field: 'Suspended Contact'}
 ];
 
 
@@ -27,7 +28,11 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (headerImportantColumns[x].field === 'Participation Status' ) ?
-        template += `<span><b>Participation Status </b></span> : ${getParticipationStatus(participant)}  &nbsp;`
+            template += `<span><b>Participation Status </b></span> : ${getParticipationStatus(participant)}  &nbsp;`
+        :
+
+        (headerImportantColumns[x].field === 'Suspended Contact'  ) ?
+            template += getParticipationSuspendedDate(participant)
         :
 
         (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
@@ -107,12 +112,21 @@ const renderSiteLocation = (participant) => {
     return keyToNameObj[siteHealthcareProvider];
 }
 
-export const getParticipationStatus = (participant) => {
-
+const getParticipationStatus = (participant) => {
    if (typeof participant !== "string") {
         const statusValue = participant[fieldMapping.participationStatus];
         return fieldMapping[statusValue] }
-    {   
+    else {   
         return participant
+    }
+}
+
+const getParticipationSuspendedDate = (participant) => {
+    if (participant[fieldMapping.suspendContact] !== "") {
+        let currentTimeStamp = humanReadableMDY(new Date().toISOString());
+        let suspendedDate = participant[fieldMapping.suspendContact]
+        return `<span><b>Suspended Contact </b></span> : From:  ${currentTimeStamp}  To:  ${suspendedDate}`
+    } else {
+        return ``
     }
 }
