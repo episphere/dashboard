@@ -1,5 +1,5 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { humanReadableMDY, getCurrentTimeStamp } from './utils.js';
+import { humanReadableMDY } from './utils.js';
 import { keyToNameObj } from './siteKeysToName.js';
 
 export const headerImportantColumns = [
