@@ -248,7 +248,10 @@ export default
     241236037 :  "Destroy Data",
     987563196 : "Deceased",
 
-    'sourceOfDeath': 764403541
+    'sourceOfDeath': 764403541,
+    'dateOfDeath': 123868967,
+
+    'suspendContact': 113579866
 
 
 

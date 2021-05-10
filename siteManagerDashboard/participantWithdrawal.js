@@ -1,6 +1,6 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
-import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToNextPage, autoSelectOptions } from './participantWithdrawalForm.js'
+import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToNextPage, autoSelectOptions, addEventMonthSelection } from './participantWithdrawalForm.js'
 
 
 export const renderParticipantWithdrawal = (participant) => {
@@ -12,10 +12,12 @@ export const renderParticipantWithdrawal = (participant) => {
     autoSelectOptions();
     viewOptionsSelected();
     proceedToNextPage();
+    addEventMonthSelection('UPMonth', 'UPDay');
 }
 
 
 export const render = (participant) => {
+    localStorage.setItem('token', participant.token)
     let template = `<div class="container-fluid">`
     if (!participant) {
         template +=` 
@@ -29,7 +31,7 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<div id="formMainPage">
-                    ${renderParticipantWithdrawalLandingPage(participant)}
+                    ${renderParticipantWithdrawalLandingPage()}
                     </div></div>`
 }
 return template;

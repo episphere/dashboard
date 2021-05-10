@@ -60,7 +60,7 @@ export function renderParticipantSearch() {
                                 <ul class="dropdown-menu" id="dropdownMenuLookupSites" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
                                     <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
-                                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
@@ -113,6 +113,7 @@ const dropdownTrigger = () => {
             a.innerHTML = e.target.textContent;
             const t = getDataAttributes(e.target)
             const att = document.getElementById('dropdownSites').setAttribute("data-siteKey", t.sitekey);
+            console.log('all', att)
         })
        
     }
@@ -177,7 +178,7 @@ export const performSearch = async (query, sitePref, failedElem) => {
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
         let filterRawData = filterdata(response.data);
-        if (sitePref !== undefined && sitePref != null) {
+        if (sitePref !== undefined && sitePref != null && sitePref !== 'allResults') {
             const sitePrefId = nameToKeyObj[sitePref];
             const tempFilterRawData = filterBySiteKey(filterRawData, sitePrefId);
             if (tempFilterRawData.length !== 0 ) {

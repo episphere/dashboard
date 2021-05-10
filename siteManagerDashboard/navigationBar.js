@@ -41,7 +41,7 @@ export const dashboardNavBarLinks = (isParent) => {
         <li class="nav-item" id="participantSummaryBtn">
             <a class="nav-item nav-link ws-nowrap" href="#participantSummary" title="Participant Summary"><i class="fa fa-id-badge"></i> Participant Summary</a>
         </li>
-        ${isParent === 'true' ?
+        ${isParent === 'false' ?
         (`<li class="nav-item" id="participantWithdrawalBtn">
             <a class="nav-item nav-link ws-nowrap" href="#participantWithdrawal" title="Participant Withdrawal"><i class="fa fa-list-alt"></i> Participant Withdrawal</a>
         </li>`) : (``)  }
