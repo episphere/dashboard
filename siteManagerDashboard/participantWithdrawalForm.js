@@ -3,6 +3,7 @@ import { showAnimation, hideAnimation } from './utils.js';
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
+    let participant = JSON.parse(localStorage.getItem("participant"))
     let template = ``;
     template = `        
                 <div class="row">
@@ -99,12 +100,12 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 &nbsp;
-                                ${participant[fieldMapping.participationStatus] === fieldMapping.noRefusal ?
-                                    (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
+                                ${  (participant[fieldMapping.participationStatus] === fieldMapping.noRefusal) && (participant[fieldMapping.suspendContact] === "") ?
+                                        (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
                                         class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>`)
-                                        : 
-                                    (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
-                                }    
+                                  :
+                                        (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
+                                  }  
                                 </div>
                         </div>
                     </div>
@@ -112,8 +113,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     <div class="row form-row">
                                         <span> <b>
                                             SUPERVISOR USE ONLY​ <br />
-                                            Suspend all contact on case until 
-                                            DATE:​ MM/DD/YYYY </b> <br />
+                                            Suspend all contact with participant until
+                                            date </b> <br />
                                             <div class="form-group row">
                                             <label class="col-md-4 col-form-label">Month</label>
                                             <select id="UPMonth" class="form-control required-field col-md-4" data-error-required='Please select your month.'>
@@ -138,7 +139,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                         </div>
                                         <div class="form-group row">
                                             <label class="col-md-4 col-form-label">Year</label>
-                                            <input type="text" class="form-control required-field input-validation col-md-4" data-error-required='Please select your year.' data-validation-pattern="year" data-error-validation="Your year must contain four digits in the YYYY format." maxlength="4" id="UPYear" list="yearsOption" title="Birth year, must be in 1900s" Placeholder="Enter year">
+                                            <input type="text" class="form-control required-field input-validation col-md-4" data-error-required='Please select your year.' data-validation-pattern="year" data-error-validation="Your year must contain four digits in the YYYY format." maxlength="4" id="UPYear" list="yearsOption" title="Year, must be in 1900s" Placeholder="Enter year">
                                             <datalist id="yearsOption"></datalist>
                                         </div>
                                         </span>
@@ -404,7 +405,7 @@ const combineResponses = (finalOptions, sendRefusalData, suspendDate) => {
 }
 
 async function clickHandler(sendRefusalData, siteKey, token) {
-
+    console.log('sendRefusalData', sendRefusalData)
     showAnimation();
     const idToken = siteKey;
 

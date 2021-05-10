@@ -187,7 +187,7 @@ export const renderCauseOptions = () => {
     template +=
             `
                 <div>
-                    <span> Date of Death: <b>MM/DD/YYYY</b>​ 
+                    <span> Date of Death:
                     <div class="form-group row">
                     <label class="col-md-4 col-form-label">Month</label>
                     <select id="page2Month" class="form-control required-field col-md-4" data-error-required='Please select your Month.'>

@@ -31,7 +31,7 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<div id="formMainPage">
-                    ${renderParticipantWithdrawalLandingPage()}
+                    ${renderParticipantWithdrawalLandingPage(participant)}
                     </div></div>`
 }
 return template;
