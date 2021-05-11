@@ -64,7 +64,7 @@ export const verificationStatus = (participant) => {
 }
 
 export const baselineBloodSample = (participantModule) => {
-    let refusedBloodOption = participantModule[fieldMapping.refusalOptions][fieldMapping.refusedBlood]
+    let refusedBloodOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedBlood]
     let template = ``;
     refusedBloodOption === (fieldMapping.yes) ?
     (
@@ -93,7 +93,7 @@ export const baselineBloodSample = (participantModule) => {
 }
 
 export const baselineUrineSample = (participantModule) => {
-    let refusedUrineOption = participantModule[fieldMapping.refusalOptions][fieldMapping.refusedUrine]
+    let refusedUrineOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedUrine]
     let template = ``;
     refusedUrineOption === (fieldMapping.yes) ?
     (
@@ -121,7 +121,7 @@ export const baselineUrineSample = (participantModule) => {
 
 
 export const baselineMouthwashSample = (participantModule) => {
-    let refusedMouthwashOption = participantModule[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash]
+    let refusedMouthwashOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash]
     let template = ``;
     refusedMouthwashOption === (fieldMapping.yes) ?
     (
@@ -148,7 +148,7 @@ export const baselineMouthwashSample = (participantModule) => {
 
 export const baselineBOHSurvey = (participant) => {
     let participantModule = participant[fieldMapping.boh]
-    let refusedSurveyOption = participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
+    let refusedSurveyOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
     let template = ``;
     refusedSurveyOption === (fieldMapping.yes) ?
     (
@@ -184,7 +184,7 @@ export const baselineBOHSurvey = (participant) => {
 
 export const baselineMRESurvey = (participant) => {
     let participantModule = participant[fieldMapping.mre]
-    let refusedSurveyOption = participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
+    let refusedSurveyOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
     let template = ``;
     refusedSurveyOption === (fieldMapping.yes)  ?
     (
@@ -219,7 +219,7 @@ export const baselineMRESurvey = (participant) => {
 
 export const baselineSASSurvey = (participant) => {
     let participantModule = participant[fieldMapping.sas]
-    let refusedSurveyOption = participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
+    let refusedSurveyOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
     let template = ``;
     refusedSurveyOption === (fieldMapping.yes) ?
     (
@@ -254,7 +254,7 @@ export const baselineSASSurvey = (participant) => {
 
 export const baselineLAWSurvey = (participant) => {
     let participantModule = participant[fieldMapping.law]
-    let refusedSurveyOption = participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
+    let refusedSurveyOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey]
     let template = ``;
     refusedSurveyOption === (fieldMapping.yes) ?
     (
@@ -310,7 +310,7 @@ export const baselineSSN = (participantModule) => {
 
 export const baselineBloodUrineSurvey = (participant) => {
     let participantModule = participant[fieldMapping.bloodUrineSurvey]
-    let refusedSpecimenOption = participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
+    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
     let template = ``;
 
     refusedSpecimenOption === (fieldMapping.yes) ?
@@ -346,7 +346,7 @@ export const baselineBloodUrineSurvey = (participant) => {
 
 export const baselineMouthwashSurvey = (participant) => {
     let participantModule = participant[fieldMapping.mouthwashSurvey]
-    let refusedSpecimenOption = participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
+    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
     let template = ``;
     refusedSpecimenOption === (fieldMapping.yes) ?
     (
