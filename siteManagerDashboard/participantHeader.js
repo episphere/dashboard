@@ -115,9 +115,8 @@ const renderSiteLocation = (participant) => {
 const getParticipationStatus = (participant) => {
    if (typeof participant !== "string") {
         const statusValue = participant[fieldMapping.participationStatus];
-        return fieldMapping[statusValue] }
-    else {   
-        return participant
+        if (statusValue !== undefined)  return fieldMapping[statusValue];
+        else return `No Refusal`;
     }
 }
 

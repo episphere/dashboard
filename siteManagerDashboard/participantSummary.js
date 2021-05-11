@@ -75,25 +75,25 @@ export const render = (participant) => {
                                     ${verificationStatus(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineBOHSurvey(participant[fieldMapping.boh], "BOH")}
+                                    ${baselineBOHSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-light">
-                                    ${baselineMRESurvey(participant[fieldMapping.mre], "MRE")}
+                                    ${baselineMRESurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineSASSurvey(participant[fieldMapping.sas], "SAS")}
+                                    ${baselineSASSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-light">
-                                    ${baselineLAWSurvey(participant[fieldMapping.law], "LAW")}
+                                    ${baselineLAWSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
                                     ${baselineSSN(participant[fieldMapping.ssn])}
                                 </tr>
                                 <tr class="row-color-survey-light">
-                                    ${baselineBloodUrineSurvey(participant[fieldMapping.bloodUrineSurvey])}
+                                    ${baselineBloodUrineSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineMouthwashSurvey(participant[fieldMapping.mouthwashSurvey])}
+                                    ${baselineMouthwashSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-sample-dark">
                                     ${baselineBloodSample(participant)}

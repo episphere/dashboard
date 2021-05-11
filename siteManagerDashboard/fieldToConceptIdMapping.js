@@ -180,7 +180,7 @@ export default
     // 'refusedUrineSample': 949501163,
     // 'refusedMouthwashSample': 277479354,
     'refusedSpecimenSurevys': 217367618,
-    'refusedSpecimenSurevys': 867203506,
+    'refusedFutureSurveys': 867203506,
     'refusedFutureSamples': 352996056,
     
     'refusedAllFutureActivities': 906417725,
@@ -240,7 +240,7 @@ export default
     "destroyData": 241236037,
     "deceased": 987563196,
 
-    208325815 :  "No refusal",
+    208325815 :  "No Refusal",
     622008261 : "Refused some activities",  
     134659217 : "Refused all future activities",
     872012139 : "Revoked HIPAA only",
