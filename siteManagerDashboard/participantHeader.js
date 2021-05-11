@@ -122,7 +122,7 @@ const getParticipationStatus = (participant) => {
 }
 
 const getParticipationSuspendedDate = (participant) => {
-    if (participant[fieldMapping.suspendContact] !== "") {
+    if (participant[fieldMapping.suspendContact] !== "" && participant[fieldMapping.suspendContact] !== undefined ) {
         let currentTimeStamp = humanReadableMDY(new Date().toISOString());
         let suspendedDate = participant[fieldMapping.suspendContact]
         return `<span><b>Suspended Contact </b></span> : From:  ${currentTimeStamp}  To:  ${suspendedDate}`
