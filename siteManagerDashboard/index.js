@@ -162,7 +162,6 @@ const renderCharts = async (siteKey) => {
     const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
 
     const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
-    console.log('activeCurrentWorkflow', filterWorkflowResults.stats)
     const passiveCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'passive')
     const totalCurrentWorkflow = filterTotalCurrentWorkflow(filterWorkflowResults.stats)
 
@@ -473,7 +472,6 @@ const filterTotalRecruitsFunnel = (data) => {
     return currentWorflowObj;
 }
 
-//486306141 854703046
 
 const filterCurrentWorkflow = (data, recruit) => {
     let recruitType = fieldMapping[recruit]
