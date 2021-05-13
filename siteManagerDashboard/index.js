@@ -472,6 +472,7 @@ const filterTotalRecruitsFunnel = (data) => {
     return currentWorflowObj;
 }
 
+
 const filterCurrentWorkflow = (data, recruit) => {
     let recruitType = fieldMapping[recruit]
     let currentWorflowObj = {}
@@ -481,7 +482,7 @@ const filterCurrentWorkflow = (data, recruit) => {
     let submittedProfile = data.filter(i =>
         (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout)))
     let verification = data.filter(i =>
-        (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
+        (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
     else currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
@@ -513,7 +514,7 @@ const filterTotalCurrentWorkflow = (data) => {
     let submittedProfile = data.filter(i =>
         ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout)))
     let verification = data.filter(i =>
-    ((i.recruitType === fieldMapping.active || fieldMapping.passive) && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)
+    ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)
         && (i.recruitType !== fieldMapping.inactive)))
     currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
