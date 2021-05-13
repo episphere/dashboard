@@ -162,6 +162,7 @@ const renderCharts = async (siteKey) => {
     const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
 
     const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
+    console.log('activeCurrentWorkflow', filterWorkflowResults.stats)
     const passiveCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'passive')
     const totalCurrentWorkflow = filterTotalCurrentWorkflow(filterWorkflowResults.stats)
 
@@ -472,6 +473,8 @@ const filterTotalRecruitsFunnel = (data) => {
     return currentWorflowObj;
 }
 
+//486306141 854703046
+
 const filterCurrentWorkflow = (data, recruit) => {
     let recruitType = fieldMapping[recruit]
     let currentWorflowObj = {}
@@ -481,7 +484,7 @@ const filterCurrentWorkflow = (data, recruit) => {
     let submittedProfile = data.filter(i =>
         (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout)))
     let verification = data.filter(i =>
-        (i.recruitType === recruitType && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
+        (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
     else currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
