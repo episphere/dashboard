@@ -156,7 +156,6 @@ const renderCharts = async (siteKey) => {
 
     const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
     const recruitsCount = filterRecruits(recruitsCountResults.stats);
-
     const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active', recruitsCount.activeCount)
     const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive', recruitsCount.passiveCount)
     const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
@@ -164,13 +163,10 @@ const renderCharts = async (siteKey) => {
     const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
     const passiveCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'passive')
     const totalCurrentWorkflow = filterTotalCurrentWorkflow(filterWorkflowResults.stats)
-
     const filterVerificationResults = await fetchStats(siteKey, 'participants_verification');
-
     const activeVerificationStatus = filterVerification(filterVerificationResults.stats, 'active')
     const passiveVerificationStatus = filterVerification(filterVerificationResults.stats, 'passive')
     const denominatorVerificationStatus = filterDenominatorVerificationStatus(filterWorkflowResults.stats)
-
     const participantsGenderMetric = await fetchStats(siteKey, 'sex');
     const participantsRaceMetric = await fetchStats(siteKey, 'race');
     const participantsAgeMetric = await fetchStats(siteKey, 'age');
@@ -246,6 +242,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
             if (sitekeyName === 'Filter by Site' || sitekeyName === tempSiteName) {
                 a.innerHTML = e.target.textContent;
                 const t = getDataAttributes(e.target)
+                console.log('t.sitekey', t.sitekey)
                 reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, recruitsCountResults);
             }
         })
@@ -572,14 +569,17 @@ const filterDenominatorVerificationStatus = (data) => {
 
 const filterRecruits = (data) => {
     let currentObj = { 'activeCount': 0, 'passiveCount': 0 };
+    let activeCount = 0;
+    let passiveCount = 0;
     data.forEach((i) => {
-        i.recruitType === fieldMapping.active ?
-            currentObj.activeCount = i.counter
-            :
-            currentObj.passiveCount = i.counter;
+        if (i.recruitType === fieldMapping.active) {
+            activeCount = i.counter + activeCount
+            currentObj.activeCount = activeCount
+        } else if (i.recruitType === fieldMapping.passive) {
+            passiveCount = i.counter + passiveCount
+            currentObj.passiveCount = passiveCount;
+        }
     })
-
-
     return currentObj;
 }
 
