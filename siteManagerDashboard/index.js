@@ -163,12 +163,10 @@ const renderCharts = async (siteKey) => {
     const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
     const passiveCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'passive')
     const totalCurrentWorkflow = filterTotalCurrentWorkflow(filterWorkflowResults.stats)
-   
     const filterVerificationResults = await fetchStats(siteKey, 'participants_verification');
     const activeVerificationStatus = filterVerification(filterVerificationResults.stats, 'active')
     const passiveVerificationStatus = filterVerification(filterVerificationResults.stats, 'passive')
     const denominatorVerificationStatus = filterDenominatorVerificationStatus(filterWorkflowResults.stats)
-    console.log('activeCurrentWorkflow', activeVerificationStatus)
     const participantsGenderMetric = await fetchStats(siteKey, 'sex');
     const participantsRaceMetric = await fetchStats(siteKey, 'race');
     const participantsAgeMetric = await fetchStats(siteKey, 'age');
@@ -192,7 +190,7 @@ const renderCharts = async (siteKey) => {
         })
         if (dropDownstatusFlag === true) {
             let sitekeyName = 'Filter by Site';
-            siteSelectionRow.innerHTML = renderSiteKeyList();
+            siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
             mainContent.appendChild(siteSelectionRow);
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
                 filterVerificationResults.stats, recruitsCountResults.stats);
