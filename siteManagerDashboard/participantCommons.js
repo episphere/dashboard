@@ -184,7 +184,7 @@ const tableTemplate = (data, showButtons) => {
                ( template += `<td>${participant[x] ? 'Email' : ''}</td>` )
             : ((x === (fieldMapping.signinDate).toString()) || (x === (fieldMapping.userProfileDateTime).toString()) || (x === (fieldMapping.consentDate).toString())
              || (x === (fieldMapping.recruitmentDate).toString()) || (x === (fieldMapping.verficationDate).toString())) ? 
-               ( template += `<td>${participant[x] ? humanReadableMDYwithTime(participant[x]) : ''}</td>`) // human readable time date
+               ( template += `<td>${participant[x] ? new Date(participant[x]).toLocaleString() : ''}</td>`) // human readable time date
             : (x === (fieldMapping.verifiedFlag).toString()) ?
             (
                 (participant[x] === fieldMapping.notYetVerified) ?
