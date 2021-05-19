@@ -379,7 +379,6 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
             automargin: true,
             fixedrange: true
         },
-       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
     };
 
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -388,23 +387,23 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
 
 const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVerificationStatus, id) => {
     const notYetVerified =  activeVerificationStatus.notYetVerified 
-                            && ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
+                            ? ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
     const verified = activeVerificationStatus.verified 
-                        && ((activeVerificationStatus.verified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
+                        ? ((activeVerificationStatus.verified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
     const cannotBeVerified =  activeVerificationStatus.cannotBeVerified 
-                        && ((activeVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
+                        ? ((activeVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
     const duplicate = activeVerificationStatus.duplicate 
-                        && ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
+                        ? ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
     const outreachTimedOut = activeVerificationStatus.outreachTimedout 
-                        && ((activeVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1);
-
-    var data = [{
+                        ? ((activeVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
+                        console.log('values', notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut)
+    let data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
         labels: [ `Not Yet Verified: N=${activeVerificationStatus.notYetVerified} `, 
-                    `Verified: N=${activeVerificationStatus.verified}`, 
-                    `Cannot be Verified: N=${activeVerificationStatus.cannotBeVerified}`,
-                    `Duplicate: N=${activeVerificationStatus.duplicate}`, 
-                    `Outreach Maxed Out: N=${activeVerificationStatus.outreachTimedout}`],
+                    `Verified: N=${activeVerificationStatus.verified }`, 
+                    `Cannot be Verified: N=${activeVerificationStatus.cannotBeVerified }`,
+                    `Duplicate: N=${activeVerificationStatus.duplicate }`, 
+                    `Outreach Maxed Out: N=${activeVerificationStatus.outreachTimedout }`],
         hoverinfo: 'label+value',
         type: 'pie'
       }];
@@ -413,8 +412,11 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
-        title: 'Active Recruits Verification Status'
+        title: `Active Recruits Verification Status among those with <br> Profile Completed N=${denominatorVerificationStatus.activeDenominator}`,
+        yaxis: {
+            'title': 'National Emissions (Megatons CO2)'
+        },
+        text: 'among those with Profile Completed'
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -422,23 +424,23 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
 
   const renderPassiveVerificationStatus = (passiveVerificationStatus, denominatorVerificationStatus, id) => {
     const notYetVerified =  passiveVerificationStatus.notYetVerified 
-                            && ((passiveVerificationStatus.notYetVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
+                            ? ((passiveVerificationStatus.notYetVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1) : 0
     const verified = passiveVerificationStatus.verified 
-                        && ((passiveVerificationStatus.verified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);            
+                        ? ((passiveVerificationStatus.verified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1) : 0           
     const cannotBeVerified =  passiveVerificationStatus.cannotBeVerified 
-                        && ((passiveVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
+                        ? ((passiveVerificationStatus.cannotBeVerified)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1) : 0
     const duplicate = passiveVerificationStatus.duplicate 
-                        && ((passiveVerificationStatus.duplicate)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
+                        ? ((passiveVerificationStatus.duplicate)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1) : 0
     const outreachTimedOut = passiveVerificationStatus.outreachTimedout 
-                        && ((passiveVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1);
-    var data = [{
+                        ? ((passiveVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.passiveDenominator)*100).toFixed(1) : 0
+    let data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
 
-        labels: [ `Not Yet Verified: N=${passiveVerificationStatus.notYetVerified}`, 
+        labels: [ `Not Yet Verified: N=${passiveVerificationStatus.notYetVerified }`, 
                 `Verified: N=${passiveVerificationStatus.verified}`, 
                 `Cannot be Verified: N=${passiveVerificationStatus.cannotBeVerified}`,
                 `Duplicate: N=${passiveVerificationStatus.duplicate}`, 
-                `Outreach Maxed Out: N=${passiveVerificationStatus.outreachTimedout}`],
+                `Outreach Maxed Out: N=${passiveVerificationStatus.outreachTimedout }`],
         hoverinfo: 'label+value',
        // textinfo: 'value',
         type: 'pie'
@@ -448,8 +450,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-       // colorway: ['#7f7fcc', '#0C1368', '#525DE9', '#008ECC'],
-        title: 'Passive Recruits Verification Status'
+        title: `Passive Recruits Verification Status among those with <br> Profile Completed N=${denominatorVerificationStatus.passiveDenominator}`
     };
       
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
