@@ -396,7 +396,6 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
                         ? ((activeVerificationStatus.duplicate)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
     const outreachTimedOut = activeVerificationStatus.outreachTimedout 
                         ? ((activeVerificationStatus.outreachTimedout)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
-                        console.log('values', notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut)
     let data = [{
         values: [notYetVerified, verified, cannotBeVerified, duplicate, outreachTimedOut],
         labels: [ `Not Yet Verified: N=${activeVerificationStatus.notYetVerified} `, 
