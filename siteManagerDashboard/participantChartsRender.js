@@ -116,21 +116,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    const row3 = document.createElement('div');
    row3.classList = ['row'];
 
-   let stackedBarChart = document.createElement('div');
-   stackedBarChart.classList = ['col-lg-12 charts'];
-
-   let subStackedBarChart = document.createElement('div');
-   subStackedBarChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subStackedBarChart.setAttribute('id', 'metrics');
-   stackedBarChart.appendChild(subStackedBarChart);
-
-   row3.appendChild(stackedBarChart);
-
-   mainContent.appendChild(row3); // Misc.
-
-   const row4 = document.createElement('div');
-   row4.classList = ['row'];
-
    let pieChart = document.createElement('div');
    pieChart.classList = ['col-lg-4 charts'];
 
@@ -139,7 +124,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subPieChart.setAttribute('id', 'activeVerificationStatus');
    pieChart.appendChild(subPieChart);
   
-
    let pieChart1 = document.createElement('div');
    pieChart1.classList = ['col-lg-4 charts'];
 
@@ -157,14 +141,51 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    placeHolder.appendChild(subPlaceHolder);
 
 
-   row4.appendChild(pieChart);
-   row4.appendChild(pieChart1);
-   row4.appendChild(placeHolder);
+   row3.appendChild(pieChart);
+   row3.appendChild(pieChart1);
+   row3.appendChild(placeHolder);
+
+   mainContent.appendChild(row3); // Misc.
+
+   const row4 = document.createElement('div');
+   row4.classList = ['row'];
+
+   let pieChartAge = document.createElement('div');
+   pieChartAge.classList = ['col-lg-4 charts'];
+
+   let subPieChartAge = document.createElement('div');
+   subPieChartAge.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartAge.setAttribute('id', 'ageMetrics');
+   pieChartAge.appendChild(subPieChartAge);
+  
+   let pieChartRace = document.createElement('div');
+   pieChartRace.classList = ['col-lg-4 charts'];
+
+   let subPieChartRace = document.createElement('div');
+   subPieChartRace.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartRace.setAttribute('id', 'raceMetrics');
+   pieChartRace.appendChild(subPieChartRace);
+
+
+   let pieChartSex = document.createElement('div');
+   pieChartSex.classList = ['col-lg-4 charts'];
+   let subPieChartSex = document.createElement('div');
+   subPieChartSex.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartSex.setAttribute('id', 'sexMetrics');
+   pieChartSex.appendChild(subPieChartSex);
+
+
+   row4.appendChild(pieChartAge);
+   row4.appendChild(pieChartRace);
+   row4.appendChild(pieChartSex);
 
    mainContent.appendChild(row4); // Misc.
 
 
-   renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
+   //renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
+   renderAgeMetrics(participantsAgeMetric, 'ageMetrics');
+   renderRaceMetrics(participantsRaceMetric, 'raceMetrics');
+   renderSexMetrics(participantsGenderMetric, 'sexMetrics');
 
    renderActiveFunnelChart(activeRecruitsFunnel, 'funnelChart')
    renderActiveBarChart(activeCurrentWorkflow, 'barChart');
@@ -385,6 +406,86 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
 
 }
 
+const renderAgeMetrics = (ageMetrics, id) => {
+    const participantAgeRangeResponse1 = ageMetrics['40-45'];
+    const participantAgeRangeResponse2 = ageMetrics['46-50'];
+    const participantAgeRangeResponse3 = ageMetrics['51-55'];
+    const participantAgeRangeResponse4 = ageMetrics['56-60'];
+    const participantAgeRangeResponse5 = ageMetrics['61-65'];
+
+
+    let data = [{
+        values: [participantAgeRangeResponse1, participantAgeRangeResponse2, participantAgeRangeResponse3, participantAgeRangeResponse4, participantAgeRangeResponse5],
+        labels: [ `40-45 `, 
+                    `46-50`, 
+                    `51-55`,
+                    `56-60`, 
+                    `61-65`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+      
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Age Metrics`
+    };
+
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderRaceMetrics = (raceMetrics, id) => {
+    const participantRaceResponse1 = raceMetrics['white'];
+    const participantRaceResponse2 = raceMetrics['other'];
+    const participantRaceResponse3 = raceMetrics['unavailable'];
+
+    let data = [{
+        values: [participantRaceResponse1, participantRaceResponse2, participantRaceResponse3],
+        labels: [ `white`, 
+                    `other`, 
+                    `unavailable`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+      
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Race Metrics`
+    };
+
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderSexMetrics = (sexMetrics, id) => {
+    const participantSexResponse1 = sexMetrics['male'];
+    const participantSexResponse2 = sexMetrics['female'];
+    const participantSexResponse3 = sexMetrics['intersex'];
+    const participantSexResponse4 = sexMetrics['unavailable'];
+
+    let data = [{
+        values: [participantSexResponse1, participantSexResponse2, participantSexResponse3, participantSexResponse4],
+        labels: [   `male`, 
+                    `female`, 
+                    `intersex`,
+                    `unavailable`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+      
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Sex Metrics`
+    };
+
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+
 const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVerificationStatus, id) => {
     const notYetVerified =  activeVerificationStatus.notYetVerified 
                             ? ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
@@ -412,9 +513,6 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         title: `Active Recruits Verification Status among those with <br> Profile Completed N=${denominatorVerificationStatus.activeDenominator}`,
-        yaxis: {
-            'title': 'National Emissions (Megatons CO2)'
-        },
         text: 'among those with Profile Completed'
     };
 
