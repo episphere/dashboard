@@ -198,12 +198,22 @@ export default
     // "none": 807835037, 
     // "other": 116984232,
     
+    "recruitmentType": 512820379,
     'active': 486306141,
     'passive': 854703046,
     'inactive': 180583933,
     'recruitmentDate': 471593703,
-
+    'signedInFlag': 230663853,
     'signinDate': 335767902,
+    'pinEntered': 379080287,
+    'noPin': 828729648,
+    'duplicateType': 148197146,
+    'updateRecruitType': 793822265,
+    'signInMechansim': 995036844,
+    'accountEmail': 421823980,
+    'accountPhone': 348474836,
+    'accountName': 756862764,
+
 
     'refusalOptions': 685002411,
 
@@ -264,6 +274,15 @@ export default
     "5": 241236037,
     "6": 987563196,
 
+    208325815 :  "No Refusal",
+    622008261 : "Refused some activities",  
+    134659217 : "Refused all future activities",
+    872012139 : "Revoked HIPAA only",
+    854021266 : "Withdrew Consent",
+    241236037 :  "Destroy Data",
+    987563196 : "Deceased",
+
+
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
     "refusedAll": 134659217,
@@ -272,13 +291,6 @@ export default
     "destroyData": 241236037,
     "deceased": 987563196,
 
-    208325815 :  "No Refusal",
-    622008261 : "Refused some activities",  
-    134659217 : "Refused all future activities",
-    872012139 : "Revoked HIPAA only",
-    854021266 : "Withdrew Consent",
-    241236037 :  "Destroy Data",
-    987563196 : "Deceased",
 
     'sourceOfDeath': 764403541,
     'dateOfDeath': 123868967,

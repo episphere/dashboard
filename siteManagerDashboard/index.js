@@ -299,130 +299,66 @@ export const animation = (status) => {
 
 
 const filterGenderMetrics = (participantsGenderMetrics) => {
-
-    let genderObject = { female: 0, male: 0, intersex: 0, unavailable: 0 }
+    let genderObject = { female: 0, male: 0, intersex: 0, unknown: 0 }
     participantsGenderMetrics && participantsGenderMetrics.forEach(i => {
-        (parseInt(i.sex) === fieldMapping['male']) ?
-            genderObject['male'] += 1
-            :
-            (parseInt(i.sex) === fieldMapping['female']) ?
+        switch (parseInt(i.sex)) {
+            case fieldMapping['male']:
+            case fieldMapping['maleKP']:
+            case fieldMapping['maleSHF']:
+                genderObject['male'] += 1
+            case fieldMapping['female']:
+            case fieldMapping['femaleKP']:
+            case fieldMapping['femaleSHF']:
                 genderObject['female'] += 1
-                :
-                (parseInt(i.sex) === fieldMapping['intersex']) ?
-                    genderObject['intersex'] += 1
-                    :
-                    (parseInt(i.sex) === fieldMapping['femaleKP']) ?
-                    genderObject['female'] += 1
-                        :
-                        (parseInt(i.sex) === fieldMapping['maleKP']) ?
-                        genderObject['male'] += 1
-                        :
-                            (parseInt(i.sex) === fieldMapping['neitherMFKP']) ?
-                            genderObject['intersex'] += 1
-                            :
-                                (parseInt(i.sex) === fieldMapping['otherKP']) ?
-                                genderObject['intersex'] += 1
-                                :
-                                    (parseInt(i.sex) === fieldMapping['unavailableKP']) ?
-                                    genderObject['unavailable'] += 1
-                                    :
-                                        (parseInt(i.sex) === fieldMapping['femaleSHF']) ?
-                                        genderObject['female'] += 1
-                                        :
-                                            (parseInt(i.sex) === fieldMapping['maleSHF']) ?
-                                            genderObject['male'] += 1
-                                            :
-                                                (parseInt(i.sex) === fieldMapping['unavailableSHF']) ?
-                                                genderObject['unavailable'] += 1
-                                                :
-                                                genderObject['unavailable'] += 1
-
-    })
-
+            case fieldMapping['intersex']:
+            case fieldMapping['neitherMFKP']:
+            case fieldMapping['otherKP']:
+                genderObject['intersex'] += 1
+            case fieldMapping['unavailableKP']:
+            case fieldMapping['unavailableSHF']:
+            case fieldMapping['unknow']:
+                genderObject['unknown'] += 1
+    }
+})
     return genderObject;
-
 }
 
 
 const filterRaceMetrics = (participantsRaceMetrics) => {
     let raceObject = { white: 0, other: 0, unavailable: 0 }
     participantsRaceMetrics && participantsRaceMetrics.forEach(i => {
-        (parseInt(i.race) === fieldMapping['africanAmericanSH']) ?
-            raceObject['other'] += 1
-            :
-            (parseInt(i.race) === fieldMapping['americanIndianSH']) ?
+        switch (parseInt(i.race)) {
+            case fieldMapping['africanAmericanSH']:
+            case fieldMapping['americanIndianSH']:
+            case fieldMapping['hispanicLBSH']:
+            case fieldMapping['hispanicLDSH']:
+            case fieldMapping['hispanicLWSH']:
+            case fieldMapping['nativeHawaiianSH']:
+            case fieldMapping['nativeHawaiianPISH']:
+            case fieldMapping['pacificIslanderSH']:
+            case fieldMapping['blankSH']:
+            case fieldMapping['declinedSH']:
+            case fieldMapping['africanAmericanBLHHF']:
+            case fieldMapping['africanAmericanBNLHHF']:
+            case fieldMapping['africanAmericanBEUHF']:
+            case fieldMapping['otherHLHF']:
+            case fieldMapping['otherNHLHF']:
+            case fieldMapping['otherEUHF']:
+            case fieldMapping['whiteHLHF']:
+            case fieldMapping['whiteEUHF']:
+            case fieldMapping['unaviableHLHF']:
+            case fieldMapping['other']:
                 raceObject['other'] += 1
-                :
-                (parseInt(i.race) === fieldMapping['whiteSH']) ?
-                    raceObject['white'] += 1
-                    :
-                    (parseInt(i.race) === fieldMapping['hispanicLBSH']) ?
-                        raceObject['other'] += 1
-                        :
-                        (parseInt(i.race) === fieldMapping['hispanicLDSH']) ?
-                            raceObject['other'] += 1
-                            :
-                            (parseInt(i.race) === fieldMapping['hispanicLWSH']) ?
-                                raceObject['other'] += 1
-                                :
-                                (parseInt(i.race) === fieldMapping['nativeHawaiianSH']) ?
-                                    raceObject['other'] += 1
-                                    :
-                                    (parseInt(i.race) === fieldMapping['nativeHawaiianPISH']) ?
-                                        raceObject['other'] += 1
-                                        :
-                                        (parseInt(i.race) === fieldMapping['pacificIslanderSH']) ?
-                                            raceObject['other'] += 1
-                                            :
-                                            (parseInt(i.race) === fieldMapping['blankSH']) ?
-                                            raceObject['other'] += 1
-                                                :
-                                                (parseInt(i.race) === fieldMapping['declinedSH']) ?
-                                                raceObject['other'] += 1
-                                                    :
-                                                    (parseInt(i.race) === fieldMapping['africanAmericanBLHHF']) ? // hf
-                                                    raceObject['other'] += 1
-                                                        :
-                                                        (parseInt(i.race) === fieldMapping['africanAmericanBNLHHF']) ?
-                                                        raceObject['other'] += 1
-                                                            :
-                                                            (parseInt(i.race) === fieldMapping['africanAmericanBEUHF']) ?
-                                                            raceObject['other'] += 1
-                                                                :
-                                                                (parseInt(i.race) === fieldMapping['whiteHLHF']) ?
-                                                                raceObject['other'] += 1
-                                                                    :
-                                                                    (parseInt(i.race) === fieldMapping['whiteNHHF']) ?
-                                                                    raceObject['white'] += 1
-                                                                        :
-                                                                        (parseInt(i.race) === fieldMapping['whiteEUHF']) ?
-                                                                        raceObject['other'] += 1
-                                                                            :
-                                                                            (parseInt(i.race) === fieldMapping['otherHLHF']) ?
-                                                                            raceObject['other'] += 1
-                                                                                :      (parseInt(i.race) === fieldMapping['otherNHLHF']) ?
-                                                                                raceObject['other'] += 1
-                                                                                    :
-                                                                                    (parseInt(i.race) === fieldMapping['otherEUHF']) ?
-                                                                                    raceObject['other'] += 1
-                                                                                        :
-                                                                                        (parseInt(i.race) === fieldMapping['unaviableHLHF']) ?
-                                                                                        raceObject['other'] += 1
-                                                                                            :
-                                                                                            (parseInt(i.race) === fieldMapping['unaviableNHLHF']) ?
-                                                                                            raceObject['unavailable'] += 1
-                                                                                                :
-                                                                                                (parseInt(i.race) === fieldMapping['unaviableEUHF']) ?
-                                                                                                raceObject['unavailable'] += 1
-                                                                                                    :
-                                                                                                    (parseInt(i.race) === fieldMapping['white']) ?
-                                                                                                    raceObject['white'] += 1
-                                                                                                    :
-                                                                                                        (parseInt(i.race) === fieldMapping['other']) ?
-                                                                                                        raceObject['other'] += 1
-                                                                                                        :
-                                                                                                        raceObject['unavailable'] += 1
-            })
+            case fieldMapping['white']:
+            case fieldMapping['whiteSH']:
+            case fieldMapping['whiteNHHF']:
+                raceObject['white'] += 1
+            case fieldMapping['unaviableNHLHF']:
+            case fieldMapping['unaviableEUHF']:
+            case fieldMapping['unavailable']:
+                raceObject['unavailable'] += 1
+    }
+})
         return raceObject;
 
 }
@@ -767,6 +703,7 @@ const renderParticipantsNotVerified = async () => {
         document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
+        console.log('filterdata(response.data)', filterdata(response.data))
         mainContent.innerHTML = renderTable(filterdata(response.data));
         addEventFilterData(filterdata(response.data), true);
         renderData(filterdata(response.data), true);

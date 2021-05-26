@@ -14,12 +14,20 @@ export const renderTable = (data, source) => {
     });
     array = array.filter((item, index) => array.indexOf(item) === index);
     array = array.filter( i => 
-        (i !== '142654897' && i !== '266600170' && i !== '303552867' && i !== '452166062' && i !== '471168198'
-            && i !== '496823485' && i !== '650465111' && i !== '996038075' && i !== '8272206437' && i !== 'state' 
-            && i !== 'D_965707586' && i !== 'D_716117818' && i !== 'query' && i !== 'D_726699695' && i !== 'D_716117817' 
-            && i !== 'D_745268907' && i !== '506826178' && i !== 'Questionnaire' && i !== 'state.875549268' && i!== 'pin'
-            && i !== '436680969' && i !== '827220437' && i !== '231676651' && i !== '399159511' && i !== '736251808' 
-            && i !== '544150384' && i !== '564964481' && i !== '795827569') )  // filter out columns with json response & duplicate columms 
+        ( i === 'Connect_ID' || i === 'pin' || i === 'token' || i == fieldMapping.recruitmentType || i == fieldMapping.recruitmentDate ||
+          i == fieldMapping.signedInFlag || i == fieldMapping.signinDate || i == fieldMapping.pinEntered || i == fieldMapping.noPin ||
+          i == fieldMapping.consentFlag || i == fieldMapping.consentDate || i == fieldMapping.consentVersion || i == fieldMapping.hippaFlag ||
+          i == fieldMapping.hippaDate || i == fieldMapping.hippaVersion || i == fieldMapping.userProfileFlag  || i == fieldMapping.userProfileDateTime ||
+          i == fieldMapping.verifiedFlag || i == fieldMapping.verficationDate || i == fieldMapping.signInMechansim || i == fieldMapping.accountName ||
+          i ==  fieldMapping.accountPhone || i == fieldMapping.accountEmail || i == fieldMapping.prefName || i == fieldMapping.address1 ||
+          i == fieldMapping.address2 || i == fieldMapping.city || i == fieldMapping.state || i == fieldMapping.zip || i == fieldMapping.prefEmail ||
+          i == fieldMapping.email || i == fieldMapping.email1 || i == fieldMapping.email2 || i == fieldMapping.cellPhone || i == fieldMapping.homePhone ||
+          i == fieldMapping.otherPhone || i == fieldMapping.refusedAllFutureActivities || i == fieldMapping.revokeHIPAA || i == fieldMapping.withdrawConsent || 
+          i == fieldMapping.revokeHIPAA || i == fieldMapping.destroyData || i == fieldMapping.participantDeceased ||  
+          i == fieldMapping.dateOfDeath || i == fieldMapping.suspendContact
+    ))
+
+
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     
