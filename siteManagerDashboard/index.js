@@ -297,60 +297,69 @@ export const animation = (status) => {
     if (!status && document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
 
-const filterGenderMetrics = (participantsGenderMetrics) => {
 
+const filterGenderMetrics = (participantsGenderMetrics) => {
     let genderObject = { female: 0, male: 0, intersex: 0, unknown: 0 }
     participantsGenderMetrics && participantsGenderMetrics.forEach(i => {
-        (parseInt(i.sex) === fieldMapping['male']) ?
-            genderObject['male'] = parseInt(i.sexCount)
-            :
-            (parseInt(i.sex) === fieldMapping['female']) ?
-                genderObject['female'] = parseInt(i.sexCount)
-                :
-                (parseInt(i.sex) === fieldMapping['intersex']) ?
-                    genderObject['intersex'] = parseInt(i.sexCount)
-                    :
-                    genderObject['unknown'] = parseInt(i.sexCount)
-
+        switch (parseInt(i.sex)) {
+            case fieldMapping['male']:
+            case fieldMapping['maleKP']:
+            case fieldMapping['maleSHF']:
+                genderObject['male'] += 1
+            case fieldMapping['female']:
+            case fieldMapping['femaleKP']:
+            case fieldMapping['femaleSHF']:
+                genderObject['female'] += 1
+            case fieldMapping['intersex']:
+            case fieldMapping['neitherMFKP']:
+            case fieldMapping['otherKP']:
+                genderObject['intersex'] += 1
+            case fieldMapping['unavailableKP']:
+            case fieldMapping['unavailableSHF']:
+            case fieldMapping['unknow']:
+                genderObject['unknown'] += 1
     }
-    )
-
+})
     return genderObject;
-
 }
 
 
 const filterRaceMetrics = (participantsRaceMetrics) => {
-
-    let raceObject = { americanIndian: 0, asian: 0, africanAmerican: 0, latino: 0, nativeHawaiian: 0, middleEastern: 0, white: 0, none: 0, other: 0 }
+    let raceObject = { white: 0, other: 0, unavailable: 0 }
     participantsRaceMetrics && participantsRaceMetrics.forEach(i => {
-        (parseInt(i.race) === fieldMapping['americanIndian']) ?
-            raceObject['americanIndian'] = parseInt(i.raceCount)
-            :
-            (parseInt(i.race) === fieldMapping['asian']) ?
-                raceObject['asian'] = parseInt(i.raceCount)
-                :
-                (parseInt(i.race) === fieldMapping['africanAmerican']) ?
-                    raceObject['africanAmerican'] = parseInt(i.raceCount)
-                    :
-                    (parseInt(i.race) === fieldMapping['latino']) ?
-                        raceObject['latino'] = parseInt(i.raceCount)
-                        :
-                        (parseInt(i.race) === fieldMapping['middleEastern']) ?
-                            raceObject['middleEastern'] = parseInt(i.raceCount)
-                            :
-                            (parseInt(i.race) === fieldMapping['nativeHawaiian']) ?
-                                raceObject['nativeHawaiian'] = parseInt(i.raceCount)
-                                :
-                                (parseInt(i.race) === fieldMapping['white']) ?
-                                    raceObject['white'] = parseInt(i.raceCount)
-                                    :
-                                    (parseInt(i.race) === fieldMapping['none']) ?
-                                        raceObject['none'] = parseInt(i.raceCount)
-                                        :
-                                        raceObject['other'] = parseInt(i.raceCount)
-    })
-    return raceObject;
+        switch (parseInt(i.race)) {
+            case fieldMapping['africanAmericanSH']:
+            case fieldMapping['americanIndianSH']:
+            case fieldMapping['hispanicLBSH']:
+            case fieldMapping['hispanicLDSH']:
+            case fieldMapping['hispanicLWSH']:
+            case fieldMapping['nativeHawaiianSH']:
+            case fieldMapping['nativeHawaiianPISH']:
+            case fieldMapping['pacificIslanderSH']:
+            case fieldMapping['blankSH']:
+            case fieldMapping['declinedSH']:
+            case fieldMapping['africanAmericanBLHHF']:
+            case fieldMapping['africanAmericanBNLHHF']:
+            case fieldMapping['africanAmericanBEUHF']:
+            case fieldMapping['otherHLHF']:
+            case fieldMapping['otherNHLHF']:
+            case fieldMapping['otherEUHF']:
+            case fieldMapping['whiteHLHF']:
+            case fieldMapping['whiteEUHF']:
+            case fieldMapping['unaviableHLHF']:
+            case fieldMapping['other']:
+                raceObject['other'] += 1
+            case fieldMapping['white']:
+            case fieldMapping['whiteSH']:
+            case fieldMapping['whiteNHHF']:
+                raceObject['white'] += 1
+            case fieldMapping['unaviableNHLHF']:
+            case fieldMapping['unaviableEUHF']:
+            case fieldMapping['unavailable']:
+                raceObject['unavailable'] += 1
+    }
+})
+        return raceObject;
 
 }
 
@@ -694,6 +703,7 @@ const renderParticipantsNotVerified = async () => {
         document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
+        console.log('filterdata(response.data)', filterdata(response.data))
         mainContent.innerHTML = renderTable(filterdata(response.data));
         addEventFilterData(filterdata(response.data), true);
         renderData(filterdata(response.data), true);

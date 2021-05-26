@@ -116,21 +116,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    const row3 = document.createElement('div');
    row3.classList = ['row'];
 
-   let stackedBarChart = document.createElement('div');
-   stackedBarChart.classList = ['col-lg-12 charts'];
-
-   let subStackedBarChart = document.createElement('div');
-   subStackedBarChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subStackedBarChart.setAttribute('id', 'metrics');
-   stackedBarChart.appendChild(subStackedBarChart);
-
-   row3.appendChild(stackedBarChart);
-
-   mainContent.appendChild(row3); // Misc.
-
-   const row4 = document.createElement('div');
-   row4.classList = ['row'];
-
    let pieChart = document.createElement('div');
    pieChart.classList = ['col-lg-4 charts'];
 
@@ -139,7 +124,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subPieChart.setAttribute('id', 'activeVerificationStatus');
    pieChart.appendChild(subPieChart);
   
-
    let pieChart1 = document.createElement('div');
    pieChart1.classList = ['col-lg-4 charts'];
 
@@ -157,14 +141,51 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    placeHolder.appendChild(subPlaceHolder);
 
 
-   row4.appendChild(pieChart);
-   row4.appendChild(pieChart1);
-   row4.appendChild(placeHolder);
+   row3.appendChild(pieChart);
+   row3.appendChild(pieChart1);
+   row3.appendChild(placeHolder);
+
+   mainContent.appendChild(row3); // Misc.
+
+   const row4 = document.createElement('div');
+   row4.classList = ['row'];
+
+   let pieChartAge = document.createElement('div');
+   pieChartAge.classList = ['col-lg-4 charts'];
+
+   let subPieChartAge = document.createElement('div');
+   subPieChartAge.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartAge.setAttribute('id', 'ageMetrics');
+   pieChartAge.appendChild(subPieChartAge);
+  
+   let pieChartRace = document.createElement('div');
+   pieChartRace.classList = ['col-lg-4 charts'];
+
+   let subPieChartRace = document.createElement('div');
+   subPieChartRace.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartRace.setAttribute('id', 'raceMetrics');
+   pieChartRace.appendChild(subPieChartRace);
+
+
+   let pieChartSex = document.createElement('div');
+   pieChartSex.classList = ['col-lg-4 charts'];
+   let subPieChartSex = document.createElement('div');
+   subPieChartSex.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartSex.setAttribute('id', 'sexMetrics');
+   pieChartSex.appendChild(subPieChartSex);
+
+
+   row4.appendChild(pieChartAge);
+   row4.appendChild(pieChartRace);
+   row4.appendChild(pieChartSex);
 
    mainContent.appendChild(row4); // Misc.
 
 
-   renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
+   //renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
+   renderAgeMetrics(participantsAgeMetric, 'ageMetrics');
+   renderRaceMetrics(participantsRaceMetric, 'raceMetrics');
+   renderSexMetrics(participantsGenderMetric, 'sexMetrics');
 
    renderActiveFunnelChart(activeRecruitsFunnel, 'funnelChart')
    renderActiveBarChart(activeCurrentWorkflow, 'barChart');
@@ -385,6 +406,88 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
 
 }
 
+const renderAgeMetrics = (ageMetrics, id) => {
+    const participantAgeRangeResponse1 = ageMetrics['40-45'];
+    const participantAgeRangeResponse2 = ageMetrics['46-50'];
+    const participantAgeRangeResponse3 = ageMetrics['51-55'];
+    const participantAgeRangeResponse4 = ageMetrics['56-60'];
+    const participantAgeRangeResponse5 = ageMetrics['61-65'];
+    const totalParticipants = participantAgeRangeResponse1 + participantAgeRangeResponse2 + participantAgeRangeResponse3 + participantAgeRangeResponse4 + participantAgeRangeResponse5
+
+    let data = [{
+        values: [participantAgeRangeResponse1, participantAgeRangeResponse2, participantAgeRangeResponse3, participantAgeRangeResponse4, participantAgeRangeResponse5],
+        labels: [ `40-45: N = ${participantAgeRangeResponse1}`, 
+                    `46-50: N = ${participantAgeRangeResponse2}`, 
+                    `51-55: N = ${participantAgeRangeResponse3}`,
+                    `56-60: N = ${participantAgeRangeResponse4}`, 
+                    `61-65: N = ${participantAgeRangeResponse5}`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+      
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Age of Verified Participants N = ${totalParticipants}`
+    };
+
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderRaceMetrics = (raceMetrics, id) => {
+    const participantRaceResponse1 = raceMetrics['white'] !== undefined ? raceMetrics['white'] : 0
+    const participantRaceResponse2 = raceMetrics['other']  !== undefined ? raceMetrics['other'] : 0
+    const participantRaceResponse3 = raceMetrics['unavailable'] !== undefined ? raceMetrics['unavailable'] : 0
+    const totalParticipants = participantRaceResponse1 + participantRaceResponse2 + participantRaceResponse3
+
+    let data = [{
+        values: [participantRaceResponse1, participantRaceResponse2, participantRaceResponse3],
+        labels: [ `White/Non-Hispanic,: N=${participantRaceResponse1}`, 
+                    `Other: N=${participantRaceResponse2}`, 
+                    `Unavailable: N=${participantRaceResponse3}`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+      
+    const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Race/Ethnicity of Verified Participants N = ${totalParticipants}`
+    };
+
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderSexMetrics = (sexMetrics, id) => {
+    const participantSexResponse1 = sexMetrics['male'] !== undefined ? sexMetrics['male'] : 0
+    const participantSexResponse2 = sexMetrics['female'] !== undefined ? sexMetrics['female'] : 0
+    const participantSexResponse3 = sexMetrics['intersex'] !== undefined ? sexMetrics['intersex'] : 0
+    const participantSexResponse4 = sexMetrics['unavailable'] !== undefined ? sexMetrics['unavailable'] : 0
+    const totalParticipants = participantSexResponse1 + participantSexResponse2 + participantSexResponse3 + participantSexResponse4
+
+    let data = [{
+        values: [participantSexResponse1, participantSexResponse2, participantSexResponse3, participantSexResponse4],
+        labels: [   `Male: N=${participantSexResponse1}`, 
+                    `Female: N=${participantSexResponse2}`, 
+                    `Intersex or Other: N=${participantSexResponse3}`,
+                    `Unavailable: N=${participantSexResponse4}`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+      
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Sex of Verified Participants N = ${totalParticipants}`
+    };
+
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+
 const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVerificationStatus, id) => {
     const notYetVerified =  activeVerificationStatus.notYetVerified 
                             ? ((activeVerificationStatus.notYetVerified)/(denominatorVerificationStatus.activeDenominator)*100).toFixed(1) : 0
@@ -412,9 +515,6 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
         title: `Active Recruits Verification Status among those with <br> Profile Completed N=${denominatorVerificationStatus.activeDenominator}`,
-        yaxis: {
-            'title': 'National Emissions (Megatons CO2)'
-        },
         text: 'among those with Profile Completed'
     };
 
@@ -441,7 +541,6 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
                 `Duplicate: N=${passiveVerificationStatus.duplicate}`, 
                 `Outreach Maxed Out: N=${passiveVerificationStatus.outreachTimedout }`],
         hoverinfo: 'label+value',
-       // textinfo: 'value',
         type: 'pie'
       }];
 
@@ -454,253 +553,3 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
       
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
-
-const renderStackBarChart = (participantGenderResponse, participantRaceResponse, participantAgeRangeResponse, id) => {
-
-    const participantGenderResponseF = participantGenderResponse.female;
-    const participantGenderResponseM = participantGenderResponse.male;
-    const participantGenderResponseI = participantGenderResponse.intersex;
-    const participantGenderResponseU = participantGenderResponse.unknown;
- 
-    const totalGenderResponse = participantGenderResponseF + participantGenderResponseM + participantGenderResponseI + participantGenderResponseU
-
-    const participantRaceResponseAI = participantRaceResponse.americanIndian;
-    const participantRaceResponseA = participantRaceResponse.asian;
-    const participantRaceResponseAA = participantRaceResponse.africanAmerican;
-    const participantRaceResponseL = participantRaceResponse.latino;
-    const participantRaceResponseME = participantRaceResponse.middleEastern;
-    const participantRaceResponseNH = participantRaceResponse.nativeHawaiian;
-    const participantRaceResponseW = participantRaceResponse.white;
-    const participantRaceResponseO = participantRaceResponse.none;
-    const participantRaceResponseU = participantRaceResponse.other;
-        
-    const totalRaceResponse = participantRaceResponseAI + participantRaceResponseA + participantRaceResponseAA +
-                                participantRaceResponseL + participantRaceResponseME + participantRaceResponseNH +
-                            participantRaceResponseW + participantRaceResponseO + participantRaceResponseU
-                            
-
-    const participantAgeRangeResponse1 = participantAgeRangeResponse['40-45'];
-    const participantAgeRangeResponse2 = participantAgeRangeResponse['46-50'];
-    const participantAgeRangeResponse3 = participantAgeRangeResponse['51-55'];
-    const participantAgeRangeResponse4 = participantAgeRangeResponse['56-60'];
-    const participantAgeRangeResponse5 = participantAgeRangeResponse['61-65'];
-
-    const totalAgeRangeResponse = participantAgeRangeResponse1 + participantAgeRangeResponse2 + participantAgeRangeResponse3 + participantAgeRangeResponse4 + participantAgeRangeResponse5
-    const totalVerifiedParticipants = totalGenderResponse + totalRaceResponse + totalAgeRangeResponse
-
-    const genderPercent = Math.round((totalGenderResponse / totalVerifiedParticipants) * 100)
-    const racePercent = Math.round((totalRaceResponse / totalVerifiedParticipants) * 100)
-    const ageRangePercent = Math.round((totalAgeRangeResponse / totalVerifiedParticipants) * 100)
-
-
-    let ageTrace1 = {
-        y: ['Age'],
-        x: [participantAgeRangeResponse1],
-        type: 'bar',
-        name: '40-45',
-        text: `Total: ${ageRangePercent}%`,
-        orientation: 'h'
-    };
-
-    let ageTrace11 = {
-        y: ['Age'],
-        x: [participantAgeRangeResponse2],
-        type: 'bar',
-        name: '46-50',
-        text: `Total: ${ageRangePercent}%`,
-        orientation: 'h'
-    };
-
-    let ageTrace12 = {
-        y: ['Age'],
-        x: [participantAgeRangeResponse3],
-        type: 'bar',
-        name: '51-55',
-        text: `Total: ${ageRangePercent}%`,
-        orientation: 'h'
-    };
-
-    let ageTrace13 = {
-        y: ['Age'],
-        x: [participantAgeRangeResponse4],
-        type: 'bar',
-        name: '56-60',
-        text: `Total: ${ageRangePercent}%`,
-        orientation: 'h'
-    };
-
-    let ageTrace14 = {
-        y: ['Age'],
-        x: [participantAgeRangeResponse5],
-        type: 'bar',
-        name: '61-66',
-        text: `Total: ${ageRangePercent}%`,
-        orientation: 'h'
-    };
-
-    let raceTrace = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseAI],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'American Indian',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-    let raceTrace1 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseA],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'Asian',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-    let raceTrace2 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseAA],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'African American',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-    let raceTrace3 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseL],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'Latino',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-    let raceTrace4 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseME],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'Middle Eastern',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-    let raceTrace5 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseNH],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'Native Hawaiian',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-
-
-    let raceTrace6 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseW],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'White',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-
-    let raceTrace7 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseO],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'Other',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-    let raceTrace8 = {
-        y: ['Race Binary'],
-        x: [participantRaceResponseU],
-        xaxis: 'x2',
-        yaxis: 'y2',
-        type: 'bar',
-        name: 'Unknown',
-        text: `Total: ${racePercent}%`,
-        orientation: 'h'
-    };
-
-    let genderTrace = {
-        y: ['Sex'],
-        x: [participantGenderResponseF],
-        xaxis: 'x3',
-        yaxis: 'y3',
-        type: 'bar',
-        name: 'Female',
-        text: `Total: ${genderPercent}%`,
-        orientation: 'h'
-    };
-
-    let genderTrace2 = {
-        y: ['Sex'],
-        x: [participantGenderResponseM],
-        xaxis: 'x3',
-        yaxis: 'y3',
-        type: 'bar',
-        name: 'Male',
-        text: `Total: ${genderPercent}%`,
-        orientation: 'h'
-    };
-
-    let genderTrace3 = {
-        y: ['Sex'],
-        x: [participantGenderResponseI],
-        xaxis: 'x3',
-        yaxis: 'y3',
-        type: 'bar',
-        name: 'Intersex',
-        text: `Total: ${genderPercent}%`,
-        orientation: 'h'
-    };
-
-    let genderTrace4 = {
-        y: ['Sex'],
-        x: [participantGenderResponseU],
-        xaxis: 'x3',
-        yaxis: 'y3',
-        type: 'bar',
-        name: 'Unknown',
-        text: `Total: ${genderPercent}%`,
-        orientation: 'h'
-    };
-
-    let data = [
-        ageTrace1, ageTrace11, ageTrace12, ageTrace13, ageTrace14,
-        raceTrace, raceTrace1, raceTrace2, raceTrace3, raceTrace4, raceTrace5, raceTrace6, raceTrace7, raceTrace8,
-        genderTrace, genderTrace2, genderTrace3, genderTrace4
-    ];
-
-
-    let layout = {
-        barmode: 'stack',
-        showlegend: false,
-        paper_bgcolor: 'rgba(0,0,0,0)',
-        plot_bgcolor: 'rgba(0,0,0,0)',
-
-        autosize: true,
-        width: 1750,
-        height: 350,
-        title: 'Demographics of Verified Participants',
-        yaxis: { domain: [0, 0.266], automargin: true },
-        xaxis: { showgrid: false, automargin: true, showticklabels: false, title: { text: `Total number of verified participants: ${totalVerifiedParticipants}` } },
-        xaxis3: { anchor: 'y3', showticklabels: false, automargin: true },
-        xaxis2: { anchor: 'y2', showticklabels: false, automargin: true },
-        yaxis2: { domain: [0.366, 0.633], automargin: true },
-        yaxis3: { domain: [0.733, 1], automargin: true },
-
-    };
-
-    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
-}
