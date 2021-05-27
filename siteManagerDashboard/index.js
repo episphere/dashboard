@@ -282,6 +282,7 @@ export const participantVerification = async (token, verified, siteKey) => {
 }
 
 const authorize = async (siteKey) => {
+    console.log(siteKey)
     const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
         method: 'GET',
         headers: {
