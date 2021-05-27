@@ -153,7 +153,7 @@ export const addEventSearchConnectId = () => {
         const connectId = document.getElementById('connectId').value;
         let query = '';
         if(connectId) query += `connectId=${connectId}`;
-        performSearch(query,"search-connect-id-failed");
+        performSearch(query, "allResults", "search-connect-id-failed");
     })
 };
 

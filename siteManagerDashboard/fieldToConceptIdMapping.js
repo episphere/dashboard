@@ -147,31 +147,73 @@ export default
     "ageRange4": 636706443,
     "ageRange5": 771230670,
 
+    // de-identified
     "female": 576796184,
     "male": 654207589,
     "intersex": 830573274,
     "unknow": 178420302,
 
-    // "white": 768826601,
-    // "other": 438483626,
-    // "unavailable": 178420302,
+    // de-identified
+    "white": 768826601,
+    "other": 181769837,
+    "unavailable": 178420302,
 
-    "americanIndian": 583826374, 
-    "asian": 636411467, 
-    "africanAmerican": 458435048, 
-    "latino": 706998638, 
-    "middleEastern": 973565052, 
-    "nativeHawaiian": 586825330,
-    "white": 412790539, 
-    "none": 807835037, 
-    "other": 116984232,
+
+    // sanford health
+	"africanAmericanSH": 232334767,
+	"americanIndianSH": 211228524,
+	"asianSH": 308427446,
+	"whiteSH": 635279662,
+	"hispanicLBSH": 432722256,
+	"hispanicLDSH": 232663805,
+	"hispanicLWSH": 785578696,
+	"nativeHawaiianSH": 200929978,
+	"nativeHawaiianPISH": 490725843,
+	"pacificIslanderSH": 965998904,
+    "blankSH": 986445321,
+    "declinedSH": 746038746,
+	"unavailableSH": 178420302,
+
+    // hfhs 
+    "africanAmericanBLHHF":	473807808,
+	"africanAmericanBNLHHF": 269950058,
+	"africanAmericanBEUHF": 998778678,
+	"whiteHLHF": 871169055,
+	"whiteNHHF": 211847969,
+	"whiteEUHF": 613506991,
+	"otherHLHF": 646444521,
+	"otherNHLHF": 480568177,
+	"otherEUHF": 601070694,
+	"unaviableHLHF": 724873055,
+	"unaviableNHLHF": 819077778,
+	"unaviableEUHF": 228278549,
+
+    // "americanIndian": 583826374, 
+    // "asian": 636411467, 
+    // "africanAmerican": 458435048, 
+    // "latino": 706998638, 
+    // "middleEastern": 973565052, 
+    // "nativeHawaiian": 586825330,
+    // "white": 412790539, 
+    // "none": 807835037, 
+    // "other": 116984232,
     
+    "recruitmentType": 512820379,
     'active': 486306141,
     'passive': 854703046,
     'inactive': 180583933,
     'recruitmentDate': 471593703,
-
+    'signedInFlag': 230663853,
     'signinDate': 335767902,
+    'pinEntered': 379080287,
+    'noPin': 828729648,
+    'duplicateType': 148197146,
+    'updateRecruitType': 793822265,
+    'signInMechansim': 995036844,
+    'accountEmail': 421823980,
+    'accountPhone': 348474836,
+    'accountName': 756862764,
+
 
     'refusalOptions': 685002411,
 
@@ -232,6 +274,15 @@ export default
     "5": 241236037,
     "6": 987563196,
 
+    208325815 :  "No Refusal",
+    622008261 : "Refused some activities",  
+    134659217 : "Refused all future activities",
+    872012139 : "Revoked HIPAA only",
+    854021266 : "Withdrew Consent",
+    241236037 :  "Destroy Data",
+    987563196 : "Deceased",
+
+
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
     "refusedAll": 134659217,
@@ -240,13 +291,6 @@ export default
     "destroyData": 241236037,
     "deceased": 987563196,
 
-    208325815 :  "No Refusal",
-    622008261 : "Refused some activities",  
-    134659217 : "Refused all future activities",
-    872012139 : "Revoked HIPAA only",
-    854021266 : "Withdrew Consent",
-    241236037 :  "Destroy Data",
-    987563196 : "Deceased",
 
     'sourceOfDeath': 764403541,
     'dateOfDeath': 123868967,
