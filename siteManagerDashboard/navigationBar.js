@@ -45,6 +45,9 @@ export const dashboardNavBarLinks = (isParent) => {
         (`<li class="nav-item" id="participantWithdrawalBtn">
             <a class="nav-item nav-link ws-nowrap" href="#participantWithdrawal" title="Participant Withdrawal"><i class="fa fa-list-alt"></i> Participant Withdrawal</a>
         </li>`) : (``)  }
+        <li class="nav-item" id="participantMessageBtn">
+            <a class="nav-item nav-link ws-nowrap" href="#participantMessages" title="Participant Messages"><i class="fa fa-envelope-open"></i> Participant Messages</a>
+        </li>
         <li class="nav-item">
             <a class="nav-item nav-link ws-nowrap" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </li>

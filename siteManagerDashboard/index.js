@@ -3,6 +3,7 @@ import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass
 import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
+import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
 import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
@@ -57,6 +58,15 @@ const router = async () => {
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))
                 renderParticipantSummary(participant);
+            }
+        }
+        else if (route === '#participantMessages') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                renderParticipantMessages();
+            }
+            else {
+                let participant = JSON.parse(localStorage.getItem("participant"))
+                renderParticipantMessages(participant);
             }
         }
         else if (route === '#participantWithdrawal' && isParent === 'true') {

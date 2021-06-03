@@ -24,7 +24,7 @@ export const renderTable = (data, source) => {
           i == fieldMapping.email || i == fieldMapping.email1 || i == fieldMapping.email2 || i == fieldMapping.cellPhone || i == fieldMapping.homePhone ||
           i == fieldMapping.otherPhone || i == fieldMapping.refusedAllFutureActivities || i == fieldMapping.revokeHIPAA || i == fieldMapping.withdrawConsent || 
           i == fieldMapping.revokeHIPAA || i == fieldMapping.destroyData || i == fieldMapping.participantDeceased ||  
-          i == fieldMapping.dateOfDeath || i == fieldMapping.suspendContact
+          i == fieldMapping.dateOfDeath || i == fieldMapping.suspendContact || i == fieldMapping.boh
     ))
 
 
@@ -247,7 +247,6 @@ const addEventShowMoreInfo = data => {
     Array.from(selectElements).forEach(element => {
         element.addEventListener('click', async () => {
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
-            console.log("select clicked", filteredData );
             let adminSubjectAudit = [];
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
