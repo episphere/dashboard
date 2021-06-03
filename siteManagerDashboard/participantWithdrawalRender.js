@@ -40,10 +40,10 @@ export const renderRefusalOptions = () => {
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="I think the incentive or benefit to participate is not great enough" name="options" 
+                        <input class="form-check-input" type="checkbox" value="I think the payment or benefit to participate is not great enough" name="options" 
                         data-optionKey=${fieldMapping.participantGreedy} id="defaultCheck6">
                         <label class="form-check-label" for="defaultCheck6">
-                            I think the incentive or benefit to participate is not great enough
+                        I think the payment or benefit to participate is not great enough
                         </label>
                     </div>
                     <div class="form-check">
@@ -172,7 +172,14 @@ export const renderRefusalOptions = () => {
                         <label class="form-check-label" for="defaultCheck23">
                             Reason not given
                         </label>
-                </div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Other reasons" name="options" data-optionKey=${fieldMapping.otherReasons} id="defaultCheck23">
+                        <label class="form-check-label" for="defaultCheck23">
+                            Other reasons: 
+                        </label>
+                        <input type="text" id="defaultCheck24" name="defaultCheck24" data-optionKey=${fieldMapping.otherReasonsSpecify}><br>
+                    </div>
                 </div> 
                 <div style="display:inline-block; margin-top:20px;">
                     <button type="button" id="backToPrevPage" class="btn btn-primary">Previous</button>

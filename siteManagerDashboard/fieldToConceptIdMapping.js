@@ -214,6 +214,13 @@ export default
     'accountPhone': 348474836,
     'accountName': 756862764,
 
+    'signedHIPAARevoc': 153713899,
+    'dateHIPAARevoc': 613641698,
+    'versionHIPAARevoc': 407743866,
+
+    'signedDataDestroy': 359404406,
+    'dateDataDestroy': 119449326,
+    'versionDataDestroy': 304438543,
 
     'refusalOptions': 685002411,
 
@@ -255,7 +262,8 @@ export default
     'concernedAboutCovid': 958588520,
     'participantUnableToParticipate': 875010152,
     'participantIncarcerated': 404289911,
-    'otherReasons': 715390138,
+    'otherReasons': 734828170,
+    'otherReasonsSpecify': 715390138,
     'reasonNotGiven': 538619788,
 
     'spouse': 817514412,
@@ -286,19 +294,22 @@ export default
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
     "refusedAll": 134659217,
-    "revokeHIPAA": 872012139,
+    "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
-    "destroyData": 241236037,
+    "destroyDataStatus": 241236037,
     "deceased": 987563196,
 
 
     'sourceOfDeath': 764403541,
     'dateOfDeath': 123868967,
 
-    'suspendContact': 113579866
-
-
-
-
-
+    'suspendContact': 113579866,
+    'whoRequested': 297147359,
+    'requestParticipant': 648459216,
+    'requestPrincipalInvestigator': 658808644,
+    'requestConnectIRB': 745366882,
+    'requestPIListed': 786757575,
+    'requestChairSite': 847056701,
+    'requestOther': 181769837,
+    'requestOtherText': 366295286
 }

@@ -112,40 +112,83 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                 <div class="col-lg">
                                     <div class="row form-row">
                                         <span> <b>
-                                            SUPERVISOR USE ONLY​ <br />
-                                            Suspend all contact with participant until
-                                            date </b> <br />
-                                            <div class="form-group row">
-                                            <label class="col-md-4 col-form-label">Month</label>
-                                            <select id="UPMonth" class="form-control required-field col-md-4" data-error-required='Please select your month.'>
-                                                <option class="option-dark-mode" value="">Select month</option>
-                                                <option class="option-dark-mode" value="01">1 - January</option>
-                                                <option class="option-dark-mode" value="02">2 - February</option>
-                                                <option class="option-dark-mode" value="03">3 - March</option>
-                                                <option class="option-dark-mode" value="04">4 - April</option>
-                                                <option class="option-dark-mode" value="05">5 - May</option>
-                                                <option class="option-dark-mode" value="06">6 - June</option>
-                                                <option class="option-dark-mode" value="07">7 - July</option>
-                                                <option class="option-dark-mode" value="08">8 - August</option>
-                                                <option class="option-dark-mode" value="09">9 - September</option>
-                                                <option class="option-dark-mode" value="10">10 - October</option>
-                                                <option class="option-dark-mode" value="11">11 - November</option>
-                                                <option class="option-dark-mode" value="12">12 - December</option>
-                                            </select>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label class="col-md-4 col-form-label">Day</label>
-                                            <select class="form-control required-field col-md-4" data-error-required='Please select your day.' id="UPDay"></select>
-                                        </div>
-                                        <div class="form-group row">
-                                            <label class="col-md-4 col-form-label">Year</label>
-                                            <input type="text" class="form-control required-field input-validation col-md-4" data-error-required='Please select your year.' data-validation-pattern="year" data-error-validation="Your year must contain four digits in the YYYY format." maxlength="4" id="UPYear" list="yearsOption" title="Year, must be in 1900s" Placeholder="Enter year">
-                                            <datalist id="yearsOption"></datalist>
-                                        </div>
+                                            Who requested? </b>
                                         </span>
-                                    </div>
-                </div>`
+                                        <div style="position:relative; left:10px; top:4px;">
+                                            <div class="form-check">
+                                                <input type="radio" id="defaultRequest1" name="whoRequested" value="The participant (via the CSC directly or via a Connect site staff)"
+                                                data-optionKey=${fieldMapping.requestParticipant}>
+                                                <label for="defaultRequest1">The participant (via the CSC directly or via a Connect site staff)</label>
+                                            </div>
 
+                                            <div class="form-check">
+                                                <input type="radio" id="defaultRequest2" name="whoRequested" value="The Connect Principal Investigator (or designate)"
+                                                data-optionKey=${fieldMapping.requestPrincipalInvestigator}>
+                                                <label for="defaultRequest2">The Connect Principal Investigator (or designate)</label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input type="radio" id="defaultRequest3" name="whoRequested" value="The Chair of the Connect IRB-of-record (NIH IRB)"
+                                                data-optionKey=${fieldMapping.requestConnectIRB}>
+                                                <label for="defaultRequest3">The Chair of the Connect IRB-of-record (NIH IRB)</label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input type="radio" id="defaultRequest4" name="whoRequested" value="Site PI listed on the site-specific consent form"
+                                                data-optionKey=${fieldMapping.requestPIListed}>
+                                                <label for="defaultRequest4">Site PI listed on the site-specific consent form</label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input type="radio" id="defaultRequest5" name="whoRequested" value="Chair of the Site IRB"
+                                                data-optionKey=${fieldMapping.requestChairSite}>
+                                                <label for="defaultRequest5">Chair of the Site IRB</label>
+                                            </div>
+
+                                            <div class="form-check">
+                                                <input type="radio" id="defaultRequest6" name="whoRequested" value="Other (specify):"
+                                                data-optionKey=${fieldMapping.requestOther}>
+                                                <label for="defaultRequest6">Other (specify):</label> 
+                                                <input type="text" id="defaultRequest7" name="defaultRequest7" data-optionKey=${fieldMapping.requestOtherText}><br>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-row">
+                                    <span> <b>
+                                        SUPERVISOR USE ONLY​ <br />
+                                        Suspend all contact with participant until
+                                        date </b> <br />
+                                        <div class="form-group row">
+                                        <label class="col-md-4 col-form-label">Month</label>
+                                        <select id="UPMonth" class="form-control required-field col-md-4" data-error-required='Please select your month.'>
+                                            <option class="option-dark-mode" value="">Select month</option>
+                                            <option class="option-dark-mode" value="01">1 - January</option>
+                                            <option class="option-dark-mode" value="02">2 - February</option>
+                                            <option class="option-dark-mode" value="03">3 - March</option>
+                                            <option class="option-dark-mode" value="04">4 - April</option>
+                                            <option class="option-dark-mode" value="05">5 - May</option>
+                                            <option class="option-dark-mode" value="06">6 - June</option>
+                                            <option class="option-dark-mode" value="07">7 - July</option>
+                                            <option class="option-dark-mode" value="08">8 - August</option>
+                                            <option class="option-dark-mode" value="09">9 - September</option>
+                                            <option class="option-dark-mode" value="10">10 - October</option>
+                                            <option class="option-dark-mode" value="11">11 - November</option>
+                                            <option class="option-dark-mode" value="12">12 - December</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-4 col-form-label">Day</label>
+                                        <select class="form-control required-field col-md-4" data-error-required='Please select your day.' id="UPDay"></select>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-md-4 col-form-label">Year</label>
+                                        <input type="text" class="form-control required-field input-validation col-md-4" data-error-required='Please select your year.' data-validation-pattern="year" data-error-validation="Your year must contain four digits in the YYYY format." maxlength="4" id="UPYear" list="yearsOption" title="Year, must be in 1900s" Placeholder="Enter year">
+                                        <datalist id="yearsOption"></datalist>
+                                    </div>
+                                    </span>
+                                </div>
+                </div>`
+           
         template += ` <div class="modal fade" id="modalShowSelectedData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content sub-div-shadow">
@@ -220,52 +263,73 @@ export const viewOptionsSelected = () => {
 
 const optionsHandler = (suspendDate) => {
     let retainOptions = []
+    let requestedHolder = []
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
     let checkboxes = document.getElementsByName('options');
+    let requestedOption = document.getElementsByName('whoRequested');
+    let skipRequestedBy = false
     header.innerHTML = `<h5>Options Selected</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
-    if (retainOptions.length === 0 && suspendDate === '//') {template += `<span><b>Select an option before proceeding!</b></span> <br />`}
+    // if (retainOptions.length === 0 || suspendDate === '//' ) { template += `<span><b>Select requested by before proceeding!</b></span> <br />`}
     checkboxes.forEach(x => { 
         if (x.checked) {  
             retainOptions.push(x)
-            template += `<span>${x.value}</span> <br />`}
+            template += `<span>${x.value}</span> <br />`
+            retainOptions.forEach(i => i.value === 'Participant Deceased' ?  skipRequestedBy = true  :  skipRequestedBy = false) }
     })
+    const a = document.getElementById('defaultRequest7')
+    a.value && requestedHolder.push(a)
+    requestedOption.forEach(x => { 
+        if (x.checked) {  
+            requestedHolder.push(x)
+            template += `<span>Requested by: ${x.value} </span> ${a && a.value} </br>`}
+    })
+
     if (suspendDate !== '//') template += `<span>Suspend all contact on case until ${suspendDate}</span> <br />`
     template += `
         <div style="display:inline-block; margin-top:20px;">
-            ${(retainOptions.length === 0 && suspendDate === '//') ? 
-                ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
+            ${ ( skipRequestedBy === true &&  requestedHolder.length >= 0) ?  
+                ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
+            :  ( retainOptions.length === 0 || requestedHolder.length === 0 ) ? 
+            `<span><b>Select an option & requested by before proceeding!</b></span> <br />
+             <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
             : ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             }
             <button type="button" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
         </div>
     </div>`
+
     body.innerHTML = template;
-    proceedToNextPage(retainOptions, suspendDate)
+    proceedToNextPage(retainOptions, requestedHolder, suspendDate)
 } 
 
 
-export const proceedToNextPage = (retainOptions, suspendDate) => {
+export const proceedToNextPage = (retainOptions, requestedHolder, suspendDate) => {
     const a = document.getElementById('proceedFormPage');
     if (a) {
         a.addEventListener('click',  () => { 
             let checkedValue = document.getElementById('messageCheckbox').checked
             ;
-            checkedValue ? causeOfDeathPage(retainOptions) : reasonForRefusalPage(retainOptions, suspendDate);
+            checkedValue ? causeOfDeathPage(retainOptions) : reasonForRefusalPage(retainOptions, requestedHolder, suspendDate);
         })
     }
 }
 
-const retainPreviouslySetOptions = (retainOptions) => {
+const retainPreviouslySetOptions = (retainOptions, requestedHolder) => {
    retainOptions &&  (
         retainOptions.forEach (x => { 
             let checkedValue = document.getElementById(x.id);
             checkedValue.checked = true;
         }))
+    requestedHolder &&  (
+        requestedHolder.forEach (x => { 
+            let checkedValue = document.getElementById(x.id);
+            checkedValue.checked = true;
+        }))
 }
 
-export const reasonForRefusalPage = (retainOptions, suspendDate) => {
+export const reasonForRefusalPage = (retainOptions, requestedHolder, suspendDate) => {
     let source = 'page1'
     let renderContent = document.getElementById('formMainPage');
     let template = ``;
@@ -284,14 +348,14 @@ export const reasonForRefusalPage = (retainOptions, suspendDate) => {
     renderContent.innerHTML =  template;
     document.getElementById('backToPrevPage').addEventListener('click', () => {
         renderContent.innerHTML = renderParticipantWithdrawalLandingPage();
-        retainPreviouslySetOptions(retainOptions);
+        retainPreviouslySetOptions(retainOptions, requestedHolder);
         addEventMonthSelection('UPMonth', 'UPDay');
         autoSelectOptions();
         viewOptionsSelected();
         proceedToNextPage();
     })
     document.getElementById('submit').addEventListener('click', () => {
-        collectFinalResponse(retainOptions, source, suspendDate)
+        collectFinalResponse(retainOptions, requestedHolder, source, suspendDate)
     })
  
 }
@@ -328,16 +392,16 @@ export const causeOfDeathPage = (retainOptions) => {
  
 }
 
-const collectFinalResponse = (retainOptions, source, suspendDate) => {
+const collectFinalResponse = (retainOptions, requestedHolder, source, suspendDate) => {
     let finalOptions = []
+    const a = document.getElementById('defaultCheck24')
+    a.value && finalOptions.push(a)
     let checkboxes = document.getElementsByName('options');
-    checkboxes.forEach(x => { if (x.checked) {  
-        finalOptions.push(x)}
-    })
-    sendResponses(finalOptions, retainOptions, source, suspendDate);
+    checkboxes.forEach(x => { if (x.checked) {  finalOptions.push(x)} })
+    sendResponses(finalOptions, retainOptions, requestedHolder, source, suspendDate);
 }
 
-const sendResponses = (finalOptions, retainOptions, source, suspendDate) => {
+const sendResponses = (finalOptions, retainOptions, requestedHolder, source, suspendDate) => {
     let sendRefusalData = {};
     let highestStatus = [];
     sendRefusalData[fieldMapping.refusalOptions] = {};
@@ -356,13 +420,25 @@ const sendResponses = (finalOptions, retainOptions, source, suspendDate) => {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
     })
+   
+    requestedHolder.forEach(x => {
+        switch (parseInt(x.dataset.optionkey)) {
+           case fieldMapping.requestOtherText:
+                sendRefusalData[fieldMapping.requestOtherText] = x.value
+           default:
+                sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
+        }
+    })
     if (suspendDate !== '//' && source !== 'page2') sendRefusalData[fieldMapping.suspendContact] = suspendDate
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
     ) : (
     finalOptions.forEach(x => {
-        sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
-    }))
+        (parseInt(x.dataset.optionkey) === fieldMapping.otherReasonsSpecify) ?
+            ( sendRefusalData[fieldMapping.otherReasonsSpecify] = x.value )
+        :
+            ( sendRefusalData[x.dataset.optionkey] = fieldMapping.yes )
+        }))
     if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore(retainOptions, highestStatus);
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
@@ -404,11 +480,9 @@ const combineResponses = (finalOptions, sendRefusalData, suspendDate) => {
     if (suspendDate !== '//') sendRefusalData[fieldMapping.dateOfDeath] = suspendDate
 }
 
-async function clickHandler(sendRefusalData, siteKey, token) {
-    console.log('sendRefusalData', sendRefusalData)
+async function clickHandler(sendRefusalData, idToken, token) {
     showAnimation();
-    const idToken = siteKey;
-
+    
     const refusalPayload = {
         "data": sendRefusalData
     }
