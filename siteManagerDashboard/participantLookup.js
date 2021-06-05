@@ -121,7 +121,6 @@ const dropdownTrigger = () => {
             a.innerHTML = e.target.textContent;
             const t = getDataAttributes(e.target)
             const att = document.getElementById('dropdownSites').setAttribute("data-siteKey", t.sitekey);
-            console.log('all', att)
         })
        
     }
@@ -140,7 +139,6 @@ const addEventSearch = () => {
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
         const sitePref = document.getElementById('dropdownSites').getAttribute('data-siteKey');
-        console.log('sitePref', sitePref)
         if(!firstName && !lastName && !dob && !phone && !email && !sitePref) return;
         let query = '';
         if(firstName) query += `firstName=${firstName}&`;
@@ -149,7 +147,6 @@ const addEventSearch = () => {
         if(phone) query += `phone=${phone}&`;
         if(email) query += `email=${email}&`;
         if(sitePref) query += `sitePref=${sitePref}`;
-        console.log('q', query)
         performSearch(query, sitePref, "search-failed");
     })
 };
@@ -230,7 +227,6 @@ export const showNotifications = (data, error) => {
 
 
 export const findParticipant = async (query) => {
-    console.log('q', query)
     const access_token = await getIdToken();
     const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
     const siteKey = access_token ? access_token : localStr.siteKey;
