@@ -213,10 +213,13 @@ export default
     'accountEmail': 421823980,
     'accountPhone': 348474836,
     'accountName': 756862764,
+    'preConsentOptOut': 158291096,
+    'datePreConsentOptOut': 697256759,
 
     'signedHIPAARevoc': 153713899,
     'dateHIPAARevoc': 613641698,
     'versionHIPAARevoc': 407743866,
+    'dateWithdrawConsent': 659990606,
 
     'signedDataDestroy': 359404406,
     'dateDataDestroy': 119449326,
@@ -273,6 +276,7 @@ export default
     'other': 181769837,
 
     'participationStatus': 912301837,
+    'enrollmentStatus': 507120821,
 
     "0": 208325815,
     "1": 622008261,	

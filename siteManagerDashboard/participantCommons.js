@@ -22,9 +22,13 @@ export const renderTable = (data, source) => {
           i ==  fieldMapping.accountPhone || i == fieldMapping.accountEmail || i == fieldMapping.prefName || i == fieldMapping.address1 ||
           i == fieldMapping.address2 || i == fieldMapping.city || i == fieldMapping.state || i == fieldMapping.zip || i == fieldMapping.prefEmail ||
           i == fieldMapping.email || i == fieldMapping.email1 || i == fieldMapping.email2 || i == fieldMapping.cellPhone || i == fieldMapping.homePhone ||
-          i == fieldMapping.otherPhone || i == fieldMapping.refusedAllFutureActivities || i == fieldMapping.revokeHIPAA || i == fieldMapping.withdrawConsent || 
-          i == fieldMapping.revokeHIPAA || i == fieldMapping.destroyData || i == fieldMapping.participantDeceased ||  
-          i == fieldMapping.dateOfDeath || i == fieldMapping.suspendContact || i == fieldMapping.boh
+          i == fieldMapping.otherPhone || i == fieldMapping.preConsentOptOut || i == fieldMapping.datePreConsentOptOut ||i == fieldMapping.refusedAllFutureActivities || 
+          i == fieldMapping.revokeHIPAA || i == fieldMapping.withdrawConsent || 
+          i == fieldMapping.revokeHIPAA || i == fieldMapping.dateHIPAARevoc || i == fieldMapping.withdrawConsent || i == fieldMapping.dateWithdrawConsent || 
+          i == fieldMapping.destroyData || i == fieldMapping.dateDataDestroy || i == fieldMapping.participantDeceased ||  i == fieldMapping.dateOfDeath ||
+          i == fieldMapping.suspendContact || i == fieldMapping.refusedFutureSurveys || i == fieldMapping.refusedFutureSamples || i == fieldMapping.participationStatus ||
+          i == fieldMapping.enrollmentStatus 
+
     ))
 
 
@@ -46,9 +50,9 @@ export const renderTable = (data, source) => {
                         <div class="float-left">
                             ${backToSearch}
                         </div>
-                        <div class="float-right">
-                            <input id="filterData" class="form-control sub-div-shadow" type="text" placeholder="Min. 3 characters"><span data-toggle="tooltip" title='Search by first name, last name or connect id' class="fas fa-search search-icon"></span></div>
-                        </div>
+                        <div class="float-right" style="display: none">
+                            <input id="filterData" class="form-control sub-div-shadow" type="text" placeholder="Min. 3 characters" disabled><span data-toggle="tooltip" title='Search by first name, last name or connect id' class="fas fa-search search-icon"></span></div>
+                        </div> 
                     </div>
                 <div class="row allow-overflow">
                     <div class="col sticky-header">
@@ -165,7 +169,7 @@ const tableTemplate = (data, showButtons) => {
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     template += `<thead class="thead-dark sticky-row"><tr><th class="sticky-row">Select</th>`
     importantColumns.forEach(x => template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</th>`)
-    template += `<th class="no-wrap sticky-row">Show all info</th>
+    template += `
             ${showButtons ? `<th class="sticky-row">Verify / Not Verify</th>`: ``}
         </tr>
     </thead>`;
@@ -186,6 +190,8 @@ const tableTemplate = (data, showButtons) => {
                ( template += `<td>${participant[x] ? 'Active' : ''}</td>` )
             : (participant[x] && participant[x] === fieldMapping.passive) ?
                 ( template += `<td>${participant[x] ? 'Passive' : ''}</td>`)
+            : (participant[x] && participant[x] === fieldMapping.inactive) ?
+                ( template += `<td>${participant[x] ? 'Inactive' : ''}</td>`)
             : (participant[x] && participant[x] === fieldMapping.prefPhone) ?
                ( template += `<td>${participant[x] ? 'Text Message' : ''}</td>` )
             : (participant[x] && participant[x] === fieldMapping.prefEmail) ?
@@ -208,7 +214,7 @@ const tableTemplate = (data, showButtons) => {
             )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
-        template += `<td><a data-toggle="modal" data-target="#modalShowMoreData" name="modalParticipantData" class="change-pointer showMoreInfo" data-token="${participant.token}"><i class="fas fa-info-circle"></i></a></td>
+        template += `
         ${showButtons ? `<td class="no-wrap"><button class="btn btn-primary participantVerified" data-token="${participant.token}"><i class="fas fa-user-check"></i> Verify</button> / <button class="btn btn-primary participantNotVerified" data-token="${participant.token}"><i class="fas fa-user-times"></i> Can't Verify</button></td>`: ``}
     </tr>
         `; 

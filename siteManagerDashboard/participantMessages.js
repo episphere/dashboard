@@ -34,7 +34,7 @@ export const render = async (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<span> <h4 style="text-align: center;">Participant Messages </h4> </span>`
-        const token = participant.token;
+        const token = '2b8fad88-bc48-4bb1-8afa-513d3f73e0d2';
         const siteKey = JSON.parse(localStorage.dashboard).siteKey
         let messages =  await getParticipantMessage(token, siteKey);
         messages.data.length !== 0 ? (
@@ -45,7 +45,7 @@ export const render = async (participant) => {
                                 <div class="d-flex w-100 justify-content-between">
                                 <small> Attempt: ${message.attempt !== undefined ? message.attempt : `N/A`} | Category: ${message.category !== undefined ? message.category : `N/A`} </small>
                                 <h5 class="mb-1">${message.notification.title}</h5>
-                                <small>${humanReadableFromISO(message.notification.time)}</small>
+                                <small>Date Sent: ${humanReadableFromISO(message.notification.time)}</small>
                                 </div>
                                 <p class="mb-1">${message.notification.body}</p>
                             </span>
@@ -55,7 +55,7 @@ export const render = async (participant) => {
                     <div class="list-group" style="text-align: center;">
                     <span class="list-group-item list-group-item-action" >
                         <div class="d-flex w-100 justify-content-between" >
-                        <h4>No New Messages</h4>
+                        <h4>No Messages</h4>
                         </div>
                     </span>
                 </div>  <br />`)

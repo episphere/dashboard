@@ -72,24 +72,24 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Revoke HIPAA authorization (no medical records)*​" 
+                                    <input class="form-check-input" name="options" type="checkbox" value="Revoke HIPAA authorization (no medical records)​" 
                                     data-optionKey=${fieldMapping.revokeHIPAA} id="defaultCheck9">
                                     <label class="form-check-label" for="defaultCheck9">
-                                        Revoke HIPAA authorization (no medical records)*​
+                                        Revoke HIPAA authorization (no medical records)
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Withdraw consent*​" 
+                                    <input class="form-check-input" name="options" type="checkbox" value="Withdraw consent" 
                                     data-optionKey=${fieldMapping.withdrawConsent} id="defaultCheck10">
                                     <label class="form-check-label" for="defaultCheck10">
-                                        Withdraw consent*​
+                                        Withdraw consent
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Destroy data*​" 
+                                    <input class="form-check-input" name="options" type="checkbox" value="Destroy data" 
                                     data-optionKey=${fieldMapping.destroyData} id="defaultCheck11">
                                     <label class="form-check-label" for="defaultCheck11">
-                                            Destroy data*​
+                                            Destroy data
                                     </label>
                                 </div>
                                 <div class="form-check">
@@ -454,13 +454,13 @@ const computeScore = (retainOptions, highestStatus) => {
             case "Refusing all future activities":
                 highestStatus.push(2)
                 break;
-            case "Revoke HIPAA authorization (no medical records)*":
+            case "Revoke HIPAA authorization (no medical records)":
                 highestStatus.push(3)
                 break;
-            case "Withdraw consent*​":
+            case "Withdraw consent":
                 highestStatus.push(4)
                 break;
-            case "Destroy data*​":
+            case "Destroy data​":
                 highestStatus.push(5)
                 break;
             case "Participant Deceased":

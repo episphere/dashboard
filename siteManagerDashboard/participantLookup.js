@@ -14,7 +14,7 @@ export function renderParticipantLookup(){
     mainContent.innerHTML = renderParticipantSearch();
     renderLookupSiteDropdown();
     addEventSearch();
-    addEventSearchConnectId();
+    addEventSearchId();
     dropdownTrigger();
 }
 const api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/';
@@ -82,14 +82,22 @@ export function renderParticipantSearch() {
                 </div>
                 <div class="col-lg">
                     <div class="row form-row">
-                        <form id="searchConnectId" method="POST">
+                        <form id="searchId" method="POST">
                             <div class="form-group">
                                 <label class="col-form-label search-label">Connect ID</label>
-                                <input class="form-control" autocomplete="off" required type="text" maxlength="10" id="connectId" placeholder="Enter ConnectID"/>
+                                <input class="form-control" autocomplete="off" type="text" maxlength="10" id="connectId" placeholder="Enter ConnectID"/>
                             </div>
-                        <div id="search-connect-id-failed" class="search-not-found" hidden>
-                            The participant with entered search criteria not found!
-                        </div>
+                            <div class="form-group">
+                                <label class="col-form-label search-label">Token</label>
+                                <input class="form-control" autocomplete="off" type="text" maxlength="36" id="token" placeholder="Enter Token"/>
+                            </div>
+                            <div class="form-group">
+                                <label class="col-form-label search-label">Study ID</label>
+                                <input class="form-control" autocomplete="off" type="text" maxlength="36" id="studyId" placeholder="Enter StudyID"/>
+                            </div>
+                            <div id="search-connect-id-failed" class="search-not-found" hidden>
+                                The participant with entered search criteria not found!
+                            </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-outline-primary">Search</button>
                             </div>
@@ -132,6 +140,7 @@ const addEventSearch = () => {
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
         const sitePref = document.getElementById('dropdownSites').getAttribute('data-siteKey');
+        console.log('sitePref', sitePref)
         if(!firstName && !lastName && !dob && !phone && !email && !sitePref) return;
         let query = '';
         if(firstName) query += `firstName=${firstName}&`;
@@ -140,19 +149,27 @@ const addEventSearch = () => {
         if(phone) query += `phone=${phone}&`;
         if(email) query += `email=${email}&`;
         if(sitePref) query += `sitePref=${sitePref}`;
+        console.log('q', query)
         performSearch(query, sitePref, "search-failed");
     })
 };
 
-export const addEventSearchConnectId = () => {
-    const form = document.getElementById('searchConnectId');
+export const addEventSearchId = () => {
+    const form = document.getElementById('searchId');
     if(!form) return;
     form.addEventListener('submit', e => {
         document.getElementById("search-connect-id-failed").hidden = true;
         e.preventDefault();
         const connectId = document.getElementById('connectId').value;
+        const token = document.getElementById('token').value;
+        const studyId = document.getElementById('studyId').value;
+        // const pin = document.getElementById('pin').value;
+        if(!connectId && !token && !studyId) return;
         let query = '';
         if(connectId) query += `connectId=${connectId}`;
+        if(token) query += `token=${token}`;
+        if(studyId) query += `studyId=${studyId}`;
+        // if(pin) query += `pin=${pin}`;
         performSearch(query, "allResults", "search-connect-id-failed");
     })
 };
@@ -178,6 +195,7 @@ export const performSearch = async (query, sitePref, failedElem) => {
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
         let filterRawData = filterdata(response.data);
+
         if (sitePref !== undefined && sitePref != null && sitePref !== 'allResults') {
             const sitePrefId = nameToKeyObj[sitePref];
             const tempFilterRawData = filterBySiteKey(filterRawData, sitePrefId);
@@ -212,6 +230,7 @@ export const showNotifications = (data, error) => {
 
 
 export const findParticipant = async (query) => {
+    console.log('q', query)
     const access_token = await getIdToken();
     const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
     const siteKey = access_token ? access_token : localStr.siteKey;
