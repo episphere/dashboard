@@ -61,9 +61,6 @@ export const importantColumns = [
     { field: fieldMapping.email2,
     editable: true,
     display: true },
-    { field: fieldMapping.prefContact,
-    editable: true,
-    display: true },
     { field: fieldMapping.address1,
     editable: true,
     display: true },
@@ -124,6 +121,7 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
 }
 
 export const render = (participant) => {
+    console.log('participant', participant)
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
@@ -198,44 +196,13 @@ export const render = (participant) => {
 
             template += `</tbody></table>
                     <br />
-                    <table class="table">
-                                <h4 style="text-align: center;"> Alternate Contact Details &nbsp;</h4>
-                                    <thead>
-                                        <tr>
-                                        <th scope="col">Contact Name</th>
-                                        <th scope="col">Relationship</th>
-                                        <th scope="col">Home Number</th>
-                                        <th scope="col">Mobile Number</th>
-                                        <th scope="col">Email</th>
-                                        <th scope="col"></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="detaileAltRow">
-                                        <td>${participant.Module1 && participant.Module1.ALTCONTACT1 ? participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME : ""} `+` ${participant.Module1  && participant.Module1.ALTCONTACT1 ? participant.Module1.ALTCONTACT1.ALTCONTACT1_LNAME : ""} </td>
-                                        <td></td>
-                                        <td>${participant.Module1  && participant.Module1.ALTCONTACT2 ? participant.Module1.ALTCONTACT2.ALTCONTACT2_HOME : ""}</td>
-                                        <td>${participant.Module1  && participant.Module1.ALTCONTACT2 ? participant.Module1.ALTCONTACT2.ALTCONTACT2_MOBILE : ""}</td>
-                                        <td>${participant.Module1  && participant.Module1.ALTCONTACT2 ? participant.Module1.ALTCONTACT2.ALTCONTACT2_EMAIL : ""}</td>
-                                        ${(participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate) )? 
-                                        `<td> 
-                                            <button type="button" id="altContact" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-primary">Edit</button> </td>`
-                                            :
-                                            `<td> <button type="button" class="btn btn-secondary" disabled>Edit</button> </td>`
-                                        }
-                                        </tr>
-                                    </tbody>
-                                    </table>
-                                    <div style="display:inline-block;">
-                                        <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
-                                            &nbsp;
-                                        <button type="button" id="adminAudit" data-toggle="modal" data-target="#modalShowMoreData" class="btn btn-success">Audit History</button>
-                                            &nbsp;
-                                        <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
-                                            &nbsp;
-                                        <br />
-                                        <b>Last Modified by: <span id="modifiedId"></span></b>
-                                    </div>
+                            <div style="display:inline-block;">
+                                <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
+                                    &nbsp;
+                                <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
+                                    &nbsp;
+                                <br />
+                            </div>
                             </div>
                         </div>
         `;
@@ -263,21 +230,18 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
             let editRow = element.getElementsByClassName('showMore')[0];
             const values = editRow;
             let data = getDataAttributes(values);
+            console.log('data', data)
             editRow.addEventListener('click', () => {
                 const header = document.getElementById('modalHeader');
                 const body = document.getElementById('modalBody');
-                header.innerHTML = `<h5>${data.participantkey}</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+                header.innerHTML = `<h5>Edit</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
                 let template = '<div>'
                 template += `
-                <form id="formResponse" method="post">
-                        <span><strong>Field Modified</strong></span> :  <span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${data.participantkey}</span>
+                <form id="formResponse" method="post">  
+                        <span><span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${removeCamelCase(data.participantkey)}</span> 
+                        : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue} />
                         <br >
-                        <span><strong>Field Value</strong></span> :  <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue}>
                         <br >
-                        <br >
-                        <span style="display: block;"><strong>Comment :</strong></span>  <textarea required type="text" name="comment" id="comment" style="height: 100px; width: 400px; display: block;"> </textarea></li>
-                        <br >
-
                     <div style="display:inline-block;">
                         <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
                         <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
@@ -298,6 +262,12 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
     else {
 
     }
+}
+
+const removeCamelCase = (participantKey) => {
+    let s = participantKey
+    s = s.replace(/([A-Z])/g, ' $1').trim()
+    return s;
 }
 // creates payload to be sent to backend and update the UI. Remaps the field name back to concept id along with new responses.
 const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement) => {
@@ -331,7 +301,7 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
         let timeStampData =  getCurrentTimeStamp();
         displayAuditHistory.timeStamp = timeStampData;
         // comment
-        displayAuditHistory.comment = document.getElementById('comment').value;
+        //displayAuditHistory.comment = document.getElementById('comment').value;
         // userID
         let userIdData = getCurrentTimeStamp();
         displayAuditHistory.userId = userIdData;
@@ -548,8 +518,8 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
             localStorage.setItem("counters", JSON.stringify(counter));
             let lastModifiedHolder;
             adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
-            let a = document.getElementById('modifiedId')
-            a.innerHTML = 'Placeholder for User id' + ' @ ' + lastModifiedHolder.timeStamp;
+            // let a = document.getElementById('modifiedId')
+            // a.innerHTML = 'Placeholder for User id' + ' @ ' + lastModifiedHolder.timeStamp;
          }
            else { 
                (alert('Error'))

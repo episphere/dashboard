@@ -207,7 +207,7 @@ table {
     box-shadow: 5px 3px 6px rgba(0, 0, 0, 0.12), 0 1px 4px rgba(0, 0, 0, 0.24);
 }
 
-#search, #searchConnectId {
+#search, #searchId {
     width: 100%;
 }
 

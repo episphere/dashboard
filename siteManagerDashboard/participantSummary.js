@@ -10,6 +10,7 @@ const headerImportantColumns = [
     { field: fieldMapping.fName },
     { field: fieldMapping.mName },
     { field: fieldMapping.lName },
+    { field: fieldMapping.suffix }
 ];
 
 const { PDFDocument, StandardFonts } = PDFLib
@@ -43,8 +44,7 @@ export const render = (participant) => {
 
         template += `<div class="table-responsive">
 
-                        <span> <h4 style="text-align: center;"><i style="float: left;" class="fa fa-sort fa-lg"></i> 
-                        <i style="float: left;" class="fa fa-filter fa-lg"></i> Participant Summary </h4> </span>
+                        <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
 
                         <div class="sticky-header">
                             <table class="table table-striped">
@@ -111,19 +111,14 @@ export const render = (participant) => {
                                 <tr class="row-color-emr-light">
                                     ${baselineEMR(participant[fieldMapping.baselineEMR])}
                                 </tr>
-                                <tr class="row-color-enrollment-dark">
-                                    ${hipaaRevocation(participant)}
-                                </tr>
-                                <tr class="row-color-enrollment-dark">
-                                    ${dataDestroy(participant)}
-                                 </tr>
+                                ${participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ? 
+                                    (`<tr class="row-color-enrollment-dark"> ${hipaaRevocation(participant)} </tr>`) : (``)}
+                                ${participant[fieldMapping.destroyData] === fieldMapping.yes ? 
+                                    (`<tr class="row-color-enrollment-dark"> ${dataDestroy(participant)} </tr>`): (``)}
                             </tbody>
                             </table>
                         </div>
-                    </div>`
-
-   
-                   
+                    </div>`                
         template +=`</div></div>`
 
     }
@@ -136,128 +131,63 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => {  
-            renderDownloadConsentCopy(participant);
+            renderDownloadConsentCopy(participant, humanReadableMDY(participant[fieldMapping.consentDate]), './consent.pdf', {x: 200, y: 625}, {x1: 200, y1: 560});
         })
     }
-    const b = document.getElementById('downloadCopyHipaaRevoc');
+    const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownloadHippaRevocCopy(participant);
+            renderDownloadConsentCopy(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), './HIPAA_form.pdf', {x: 100, y: 440}, {x1: 100, y1: 460});
         })
     }
-    const c = document.getElementById('downloadCopyDataDestroy');
+    const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownloadDataDestroyCopy(participant);
+            renderDownloadHippaRevocCopy(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './HIPAA_Revocation_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
         })
     }
+    const d = document.getElementById('downloadCopyDataDestroy');
+    if (d) {
+        d.addEventListener('click',  () => {  
+            renderDownloadDataDestroyCopy(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './Data_Destruction_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 405});
+        })
+    }
+ 
 }
 
-const renderDownloadConsentCopy = async (participant) => {
+const renderDownloadConsentCopy = async (participant, timeStamp, fileLocation, nameCoordinates, signatureCoordinates) => {
+    let fileLocationDownload = fileLocation.slice(2)
     const participantSignature = createSignature(participant)
     let seekLastPage;
-    const pdfLocation = './consent.pdf';
+    const pdfLocation = fileLocation;
     const existingPdfBytes = await fetch(pdfLocation).then(res => res.arrayBuffer());
-    const pdfConsentDoc = await PDFDocument.load(existingPdfBytes);
-    const helveticaFont = await pdfConsentDoc.embedFont(StandardFonts.TimesRomanItalic);
-    const pages = pdfConsentDoc.getPages();
+    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.TimesRomanItalic);
+    const pages = pdfDoc.getPages();
     for (let i = 0; i <= pages.length; i++) {seekLastPage = i}
     const editPage = pages[seekLastPage-1];
-    const currentTime = getCurrentTimeStamp();
 
     editPage.drawText(`
     ${participant[headerImportantColumns[0].field]} ${participant[headerImportantColumns[1].field]} 
-    ${currentTime}`, {
-                x: 200,
-                y: 625,
+    ${timeStamp}`, {
+                x: nameCoordinates.x,
+                y: nameCoordinates.y,
                 size: 24,
       });
 
     editPage.drawText(`
     ${participantSignature}`, {
-        x: 200,
-        y: 560,
-        size: 34,
+        x: signatureCoordinates.x1,
+        y: signatureCoordinates.y1,
+        size: 20,
         font: helveticaFont,
       });
     
     // Serialize the PDFDocument to bytes (a Uint8Array)
-    const pdfBytes = await pdfConsentDoc.save();
+    const pdfBytes = await pdfDoc.save();
 
     // Trigger the browser to download the PDF document
-    download(pdfBytes, "consent.pdf", "application/pdf");
-}
-
-const renderDownloadHippaRevocCopy = async (participant) => {
-    const participantSignature = createSignature(participant)
-    let seekLastPage;
-    const pdfLocation = './HIPAA_Revocation_Form.pdf';
-    const existingPdfBytes = await fetch(pdfLocation).then(res => res.arrayBuffer());
-    const pdfConsentDoc = await PDFDocument.load(existingPdfBytes);
-    const helveticaFont = await pdfConsentDoc.embedFont(StandardFonts.TimesRomanItalic);
-    const pages = pdfConsentDoc.getPages();
-    for (let i = 0; i <= pages.length; i++) {seekLastPage = i}
-    const editPage = pages[seekLastPage-1];
-    const currentTime = getCurrentTimeStamp();
-
-    editPage.drawText(`
-    ${participant[headerImportantColumns[0].field]} ${participant[headerImportantColumns[1].field]} ${participant[headerImportantColumns[2].field]} 
-    `, {
-                x: 150,
-                y: 425,
-                size: 24,
-      });
-
-    editPage.drawText(`
-    ${participantSignature} 
-    ${currentTime}`, {
-        x: 150,
-        y: 405,
-        size: 24,
-        font: helveticaFont,
-      });
-    
-    // Serialize the PDFDocument to bytes (a Uint8Array)
-    const pdfBytes = await pdfConsentDoc.save();
-
-    // Trigger the browser to download the PDF document
-    download(pdfBytes, "HIPAA_Revocation_Form.pdf", "application/pdf");
-}
-
-const renderDownloadDataDestroyCopy = async (participant) => {
-    const participantSignature = createSignature(participant)
-    let seekLastPage;
-    const pdfLocation = './Data_Destruction_Form.pdf';
-    const existingPdfBytes = await fetch(pdfLocation).then(res => res.arrayBuffer());
-    const pdfConsentDoc = await PDFDocument.load(existingPdfBytes);
-    const helveticaFont = await pdfConsentDoc.embedFont(StandardFonts.TimesRomanItalic);
-    const pages = pdfConsentDoc.getPages();
-    for (let i = 0; i <= pages.length; i++) {seekLastPage = i}
-    const editPage = pages[seekLastPage-1];
-    const currentTime = getCurrentTimeStamp();
-
-    editPage.drawText(`
-    ${participant[headerImportantColumns[0].field]} ${participant[headerImportantColumns[1].field]} ${participant[headerImportantColumns[2].field]} 
-    `, {
-                x: 150,
-                y: 425,
-                size: 24,
-      });
-
-    editPage.drawText(`
-    ${participantSignature} 
-    ${currentTime}`, {
-        x: 150,
-        y: 405,
-        size: 24,
-        font: helveticaFont,
-      });
-    
-    // Serialize the PDFDocument to bytes (a Uint8Array)
-    const pdfBytes = await pdfConsentDoc.save();
-
-    // Trigger the browser to download the PDF document
-    download(pdfBytes, "Data_Destruction_Form.pdf", "application/pdf");
+    download(pdfBytes, fileLocationDownload, "application/pdf");
 }
 
 const createSignature = (participant) => {
@@ -307,7 +237,7 @@ const hippaHandler = (participant) => {
                     <td>${participant[fieldMapping.hippaDate] && humanReadableMDY(participant[fieldMapping.hippaDate])}</td>
                     <td>${participant[fieldMapping.hippaVersion]}</td>
                     <td>N/A</td>
-                    <td style="color: grey; text-decoration: underline;">Download Link</td>
+                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHIPAA">Download Link</a></td>
     ` ) : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
@@ -331,11 +261,13 @@ const hipaaRevocation = (participant) => {
                     <td>Revocation</td>
                     <td>Agreement</td>
                     <td>HIPAA Revoc Form</td>
-                    <td>${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? `Signed`: 'Not Signed'}</td>
+                    <td>${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? `Signed`: `Not Signed`}</td>
                     <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
                     <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
                     <td>N/A</td>
-                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHipaaRevoc">Download Link</a></td>
+                    ${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? 
+                    `<td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHipaaRevoc">Download Link</a></td>`
+                    : `<td style="color: grey; text-decoration: underline;">Download Link</td>`}</td>
     ` ) : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
@@ -363,7 +295,9 @@ const dataDestroy = (participant) => {
                     <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
                     <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
                     <td>N/A</td>
-                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyDataDestroy">Download Link</a></td>
+                    ${participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ? 
+                    `<td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyDataDestroy">Download Link</a></td>`
+                    : `<td style="color: grey; text-decoration: underline;">Download Link</td>`}</td>
     ` ) : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
