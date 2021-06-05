@@ -34,7 +34,7 @@ export const render = async (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<span> <h4 style="text-align: center;">Participant Messages </h4> </span>`
-        const token = '2b8fad88-bc48-4bb1-8afa-513d3f73e0d2';
+        const token = participant.token;
         const siteKey = JSON.parse(localStorage.dashboard).siteKey
         let messages =  await getParticipantMessage(token, siteKey);
         messages.data.length !== 0 ? (
