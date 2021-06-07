@@ -117,11 +117,9 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
     editAltContact(participant, adminSubjectAudit);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
-  
 }
 
 export const render = (participant) => {
-    console.log('participant', participant)
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
@@ -135,6 +133,7 @@ export const render = (participant) => {
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
+        console.log('participant', participant)
         template += `
                     <div class="float-left">
                         <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
@@ -197,10 +196,10 @@ export const render = (participant) => {
             template += `</tbody></table>
                     <br />
                             <div style="display:inline-block;">
-                                <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
-                                    &nbsp;
                                 <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
-                                    &nbsp;
+                                &nbsp;
+                                <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
+                                &nbsp;
                                 <br />
                             </div>
                             </div>
@@ -230,7 +229,6 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
             let editRow = element.getElementsByClassName('showMore')[0];
             const values = editRow;
             let data = getDataAttributes(values);
-            console.log('data', data)
             editRow.addEventListener('click', () => {
                 const header = document.getElementById('modalHeader');
                 const body = document.getElementById('modalBody');
@@ -241,10 +239,11 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                         <span><span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${removeCamelCase(data.participantkey)}</span> 
                         : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue} />
                         <br >
+                        <span style="font-size: 12px;" id="showNote"><i></i></span>
                         <br >
                     <div style="display:inline-block;">
-                        <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
                         <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
+                        <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
                     </div>
                 </form>
                </div>`
@@ -254,6 +253,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                 viewAuditHandler(adminSubjectAudit);
                 showSaveAlert();
                 resetChanges(participant, originalHTML, siteKey);  
+                showSaveNote();
                // viewParticipantSummary(participant);          
             });
 
@@ -261,6 +261,17 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
     }
     else {
 
+    }
+}
+
+const showSaveNote = () => {
+    const a = document.getElementById('newValue');
+    if (a) {
+        a.addEventListener('click', () => {
+            console.log('12345')
+            const b = document.getElementById('showNote');
+            b.innerHTML = `After 'Submit' you must scroll down and click 'Save Changes' at bottom of screen for your changes to be saved.`
+        })
     }
 }
 

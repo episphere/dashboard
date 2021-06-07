@@ -31,7 +31,7 @@ const router = async () => {
     const route = hash || '#';
     const isParent = localStorage.getItem('isParent')
     if (await userLoggedIn() || localStorage.dashboard) {
-        if (route === '#dashboard') renderDashboard();
+        if (route === '#home') renderDashboard();
         else if (route === '#participants/notyetverified') renderParticipantsNotVerified();
         else if (route === '#participants/cannotbeverified') renderParticipantsCanNotBeVerified();
         else if (route === '#participants/verified') renderParticipantsVerified();
@@ -79,7 +79,7 @@ const router = async () => {
             }
         }
         else if (route === '#logout') clearLocalStroage();
-        else window.location.hash = '#dashboard';
+        else window.location.hash = '#home';
     }
     else if (route === '#') homePage();
     else window.location.hash = '#';
@@ -87,7 +87,7 @@ const router = async () => {
 
 const homePage = async () => {
     if (localStorage.dashboard) {
-        window.location.hash = '#dashboard';
+        window.location.hash = '#home';
     }
     else {
         document.getElementById('navBarLinks').innerHTML = renderNavBarLinks();
@@ -103,7 +103,7 @@ const homePage = async () => {
 
             const isAuthorized = await authorize(siteKey);
             if (isAuthorized.code === 200) {
-                window.location.hash = '#dashboard';
+                window.location.hash = '#home';
             }
             if (isAuthorized.code === 401) {
                 document.getElementById('mainContent').innerHTML = 'Not Authorized! <a href="#logout" class="btn btn-primary">Log Out</a>';
@@ -122,7 +122,7 @@ const homePage = async () => {
             firebase.auth().tenantId = tenantID;
             firebase.auth().signInWithPopup(saml)
                 .then(async (result) => {
-                    location.hash = '#dashboard'
+                    location.hash = '##home'
                 })
                 .catch((error) => {
                     console.log(error)

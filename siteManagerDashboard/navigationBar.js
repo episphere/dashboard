@@ -19,7 +19,7 @@ export const renderNavBarLinks = () => {
 export const dashboardNavBarLinks = (isParent) => {
     return `
         <li class="nav-item">
-            <a class="nav-item nav-link ws-nowrap" href="#dashboard" title="Dashboard" id="dashboardBtn"><i class="fas fa-home"></i> Dashboard</a>
+            <a class="nav-item nav-link ws-nowrap" href="#home" title="Home" id="dashboardBtn"><i class="fas fa-home"></i> Home</a>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle ws-nowrap" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
