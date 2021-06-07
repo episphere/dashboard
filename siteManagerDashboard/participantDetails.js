@@ -120,7 +120,6 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
 }
 
 export const render = (participant) => {
-    console.log('participant', participant)
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
