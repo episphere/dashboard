@@ -454,13 +454,13 @@ const computeScore = (retainOptions, highestStatus) => {
             case "Refusing all future activities":
                 highestStatus.push(2)
                 break;
-            case "Revoke HIPAA authorization (no medical records)":
+            case "Revoke HIPAA authorization (no medical records)​":
                 highestStatus.push(3)
                 break;
             case "Withdraw consent":
                 highestStatus.push(4)
                 break;
-            case "Destroy data​":
+            case "Destroy data":
                 highestStatus.push(5)
                 break;
             case "Participant Deceased":

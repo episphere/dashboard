@@ -48,6 +48,8 @@ export function renderParticipantSearch() {
                                 <label class="col-form-label search-label">Phone number</label>
                                 <input class="form-control" id="phone" placeholder="Enter phone number without dashes & parenthesis"/>
                             </div>
+                            <span><i> (OR) </i></span>
+                            <br />
                             <div class="form-group">
                                 <label class="col-form-label search-label">Email</label>
                                 <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
@@ -55,7 +57,7 @@ export function renderParticipantSearch() {
                             <div class="form-group dropdown" id="siteDropdownLookup" hidden>
                                 <label class="col-form-label search-label">Site Preference </label> &nbsp;
                                 <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Filter by Site
+                                    Filter by Site
                                 </button>
                                 <ul class="dropdown-menu" id="dropdownMenuLookupSites" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
@@ -87,10 +89,12 @@ export function renderParticipantSearch() {
                                 <label class="col-form-label search-label">Connect ID</label>
                                 <input class="form-control" autocomplete="off" type="text" maxlength="10" id="connectId" placeholder="Enter ConnectID"/>
                             </div>
+                            <span><i> (OR) </i></span>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Token</label>
                                 <input class="form-control" autocomplete="off" type="text" maxlength="36" id="token" placeholder="Enter Token"/>
                             </div>
+                            <span><i> (OR) </i></span>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Study ID</label>
                                 <input class="form-control" autocomplete="off" type="text" maxlength="36" id="studyId" placeholder="Enter StudyID"/>

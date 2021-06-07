@@ -191,7 +191,7 @@ const tableTemplate = (data, showButtons) => {
             : (participant[x] && participant[x] === fieldMapping.passive) ?
                 ( template += `<td>${participant[x] ? 'Passive' : ''}</td>`)
             : (participant[x] && participant[x] === fieldMapping.inactive) ?
-                ( template += `<td>${participant[x] ? 'Inactive' : ''}</td>`)
+                ( template += `<td>${participant[x] ? 'Not active' : ''}</td>`)
             : (participant[x] && participant[x] === fieldMapping.prefPhone) ?
                ( template += `<td>${participant[x] ? 'Text Message' : ''}</td>` )
             : (participant[x] && participant[x] === fieldMapping.prefEmail) ?
