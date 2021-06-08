@@ -131,31 +131,31 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => {  
-            renderDownloadConsentCopy(participant, humanReadableMDY(participant[fieldMapping.consentDate]), './consent.pdf', {x: 200, y: 625}, {x1: 200, y1: 560});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), './consent.pdf', {x: 200, y: 625}, {x1: 200, y1: 560});
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownloadConsentCopy(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), './HIPAA_form.pdf', {x: 100, y: 440}, {x1: 100, y1: 460});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), './HIPAA_form.pdf', {x: 100, y: 440}, {x1: 100, y1: 460});
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownloadHippaRevocCopy(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './HIPAA_Revocation_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './HIPAA_Revocation_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownloadDataDestroyCopy(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './Data_Destruction_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 405});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './Data_Destruction_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 405});
         })
     }
  
 }
 
-const renderDownloadConsentCopy = async (participant, timeStamp, fileLocation, nameCoordinates, signatureCoordinates) => {
+const renderDownload = async (participant, timeStamp, fileLocation, nameCoordinates, signatureCoordinates) => {
     let fileLocationDownload = fileLocation.slice(2)
     const participantSignature = createSignature(participant)
     let seekLastPage;
