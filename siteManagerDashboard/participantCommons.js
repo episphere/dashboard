@@ -34,7 +34,7 @@ export const renderTable = (data, source) => {
 
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    
+    console.log('conceptIds', conceptIdMapping)
     if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
