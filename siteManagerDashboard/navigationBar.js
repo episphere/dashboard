@@ -30,6 +30,9 @@ export const dashboardNavBarLinks = (isParent) => {
                 <a class="dropdown-item" href="#participants/cannotbeverified" id="cannotVerifiedBtn">Cannot Be Verified Participants</a>
                 <a class="dropdown-item" href="#participants/verified" id="verifiedBtn">Verified Participants</a>
                 <a class="dropdown-item" href="#participants/all" id="allBtn">All Participants</a>
+                <a class="dropdown-item" href="#participants/profilenotsubmitted" id="profileNotSubmitted">Profile Not Submitted</a>
+                <a class="dropdown-item" href="#participants/consentnotsubmitted" id=" consentNotSubmitted"> Consent Not Submitted</a>
+                <a class="dropdown-item" href="#participants/notsignedin" id="notSignedIn">Not SignedIn</a>
             </div>
         </li>
         <li class="nav-item" id="participantLookupBtn">
