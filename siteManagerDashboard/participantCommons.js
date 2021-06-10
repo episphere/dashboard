@@ -24,7 +24,7 @@ export const renderTable = (data, source) => {
 
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    console.log('conceptIds', conceptIdMapping)
+
     if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
@@ -32,6 +32,27 @@ export const renderTable = (data, source) => {
             </div>
         </div>`
     }
+    template += `<div class="row">
+                    ${(source === 'participantAll') ? ` 
+                    <span style="padding-left: 20px;"></span>             
+                    <div class="form-group dropdown" id="siteDropdownLookup" >
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Filter by Site
+                    </button>
+                    <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
+                        <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
+                        <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
+                        <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
+                        <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
+                        <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
+                        <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
+                        <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
+                        <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
+                        <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
+                    </ul>
+                </div>`: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
@@ -58,6 +79,8 @@ export const renderTable = (data, source) => {
                         </div>
                     </div>
                 </div>`
+    // renderLookupSiteDropdown();
+    // dropdownTrigger();
     return template;
 }
 
@@ -390,3 +413,55 @@ export const searchBy = (data, value) => {
         }
     });
 }
+
+// const renderLookupSiteDropdown = () => {
+//     let dropDownstatusFlag = localStorage.getItem('dropDownstatusFlag');
+//   //  if (dropDownstatusFlag === 'true') {
+//        // document.getElementById("siteDropdownLookup").hidden = false }
+// }
+
+// const dropdownTrigger = () => {
+//     let a = document.getElementById('dropdownSites');
+//     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
+//     let tempSiteName = a.innerHTML = sitekeyName;
+//     if (dropdownMenuButton) {
+//         dropdownMenuButton.addEventListener('click', (e) => {
+//             if (sitekeyName === 'Filter by Site' || sitekeyName === tempSiteName) {
+//                 a.innerHTML = e.target.textContent;
+//                 const t = getDataAttributes(e.target)
+//                 //reRenderTableParticipantsAllTable(e.target.textContent, t.sitekey);
+//             }
+//         })
+
+//     }
+// }
+
+// const reRenderTableParticipantsAllTable = (query, sitePref) => {
+//     showAnimation();
+//     const response = await findParticipant(query);
+//     hideAnimation();
+//     if(response.code === 200 && response.data.length > 0) {
+//         const mainContent = document.getElementById('mainContent')
+//         let filterRawData = filterdata(response.data);
+//         if (sitePref !== undefined && sitePref != null && sitePref !== 'allResults') {
+//             const sitePrefId = nameToKeyObj[sitePref];
+//             const tempFilterRawData = filterBySiteKey(filterRawData, sitePrefId);
+//             if (tempFilterRawData.length !== 0 ) {
+//                 filterRawData = tempFilterRawData;
+//             }
+//             else if (tempFilterRawData.length === 0) {
+//                 document.getElementById(failedElem).hidden = false;
+//                 return alertTrigger();
+//             }
+//         }
+//         localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+//         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+//         addEventFilterData(filterRawData);
+//         renderData(filterRawData);
+//         activeColumns(filterRawData);
+//     }
+//     else if(response.code === 200 && response.data.length === 0) {
+//        console.log('error')
+//     }
+// }
+
