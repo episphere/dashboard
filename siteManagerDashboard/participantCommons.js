@@ -8,33 +8,23 @@ import { getIdToken, humanReadableMDYwithTime } from './utils.js';
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
-    let array = [];
-    data.forEach(dt => {
-        array = array.concat(Object.keys(dt))
-    });
-    array = array.filter((item, index) => array.indexOf(item) === index);
-    array = array.filter( i => 
-        ( i === 'Connect_ID' || i === 'pin' || i === 'token' || i == fieldMapping.recruitmentType || i == fieldMapping.recruitmentDate ||
-          i == fieldMapping.signedInFlag || i == fieldMapping.signinDate || i == fieldMapping.pinEntered || i == fieldMapping.noPin ||
-          i == fieldMapping.consentFlag || i == fieldMapping.consentDate || i == fieldMapping.consentVersion || i == fieldMapping.hippaFlag ||
-          i == fieldMapping.hippaDate || i == fieldMapping.hippaVersion || i == fieldMapping.userProfileFlag  || i == fieldMapping.userProfileDateTime ||
-          i == fieldMapping.verifiedFlag || i == fieldMapping.verficationDate || i == fieldMapping.signInMechansim || i == fieldMapping.accountName ||
-          i ==  fieldMapping.accountPhone || i == fieldMapping.accountEmail || i == fieldMapping.prefName || i == fieldMapping.address1 ||
-          i == fieldMapping.address2 || i == fieldMapping.city || i == fieldMapping.state || i == fieldMapping.zip || i == fieldMapping.prefEmail ||
-          i == fieldMapping.email || i == fieldMapping.email1 || i == fieldMapping.email2 || i == fieldMapping.cellPhone || i == fieldMapping.homePhone ||
-          i == fieldMapping.otherPhone || i == fieldMapping.preConsentOptOut || i == fieldMapping.datePreConsentOptOut ||i == fieldMapping.refusedAllFutureActivities || 
-          i == fieldMapping.revokeHIPAA || i == fieldMapping.withdrawConsent || 
-          i == fieldMapping.revokeHIPAA || i == fieldMapping.dateHIPAARevoc || i == fieldMapping.withdrawConsent || i == fieldMapping.dateWithdrawConsent || 
-          i == fieldMapping.destroyData || i == fieldMapping.dateDataDestroy || i == fieldMapping.participantDeceased ||  i == fieldMapping.dateOfDeath ||
-          i == fieldMapping.suspendContact || i == fieldMapping.refusedFutureSurveys || i == fieldMapping.refusedFutureSamples || i == fieldMapping.participationStatus ||
-          i == fieldMapping.enrollmentStatus 
-
-    ))
-
+    let array = [ 'Connect_ID', 'pin', 'token', fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
+    fieldMapping.siteReportedSex, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
+    fieldMapping.consentDate, fieldMapping.consentVersion, fieldMapping.hippaFlag, fieldMapping.hippaDate, fieldMapping.hippaVersion, fieldMapping.userProfileFlag, 
+    fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.duplicateType, fieldMapping.updateRecruitType, 
+    fieldMapping.preConsentOptOut, fieldMapping.datePreConsentOptOut, fieldMapping.enrollmentStatus, fieldMapping.signInMechansim, fieldMapping.consentFirstName, 
+    fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
+    fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.prefEmail, fieldMapping.email, fieldMapping.email1, 
+    fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
+    fieldMapping.participationStatus,  fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
+    fieldMapping.ssnFullflag1, fieldMapping.ssnPartialFlag1 ,fieldMapping.refusedFutureSamples, fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, 
+    fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrawConsent, fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, 
+    fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+ ];
 
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    
+    console.log('conceptIds', conceptIdMapping)
     if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
@@ -89,6 +79,7 @@ export  const renderData = (data, showButtons) => {
     }
     document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
     addEventPageBtns(pageSize, data, showButtons);
+
     document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
     addEventShowMoreInfo(data);
 }
@@ -211,6 +202,15 @@ const tableTemplate = (data, showButtons) => {
                     template += `<td>${participant[x] ? 'Can Not Be Verified '  : ''}</td>`
                 : (
                     template += `<td>${participant[x] ? 'Duplicate'  : ''}</td>` )
+            )
+            : (x === (fieldMapping.bohStatusFlag1).toString() || x === (fieldMapping.mreStatusFlag1).toString() 
+            || x === (fieldMapping.lawStausFlag1).toString() || x === (fieldMapping.sasStatusFlag1).toString()) ?
+            (
+                (participant[x] === fieldMapping.submitted1) ?
+                ( template += `<td>${participant[x] ? 'Submitted'  : ''}</td>` )
+                : (participant[x] === fieldMapping.started1) ?
+                (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
+                : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
