@@ -800,7 +800,7 @@ const renderParticipantsAll = async () => {
         document.getElementById('allBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'participantAll');
         addEventFilterData(filterdata(response.data));
         renderData(filterdata(response.data));
         activeColumns(filterdata(response.data));
@@ -824,7 +824,7 @@ const renderParticipantsProfileNotSubmitted = async () => {
         console.log('response.data', response.data)
         const isParent = localStorage.getItem('isParent')
         document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Profile Not Submitted'
         removeActiveClass('dropdown-item', 'dd-item-active');
         document.getElementById('profileNotSubmitted').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
@@ -853,7 +853,7 @@ const renderParticipantsConsentNotSubmitted = async () => {
         console.log('response.data', response.data)
         const isParent = localStorage.getItem('isParent')
         document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Consent Not Submitted'
         removeActiveClass('dropdown-item', 'dd-item-active');
         document.getElementById('consentNotSubmitted').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
@@ -882,7 +882,7 @@ const renderParticipantsNotSignedIn = async () => {
         console.log('response.data', response.data)
         const isParent = localStorage.getItem('isParent')
         document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> Not Signed In'
         removeActiveClass('dropdown-item', 'dd-item-active');
         document.getElementById('notSignedIn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
