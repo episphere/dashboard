@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Soccer dashboard</title>
+    <link rel="stylesheet" href="soccerDashboard.css" />
+  </head>
+  <body>
+    <h1>Dan's API Status</h1>
+    <div class="dashboard">
+      <div class="view">
+        <div class="viewTitle">Is Soccer API up?</div>
+        <hr />
+        <div id="soccerUpDiv">
+          <div>
+            is soccer up?
+            <svg viewBox="0 0 70 70" fill="yellow" width="70" style="vertical-align: middle" xmlns="http://www.w3.org/2000/svg">
+              <circle id="soccerUpCircle" cx="35" cy="35" r="15" />
+            </svg>
+            <div id="soccerUptime"></div>
+          </div>
+        </div>
+        <div class="center"><button id="isSoccerUpButton" type="button">check status</button></div>
+      </div>
+      <div class="view"></div>
+      <div class="view"></div>
+      <div class="view"></div>
+      <div class="view"></div>
+      <div class="view"></div>
+      <div class="view"></div>
+    </div>
+  </body>
+  <script>
+    // call soccer heartbeat...
+    async function heartbeat() {
+      const x = fetch("https://sitf-raft3imjaq-uc.a.run.app/soccer/heartbeat")
+        .then((resp) => {
+          soccerUpCircle.style.fill = resp.status == 200 ? "green" : "red";
+          return resp.text();
+        })
+        .then((text) => {
+          soccerUptime.innerText = text;
+        });
+    }
+    isSoccerUpButton.addEventListener("click", heartbeat);
+  </script>
+</html>

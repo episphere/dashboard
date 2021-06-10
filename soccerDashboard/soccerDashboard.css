@@ -1,0 +1,24 @@
+body {
+  margin: 40px;
+}
+
+.dashboard {
+  display: grid;
+  grid-gap: 10px;
+  background-color: floralwhite;
+  grid-template-columns: auto auto auto auto;
+}
+
+.view {
+  background-color: black;
+  color: white;
+  padding: 10px;
+  border-radius: 10px;
+  min-height: 100px;
+  margin: 10px;
+}
+
+.center {
+  margin: 10 auto;
+  text-align: center;
+}
