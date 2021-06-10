@@ -56,9 +56,9 @@ const formSubmit = () => {
 
         Array.from(document.getElementsByName('condition-key')).forEach((e, i) => {
             obj['conditions'][e.value] = {};
-            obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = Array.from(document.getElementsByName('condition-value'))[i].value
+            obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value)
         })
-
+        
         downloadObjectAsJson(obj, 'notification_specification')
     })
 }
