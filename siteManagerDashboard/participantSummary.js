@@ -143,13 +143,13 @@ const downloadCopyHandler = (participant) => {
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './HIPAA_Revocation_Form.pdf', {x: 150, y: 400}, {x1: 150, y1: 425});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './HIPAA_Revocation_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './Data_Destruction_Form.pdf', {x: 150, y: 400}, {x1: 150, y1: 425});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './Data_Destruction_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 405});
         })
     }
  
