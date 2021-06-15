@@ -70,13 +70,26 @@ export default
     "started": 1,
     "submitted": 2,
 
+    "notStarted1": 972455046,
+    "started1": 615768760,
+    "submitted1": 231311385,
+
     "yes": 353358909,
     "no": 104430631,
+
+    "allBaselineSurveysCompleted": 100767870,
 
     "biospecimenFlag": 650516960,
     "biospecimenResearch": 534621077,
     "biospecimenClinical": 664882224,
     "biospecimenHome": 103209024,
+
+    "bohStatusFlag1": 949302066,
+    "mreStatusFlag1": 536735468,
+    "sasStatusFlag1": 976570371,
+    "lawStausFlag1": 663265240,
+    "ssnFullflag1": 311580100,
+    "ssnPartialFlag1": 914639140,
 
     "boh": "D_726699695",
     "bohStatusFlag": "D_949302066",
@@ -198,7 +211,11 @@ export default
     // "none": 807835037, 
     // "other": 116984232,
     
+    'siteReportedAge': 934298480,
+    'siteReportedRace': 849518448,
+    'siteReportedSex': 706256705,
     "recruitmentType": 512820379,
+    'campaignType': 667474224,
     'active': 486306141,
     'passive': 854703046,
     'inactive': 180583933,
@@ -213,8 +230,13 @@ export default
     'accountEmail': 421823980,
     'accountPhone': 348474836,
     'accountName': 756862764,
+    'consentFirstName': 471168198,
+    'consentMiddleName': 736251808,
+    'consentLastName': 436680969,
     'preConsentOptOut': 158291096,
     'datePreConsentOptOut': 697256759,
+    'duplicateType': 148197146,
+    'previousCancer': 452166062,
 
     'signedHIPAARevoc': 153713899,
     'dateHIPAARevoc': 613641698,
