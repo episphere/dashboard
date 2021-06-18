@@ -3,7 +3,7 @@ import { animation, participantVerification } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getIdToken, humanReadableMDYwithTime } from './utils.js';
+import { getIdToken } from './utils.js';
 
 export const renderTable = (data, source) => {
     let template = '';

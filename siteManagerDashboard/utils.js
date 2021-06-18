@@ -41,20 +41,38 @@ export const humanReadableMDY = (participantDate) => {
   return readableConsentDate; // 10/30/2020
 }
 
-export const humanReadableMDYwithTime = (participantDate) => {
-  let consentTimeSubmitted = participantDate;
-  let submittedDate = String(consentTimeSubmitted);
-  submittedDate = submittedDate.split("T");
-  let submittedTime = submittedDate[1];
-  submittedTime = submittedTime.split(".")
-  submittedTime = submittedTime[0]
-  submittedDate = submittedDate[0];
-  submittedDate = submittedDate.split("-");
-  const readableYear = submittedDate[0];
-  const readableMonth = parseInt(submittedDate[1])-1
-  const readableDate = submittedDate[2];
-  const readableConsentDateTime = readableMonth + "/" + readableDate + "/" + readableYear + " " + submittedTime;
-  return readableConsentDateTime; // 10/30/2020 20:30:22
+export const SSOConfig = (inputValue) => {
+  let tenantID = '';
+  let provider = '';
+  if(/nih.gov/i.test(inputValue)) {
+      tenantID = 'NIH-SSO-qfszp';
+      provider = 'saml.nih-sso';
+  };
+  if(/healthpartners.com/i.test(inputValue)) {
+      tenantID = 'HP-SSO-wb1zb';
+      provider = 'saml.healthpartner';
+  };
+  if(/hfhs.org/i.test(inputValue)) {
+      tenantID = 'HFHS-SSO-ay0iz';
+      provider = 'saml.connect-hfhs';
+  };
+  if(/sanfordhealth.org/i.test(inputValue)) {
+      tenantID = 'SFH-SSO-cgzpj';
+      provider = 'saml.connect-sanford';
+  };
+  if(/uchicago.edu/i.test(inputValue)) {
+      tenantID = 'UCM-SSO-tovai';
+      provider = 'saml.connect-uchicago';
+  };
+  if(/norc.org/i.test(inputValue)) {
+      tenantID = 'NORC-SSO-dilvf';
+      provider = 'saml.connect-norc';
+  };
+  if(/kp.org/i.test(inputValue)) {
+      tenantID = 'KP-SSO-wulix';
+      provider = 'saml.connect-kp';
+  };
+  return {tenantID, provider}
 }
 
 export const humanReadableY = () => {
