@@ -5,7 +5,11 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
+<<<<<<< HEAD
 import { internalNavigatorHandler, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn } from './utils.js';
+=======
+import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn, SSOConfig } from './utils.js';
+>>>>>>> dev
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -119,14 +123,13 @@ const homePage = async () => {
         form.addEventListener('submit', async e => {
             e.preventDefault();
             const email = document.getElementById('ssoEmail').value;
-            const { SSOConfig } = await import('https://episphere.github.io/biospecimen/src/shared.js');
             const { tenantID, provider } = SSOConfig(email);
 
             const saml = new firebase.auth.SAMLAuthProvider(provider);
             firebase.auth().tenantId = tenantID;
             firebase.auth().signInWithPopup(saml)
                 .then(async (result) => {
-                    location.hash = '##home'
+                    location.hash = '#home'
                 })
                 .catch((error) => {
                     console.log(error)
