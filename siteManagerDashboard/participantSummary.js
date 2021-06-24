@@ -88,7 +88,7 @@ export const render = (participant) => {
                                     ${baselineLAWSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineSSN(participant[fieldMapping.ssn])}
+                                    ${baselineSSN(participant)}
                                 </tr>
                                 <tr class="row-color-survey-light">
                                     ${baselineBloodUrineSurvey(participant)}

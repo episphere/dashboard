@@ -1,5 +1,5 @@
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
-import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
+import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns } from './participantCommons.js';
 import { internalNavigatorHandler, getDataAttributes, getIdToken, showAnimation, hideAnimation } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
@@ -164,13 +164,11 @@ export const addEventSearchId = () => {
         const connectId = document.getElementById('connectId').value;
         const token = document.getElementById('token').value;
         const studyId = document.getElementById('studyId').value;
-        // const pin = document.getElementById('pin').value;
         if(!connectId && !token && !studyId) return;
         let query = '';
         if(connectId) query += `connectId=${connectId}`;
         if(token) query += `token=${token}`;
         if(studyId) query += `studyId=${studyId}`;
-        // if(pin) query += `pin=${pin}`;
         performSearch(query, "allResults", "search-connect-id-failed");
     })
 };
@@ -227,7 +225,6 @@ export const performSearch = async (query, sitePref, failedElem) => {
 export const showNotifications = (data, error) => {
     document.getElementById("search-failed").hidden = false;
 }
-
 
 
 export const findParticipant = async (query) => {
