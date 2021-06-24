@@ -3,13 +3,9 @@ import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-<<<<<<< HEAD
-import { getIdToken, humanReadableMDYwithTime, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
+import { getIdToken, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj } from './siteKeysToName.js';
-=======
-import { getIdToken } from './utils.js';
->>>>>>> dev
 
 export const renderTable = (data, source) => {
     let template = '';

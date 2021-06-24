@@ -5,11 +5,7 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-<<<<<<< HEAD
-import { internalNavigatorHandler, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn } from './utils.js';
-=======
 import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn, SSOConfig } from './utils.js';
->>>>>>> dev
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -24,7 +20,7 @@ window.onload = async () => {
     await getMappings();
     localStorage.setItem("flags", JSON.stringify(saveFlag));
     localStorage.setItem("counters", JSON.stringify(counter));
-   // activityCheckController()
+    activityCheckController()
 }
 
 window.onhashchange = () => {
