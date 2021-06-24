@@ -919,7 +919,7 @@ const activityCheckController = () => {
                     resetTimer;
                 })
             });
-        }, 30000);
+        }, 1200000);
     }
     window.onload = resetTimer;
     document.onmousemove = resetTimer;
