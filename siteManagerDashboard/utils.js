@@ -41,40 +41,6 @@ export const humanReadableMDY = (participantDate) => {
   return readableConsentDate; // 10/30/2020
 }
 
-export const SSOConfig = (inputValue) => {
-  let tenantID = '';
-  let provider = '';
-  if(/nih.gov/i.test(inputValue)) {
-      tenantID = 'NIH-SSO-qfszp';
-      provider = 'saml.nih-sso';
-  };
-  if(/healthpartners.com/i.test(inputValue)) {
-      tenantID = 'HP-SSO-wb1zb';
-      provider = 'saml.healthpartner';
-  };
-  if(/hfhs.org/i.test(inputValue)) {
-      tenantID = 'HFHS-SSO-ay0iz';
-      provider = 'saml.connect-hfhs';
-  };
-  if(/sanfordhealth.org/i.test(inputValue)) {
-      tenantID = 'SFH-SSO-cgzpj';
-      provider = 'saml.connect-sanford';
-  };
-  if(/uchicago.edu/i.test(inputValue)) {
-      tenantID = 'UCM-SSO-tovai';
-      provider = 'saml.connect-uchicago';
-  };
-  if(/norc.org/i.test(inputValue)) {
-      tenantID = 'NORC-SSO-dilvf';
-      provider = 'saml.connect-norc';
-  };
-  if(/kp.org/i.test(inputValue)) {
-      tenantID = 'KP-SSO-wulix';
-      provider = 'saml.connect-kp';
-  };
-  return {tenantID, provider}
-}
-
 export const humanReadableY = () => {
   const currentYear = new Date().getFullYear();
   return currentYear;
@@ -138,11 +104,6 @@ export const userLoggedIn = () => {
       });
   });
 }
-
-export const firebaseConfig =  {
-  apiKey: "AIzaSyCoz1UxNYE53ujAkXysPTSEA-IDU9utcNQ",
-  authDomain: "nih-nci-dceg-connect-dev.firebaseapp.com"
-};
 
 export const getIdToken = () => {
   return new Promise((resolve, reject) => {

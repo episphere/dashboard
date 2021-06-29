@@ -5,17 +5,26 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { internalNavigatorHandler, humanReadableY, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn, SSOConfig } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
+import { firebaseConfig as devFirebaseConfig } from "./dev/config.js";
+import { firebaseConfig as stageFirebaseConfig } from "./stage/config.js";
+import { firebaseConfig as prodFirebaseConfig } from "./prod/config.js";
+import { SSOConfig as devSSOConfig} from './dev/identityProvider.js';
+import { SSOConfig as stageSSOConfig} from './stage/identityProvider.js';
+import { SSOConfig as prodSSOConfig} from './prod/identityProvider.js';
 
 let saveFlag = false;
 let counter = 0;
 
 
 window.onload = async () => {
-    !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+    if(location.host === 'myconnect.cancer.gov') !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
+    else if(location.host === 'myconnect-stage.cancer.gov') !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
+    else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
+
     router();
     await getMappings();
     localStorage.setItem("flags", JSON.stringify(saveFlag));
@@ -119,7 +128,24 @@ const homePage = async () => {
         form.addEventListener('submit', async e => {
             e.preventDefault();
             const email = document.getElementById('ssoEmail').value;
-            const { tenantID, provider } = SSOConfig(email);
+            let tenantID = '';
+            let provider = '';
+            
+            if(location.host === 'myconnect.cancer.gov') {
+                let config = prodSSOConfig(email);
+                tenantID = config.tenantID;
+                provider = config.provider;
+            }
+            else if(location.host === 'myconnect-stage.cancer.gov') {
+                let config = stageSSOConfig(email);
+                tenantID = config.tenantID;
+                provider = config.provider;
+            }
+            else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();{
+                let config = devSSOConfig(email);
+                tenantID = config.tenantID;
+                provider = config.provider;
+            }
 
             const saml = new firebase.auth.SAMLAuthProvider(provider);
             firebase.auth().tenantId = tenantID;
