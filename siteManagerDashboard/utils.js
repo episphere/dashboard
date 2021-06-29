@@ -130,3 +130,5 @@ export const showAnimation = () => {
 export const hideAnimation = () => {
   if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
+
+export const baseAPI = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
