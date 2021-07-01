@@ -13,8 +13,8 @@
         <script>
             const host = location.host;
             let measurementID = '';
-            if(host === 'dashboard.myconnect.cancer.gov') measurementID = 'G-YBD450K10S'
-            else if(host === 'dashboard.myconnect-stage.cancer.gov') measurementID = 'G-29BD50GYSD'
+            if(host === 'dashboard-myconnect.cancer.gov') measurementID = 'G-YBD450K10S'
+            else if(host === 'dashboard-myconnect-stage.cancer.gov') measurementID = 'G-29BD50GYSD'
             else measurementID = 'G-HPFBFBVJYS'
             const gtagSrc = `https://www.googletagmanager.com/gtag/js?id=${measurementID}`
             const gtagScript = document.createElement('script');

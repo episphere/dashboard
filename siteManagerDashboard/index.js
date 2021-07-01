@@ -21,8 +21,8 @@ let counter = 0;
 
 
 window.onload = async () => {
-    if(location.host === 'myconnect.cancer.gov') !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
-    else if(location.host === 'myconnect-stage.cancer.gov') !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
+    if(location.host === 'dashboard-myconnect.cancer.gov') !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
+    else if(location.host === 'dashboard-myconnect-stage.cancer.gov') !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
     else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
 
     router();
@@ -131,12 +131,12 @@ const homePage = async () => {
             let tenantID = '';
             let provider = '';
             
-            if(location.host === 'myconnect.cancer.gov') {
+            if(location.host === 'dashboard-myconnect.cancer.gov') {
                 let config = prodSSOConfig(email);
                 tenantID = config.tenantID;
                 provider = config.provider;
             }
-            else if(location.host === 'myconnect-stage.cancer.gov') {
+            else if(location.host === 'dashboard-myconnect-stage.cancer.gov') {
                 let config = stageSSOConfig(email);
                 tenantID = config.tenantID;
                 provider = config.provider;
