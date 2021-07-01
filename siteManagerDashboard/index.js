@@ -5,7 +5,7 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -21,8 +21,8 @@ let counter = 0;
 
 
 window.onload = async () => {
-    if(location.host === 'dashboard-myconnect.cancer.gov') !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
-    else if(location.host === 'dashboard-myconnect-stage.cancer.gov') !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
+    if(location.host === urls.prod) !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
+    else if(location.host === urls.stage) !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
     else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
 
     router();
@@ -131,12 +131,12 @@ const homePage = async () => {
             let tenantID = '';
             let provider = '';
             
-            if(location.host === 'dashboard-myconnect.cancer.gov') {
+            if(location.host === urls.prod) {
                 let config = prodSSOConfig(email);
                 tenantID = config.tenantID;
                 provider = config.provider;
             }
-            else if(location.host === 'dashboard-myconnect-stage.cancer.gov') {
+            else if(location.host === urls.stage) {
                 let config = stageSSOConfig(email);
                 tenantID = config.tenantID;
                 provider = config.provider;

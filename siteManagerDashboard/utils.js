@@ -132,3 +132,8 @@ export const hideAnimation = () => {
 }
 
 export const baseAPI = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
+
+export const urls = {
+  'stage': 'dashboard-myconnect-stage.cancer.gov',
+  'prod': 'dashboard-myconnect.cancer.gov'
+}
