@@ -1,5 +1,5 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { showAnimation, hideAnimation } from './utils.js';
+import { showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
@@ -486,7 +486,7 @@ async function clickHandler(sendRefusalData, idToken, token) {
     const refusalPayload = {
         "data": sendRefusalData
     }
-    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=updateParticipantData`, {
+    const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`, {
         method:'POST',
         body: JSON.stringify(refusalPayload),
         headers:{
@@ -496,7 +496,7 @@ async function clickHandler(sendRefusalData, idToken, token) {
     }))
     hideAnimation();
     if (response.status === 200) {
-        const participantResponse = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipants&type=filter&token=${token}`, {
+        const participantResponse = await (await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&token=${token}`, {
             method:'GET',
             headers:{
                 Authorization:"Bearer "+idToken,
