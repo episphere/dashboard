@@ -146,7 +146,7 @@ export const conceptToSiteMapping = {
   300267574: 'KPHI',
   452412599: 'KPNW',
   303349821: 'MFC',
-  657167265: 'SFH',
+  657167265: 'Sanford',
   809703864: 'UCM',
   13: 'NCI'
 }
