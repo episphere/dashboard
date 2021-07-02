@@ -131,7 +131,11 @@ export const hideAnimation = () => {
   if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = 'none';
 }
 
-export const baseAPI = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
+let api = '';
+if(location.host === 'dashboard-myconnect.cancer.gov') api = 'https://api-myconnect.cancer.gov';
+else if(location.host === 'dashboard-myconnect-stage.cancer.gov') api = 'https://api-myconnect-stage.cancer.gov';
+else api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
+export const baseAPI = api;
 
 export const urls = {
   'stage': 'dashboard-myconnect-stage.cancer.gov',
