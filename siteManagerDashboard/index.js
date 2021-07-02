@@ -640,8 +640,8 @@ const filterVerification = (data, recruit) => {
             duplicate += i.verificationCount
         }
     });
-    currentVerificationObj.notYetVerified = notYetVerified
-    currentVerificationObj.outreachTimedout = outreachTimedout
+    currentVerificationObj.notYetVerified = outreachTimedout
+    currentVerificationObj.outreachTimedout = notYetVerified
     currentVerificationObj.verified = verified
     currentVerificationObj.cannotBeVerified = cannotBeVerified
     currentVerificationObj.duplicate = duplicate
