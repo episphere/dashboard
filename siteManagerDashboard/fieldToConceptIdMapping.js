@@ -54,6 +54,7 @@ export default
     "suffix":480305327,
     "ssnOnFile": 454067894,
     "timeProfileSubmitted": 430551721,
+    'timeStudyIdSubmitted': 521025370,
 
     'jr': 612166858,
     'sr': 255907182,
@@ -85,11 +86,20 @@ export default
     "biospecimenHome": 103209024,
 
     "bohStatusFlag1": 949302066,
+    "bohCompletedDate1": 517311251,
+    "bohStartDate1": 205553981,
+
     "mreStatusFlag1": 536735468,
+    "mreCompletedDate1": 832139544,
+    "mreStartDate1": 541836531,
+     
     "sasStatusFlag1": 976570371,
+    "sasCompletedDate1": 770257102,
+    "sasStartDate1": 386488297,
+
     "lawStausFlag1": 663265240,
-    "ssnFullflag1": 311580100,
-    "ssnPartialFlag1": 914639140,
+    "lawCompletedDate1": 264644252,
+    "lawStartDate1": 452942800,
 
     "boh": "D_726699695",
     "bohStatusFlag": "D_949302066",
@@ -154,6 +164,7 @@ export default
     "refusedBaselinePayment": 648228701,
     "refusedBaselinePaymentDate": 438636757,
 
+    // de-identified age
     "ageRange1": 124276120,
     "ageRange2": 450985724,
     "ageRange3": 363147933,
@@ -161,10 +172,10 @@ export default
     "ageRange5": 771230670,
 
     // de-identified
-    "female": 576796184,
+    "female": 536341288,
     "male": 654207589,
     "intersex": 830573274,
-    "unknow": 178420302,
+    "unavailable": 178420302,
 
     // de-identified
     "white": 768826601,

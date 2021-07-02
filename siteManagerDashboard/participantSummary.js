@@ -4,7 +4,7 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,
     baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, 
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
-import { humanReadableMDY, getCurrentTimeStamp } from './utils.js';
+import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping } from './utils.js';
 
 const headerImportantColumns = [
     { field: fieldMapping.fName },
@@ -88,7 +88,7 @@ export const render = (participant) => {
                                     ${baselineLAWSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-survey-dark">
-                                    ${baselineSSN(participant[fieldMapping.ssn])}
+                                    ${baselineSSN(participant)}
                                 </tr>
                                 <tr class="row-color-survey-light">
                                     ${baselineBloodUrineSurvey(participant)}
@@ -130,26 +130,26 @@ export const render = (participant) => {
 const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
-        a.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), './consent.pdf', {x: 200, y: 625}, {x1: 200, y1: 560});
+        a.addEventListener('click',  () => { 
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, {x: 200, y: 625}, {x1: 200, y1: 560});
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), './HIPAA_form.pdf', {x: 100, y: 440}, {x1: 100, y1: 460});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, {x: 100, y: 440}, {x1: 100, y1: 460});
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './HIPAA_Revocation_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './Data_Destruction_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 405});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', {x: 150, y: 405}, {x1: 150, y1: 450});
         })
     }
  

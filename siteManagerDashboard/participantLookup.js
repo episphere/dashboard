@@ -1,6 +1,6 @@
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
-import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns, eventVerifiedButton } from './participantCommons.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken, showAnimation, hideAnimation } from './utils.js';
+import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns } from './participantCommons.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
 export function renderParticipantLookup(){
@@ -17,7 +17,7 @@ export function renderParticipantLookup(){
     addEventSearchId();
     dropdownTrigger();
 }
-const api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/';
+
 export function renderParticipantSearch() {
     return `
         <div class="container">
@@ -164,13 +164,11 @@ export const addEventSearchId = () => {
         const connectId = document.getElementById('connectId').value;
         const token = document.getElementById('token').value;
         const studyId = document.getElementById('studyId').value;
-        // const pin = document.getElementById('pin').value;
         if(!connectId && !token && !studyId) return;
         let query = '';
         if(connectId) query += `connectId=${connectId}`;
         if(token) query += `token=${token}`;
         if(studyId) query += `studyId=${studyId}`;
-        // if(pin) query += `pin=${pin}`;
         performSearch(query, "allResults", "search-connect-id-failed");
     })
 };
@@ -229,12 +227,11 @@ export const showNotifications = (data, error) => {
 }
 
 
-
 export const findParticipant = async (query) => {
     const access_token = await getIdToken();
     const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
     const siteKey = access_token ? access_token : localStr.siteKey;
-    const response = await fetch(`${api}dashboard?api=getParticipants&type=filter&${query}`, {
+    const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`, {
         method: "GET",
         headers: {
             Authorization:"Bearer "+siteKey

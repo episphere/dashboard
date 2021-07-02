@@ -1,7 +1,7 @@
 import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation } from './utils.js';
+import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderLookupResultsTable } from './participantLookup.js';
 
@@ -512,7 +512,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         "data": updatedOptions
     }
 
-    const response = await (await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=updateParticipantData`,{
+    const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
         method:'POST',
         body: JSON.stringify(updateParticpantPayload),
         headers:{
