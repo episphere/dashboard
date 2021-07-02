@@ -1,7 +1,8 @@
 
 
 export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
-    participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount ) => {
+    participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, 
+    modulesSurvey, ssnSurvey, optOuts  ) => {
 
    const row = document.createElement('div');
    row.classList = ['row'];
@@ -29,7 +30,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    let subactiveOptouts = document.createElement('div');
    subactiveOptouts.classList = ['col-lg-12 sub-div-shadow viz-div'];
-//    activeOptouts.innerHTML = renderLabel(recruitsCount.activeCount, 'Active')
    subactiveOptouts.setAttribute('id', 'activeOptouts');
    activeOptouts.appendChild(subactiveOptouts);
 
@@ -181,6 +181,38 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    mainContent.appendChild(row4); // Misc.
 
+   const row5 = document.createElement('div');
+   row5.classList = ['row'];
+
+   let pieChartModule = document.createElement('div');
+   pieChartModule.classList = ['col-lg-4 charts'];
+
+   let subPieChartModule = document.createElement('div');
+   subPieChartModule.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartModule.setAttribute('id', 'moduleMetrics');
+   pieChartModule.appendChild(subPieChartModule);
+  
+   let pieChartSsn = document.createElement('div');
+   pieChartSsn.classList = ['col-lg-4 charts'];
+
+   let subPieChartSsn = document.createElement('div');
+   subPieChartSsn.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartSsn.setAttribute('id', 'ssnMetrics');
+   pieChartSsn.appendChild(subPieChartSsn);
+
+//    let pieChartSex = document.createElement('div');
+//    pieChartSex.classList = ['col-lg-4 charts'];
+//    let subPieChartSex = document.createElement('div');
+//    subPieChartSex.classList = ['col-lg-12 viz-div sub-div-shadow'];
+//    subPieChartSex.setAttribute('id', 'sexMetrics');
+//    pieChartSex.appendChild(subPieChartSex);
+
+
+   row5.appendChild(pieChartModule);
+   row5.appendChild(pieChartSsn);
+//    row4.appendChild(pieChartRace);
+
+   mainContent.appendChild(row5); // Misc.
 
    //renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
    renderAgeMetrics(participantsAgeMetric, 'ageMetrics');
@@ -189,7 +221,7 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    renderActiveFunnelChart(activeRecruitsFunnel, 'funnelChart')
    renderActiveBarChart(activeCurrentWorkflow, 'barChart');
-   renderActiveOptouts('activeOptouts');
+   renderActiveOptouts(optOuts, recruitsCount.activeCount, 'activeOptouts');
 
    renderPassiveFunnelChart(passiveRecruitsFunnel, 'passiveFunnelChart');
    renderPassiveBarChart(passiveCurrentWorkflow, 'passiveBarChart');
@@ -199,6 +231,9 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    renderActiveVerificationStatus(activeVerificationStatus, denominatorVerificationStatus, 'activeVerificationStatus');
    renderPassiveVerificationStatus(passiveVerificationStatus, denominatorVerificationStatus, 'passiveVerificationStatus');
+
+   renderModuleChart(modulesSurvey, 'moduleMetrics');
+   renderSsnChart(ssnSurvey, 'ssnMetrics');
 }
 
 const renderLabel = (count, recruitType) => {
@@ -305,10 +340,12 @@ const renderPassiveFunnelChart = (passiveRecruitsFunnel, id) => {
         Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
 };
 
-const renderActiveOptouts = (id) => {
+const renderActiveOptouts = (optOuts, recruitsCount, id) => {
     let template = ``;
     template += `
-        <span style="text-align: center;"><h5>Opt Outs</h5></span>`
+        ${renderLabel(recruitsCount, 'Active')}
+        <span style="text-align: center;"><h5>Opt Outs</h5></span>
+        <center><h4><b>Total Opt Out: ${optOuts.totalOptOuts}</b></h4></center>`
     document.getElementById(id).innerHTML = template
 }
 
@@ -553,3 +590,57 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
       
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
+
+  const renderModuleChart = (modulesSurvey, id) => {
+    const verifiedParticipants = modulesSurvey.verifiedParticipants ? modulesSurvey.verifiedParticipants : 0
+    const noModulesSubmitted =  modulesSurvey.noModulesSubmitted ? ((modulesSurvey.noModulesSubmitted)/(verifiedParticipants)*100).toFixed(1) : 0
+    const moduleOneSubmitted = modulesSurvey.moduleOneSubmitted ? ((modulesSurvey.moduleOneSubmitted)/(verifiedParticipants)*100).toFixed(1) : 0
+    const modulesTwoThreeSubmitted =  modulesSurvey.modulesTwoThreeSubmitted ? ((modulesSurvey.modulesTwoThreeSubmitted)/(verifiedParticipants)*100).toFixed(1) : 0
+    const modulesSubmitted = modulesSurvey.modulesSubmitted ? ((modulesSurvey.modulesSubmitted)/(verifiedParticipants)*100).toFixed(1) : 0
+       let data = [{
+        values: [noModulesSubmitted, moduleOneSubmitted, modulesTwoThreeSubmitted, modulesSubmitted],
+
+        labels: [ `None: N=${modulesSurvey.noModulesSubmitted }`, 
+                `BOH only: N=${modulesSurvey.moduleOneSubmitted}`, 
+                `2 or 3 of SAS/MRE/LAW : N=${modulesSurvey.modulesTwoThreeSubmitted}`, 
+                `All: N=${modulesSurvey.modulesSubmitted}`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Completion of Initial Survey among verified participants N=${verifiedParticipants}`
+    };
+      
+      Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+
+  const renderSsnChart = (ssnSurvey, id) => {
+    const verifiedParticipants = ssnSurvey.verifiedParticipants ? ssnSurvey.verifiedParticipants : 0
+    const noSsnFlag =  ssnSurvey.ssnNoFlagCounter ? ((ssnSurvey.ssnNoFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
+    const ssnFullFlag = ssnSurvey.ssnFullFlagCounter ? ((ssnSurvey.ssnFullFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
+    const ssnHalfFlag =  ssnSurvey.ssnHalfFlagCounter ? ((ssnSurvey.ssnHalfFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
+    
+       let data = [{
+        values: [noSsnFlag, ssnFullFlag, ssnHalfFlag],
+
+        labels: [ `0 digits given: N=${ssnSurvey.ssnNoFlagCounter}`, 
+                `Full SSN given: N=${ssnSurvey.ssnFullFlagCounter}`, 
+                `Partial digits: N=${ssnSurvey.ssnHalfFlagCounter}`],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Completion of SSN among verified participants N=${verifiedParticipants}`
+    };
+      
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
+ 

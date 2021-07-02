@@ -201,10 +201,10 @@ const renderDashboard = async () => {
 
 const renderCharts = async (siteKey, isParent) => {
 
-    const filterWorkflowResults = await fetchStats(siteKey, 'participants_workflow');
-
     const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
     const recruitsCount = filterRecruits(recruitsCountResults.stats);
+
+    const filterWorkflowResults = await fetchStats(siteKey, 'participants_workflow');
     const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active', recruitsCount.activeCount)
     const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive', recruitsCount.passiveCount)
     const totalRecruitsFunnel = filterTotalRecruitsFunnel(filterWorkflowResults.stats)
@@ -217,13 +217,26 @@ const renderCharts = async (siteKey, isParent) => {
     const activeVerificationStatus = filterVerification(filterVerificationResults.stats, 'active');
     const passiveVerificationStatus = filterVerification(filterVerificationResults.stats, 'passive');
     const denominatorVerificationStatus = filterDenominatorVerificationStatus(filterWorkflowResults.stats);
+
     const participantsGenderMetric = await fetchStats(siteKey, 'sex');
     const participantsRaceMetric = await fetchStats(siteKey, 'race');
     const participantsAgeMetric = await fetchStats(siteKey, 'age');
 
-    const genderStats = filterGenderMetrics(participantsGenderMetric.stats)
-    const raceStats = filterRaceMetrics(participantsRaceMetric.stats)
-    const ageStats = filterAgeMetrics(participantsAgeMetric.stats)
+    const genderStats = filterGenderMetrics(participantsGenderMetric.stats);
+    const raceStats = filterRaceMetrics(participantsRaceMetric.stats);
+    const ageStats = filterAgeMetrics(participantsAgeMetric.stats);
+
+    const optOutsMetric = await fetchStats(siteKey, 'participants_optOuts');
+    const optOutsStats = filterOptOutsMetrics(optOutsMetric.stats);
+
+    const modulesMetric = await fetchStats(siteKey, 'participants_allModules');
+    const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
+    const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
+    const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
+    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
+
+
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
     siteSelectionRow.id = 'siteSelection';
@@ -239,11 +252,10 @@ const renderCharts = async (siteKey, isParent) => {
             siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
             mainContent.appendChild(siteSelectionRow);
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
-                filterVerificationResults.stats, recruitsCountResults.stats);
+                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats);
         }
         renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
-            genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus,
-            denominatorVerificationStatus, recruitsCount);
+            genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats);
 
         animation(false);
     }
@@ -278,7 +290,8 @@ const renderSiteKeyList = () => {
     return template;
 }
 
-const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, recruitsCountResults) => {
+const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, 
+    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults) => {
     let a = document.getElementById('dropdownSites');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
     let tempSiteName = a.innerHTML = sitekeyName;
@@ -287,7 +300,8 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
             if (sitekeyName === 'Filter by Site' || sitekeyName === tempSiteName) {
                 a.innerHTML = e.target.textContent;
                 const t = getDataAttributes(e.target)
-                reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, recruitsCountResults);
+                reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 
+                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults);
             }
         })
 
@@ -410,17 +424,65 @@ const filterAgeMetrics = (participantsAgeMetrics) => {
     return ageObject;
 }
 
-const filterRecruitsFunnel = (data, recruit, count) => {
-    let recruitType = fieldMapping[recruit]
+const filterOptOutsMetrics = (participantOptOutsMetric) => {
     let currentWorflowObj = {}
-    let signedInCount = 0
-    let consentedCount = 0
-    let submittedProfileCount = 0
-    let verificationCount = 0
-    let verifiedCount = 0
+    let totalOptOuts = 0
+    participantOptOutsMetric && participantOptOutsMetric.filter( i => totalOptOuts += i.totalOptOuts );
+    currentWorflowObj.totalOptOuts = totalOptOuts
+    return currentWorflowObj;
+}
 
-    let signedIn = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes))
+const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+    let currentWorflowObj = {}
+    let noModulesSubmitted = 0
+    let moduleOneSubmitted = 0
+    let modulesTwoThreeSubmitted = 0
+    let modulesSubmitted = 0
+  
+    participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
+    participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
+    participantModulesTwoThree && participantModulesTwoThree.filter( i => {
+        modulesTwoThreeSubmitted += i.countModuleTwo
+        modulesTwoThreeSubmitted += i.countModuleThree
+    })
+    const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
+    noModulesSubmitted = verifiedParticipants - (modulesSubmitted+moduleOneSubmitted+modulesTwoThreeSubmitted)
+    currentWorflowObj.noModulesSubmitted = noModulesSubmitted
+    currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
+    currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
+    currentWorflowObj.modulesSubmitted = modulesSubmitted
+    currentWorflowObj.verifiedParticipants = verifiedParticipants
+    return currentWorflowObj;  
+
+}
+
+const filterSsnMetrics = (participantsSsnMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+    let currentWorflowObj = {}
+    let ssnFullFlagCounter = 0
+    let ssnHalfFlagCounter = 0
+    const verifiedParticipants = activeVerifiedParticipants +  passiveVerifiedParticipants
+
+    participantsSsnMetrics && participantsSsnMetrics.filter( i => {
+        if (i.ssnFlag === null &&  i.ssnFlagCount === 0) {  ssnHalfFlagCounter += i.ssnHalfFlagCount }
+        if (i.ssnHalfFlag === null &&  i.ssnHalfFlagCount === 0) {  ssnFullFlagCounter += i.ssnFlagCount }
+
+    })
+    currentWorflowObj.ssnNoFlagCounter = verifiedParticipants - (ssnFullFlagCounter + ssnHalfFlagCounter);
+    currentWorflowObj.ssnFullFlagCounter = ssnFullFlagCounter;
+    currentWorflowObj.ssnHalfFlagCounter = ssnHalfFlagCounter;
+    currentWorflowObj.verifiedParticipants = verifiedParticipants;
+    return currentWorflowObj; 
+}
+
+const filterRecruitsFunnel = (data, recruit) => {
+    let recruitType = fieldMapping[recruit];
+    let currentWorflowObj = {};
+    let signedInCount = 0;
+    let consentedCount = 0;
+    let submittedProfileCount = 0;
+    let verificationCount = 0;
+    let verifiedCount = 0;
+    let signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes ));
     signedIn.forEach((i) => {
         signedInCount += i.signedCount
     })
@@ -446,11 +508,11 @@ const filterRecruitsFunnel = (data, recruit, count) => {
         verifiedCount += i.verificationCount
     })
 
-    currentWorflowObj.signedIn = signedInCount
-    currentWorflowObj.consented = consentedCount
-    currentWorflowObj.submittedProfile = submittedProfileCount
-    currentWorflowObj.verification = verificationCount
-    currentWorflowObj.verified = verifiedCount
+    currentWorflowObj.signedIn = signedInCount;
+    currentWorflowObj.consented = consentedCount;
+    currentWorflowObj.submittedProfile = submittedProfileCount;
+    currentWorflowObj.verification = verificationCount;
+    currentWorflowObj.verified = verifiedCount;
     return currentWorflowObj;
 }
 
@@ -625,7 +687,7 @@ const filterRecruits = (data) => {
 
 
 const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-    participantsAgeMetric, filterVerificationResults, recruitsCountResults) => {
+    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults) => {
 
     const siteKeyFilter = nameToKeyObj[siteKey];
     let resultWorkflow = []
@@ -646,37 +708,56 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     let resultRecruitsCount = []
     filterDatabySiteCode(resultRecruitsCount, recruitsCountResults, siteKeyFilter);
 
+    let resultModules = []
+    filterDatabySiteCode(resultModules, modulesResults, siteKeyFilter);
+
+    let resultModuleOne = []
+    filterDatabySiteCode(resultModuleOne, moduleOneResults, siteKeyFilter);
+
+    let resultModulesTwoThree = []
+    filterDatabySiteCode(resultModulesTwoThree, modulesTwoThreeResults, siteKeyFilter);
+
+    let resultSsn = []
+    filterDatabySiteCode(resultSsn, ssnResults, siteKeyFilter);
+
+    let resultOptOuts = []
+    filterDatabySiteCode(resultOptOuts, optOutsResults, siteKeyFilter);
+
     mainContent.innerHTML = '';
 
-    const activeRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'active')
-    const passiveRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'passive')
-    const totalRecruitsFunnel = filterTotalRecruitsFunnel(resultWorkflow)
+    const activeRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'active');
+    const passiveRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'passive');
+    const totalRecruitsFunnel = filterTotalRecruitsFunnel(resultWorkflow);
 
-    const activeCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'active')
-    const passiveCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'passive')
-    const totalCurrentWorkflow = filterTotalCurrentWorkflow(resultWorkflow)
+    const activeCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'active');
+    const passiveCurrentWorkflow = filterCurrentWorkflow(resultWorkflow, 'passive');
+    const totalCurrentWorkflow = filterTotalCurrentWorkflow(resultWorkflow);
 
-    const activeVerificationStatus = filterVerification(resultVerification, 'active')
-    const passiveVerificationStatus = filterVerification(resultVerification, 'passive')
-    const denominatorVerificationStatus = filterDenominatorVerificationStatus(resultWorkflow)
+    const activeVerificationStatus = filterVerification(resultVerification, 'active');
+    const passiveVerificationStatus = filterVerification(resultVerification, 'passive');
+    const denominatorVerificationStatus = filterDenominatorVerificationStatus(resultWorkflow);
 
-    const genderStats = filterGenderMetrics(resultGender)
-    const raceStats = filterRaceMetrics(resultRace)
-    const ageStats = filterAgeMetrics(resultAge)
+    const genderStats = filterGenderMetrics(resultGender);
+    const raceStats = filterRaceMetrics(resultRace);
+    const ageStats = filterAgeMetrics(resultAge);
 
-    const recruitsCount = filterRecruits(resultRecruitsCount)
+    const recruitsCount = filterRecruits(resultRecruitsCount);
+    const optOutsStats = filterOptOutsMetrics(resultOptOuts);
+
+    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const ssnStats = filterSsnMetrics(resultSsn, activeVerificationStatus.verified, passiveVerificationStatus.verified);
 
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
     siteSelectionRow.id = 'siteSelection';
 
-    siteSelectionRow.innerHTML = renderSiteKeyList(siteKey)
+    siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
     mainContent.appendChild(siteSelectionRow);
     dropdownTrigger(siteTextContent, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-        participantsAgeMetric, filterVerificationResults, recruitsCountResults)
+        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults);
 
     renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
-        genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount)
+        genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats);
 
     animation(false);
 }
