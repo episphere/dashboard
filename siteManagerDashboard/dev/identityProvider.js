@@ -29,5 +29,9 @@ export const SSOConfig = (inputValue) => {
         tenantID = 'KP-SSO-wulix';
         provider = 'saml.connect-kp';
     };
+    if(/marshfieldresearch.org/i.test(inputValue)) {
+        tenantID = 'MFC-SSO-fljvd';
+        provider = 'saml.connect-mfc'
+    }
     return {tenantID, provider}
 }
