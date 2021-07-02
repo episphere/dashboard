@@ -236,7 +236,6 @@ const renderCharts = async (siteKey, isParent) => {
     const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
 
-
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
     siteSelectionRow.id = 'siteSelection';
@@ -641,8 +640,8 @@ const filterVerification = (data, recruit) => {
             duplicate += i.verificationCount
         }
     });
-    currentVerificationObj.notYetVerified = outreachTimedout
-    currentVerificationObj.outreachTimedout = notYetVerified
+    currentVerificationObj.notYetVerified = notYetVerified 
+    currentVerificationObj.outreachTimedout = outreachTimedout
     currentVerificationObj.verified = verified
     currentVerificationObj.cannotBeVerified = cannotBeVerified
     currentVerificationObj.duplicate = duplicate

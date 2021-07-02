@@ -131,25 +131,25 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_form.pdf`, {x: 200, y: 625}, {x1: 200, y1: 560});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, {x: 200, y: 625}, {x1: 200, y1: 560});
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_form.pdf`, {x: 100, y: 440}, {x1: 100, y1: 460});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, {x: 100, y: 440}, {x1: 100, y1: 460});
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_Form.pdf', {x: 150, y: 425}, {x1: 150, y1: 405});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', {x: 150, y: 405}, {x1: 150, y1: 450});
         })
     }
  
