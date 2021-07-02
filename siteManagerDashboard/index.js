@@ -5,17 +5,26 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { internalNavigatorHandler, getDataAttributes, firebaseConfig, getIdToken, userLoggedIn, SSOConfig } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
+import { firebaseConfig as devFirebaseConfig } from "./dev/config.js";
+import { firebaseConfig as stageFirebaseConfig } from "./stage/config.js";
+import { firebaseConfig as prodFirebaseConfig } from "./prod/config.js";
+import { SSOConfig as devSSOConfig} from './dev/identityProvider.js';
+import { SSOConfig as stageSSOConfig} from './stage/identityProvider.js';
+import { SSOConfig as prodSSOConfig} from './prod/identityProvider.js';
 
 let saveFlag = false;
 let counter = 0;
 
 
 window.onload = async () => {
-    !firebase.apps.length ? firebase.initializeApp(firebaseConfig) : firebase.app();
+    if(location.host === urls.prod) !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
+    else if(location.host === urls.stage) !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
+    else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
+
     router();
     await getMappings();
     localStorage.setItem("flags", JSON.stringify(saveFlag));
@@ -119,7 +128,24 @@ const homePage = async () => {
         form.addEventListener('submit', async e => {
             e.preventDefault();
             const email = document.getElementById('ssoEmail').value;
-            const { tenantID, provider } = SSOConfig(email);
+            let tenantID = '';
+            let provider = '';
+            
+            if(location.host === urls.prod) {
+                let config = prodSSOConfig(email);
+                tenantID = config.tenantID;
+                provider = config.provider;
+            }
+            else if(location.host === urls.stage) {
+                let config = stageSSOConfig(email);
+                tenantID = config.tenantID;
+                provider = config.provider;
+            }
+            else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();{
+                let config = devSSOConfig(email);
+                tenantID = config.tenantID;
+                provider = config.provider;
+            }
 
             const saml = new firebase.auth.SAMLAuthProvider(provider);
             firebase.auth().tenantId = tenantID;
@@ -284,7 +310,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
 
 
 const fetchData = async (siteKey, type) => {
-    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipants&type=${type}`, {
+    const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=${type}`, {
         method: 'GET',
         headers: {
             Authorization: "Bearer " + siteKey
@@ -294,7 +320,7 @@ const fetchData = async (siteKey, type) => {
 }
 
 const fetchStats = async (siteKey, type) => {
-    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=stats&type=${type}`, {
+    const response = await fetch(`${baseAPI}/dashboard?api=stats&type=${type}`, {
         method: 'GET',
         headers: {
             Authorization: "Bearer " + siteKey
@@ -304,7 +330,7 @@ const fetchStats = async (siteKey, type) => {
 }
 
 const authorize = async (siteKey) => {
-    const response = await fetch(`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=validateSiteUsers`, {
+    const response = await fetch(`${baseAPI}/dashboard?api=validateSiteUsers`, {
         method: 'GET',
         headers: {
             Authorization: "Bearer " + siteKey

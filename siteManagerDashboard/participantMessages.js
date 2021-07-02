@@ -1,7 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import {  humanReadableFromISO } from './utils.js';
+import {  baseAPI, humanReadableFromISO } from './utils.js';
 
 
 const headerImportantColumns = [
@@ -66,7 +66,7 @@ export const render = async (participant) => {
 
 const getParticipantMessage = async (token, idToken) => {
     let results = null;
-    const response = await fetch (`https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net/dashboard?api=getParticipantNotification&token=${token}`, {
+    const response = await fetch (`${baseAPI}/dashboard?api=getParticipantNotification&token=${token}`, {
         method:'GET',
         headers:{
             Authorization:"Bearer "+idToken,
