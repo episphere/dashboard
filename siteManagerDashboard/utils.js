@@ -137,3 +137,16 @@ export const urls = {
   'stage': 'dashboard-myconnect-stage.cancer.gov',
   'prod': 'dashboard-myconnect.cancer.gov'
 }
+
+export const conceptToSiteMapping = {
+  531629870: 'HP',
+  548392715: 'HFHS',
+  125001209: 'KPCO',
+  327912200: 'KPGA',
+  300267574: 'KPHI',
+  452412599: 'KPNW',
+  303349821: 'MFC',
+  657167265: 'SFH',
+  809703864: 'UCM',
+  13: 'NCI'
+}
