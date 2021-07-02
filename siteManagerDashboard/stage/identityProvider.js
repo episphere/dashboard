@@ -17,5 +17,21 @@ export const SSOConfig = (inputValue) => {
         tenantID = 'NORC-SSO-l80az';
         provider = 'saml.connect-norc';
     };
+    if(/kp.org/i.test(inputValue)) {
+        tenantID = 'KP-SSO-ssj7c';
+        provider = 'saml.connect-kp';
+    };
+    if(/uchicago.edu/i.test(inputValue)) {
+        tenantID = 'UCM-SSO-lrjsp';
+        provider = 'saml.connect-uchicago';
+    };
+    if(/hfhs.org/i.test(inputValue)) {
+        tenantID = 'HFHS-SSO-eq1fj';
+        provider = 'saml.connect-hfhs';
+    };
+    if(/marshfieldresearch.org/i.test(inputValue)) {
+        tenantID = 'MFC-SSO-6x4zy';
+        provider = 'saml.connect-mfc'
+    }
     return {tenantID, provider}
 }

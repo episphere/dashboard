@@ -2,20 +2,36 @@ export const SSOConfig = (inputValue) => {
     let tenantID = '';
     let provider = '';
     if(/nih.gov/i.test(inputValue)) {
-        tenantID = 'NIH-SSO-9q2ao';
+        tenantID = 'NIH-SSO-wthvn';
         provider = 'saml.nih-sso';
     };
     if(/healthpartners.com/i.test(inputValue)) {
-        tenantID = 'HP-SSO-1elez';
+        tenantID = 'HP-SSO-252sf';
         provider = 'saml.healthpartner';
     };
     if(/sanfordhealth.org/i.test(inputValue)) {
-        tenantID = 'SFH-SSO-uetfo';
+        tenantID = 'SFH-SSO-pb390';
         provider = 'saml.connect-sanford';
     };
     if(/norc.org/i.test(inputValue)) {
-        tenantID = 'NORC-SSO-l80az';
+        tenantID = 'NORC-SSO-nwvau';
         provider = 'saml.connect-norc';
     };
+    if(/kp.org/i.test(inputValue)) {
+        tenantID = 'KP-SSO-ii9sr';
+        provider = 'saml.connect-kp';
+    };
+    if(/uchicago.edu/i.test(inputValue)) {
+        tenantID = 'UCM-SSO-p4f5m';
+        provider = 'saml.connect-uchicago';
+    };
+    if(/hfhs.org/i.test(inputValue)) {
+        tenantID = 'HFHS-SSO-lo99j';
+        provider = 'saml.connect-hfhs';
+    };
+    if(/marshfieldresearch.org/i.test(inputValue)) {
+        tenantID = 'MFC-SSO-tdj17';
+        provider = 'saml.connect-mfc'
+    }
     return {tenantID, provider}
 }
