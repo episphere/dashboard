@@ -91,7 +91,7 @@ export const  renderLogin = () => {
         `: ``}
         </br></br>
         <h4>Single Sign-On</h4>
-        <form method="post" id="ssoLogin">
+        <form id="ssoLogin">
             <div class="row">
                 <div class="col">
                     <label for="ssoEmail">Institutional email</label>
