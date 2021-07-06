@@ -33,7 +33,7 @@ const formSubmit = () => {
         obj['time'] = {}
         obj['time']['day'] = parseInt(document.getElementById('days').value);
         obj['time']['hour'] = parseInt(document.getElementById('hours').value);
-        obj['time']['minutes'] = parseInt(document.getElementById('minutes').value);
+        obj['time']['minute'] = parseInt(document.getElementById('minutes').value);
 
         if(document.getElementById('emailSubject')) {
             obj['email'] = {};
