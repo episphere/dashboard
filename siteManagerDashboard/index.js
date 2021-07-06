@@ -107,6 +107,7 @@ const homePage = async () => {
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderLogin();
         const submit = document.getElementById('submit');
+        if(!submit) return
         submit.addEventListener('click', async () => {
             animation(true);
             const siteKey = document.getElementById('siteKey').value;
