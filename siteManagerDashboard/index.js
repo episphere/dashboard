@@ -144,7 +144,7 @@ const homePage = async () => {
                 tenantID = config.tenantID;
                 provider = config.provider;
             }
-            else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();{
+            else {
                 let config = devSSOConfig(email);
                 tenantID = config.tenantID;
                 provider = config.provider;
