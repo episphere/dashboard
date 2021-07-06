@@ -107,23 +107,25 @@ const homePage = async () => {
         const mainContent = document.getElementById('mainContent')
         mainContent.innerHTML = renderLogin();
         const submit = document.getElementById('submit');
-        if(!submit) return
-        submit.addEventListener('click', async () => {
-            animation(true);
-            const siteKey = document.getElementById('siteKey').value;
-            if (siteKey.trim() === '') return;
-            const dashboard = { siteKey }
-            localStorage.dashboard = JSON.stringify(dashboard);
-
-            const isAuthorized = await authorize(siteKey);
-            if (isAuthorized.code === 200) {
-                window.location.hash = '#home';
-            }
-            if (isAuthorized.code === 401) {
-                document.getElementById('mainContent').innerHTML = 'Not Authorized! <a href="#logout" class="btn btn-primary">Log Out</a>';
-                animation(false)
-            }
-        });
+        
+        if(submit) {
+            submit.addEventListener('click', async () => {
+                animation(true);
+                const siteKey = document.getElementById('siteKey').value;
+                if (siteKey.trim() === '') return;
+                const dashboard = { siteKey }
+                localStorage.dashboard = JSON.stringify(dashboard);
+    
+                const isAuthorized = await authorize(siteKey);
+                if (isAuthorized.code === 200) {
+                    window.location.hash = '#home';
+                }
+                if (isAuthorized.code === 401) {
+                    document.getElementById('mainContent').innerHTML = 'Not Authorized! <a href="#logout" class="btn btn-primary">Log Out</a>';
+                    animation(false)
+                }
+            });   
+        }
 
         const form = document.getElementById('ssoLogin');
         form.addEventListener('submit', async e => {
