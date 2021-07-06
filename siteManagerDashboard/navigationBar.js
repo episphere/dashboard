@@ -1,3 +1,5 @@
+import { urls } from "./utils.js";
+
 export const renderNavBarLinks = () => {
     return `
         <li class="nav-item active">
@@ -70,7 +72,8 @@ export const dashboardNavBarLinks = (isParent) => {
 export const  renderLogin = () => {
     return `
         <h1>Site Study Manager Dashboard</h1>
-        <div class="row">
+
+        ${location.host !== urls.prod && location.host !== urls.stage ? `<div class="row">
             <div class="col">
                 <label for="siteKey">Site Key</label><input type="password" class="form-control" id="siteKey">
             </div>
@@ -81,8 +84,9 @@ export const  renderLogin = () => {
                 <button class="btn btn-primary" id="submit">Log In</button>
             </div>
         </div>
+        `: ``}
         </br></br>
-        <h4>SSO (beta)</h4>
+        <h4>Single Sign-On</h4>
         <form method="post" id="ssoLogin">
             <div class="row">
                 <div class="col">
