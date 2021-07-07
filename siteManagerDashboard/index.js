@@ -159,6 +159,7 @@ const homePage = async () => {
         })
     }
 }
+
 const renderActivityCheck = () => {
     let template = ``
     template += ` <div class="modal fade" id="siteManagerMainModal" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
