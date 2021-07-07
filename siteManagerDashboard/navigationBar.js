@@ -1,18 +1,22 @@
+import { urls } from "./utils.js";
+
 export const renderNavBarLinks = () => {
     return `
         <li class="nav-item active">
             <a class="nav-item nav-link active" href="#" title="Home"><i class="fas fa-home"></i> Home</a>
         </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle ws-nowrap" id="devOps" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-users"></i> Feedback
-            </a>
-            <div class="dropdown-menu sub-div-shadow" aria-labelledby="devOps">
-                <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"></i> Report issue</a>
-                <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
-                <a class="dropdown-item" target="_blank" href="https://gitter.im/episphere/connect" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
-            </div>
-        </li>
+        ${location.host !== urls.prod && location.host !== urls.stage ? `
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle ws-nowrap" id="devOps" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-users"></i> Feedback
+                </a>
+                <div class="dropdown-menu sub-div-shadow" aria-labelledby="devOps">
+                    <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"></i> Report issue</a>
+                    <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
+                    <a class="dropdown-item" target="_blank" href="https://gitter.im/episphere/connect" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
+                </div>
+            </li>
+        `: ``}
     `;
 }
 
@@ -54,23 +58,26 @@ export const dashboardNavBarLinks = (isParent) => {
         <li class="nav-item">
             <a class="nav-item nav-link ws-nowrap" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </li>
-        <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle ws-nowrap" id="devOps" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <i class="fas fa-users"></i> Feedback
-            </a>
-            <div class="dropdown-menu sub-div-shadow" aria-labelledby="devOps">
-                <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"></i> Report issue</a>
-                <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
-                <a class="dropdown-item" target="_blank" href="https://gitter.im/episphere/connect" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
-            </div>
-        </li>
+        ${location.host !== urls.prod && location.host !== urls.stage ? `
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle ws-nowrap" id="devOps" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-users"></i> Feedback
+                </a>
+                <div class="dropdown-menu sub-div-shadow" aria-labelledby="devOps">
+                    <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/issues" title="Please create an issue if you encounter any."><i class="fas fa-bug"></i> Report issue</a>
+                    <a class="dropdown-item" target="_blank" href="https://github.com/episphere/connect/projects/1" title="GitHub Projects page"><i class="fas fa-tasks"></i> GitHub Projects</a>
+                    <a class="dropdown-item" target="_blank" href="https://gitter.im/episphere/connect" title="Chat with us"><i class="fas fa-comments"></i> Chat with us</a>
+                </div>
+            </li>
+        `: ``}
     `;
 }
 
 export const  renderLogin = () => {
     return `
         <h1>Site Study Manager Dashboard</h1>
-        <div class="row">
+
+        ${location.host !== urls.prod && location.host !== urls.stage ? `<div class="row">
             <div class="col">
                 <label for="siteKey">Site Key</label><input type="password" class="form-control" id="siteKey">
             </div>
@@ -81,9 +88,10 @@ export const  renderLogin = () => {
                 <button class="btn btn-primary" id="submit">Log In</button>
             </div>
         </div>
+        `: ``}
         </br></br>
-        <h4>SSO (beta)</h4>
-        <form method="post" id="ssoLogin">
+        <h4>Single Sign-On</h4>
+        <form id="ssoLogin">
             <div class="row">
                 <div class="col">
                     <label for="ssoEmail">Institutional email</label>
