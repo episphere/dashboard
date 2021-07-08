@@ -133,7 +133,6 @@ export const render = (participant) => {
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
-        console.log('participant', participant)
         template += `
                     <div class="float-left">
                         <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
@@ -268,7 +267,6 @@ const showSaveNote = () => {
     const a = document.getElementById('newValue');
     if (a) {
         a.addEventListener('click', () => {
-            console.log('12345')
             const b = document.getElementById('showNote');
             b.innerHTML = `After 'Submit' you must scroll down and click 'Save Changes' at bottom of screen for your changes to be saved.`
         })
@@ -496,7 +494,6 @@ const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteK
     a.addEventListener('click', () => {
         const participantToken = participant.token;
         changedOption['token'] = participantToken;
-        console.log('conol', changedOption)
         clickHandler(adminSubjectAudit, changedOption, siteKey);
     })
 }

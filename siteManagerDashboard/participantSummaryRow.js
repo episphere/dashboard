@@ -293,11 +293,11 @@ export const baselineSSN = (participant) => {
         (
         template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SSN", "All Digits", 
-                humanReadableMDY(participant[fieldMapping.ssnFulldate]), "N/A", "N", "N/A")}`
+                (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A")}`
         ) : (participant[fieldMapping.ssnPartialFlag]) ? 
         ( template += `
             ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "4 Digits", 
-            humanReadableMDY(participant[fieldMapping.ssnPartialDate]), "N/A", "N", "N/A")}`
+            (participant[fieldMapping.ssnPartialDate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnPartialDate]) : `N/A`), "N/A", "N", "N/A")}`
         ): (
             template += `
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "None", "N/A", "N/A", "N", "N/A")}`
