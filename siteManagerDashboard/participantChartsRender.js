@@ -480,7 +480,7 @@ const renderAgeMetrics = (ageMetrics, id) => {
 
     let data = [{
         values: [participantRaceResponse1, participantRaceResponse2, participantRaceResponse3],
-        labels: [ `White/Non-Hispanic,: N=${participantRaceResponse1}`, 
+        labels: [ `White/Non-Hispanic: N=${participantRaceResponse1}`, 
                     `Other: N=${participantRaceResponse2}`, 
                     `Unavailable: N=${participantRaceResponse3}`],
         hoverinfo: 'label+value',
