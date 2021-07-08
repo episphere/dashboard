@@ -133,7 +133,6 @@ export const render = (participant) => {
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
-        console.log('participant', participant)
         template += `
                     <div class="float-left">
                         <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
