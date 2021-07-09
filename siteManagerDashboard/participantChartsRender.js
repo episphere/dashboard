@@ -444,20 +444,27 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
 }
 
 const renderAgeMetrics = (ageMetrics, id) => {
-    const participantAgeRangeResponse1 = ageMetrics['40-45'];
-    const participantAgeRangeResponse2 = ageMetrics['46-50'];
-    const participantAgeRangeResponse3 = ageMetrics['51-55'];
-    const participantAgeRangeResponse4 = ageMetrics['56-60'];
-    const participantAgeRangeResponse5 = ageMetrics['61-65'];
-    const totalParticipants = participantAgeRangeResponse1 + participantAgeRangeResponse2 + participantAgeRangeResponse3 + participantAgeRangeResponse4 + participantAgeRangeResponse5
+    const verifiedParticipants = ageMetrics.verifiedParticipants ? ageMetrics.verifiedParticipants : 0
+
+    const participantAgeRange1 = ageMetrics['40-45'] !== undefined ? ageMetrics['40-45'] : 0;
+    const participantAgeRange2 = ageMetrics['46-50'] !== undefined ? ageMetrics['46-50'] : 0;
+    const participantAgeRange3 = ageMetrics['51-55'] !== undefined ? ageMetrics['51-55'] : 0;
+    const participantAgeRange4 = ageMetrics['56-60'] !== undefined ? ageMetrics['56-60'] : 0;
+    const participantAgeRange5 = ageMetrics['61-65'] !== undefined ? ageMetrics['61-65'] : 0;
+
+    const participantAgeRangeResponse1 = ((participantAgeRange1)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse2 = ((participantAgeRange2)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse3 = ((participantAgeRange3)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse4 = ((participantAgeRange4)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse5 = ((participantAgeRange5)/(verifiedParticipants)*100).toFixed(1);
 
     let data = [{
         values: [participantAgeRangeResponse1, participantAgeRangeResponse2, participantAgeRangeResponse3, participantAgeRangeResponse4, participantAgeRangeResponse5],
-        labels: [ `40-45: N = ${participantAgeRangeResponse1}`, 
-                    `46-50: N = ${participantAgeRangeResponse2}`, 
-                    `51-55: N = ${participantAgeRangeResponse3}`,
-                    `56-60: N = ${participantAgeRangeResponse4}`, 
-                    `61-65: N = ${participantAgeRangeResponse5}`],
+        labels: [ `40-45: N = ${participantAgeRange1}`, 
+                    `46-50: N = ${participantAgeRange2}`, 
+                    `51-55: N = ${participantAgeRange3}`,
+                    `56-60: N = ${participantAgeRange4}`, 
+                    `61-65: N = ${participantAgeRange5}`],
         hoverinfo: 'label+value',
         type: 'pie'
       }];
@@ -466,23 +473,29 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Age of Verified Participants N = ${totalParticipants}`
+        title: `Age of Verified Participants N = ${verifiedParticipants}`
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
 
   const renderRaceMetrics = (raceMetrics, id) => {
-    const participantRaceResponse1 = raceMetrics['white'] !== undefined ? raceMetrics['white'] : 0
-    const participantRaceResponse2 = raceMetrics['other']  !== undefined ? raceMetrics['other'] : 0
-    const participantRaceResponse3 = raceMetrics['unavailable'] !== undefined ? raceMetrics['unavailable'] : 0
-    const totalParticipants = participantRaceResponse1 + participantRaceResponse2 + participantRaceResponse3
+    const verifiedParticipants = raceMetrics.verifiedParticipants ? raceMetrics.verifiedParticipants : 0
+
+    const participantW = raceMetrics['white'] !== undefined ? raceMetrics['white'] : 0
+    const participantO = raceMetrics['other']  !== undefined ? raceMetrics['other'] : 0
+    const participantU = raceMetrics['unavailable'] !== undefined ? raceMetrics['unavailable'] : 0
+   
+    const participantRaceResponse1 = ((participantW)/(verifiedParticipants)*100).toFixed(1)
+    const participantRaceResponse2 = ((participantO)/(verifiedParticipants)*100).toFixed(1)
+    const participantRaceResponse3 = ((participantU)/(verifiedParticipants)*100).toFixed(1)
+
 
     let data = [{
         values: [participantRaceResponse1, participantRaceResponse2, participantRaceResponse3],
-        labels: [ `White/Non-Hispanic: N=${participantRaceResponse1}`, 
-                    `Other: N=${participantRaceResponse2}`, 
-                    `Unavailable: N=${participantRaceResponse3}`],
+        labels: [ `White/Non-Hispanic: N=${participantW}`, 
+                    `Other: N=${participantO}`, 
+                    `Unavailable: N=${participantU}`],
         hoverinfo: 'label+value',
         type: 'pie'
       }];
@@ -491,25 +504,38 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Race/Ethnicity of Verified Participants N = ${totalParticipants}`
+        title: `Race/Ethnicity of Verified Participants N = ${verifiedParticipants}`
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
 
   const renderSexMetrics = (sexMetrics, id) => {
-    const participantSexResponse1 = sexMetrics['male'] !== undefined ? sexMetrics['male'] : 0
-    const participantSexResponse2 = sexMetrics['female'] !== undefined ? sexMetrics['female'] : 0
-    const participantSexResponse3 = sexMetrics['intersex'] !== undefined ? sexMetrics['intersex'] : 0
-    const participantSexResponse4 = sexMetrics['unavailable'] !== undefined ? sexMetrics['unavailable'] : 0
-    const totalParticipants = participantSexResponse1 + participantSexResponse2 + participantSexResponse3 + participantSexResponse4
+
+    const verifiedParticipants = sexMetrics.verifiedParticipants ? sexMetrics.verifiedParticipants : 0
+
+    const participantM = sexMetrics['male'] !== undefined ? sexMetrics['male'] : 0
+    const participantF = sexMetrics['female'] !== undefined ? sexMetrics['female'] : 0
+    const participantI = sexMetrics['intersex'] !== undefined ? sexMetrics['intersex'] : 0
+    const participantU = sexMetrics['unavailable'] !== undefined ? sexMetrics['unavailable'] : 0
+   //  const participantCount = (participantM + participantF + participantI + participantU) 
+
+    // console.log('participantU', participantU, verifiedParticipants - participantCount)
+
+    // {(verifiedParticipants - participantCount != 0) ? participantU += verifiedParticipants - participantCount : ``}
+
+    // console.log('participantssU', participantU)
+    const participantSexResponse1 = ((participantM)/(verifiedParticipants)*100).toFixed(1)
+    const participantSexResponse2 = ((participantF)/(verifiedParticipants)*100).toFixed(1)
+    const participantSexResponse3 = ((participantI)/(verifiedParticipants)*100).toFixed(1)
+    const participantSexResponse4 = ((participantU)/(verifiedParticipants)*100).toFixed(1)
 
     let data = [{
         values: [participantSexResponse1, participantSexResponse2, participantSexResponse3, participantSexResponse4],
-        labels: [   `Male: N=${participantSexResponse1}`, 
-                    `Female: N=${participantSexResponse2}`, 
-                    `Intersex or Other: N=${participantSexResponse3}`,
-                    `Unavailable: N=${participantSexResponse4}`],
+        labels: [   `Male: N=${participantM}`, 
+                    `Female: N=${participantF}`, 
+                    `Intersex or Other: N=${participantI}`,
+                    `Unavailable: N=${participantU}`],
         hoverinfo: 'label+value',
         type: 'pie'
       }];
@@ -518,7 +544,7 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Sex of Verified Participants N = ${totalParticipants}`
+        title: `Sex of Verified Participants N = ${verifiedParticipants}`
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
