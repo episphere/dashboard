@@ -518,13 +518,7 @@ const renderAgeMetrics = (ageMetrics, id) => {
     const participantF = sexMetrics['female'] !== undefined ? sexMetrics['female'] : 0
     const participantI = sexMetrics['intersex'] !== undefined ? sexMetrics['intersex'] : 0
     const participantU = sexMetrics['unavailable'] !== undefined ? sexMetrics['unavailable'] : 0
-   //  const participantCount = (participantM + participantF + participantI + participantU) 
 
-    // console.log('participantU', participantU, verifiedParticipants - participantCount)
-
-    // {(verifiedParticipants - participantCount != 0) ? participantU += verifiedParticipants - participantCount : ``}
-
-    // console.log('participantssU', participantU)
     const participantSexResponse1 = ((participantM)/(verifiedParticipants)*100).toFixed(1)
     const participantSexResponse2 = ((participantF)/(verifiedParticipants)*100).toFixed(1)
     const participantSexResponse3 = ((participantI)/(verifiedParticipants)*100).toFixed(1)
