@@ -175,11 +175,13 @@ export default
     "female": 536341288,
     "male": 654207589,
     "intersex": 830573274,
-    "unavailable": 178420302,
+    "neitherMF": 395528052,
 
     // de-identified
     "white": 768826601,
     "other": 181769837,
+
+    //unavailable
     "unavailable": 178420302,
 
 
@@ -196,7 +198,6 @@ export default
 	"pacificIslanderSH": 965998904,
     "blankSH": 986445321,
     "declinedSH": 746038746,
-	"unavailableSH": 178420302,
 
     // hfhs 
     "africanAmericanBLHHF":	473807808,
