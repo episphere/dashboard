@@ -225,9 +225,9 @@ const renderCharts = async (siteKey, isParent) => {
     const participantsRaceMetric = await fetchStats(siteKey, 'race');
     const participantsAgeMetric = await fetchStats(siteKey, 'age');
 
-    const genderStats = filterGenderMetrics(participantsGenderMetric.stats);
-    const raceStats = filterRaceMetrics(participantsRaceMetric.stats);
-    const ageStats = filterAgeMetrics(participantsAgeMetric.stats);
+    const genderStats = filterGenderMetrics(participantsGenderMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const raceStats = filterRaceMetrics(participantsRaceMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const ageStats = filterAgeMetrics(participantsAgeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
 
     const optOutsMetric = await fetchStats(siteKey, 'participants_optOuts');
     const optOutsStats = filterOptOutsMetrics(optOutsMetric.stats);
@@ -348,8 +348,9 @@ export const animation = (status) => {
 }
 
 
-const filterGenderMetrics = (participantsGenderMetrics) => {
-    let genderObject = { female: 0, male: 0, intersex: 0, unavailable: 0 }
+const filterGenderMetrics = (participantsGenderMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+    const verifiedParticipants =  activeVerifiedParticipants + passiveVerifiedParticipants
+    let genderObject = { female: 0, male: 0, intersex: 0, unavailable: 0, verifiedParticipants: 0 }
     participantsGenderMetrics && participantsGenderMetrics.forEach(i => {
         (parseInt(i.sex) === fieldMapping.male) ?
             genderObject['male'] += parseInt(i.sexCount)
@@ -377,28 +378,30 @@ const filterGenderMetrics = (participantsGenderMetrics) => {
             genderObject['unavailable'] += parseInt(i.shHfSexCount)
         : ``
 })
+    genderObject.verifiedParticipants = verifiedParticipants
     return genderObject;
 }
 
 
-const filterRaceMetrics = (participantsRaceMetrics) => {
-    let raceObject = { white: 0, other: 0, unavailable: 0 }
+const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+    const verifiedParticipants =  activeVerifiedParticipants + passiveVerifiedParticipants
+    let raceObject = { white: 0, other: 0, unavailable: 0, verifiedParticipants: 0 }
     participantsRaceMetrics && participantsRaceMetrics.forEach(i => {
 
         (parseInt(i.race) === fieldMapping.white) ?
         raceObject['white'] += parseInt(i.raceCount)
-
         :  (parseInt(i.shRace) === fieldMapping.whiteSH) ?
         raceObject['white'] += parseInt(i.shRaceCount)
         :  (parseInt(i.hfRace) === fieldMapping.whiteNHHF) ?
         raceObject['white'] += parseInt(i.hfRaceCount)
-
         :  (parseInt(i.race) === fieldMapping.other) ?
         raceObject['other'] += parseInt(i.raceCount)
 
         :  (parseInt(i.shRace) === fieldMapping.africanAmericanSH) ? // SH Harmonization
         raceObject['other'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.americanIndianSH) ?
+        raceObject['other'] += parseInt(i.shRaceCount)
+        :  (parseInt(i.shRace) === fieldMapping.asianSH) ?
         raceObject['other'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.hispanicLBSH) ?
         raceObject['other'] += parseInt(i.shRaceCount)
@@ -413,10 +416,12 @@ const filterRaceMetrics = (participantsRaceMetrics) => {
         :  (parseInt(i.shRace) === fieldMapping.pacificIslanderSH) ?
         raceObject['other'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.blankSH) ?
-        raceObject['other'] += parseInt(i.shRaceCount)
+        raceObject['unavailable'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.declinedSH) ?
-        raceObject['other'] += parseInt(i.shRaceCount)
-        
+        raceObject['unavailable'] += parseInt(i.shRaceCount)
+        :  (parseInt(i.shRace) === fieldMapping.unavailable) ?
+        raceObject['unavailable'] += parseInt(i.shRaceCount)   
+      
         :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBLHHF) ? // HF Harmonization
         raceObject['other'] += parseInt(i.hfRaceCount)
         :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBNLHHF) ?
@@ -435,21 +440,22 @@ const filterRaceMetrics = (participantsRaceMetrics) => {
         raceObject['other'] += parseInt(i.hfRaceCount)
         :  (parseInt(i.hfRace) === fieldMapping.unaviableHLHF) ?
         raceObject['other'] += parseInt(i.hfRaceCount)
-
+      
         :  (parseInt(i.race) === fieldMapping.unavailable) ?
         raceObject['unavailable'] += parseInt(i.raceCount)
-
         : (parseInt(i.hfRace) === fieldMapping.unaviableNHLHF) ?
         raceObject['unavailable'] += parseInt(i.hfRaceCount)
         : (parseInt(i.hfRace) === fieldMapping.unaviableEUHF) ?
         raceObject['unavailable'] += parseInt(i.hfRaceCount) :``
 })
-        return raceObject;
+    raceObject.verifiedParticipants = verifiedParticipants
+    return raceObject;
 
 }
 
-const filterAgeMetrics = (participantsAgeMetrics) => {
-    let ageObject = { '40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0 }
+const filterAgeMetrics = (participantsAgeMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+    const verifiedParticipants =  activeVerifiedParticipants + passiveVerifiedParticipants
+    let ageObject = { '40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0, verifiedParticipants: 0 }
     participantsAgeMetrics && participantsAgeMetrics.forEach(i => {
         if (parseInt(i.recruitmentAge) === fieldMapping.ageRange1) {
             ageObject['40-45'] +=  parseInt(i.recruitmentAgeCount)
@@ -467,6 +473,7 @@ const filterAgeMetrics = (participantsAgeMetrics) => {
             ageObject['61-65'] +=  parseInt(i.recruitmentAgeCount)
         }
     })
+    ageObject.verifiedParticipants = verifiedParticipants
     return ageObject;
 }
 
@@ -783,9 +790,9 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     const passiveVerificationStatus = filterVerification(resultVerification, 'passive');
     const denominatorVerificationStatus = filterDenominatorVerificationStatus(resultWorkflow);
 
-    const genderStats = filterGenderMetrics(resultGender);
-    const raceStats = filterRaceMetrics(resultRace);
-    const ageStats = filterAgeMetrics(resultAge);
+    const genderStats = filterGenderMetrics(resultGender, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const raceStats = filterRaceMetrics(resultRace, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const ageStats = filterAgeMetrics(resultAge, activeVerificationStatus.verified, passiveVerificationStatus.verified);
 
     const recruitsCount = filterRecruits(resultRecruitsCount);
     const optOutsStats = filterOptOutsMetrics(resultOptOuts);
