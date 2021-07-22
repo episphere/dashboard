@@ -1,44 +1,19 @@
 export const getCurrentTimeStamp = () => {
-
-  const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  const currentDate = new Date();
-  const currentMonth = monthList[currentDate.getMonth()];
-  const currentDayOfMonth = currentDate.getDate();
-  const currentYear = currentDate.getFullYear();
-  const currentHour = currentDate.getHours();
-  const currentMinute = currentDate.getMinutes();
-  const currentSecond = currentDate.getSeconds();
-  const timeStamp = currentMonth +" "+ currentDayOfMonth + ", "+ currentYear + " " 
-                      + currentHour + ":" + currentMinute + ":" + currentSecond;
+  const date = new Date(new Date().toISOString());
+  const timeStamp = date.toLocaleString('en-US',  {month: 'long'}) + ' ' + date.getDate() + ',' + date.getFullYear() + ' ' + 
+                        date.getHours() + ':'+ date.getMinutes()+':'+ date.getSeconds();
   return timeStamp; // January 28, 2021 16:11:54
-  
 }
                 
 export const humanReadableFromISO = (participantDate) => {
-  const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  let timeSubmitted = participantDate;
-  let submittedDate = String(timeSubmitted);
-  submittedDate = submittedDate.split("T");
-  submittedDate = submittedDate[0];
-  submittedDate = submittedDate.split("-");
-  const readableYear = submittedDate[0];
-  const readableMonth = monthList[parseInt(submittedDate[1])-1];
-  const readableDate = submittedDate[2];
-  const readableConsentDate = readableMonth + " " + readableDate + ", " + readableYear;
-  return readableConsentDate; // October 30, 2020
+  const submittedDate = new Date(String(participantDate));
+  const humanReadable = submittedDate.toLocaleString('en-US', { month: 'long' }) + ' ' + submittedDate.getDate() + ',' + submittedDate.getFullYear();
+  return humanReadable; // October 30, 2020
 }
 
 export const humanReadableMDY = (participantDate) => {
-  let consentTimeSubmitted = participantDate;
-  let submittedDate = String(consentTimeSubmitted);
-  submittedDate = submittedDate.split("T");
-  submittedDate = submittedDate[0];
-  submittedDate = submittedDate.split("-");
-  const readableYear = submittedDate[0];
-  const readableMonth = submittedDate[1];
-  const readableDate = submittedDate[2];
-  const readableConsentDate = readableMonth + "/" + readableDate + "/" + readableYear;
-  return readableConsentDate; // 10/30/2020
+  const humanReadableDate = new Date(String(participantDate)).toLocaleDateString()
+  return humanReadableDate; // 10/30/2020
 }
 
 export const humanReadableY = () => {
