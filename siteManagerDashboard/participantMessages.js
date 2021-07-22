@@ -1,7 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import {  baseAPI, humanReadableFromISO } from './utils.js';
+import {  baseAPI, humanReadableFromISO, getIdToken } from './utils.js';
 
 
 const headerImportantColumns = [
@@ -35,7 +35,9 @@ export const render = async (participant) => {
         template += renderParticipantHeader(participant);
         template += `<span> <h4 style="text-align: center;">Participant Messages </h4> </span>`
         const token = participant.token;
-        const siteKey = JSON.parse(localStorage.dashboard).siteKey
+        const access_token = await getIdToken();
+        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+        const siteKey = access_token !== null ? access_token : localStr.siteKey   
         let messages =  await getParticipantMessage(token, siteKey);
         messages.data.length !== 0 ? (
             messages.data.forEach(message => 
