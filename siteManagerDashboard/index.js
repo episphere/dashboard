@@ -179,7 +179,6 @@ const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
         const access_token = await getIdToken();
-        console.log('access_token', access_token)
         const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
         const siteKey = access_token ? access_token : localStr.siteKey;
         const isAuthorized = await authorize(siteKey);
