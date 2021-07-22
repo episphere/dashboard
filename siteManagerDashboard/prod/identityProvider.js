@@ -15,7 +15,7 @@ export const SSOConfig = (inputValue) => {
     };
     if(/norc.org/i.test(inputValue)) {
         tenantID = 'NORC-SSO-nwvau';
-        provider = 'saml.connect-norc';
+        provider = 'saml.connect-norc-prod';
     };
     if(/kp.org/i.test(inputValue)) {
         tenantID = 'KP-SSO-ii9sr';
