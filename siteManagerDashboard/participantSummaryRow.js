@@ -289,12 +289,12 @@ export const baselineLAWSurvey = (participant) => {
 export const baselineSSN = (participant) => {
     let template = ``;
     (
-        (participant[fieldMapping.ssnFullflag]) ?
+        (participant[fieldMapping.ssnFullflag] === fieldMapping.yes) ?
         (
         template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SSN", "All Digits", 
                 (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A")}`
-        ) : (participant[fieldMapping.ssnPartialFlag]) ? 
+        ) : (participant[fieldMapping.ssnPartialFlag] === fieldMapping.yes) ? 
         ( template += `
             ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "4 Digits", 
             (participant[fieldMapping.ssnPartialDate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnPartialDate]) : `N/A`), "N/A", "N", "N/A")}`
