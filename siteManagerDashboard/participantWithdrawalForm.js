@@ -1,5 +1,5 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { showAnimation, hideAnimation, baseAPI } from './utils.js';
+import { showAnimation, hideAnimation, baseAPI, getIdToken } from './utils.js';
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
@@ -401,7 +401,7 @@ const collectFinalResponse = (retainOptions, requestedHolder, source, suspendDat
     sendResponses(finalOptions, retainOptions, requestedHolder, source, suspendDate);
 }
 
-const sendResponses = (finalOptions, retainOptions, requestedHolder, source, suspendDate) => {
+const sendResponses = async (finalOptions, retainOptions, requestedHolder, source, suspendDate) => {
     let sendRefusalData = {};
     let highestStatus = [];
     sendRefusalData[fieldMapping.refusalOptions] = {};
@@ -444,7 +444,9 @@ const sendResponses = (finalOptions, retainOptions, requestedHolder, source, sus
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-    const siteKey = JSON.parse(localStorage.dashboard).siteKey
+    const access_token = await getIdToken();
+    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+    const siteKey = access_token !== null ? access_token : localStr.siteKey  
     clickHandler(sendRefusalData, siteKey, token);
 }
 
