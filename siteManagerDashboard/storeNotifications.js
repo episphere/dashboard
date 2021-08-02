@@ -1,4 +1,6 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { getIdToken, showAnimation, hideAnimation, baseAPI } from './utils.js';
+
 
 export const renderStoreNotificationSchema = () => {
     const isParent = localStorage.getItem('isParent')
@@ -6,7 +8,10 @@ export const renderStoreNotificationSchema = () => {
     removeActiveClass('nav-link', 'active');
     document.getElementById('notifications').classList.add('active');
     mainContent.innerHTML = render();
+    let originalHTML = mainContent.innerHTML;
     init();
+   // resetChanges(originalHTML);
+    
 }
 
 const init = async () => {
@@ -28,6 +33,7 @@ const init = async () => {
 export const render = () => {
     let template = `<div class="container-fluid">
                         <div id="root root-margin"> 
+                        <div id="alert_placeholder"></div>
                         <br />
                         <span> <h4 style="text-align: center;">Store Notification Schema</h4> </span>
                             <form method="post" class="mt-3" id="configForm">
@@ -104,7 +110,7 @@ export const render = () => {
                                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)">
                                 </div>
                                 
-                                <div class="mt-4 mb-4">
+                                <div class="mt-4 mb-4" style="display:inline-block;">
                                     <button type="submit" class="btn btn-primary">Submit</button>
                                 </div>
         
@@ -159,7 +165,7 @@ const formSubmit = () => {
             obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value)
         })
         
-        downloadObjectAsJson(obj, 'notification_specification')
+        storeNotificationSchema(obj, 'notification_specification')
     })
 }
 
@@ -203,7 +209,7 @@ const getDataListTemplate = (concepts, id, name) => {
     }
     template += `</datalist>`
     return template;
-}
+}  
 
 const addEventNotificationCheckbox = () => {
     const chkbs = document.getElementsByName('notification-checkbox');
@@ -304,4 +310,45 @@ const downloadObjectAsJson = (exportObj, exportName) => {
     document.body.appendChild(downloadAnchorNode);
     downloadAnchorNode.click();
     downloadAnchorNode.remove();
+}
+
+const storeNotificationSchema = async (schema) => {
+    console.log('obj', schema)
+    showAnimation();
+    const access_token = await getIdToken();
+    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
+    const siteKey = access_token !== null ? access_token : localStr.siteKey   
+
+    const schemaPayload = {
+        "data": schema
+    }
+
+    const response = await (await fetch(`${baseAPI}/dashboard?api=storeNotificationSchema`,{
+        method:'POST',
+        body: JSON.stringify(schemaPayload),
+        headers:{
+            Authorization:"Bearer "+siteKey,
+            "Content-Type": "application/json"
+            }
+        }))
+        hideAnimation();
+        if (response.status === 200) {
+            successAlert();
+         }
+           else { 
+               (alert('Error'))
+        }
+}
+
+const successAlert = () => {
+    let alertList = document.getElementById('alert_placeholder');
+    let template = '';
+    // throws an alert when canncel changes button is clicked
+    template += `<div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Notfication Schema Saved.
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>`
+    alertList.innerHTML = template;
 }
