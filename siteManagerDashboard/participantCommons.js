@@ -173,6 +173,7 @@ const paginationTemplate = (array) => {
     return template;
 }
 
+// TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
     let template = '';
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -247,6 +248,39 @@ const tableTemplate = (data, showButtons) => {
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
+            : (x === fieldMapping.siteReportedAge.toString()) ? 
+            (
+                ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `40-45` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange2 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `46-50` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange3 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `51-55` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange4 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `56-60` : ``}</td>`
+                :   (
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `61-65` : ``}</td>`)
+                )
+            : (x === fieldMapping.siteReportedSex.toString()) ? (
+            (  
+                ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.female ) ?
+                template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `Female` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.male ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `Male` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.intersex ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `Intersex` : ``}</td>`
+                :
+                    template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                )
+            : (x === fieldMapping.siteReportedRace.toString()) ? (
+                (  
+                    ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.white ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `White` : ``}</td>`
+                    :   ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.other ) ?
+                        template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `Other` : ``}</td>`
+                    :
+                        template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                    )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
         template += `</tr>`; 

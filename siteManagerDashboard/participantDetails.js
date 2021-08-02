@@ -132,6 +132,7 @@ export const render = (participant) => {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
+                    console.log('fff', participant)
         template += renderParticipantHeader(participant);
         template += `
                     <div class="float-left">
