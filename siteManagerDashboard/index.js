@@ -5,7 +5,8 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { renderStoreNotificationSchema } from './storeNotifications.js';
+import { renderStoreNotificationSchema } from './notifications/storeNotifications.js';
+import { renderRetrieveNotificationSchema } from './notifications/retrieveNotifications.js';
 import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
@@ -92,6 +93,7 @@ const router = async () => {
             }
         }
         else if (route === '#notifications/storenotificationschema') renderStoreNotificationSchema();
+        else if (route === '#notifications/retrievenotificationschema') renderRetrieveNotificationSchema();
         else if (route === '#logout') clearLocalStorage();
         else window.location.hash = '#home';
     }

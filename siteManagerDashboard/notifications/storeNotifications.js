@@ -1,5 +1,5 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
-import { getIdToken, showAnimation, hideAnimation, baseAPI } from './utils.js';
+import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
+import { getIdToken, showAnimation, hideAnimation, baseAPI } from '../utils.js';
 
 
 export const renderStoreNotificationSchema = () => {
@@ -15,7 +15,6 @@ export const renderStoreNotificationSchema = () => {
 }
 
 const init = async () => {
-    console.log('1234')
     const concepts = await getConcepts();  
     addEventMoreCondition(concepts);
     conceptDropdown(concepts, 'condition-key');
