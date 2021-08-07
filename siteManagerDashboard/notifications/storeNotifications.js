@@ -1,21 +1,23 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
-import { getIdToken, showAnimation, hideAnimation, baseAPI } from '../utils.js';
+import { showAnimation, hideAnimation, baseAPI, getAccessToken } from '../utils.js';
 
 
-export const renderStoreNotificationSchema = () => {
+export const renderStoreNotificationSchema = async () => {
     const isParent = localStorage.getItem('isParent')
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('notifications').classList.add('active');
+    let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
+    let updateCounter = localStorage.getItem("updateFlag");
+    localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
-    let originalHTML = mainContent.innerHTML;
-    init();
-   // resetChanges(originalHTML);
-    
+    const concepts = await getConcepts();  
+    init(concepts);
+    if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
+    clearNotificationSchemaForm();  
 }
 
-const init = async () => {
-    const concepts = await getConcepts();  
+const init = (concepts) => { 
     addEventMoreCondition(concepts);
     conceptDropdown(concepts, 'condition-key');
     conceptDropdown(concepts, 'condition-value');
@@ -34,7 +36,7 @@ export const render = () => {
                         <div id="root root-margin"> 
                         <div id="alert_placeholder"></div>
                         <br />
-                        <span> <h4 style="text-align: center;">Store Notification Schema</h4> </span>
+                        <span> <h4 style="text-align: center;">Create Notification Schema</h4> </span>
                             <form method="post" class="mt-3" id="configForm">
                                 <div class="row form-group">
                                     <label class="col-form-label col-md-4" for="attempt">Attempt</label>
@@ -66,7 +68,7 @@ export const render = () => {
                                     <div class="row form-group">
                                         <label class="col-form-label col-md-4">Condition</label>
                                         <div class="condition-key col-md-3 mr-2 p-0"></div>
-                                        <select name="condition-operator" class="col-md-1 form-control mr-2">
+                                        <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
                                             <option value="equals">equals</option>
                                             <option value="notequals">notequals</option>
                                         </select>
@@ -111,6 +113,7 @@ export const render = () => {
                                 
                                 <div class="mt-4 mb-4" style="display:inline-block;">
                                     <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="button" class="btn btn-danger" id="clearForm">Clear</button>
                                 </div>
         
                             </form>
@@ -120,6 +123,77 @@ export const render = () => {
     return template;
 
 }
+
+const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
+
+    document.getElementById("attempt").value = updateSchemaNotification.attempt;
+    document.getElementById("description").value = updateSchemaNotification.description;
+    document.getElementById("category").value = updateSchemaNotification.category;
+
+    (updateSchemaNotification.notificationType).forEach(i => {
+        if (i === "email") {
+            document.getElementById('emailCheckBox').checked = true
+            renderDivs("email");
+            document.getElementById('emailSubject').value = updateSchemaNotification.email.subject
+            document.getElementById('emailBody').value = updateSchemaNotification.email.body
+        }
+        else if (i === "sms") {
+            document.getElementById('smsCheckBox').checked = true
+            renderDivs("sms");
+            document.getElementById('smsBody').value = updateSchemaNotification.sms.body
+        } 
+        else if (i === "push") {
+            document.getElementById('pushCheckBox').checked = true
+            renderDivs("push");
+            document.getElementById('pushSubject').value = updateSchemaNotification.push.subject
+            document.getElementById('pushBody').value = updateSchemaNotification.push.body
+        }
+    })
+
+    const size = Object.keys(updateSchemaNotification.conditions).length;
+    let counter = 0;
+    const conditions = updateSchemaNotification.conditions;
+    for (let i in updateSchemaNotification.conditions) {
+        if (counter <= (size-1)) {
+            document.getElementById(`conditionkey${counter}`).value = i;
+            document.getElementById(`operatorkey${counter}`).value = getOperatorResponse(conditions[i]);
+            if((conditions).hasOwnProperty(i)) {
+                document.getElementById(`conditionvalue${counter}`).value = getConditionsResponse(conditions[i]);
+            }
+            counter++;
+            document.getElementById('addConditions').click();
+            getOperatorResponse(conditions[i])
+        }
+    }
+
+   
+    conceptDropdown(concepts, 'email-concept');
+    const emailconcept =  document.getElementById('emailconcept0');
+    emailconcept.value = updateSchemaNotification.emailField;
+
+    conceptDropdown(concepts, 'first-name-concept');
+    const firstname = document.getElementById("firstnameconcept0");
+    if (firstname) {firstname.value = updateSchemaNotification.firstNameField}
+
+    conceptDropdown(concepts, 'preferred-name-concept');
+    const preferredname = document.getElementById('preferrednameconcept0');
+    if(updateSchemaNotification.preferredNameField && preferredname) { preferredname.value = updateSchemaNotification.preferredNameField};
+
+
+    conceptDropdown(concepts, 'phone-concept');
+    const phoneconcept = document.getElementById('phoneconcept0')
+    if (phoneconcept) {phoneconcept.value = updateSchemaNotification.phoneField}
+
+    conceptDropdown(concepts, 'primary-field');
+    const primaryfield = document.getElementById('primaryfield0');
+    if (primaryfield) {primaryfield.value = updateSchemaNotification.primaryField}
+
+    document.getElementById('days').value = updateSchemaNotification.time['day']
+    document.getElementById('hours').value = updateSchemaNotification.time['hour']
+    document.getElementById('minutes').value = updateSchemaNotification.time['minute']
+
+}
+
 
 const formSubmit = () => {
     const form = document.getElementById('configForm');
@@ -178,7 +252,7 @@ const addEventMoreCondition = (concepts) => {
         div.innerHTML = `
             <label class="col-form-label col-md-4">Condition</label>
             <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key')}</div>
-            <select name="condition-operator" class="col-md-1 form-control mr-2">
+            <select name="condition-operator" class="col-md-1 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
             </select>
@@ -314,9 +388,7 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 const storeNotificationSchema = async (schema) => {
     console.log('obj', schema)
     showAnimation();
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token !== null ? access_token : localStr.siteKey   
+    const siteKey = await getAccessToken();  
 
     const schemaPayload = {
         "data": schema
@@ -350,4 +422,23 @@ const successAlert = () => {
                     </button>
                     </div>`
     alertList.innerHTML = template;
+}
+
+const getOperatorResponse = (i) => {
+    return Object.keys(i)[0];
+} 
+
+const getConditionsResponse = (i) => {
+    if (i['equals'] !== undefined) {
+        return i['equals'];
+    } else if (i['notequals'] !== undefined) {
+        return i['notequals'];
+    }
+}
+
+const clearNotificationSchemaForm = () => {
+    const a = document.getElementById('clearForm');
+    a.addEventListener("click", () => {
+        window.location.reload();
+    })
 }

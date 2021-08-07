@@ -21,6 +21,7 @@ export const renderNavBarLinks = () => {
 }
 
 export const dashboardNavBarLinks = (isParent) => {
+    const coordinatingCenter = localStorage.getItem('coordinatingCenter');
     return `
         <li class="nav-item">
             <a class="nav-item nav-link ws-nowrap" href="#home" title="Home" id="dashboardBtn"><i class="fas fa-home"></i> Home</a>
@@ -55,15 +56,19 @@ export const dashboardNavBarLinks = (isParent) => {
         <li class="nav-item" id="participantMessageBtn">
             <a class="nav-item nav-link ws-nowrap" href="#participantMessages" title="Participant Messages"><i class="fa fa-envelope-open"></i> Participant Messages</a>
         </li>
-        <li class="nav-item dropdown">
+        <li class="nav-item" id="siteMessageBtn">
+            <a class="nav-item nav-link ws-nowrap" href="#siteMessages" title="Site Messages"><i class="fa fa-comments""></i> Site Messages</a>
+        </li>
+        ${coordinatingCenter === 'true' ?
+        (`<li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle ws-nowrap" id="notifications" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-bell"></i> Notifications 
                 </a>
                 <div class="dropdown-menu sub-div-shadow" aria-labelledby="notifications">
-                    <a class="dropdown-item" href="#notifications/storenotificationschema" id="storeNotificationSchema">Store Notification Schema</a>
+                    <a class="dropdown-item" href="#notifications/createnotificationschema" id="storeNotificationSchema">Create Notification Schema</a>
                     <a class="dropdown-item" href="#notifications/retrievenotificationschema" id="retrieveNotificationSchema">Retrieve Notification Schema</a>
                 </div>
-            </li>
+            </li>`) : (``) }
         <li class="nav-item">
             <a class="nav-item nav-link ws-nowrap" href="#logout" title="Log Out"><i class="fas fa-sign-out-alt"></i> Log Out</a>
         </li>

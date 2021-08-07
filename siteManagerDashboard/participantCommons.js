@@ -3,7 +3,7 @@ import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getIdToken, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
@@ -289,9 +289,7 @@ const addEventShowMoreInfo = data => {
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
             location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
-            const access_token = await getIdToken();
-            const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-            const siteKey = access_token ? access_token : localStr.siteKey;
+            const siteKey = await getAccessToken();
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, siteKey);
         });
     });

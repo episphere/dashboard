@@ -4,10 +4,11 @@ import { renderTable, filterdata, renderData, addEventFilterData, activeColumns,
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
+import { renderSiteMessages } from './siteMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
 import { renderStoreNotificationSchema } from './notifications/storeNotifications.js';
 import { renderRetrieveNotificationSchema } from './notifications/retrieveNotifications.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls, getAccessToken } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -59,9 +60,7 @@ const router = async () => {
                 let participant = JSON.parse(localStorage.getItem("participant"));
                 let adminSubjectAudit = [];
                 let changedOption = {};
-                const access_token = await getIdToken();
-                const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-                const siteKey = access_token ? access_token : localStr.siteKey;
+                const siteKey = await getAccessToken();
                 renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey);
             }
         }
@@ -83,6 +82,7 @@ const router = async () => {
                 renderParticipantMessages(participant);
             }
         }
+        else if (route === '#siteMessages') renderSiteMessages();
         else if (route === '#participantWithdrawal' && isParent === 'true') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
                 renderParticipantWithdrawal();
@@ -92,7 +92,7 @@ const router = async () => {
                 renderParticipantWithdrawal(participant);
             }
         }
-        else if (route === '#notifications/storenotificationschema') renderStoreNotificationSchema();
+        else if (route === '#notifications/createnotificationschema') renderStoreNotificationSchema();
         else if (route === '#notifications/retrievenotificationschema') renderRetrieveNotificationSchema();
         else if (route === '#logout') clearLocalStorage();
         else window.location.hash = '#home';
@@ -182,13 +182,13 @@ const renderActivityCheck = () => {
 const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
-        const access_token = await getIdToken();
-        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-        const siteKey = access_token ? access_token : localStr.siteKey;
+        const siteKey = await getAccessToken();
         const isAuthorized = await authorize(siteKey);
         if (isAuthorized && isAuthorized.code === 200) {
             localStorage.setItem('isParent', isAuthorized.isParent)
-            const isParent = localStorage.getItem('isParent')
+            localStorage.setItem('coordinatingCenter', isAuthorized.coordinatingCenter)
+            const isParent = localStorage.getItem('isParent');
+            //const coordinatingCenter = localStorage.getItem('coordinatingCenter');
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
             removeActiveClass('nav-link', 'active');
             document.getElementById('dashboardBtn').classList.add('active');
@@ -850,9 +850,7 @@ const filterDatabySiteCode = (resultHolder, filteredResults, siteKeyFilter) => {
 
 const renderParticipantsNotVerified = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'notyetverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
@@ -877,9 +875,7 @@ const renderParticipantsNotVerified = async () => {
 
 const renderParticipantsCanNotBeVerified = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'cannotbeverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
@@ -910,9 +906,7 @@ const renderParticipantsCanNotBeVerified = async () => {
 
 const renderParticipantsVerified = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'verified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
@@ -937,9 +931,7 @@ const renderParticipantsVerified = async () => {
 
 const renderParticipantsAll = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'all');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
@@ -966,9 +958,7 @@ const renderParticipantsAll = async () => {
 
 const renderParticipantsProfileNotSubmitted = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'profileNotSubmitted');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
@@ -993,9 +983,7 @@ const renderParticipantsProfileNotSubmitted = async () => {
 
 const renderParticipantsConsentNotSubmitted = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'consentNotSubmitted');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
@@ -1020,9 +1008,7 @@ const renderParticipantsConsentNotSubmitted = async () => {
 
 const renderParticipantsNotSignedIn = async () => {
     animation(true);
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetchData(siteKey, 'notSignedIn');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
