@@ -446,9 +446,13 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
 <<<<<<< HEAD
+<<<<<<< HEAD
     const access_token = await getIdToken();
     const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
     const siteKey = access_token !== null ? access_token : localStr.siteKey  
+=======
+    const siteKey = await getAccessToken();
+>>>>>>> 4b0a275... addressed hotfix issue (#174)
 =======
     const siteKey = await getAccessToken();
 >>>>>>> 4b0a275... addressed hotfix issue (#174)
