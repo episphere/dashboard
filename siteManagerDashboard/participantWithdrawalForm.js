@@ -207,7 +207,7 @@ export const addEventMonthSelection = (month, day) => {
     UPMonth.addEventListener('change', () => {
         const value = UPMonth.value;
 
-        let template = '<option class="option-dark-mode" value="">Select birth day</option>';
+        let template = '<option class="option-dark-mode" value="">Select day</option>';
 
         if(value === '02'){
             for(let i = 1; i < 30; i++){
@@ -387,15 +387,15 @@ export const causeOfDeathPage = (retainOptions) => {
         const UPDay = document.getElementById('page2Day').value;
         const UPYear = document.getElementById('page2Year').value;
         let suspendDate = UPMonth +'/'+ UPDay +'/'+ UPYear
-        collectFinalResponse(retainOptions, source, suspendDate)
+        collectFinalResponse(retainOptions, [], source, suspendDate)
     })
  
 }
 
 const collectFinalResponse = (retainOptions, requestedHolder, source, suspendDate) => {
     let finalOptions = []
-    const a = document.getElementById('defaultCheck24')
-    a.value && finalOptions.push(a)
+    const a = document.getElementById('defaultCheck24');
+    if (a !== null) a.value && finalOptions.push(a)
     let checkboxes = document.getElementsByName('options');
     checkboxes.forEach(x => { if (x.checked) {  finalOptions.push(x)} })
     sendResponses(finalOptions, retainOptions, requestedHolder, source, suspendDate);
@@ -420,15 +420,16 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
     })
-   
-    requestedHolder.forEach(x => {
-        switch (parseInt(x.dataset.optionkey)) {
-           case fieldMapping.requestOtherText:
-                sendRefusalData[fieldMapping.requestOtherText] = x.value
-           default:
-                sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
-        }
-    })
+    if (requestedHolder.length != 0) {
+        requestedHolder.forEach(x => {
+            switch (parseInt(x.dataset.optionkey)) {
+            case fieldMapping.requestOtherText:
+                    sendRefusalData[fieldMapping.requestOtherText] = x.value
+            default:
+                    sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
+            }
+        })
+    }
     if (suspendDate !== '//' && source !== 'page2') sendRefusalData[fieldMapping.suspendContact] = suspendDate
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
@@ -444,9 +445,13 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
+<<<<<<< HEAD
     const access_token = await getIdToken();
     const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
     const siteKey = access_token !== null ? access_token : localStr.siteKey  
+=======
+    const siteKey = await getAccessToken();
+>>>>>>> 4b0a275... addressed hotfix issue (#174)
     clickHandler(sendRefusalData, siteKey, token);
 }
 
