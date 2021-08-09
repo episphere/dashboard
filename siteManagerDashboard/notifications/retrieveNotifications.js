@@ -120,7 +120,6 @@ const renderCategorydDropdown = (categoriesHolder) => {
         list.appendChild(listHyperLink);
         unlistedDiv.appendChild(list);
     })
-   
 }
 
 
