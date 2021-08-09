@@ -56,9 +56,10 @@ export const dashboardNavBarLinks = (isParent) => {
         <li class="nav-item" id="participantMessageBtn">
             <a class="nav-item nav-link ws-nowrap" href="#participantMessages" title="Participant Messages"><i class="fa fa-envelope-open"></i> Participant Messages</a>
         </li>
-        <li class="nav-item" id="siteMessageBtn">
+        ${(isParent !== 'true' || coordinatingCenter === 'true') ?
+        (`<li class="nav-item" id="siteMessageBtn">
             <a class="nav-item nav-link ws-nowrap" href="#siteMessages" title="Site Messages"><i class="fa fa-comments""></i> Site Messages</a>
-        </li>
+        </li>`) : (``) }
         ${coordinatingCenter === 'true' ?
         (`<li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle ws-nowrap" id="notifications" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

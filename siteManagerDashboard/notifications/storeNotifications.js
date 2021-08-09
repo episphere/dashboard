@@ -125,7 +125,6 @@ export const render = () => {
 }
 
 const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
-
     document.getElementById("attempt").value = updateSchemaNotification.attempt;
     document.getElementById("description").value = updateSchemaNotification.description;
     document.getElementById("category").value = updateSchemaNotification.category;
@@ -161,8 +160,7 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
                 document.getElementById(`conditionvalue${counter}`).value = getConditionsResponse(conditions[i]);
             }
             counter++;
-            document.getElementById('addConditions').click();
-            getOperatorResponse(conditions[i])
+            if(counter != size) document.getElementById('addConditions').click();
         }
     }
 
@@ -188,9 +186,11 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
     const primaryfield = document.getElementById('primaryfield0');
     if (primaryfield) {primaryfield.value = updateSchemaNotification.primaryField}
 
-    document.getElementById('days').value = updateSchemaNotification.time['day']
-    document.getElementById('hours').value = updateSchemaNotification.time['hour']
-    document.getElementById('minutes').value = updateSchemaNotification.time['minute']
+    document.getElementById('days').value = updateSchemaNotification.time['day'];
+    document.getElementById('hours').value = updateSchemaNotification.time['hour'];
+    document.getElementById('minutes').value = updateSchemaNotification.time['minute'];
+
+    localStorage.setItem("idFlag", true);
 
 }
 
@@ -386,10 +386,14 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 }
 
 const storeNotificationSchema = async (schema) => {
-    console.log('obj', schema)
+    const idFlag = localStorage.getItem("idFlag");
+    if(idFlag == "true") { 
+        let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
+        localStorage.setItem("idFlag", false);
+        schema.id = updateSchemaNotification.id;
+    }
     showAnimation();
     const siteKey = await getAccessToken();  
-
     const schemaPayload = {
         "data": schema
     }
