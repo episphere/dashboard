@@ -1,6 +1,6 @@
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
 import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns } from './participantCommons.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken, showAnimation, hideAnimation, baseAPI } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getAccessToken, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
 export function renderParticipantLookup(){
@@ -228,9 +228,7 @@ export const showNotifications = (data, error) => {
 
 
 export const findParticipant = async (query) => {
-    const access_token = await getIdToken();
-    const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-    const siteKey = access_token ? access_token : localStr.siteKey;
+    const siteKey = await getAccessToken();
     const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`, {
         method: "GET",
         headers: {

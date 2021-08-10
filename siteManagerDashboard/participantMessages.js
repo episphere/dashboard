@@ -1,7 +1,7 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import {  baseAPI, humanReadableFromISO, getIdToken } from './utils.js';
+import {  baseAPI, humanReadableFromISO, getAccessToken } from './utils.js';
 
 
 const headerImportantColumns = [
@@ -21,7 +21,6 @@ export const renderParticipantMessages = async (participant) => {
 
 export const render = async (participant) => {
     let template = `<div class="container-fluid">`
-    let messageHolder = []
     if (!participant) {
         template +=` 
             <div id="root">
@@ -35,9 +34,7 @@ export const render = async (participant) => {
         template += renderParticipantHeader(participant);
         template += `<span> <h4 style="text-align: center;">Participant Messages </h4> </span>`
         const token = participant.token;
-        const access_token = await getIdToken();
-        const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-        const siteKey = access_token !== null ? access_token : localStr.siteKey   
+        const siteKey = await getAccessToken();  
         let messages =  await getParticipantMessage(token, siteKey);
         messages.data.length !== 0 ? (
             messages.data.forEach(message => 
@@ -67,7 +64,6 @@ export const render = async (participant) => {
 }
 
 const getParticipantMessage = async (token, idToken) => {
-    let results = null;
     const response = await fetch (`${baseAPI}/dashboard?api=getParticipantNotification&token=${token}`, {
         method:'GET',
         headers:{
