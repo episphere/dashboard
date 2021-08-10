@@ -269,20 +269,29 @@ const hippaHandler = (participant) => {
 const hipaaRevocation = (participant) => {
     let template = ``;
     participant && 
-    participant[fieldMapping.revokeHIPAA] === (fieldMapping.yes)?
-    ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Revocation</td>
-                    <td>Agreement</td>
-                    <td>HIPAA Revoc Form</td>
-                    <td>${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? `Signed`: `Not Signed`}</td>
-                    <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
-                    <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
-                    <td>N/A</td>
-                    ${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? 
-                    `<td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHipaaRevoc">Download Link</a></td>`
-                    : `<td style="color: grey; text-decoration: underline;">Download Link</td>`}</td>
-    ` ) : 
-    (
+    participant[fieldMapping.revokeHIPAA] === (fieldMapping.yes) ?
+    ( participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ?
+        ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                        <td>Revocation</td>
+                        <td>Agreement</td>
+                        <td>HIPAA Revoc Form</td>
+                        <td>Signed</td>
+                        <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
+                        <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
+                        <td>N/A</td>
+                        <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHipaaRevoc">Download Link</a></td>
+        ` ) : 
+        ( template += `<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                        <td>Revocation</td>
+                        <td>Agreement</td>
+                        <td>HIPAA Revoc Form</td>
+                        <td>Not Signed</td>
+                        <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
+                        <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
+                        <td>N/A</td>
+                        <td style="color: grey; text-decoration: underline;">Download Link</td>` 
+    ) ):
+     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Revocation</td>
                     <td>Agreement</td>
@@ -299,19 +308,29 @@ const hipaaRevocation = (participant) => {
 const dataDestroy = (participant) => {
     let template = ``;
     participant && 
-    participant[fieldMapping.destroyData] === (fieldMapping.yes)?
-    ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Destruction</td>
-                    <td>Agreement</td>
-                    <td>Data Destroy Form</td>
-                    <td>${participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ? `Signed`: 'Not Signed'}</td>
-                    <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
-                    <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
-                    <td>N/A</td>
-                    ${participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ? 
-                    `<td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyDataDestroy">Download Link</a></td>`
-                    : `<td style="color: grey; text-decoration: underline;">Download Link</td>`}</td>
-    ` ) : 
+    participant[fieldMapping.destroyData] === (fieldMapping.yes) ?
+        ( participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ?
+            ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                            <td>Destruction</td>
+                            <td>Agreement</td>
+                            <td>Data Destroy Form</td>
+                            <td>Signed</td>
+                            <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
+                            <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
+                            <td>N/A</td>
+                            <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyDataDestroy">Download Link</a></td>
+            ` ) : 
+        ( template += `<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                        <td>Destruction</td>
+                        <td>Agreement</td>
+                        <td>Data Destroy Form</td>
+                        <td>Not Signed</td>
+                        <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
+                        <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
+                        <td>N/A</td>
+                        <td style="color: grey; text-decoration: underline;">Download Link</td>
+        ` )  )
+    : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Destruction</td>
