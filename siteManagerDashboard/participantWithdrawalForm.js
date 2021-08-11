@@ -445,13 +445,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-<<<<<<< HEAD
     const access_token = await getIdToken();
     const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
     const siteKey = access_token !== null ? access_token : localStr.siteKey  
-=======
-    const siteKey = await getAccessToken();
->>>>>>> 4b0a275... addressed hotfix issue (#174)
     clickHandler(sendRefusalData, siteKey, token);
 }
 
