@@ -440,7 +440,13 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         :
             ( sendRefusalData[x.dataset.optionkey] = fieldMapping.yes )
         }))
-    if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore(retainOptions, highestStatus);
+    const computeScore = getComputeScore(retainOptions, highestStatus);
+    if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore
+    
+    if (computeScore === fieldMapping.withdrewConsent) { sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString(); }
+    if (computeScore === fieldMapping.destroyDataStatus) { sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString(); }
+    if (computeScore === fieldMapping.revokeHIPAAOnly) { sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); }
+    
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
@@ -449,7 +455,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-const computeScore = (retainOptions, highestStatus) => {
+const getComputeScore = (retainOptions, highestStatus) => {
     retainOptions.forEach(x => {
         switch (x.value) {
             case "Refusing all future activities":
