@@ -355,7 +355,7 @@ export default
     'random':926338735,
     'screeningAppointment': 348281054,
     'nonScreeningAppointment':324692899,
-    'DemographicGroup': 351257378,
+    'demographicGroup': 351257378,
     'agingOutofStudy': 647148178,
     'geographicGroup': 834544960,
     'postScreeningAppointment': 682916147,
