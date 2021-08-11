@@ -349,5 +349,18 @@ export default
     'requestPIListed': 786757575,
     'requestChairSite': 847056701,
     'requestOther': 181769837,
-    'requestOtherText': 366295286
+    'requestOtherText': 366295286,
+
+    'campaignType': 667474224,
+    'random':926338735,
+    'screeningAppointment': 348281054,
+    'nonScreeningAppointment':324692899,
+    'demographicGroup': 351257378,
+    'agingOutofStudy': 647148178,
+    'geographicGroup': 834544960,
+    'postScreeningAppointment': 682916147,
+    'technologyAdapters': 153365143,
+    'lowIncomeAreas': 663706936
+
+
 }
