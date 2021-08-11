@@ -337,6 +337,10 @@ export default
     "destroyDataStatus": 241236037,
     "deceased": 987563196,
 
+    'dateWithdrewConsentRequested': 659990606,
+    'dateDataDestroyRequested': 269050420,
+    'dateHipaaRevokeRequested': 664453818,
+
 
     'sourceOfDeath': 764403541,
     'dateOfDeath': 123868967,
