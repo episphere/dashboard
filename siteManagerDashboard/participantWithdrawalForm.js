@@ -442,19 +442,10 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         }))
     const computeScore = getComputeScore(retainOptions, highestStatus);
     if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore
-
-    if (computeScore === fieldMapping.revokeHIPAAOnly) { 
-        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
-     }
-    if (computeScore === fieldMapping.withdrewConsent) { 
-        sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
-        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
-     }
-    if (computeScore === fieldMapping.destroyDataStatus) { 
-        sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
-        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
-        sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
-    }
+    
+    if (computeScore === fieldMapping.withdrewConsent) { sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString(); }
+    if (computeScore === fieldMapping.destroyDataStatus) { sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString(); }
+    if (computeScore === fieldMapping.revokeHIPAAOnly) { sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); }
     
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
