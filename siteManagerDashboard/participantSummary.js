@@ -131,13 +131,13 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, {x: 110, y: 400}, {x1: 110, y1: 330});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, {x: 100, y: 410}, {x1: 100, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
@@ -154,8 +154,37 @@ const downloadCopyHandler = (participant) => {
     }
  
 }
+const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
+    let coordinates = ``;
+    if (source === 'consent') {
+        switch(healthcareProvider) {
+            case 'Sanford':
+                coordinates = [{x: 110, y: 400}, {x1: 110, y1: 330}]
+                break;
+            case 'HP':
+                coordinates = [{x: 110, y: 410}, {x1: 110, y1: 340}]
+                break;
+            default:
+                coordinates = [{x: 110, y: 400}, {x1: 110, y1: 330}]
 
-const renderDownload = async (participant, timeStamp, fileLocation, nameCoordinates, signatureCoordinates) => {
+        }
+        return coordinates 
+    } else {
+        switch(healthcareProvider) {
+            case 'Sanford':
+                coordinates = [{x: 100, y: 400}, {x1: 100, y1: 450}]
+                break;
+            case 'HP':
+                coordinates = [{x: 100, y: 400}, {x1: 100, y1: 465}]
+                break;
+            default:
+                coordinates = [{x: 100, y: 410}, {x1: 100, y1: 450}]
+        }
+        return coordinates 
+    }
+}
+
+const renderDownload = async (participant, timeStamp, fileLocation, coordinates) => {
     let fileLocationDownload = fileLocation.slice(2)
     const participantPrintName = createPrintName(participant)
     const participantSignature = createSignature(participant)
@@ -171,15 +200,15 @@ const renderDownload = async (participant, timeStamp, fileLocation, nameCoordina
     editPage.drawText(`
     ${participantPrintName} 
     ${timeStamp}`, {
-                x: nameCoordinates.x,
-                y: nameCoordinates.y,
+                x: coordinates[0].x,
+                y: coordinates[0].y,
                 size: 24,
       });
 
     editPage.drawText(`
     ${participantSignature}`, {
-        x: signatureCoordinates.x1,
-        y: signatureCoordinates.y1,
+        x: coordinates[1].x1,
+        y: coordinates[1].y1,
         size: 20,
         font: helveticaFont,
       });

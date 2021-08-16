@@ -272,6 +272,9 @@ const tableTemplate = (data, showButtons) => {
                 :
                     template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                 )
+            :   (x === fieldMapping.studyIdTimeStamp.toString()) ? (
+                    template += `<td>${participant['state'][fieldMapping.studyIdTimeStamp.toString()] ? participant['state'][fieldMapping.studyIdTimeStamp.toString()] : ``}</td>`
+                 )   
             : (x === fieldMapping.siteReportedRace.toString()) ? (
                 (  
                     ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.white ) ?
