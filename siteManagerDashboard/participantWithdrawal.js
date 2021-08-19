@@ -1,6 +1,6 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { renderParticipantHeader, getParticipationStatus } from './participantHeader.js';
+import { renderParticipantHeader, getParticipantStatus, getParticipantSuspendedDate } from './participantHeader.js';
 import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToNextPage, autoSelectOptions, addEventMonthSelection } from './participantWithdrawalForm.js'
 
 
@@ -36,20 +36,29 @@ export const render = (participant) => {
         template += `<div id="formMainPage">
                     ${renderParticipantWithdrawalLandingPage()}
                     </div></div>`
-}
-return template;
     }
+    return template;
+}
 
 const checkPreviousWithdrawalStatus = (participant) => {
     let template = ``;
     let alertList = document.getElementById('alert_placeholder');
-    if (participant[fieldMapping.participationStatus] !== fieldMapping.noRefusal) {
+    if (participant[fieldMapping.participationStatus] !== fieldMapping.noRefusal && participant[fieldMapping.participationStatus] !== ``) {
+        localStorage.setItem('participationStatus', true)
         template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Previously Selected Refusal Option: <b> ${getParticipationStatus(participant)} </b>
+                        Previously Selected Refusal Option: <b> ${getParticipantStatus(participant)} </b>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>`
-    } 
+    } else if (participant[fieldMapping.suspendContact] !== "" && participant[fieldMapping.suspendContact] !== ``) {
+        localStorage.setItem('suspendContact', true)
+        template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <b> ${getParticipantSuspendedDate(participant)} </b>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+    }
     alertList.innerHTML = template;
 }
