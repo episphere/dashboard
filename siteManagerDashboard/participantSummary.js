@@ -143,13 +143,13 @@ const downloadCopyHandler = (participant) => {
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', getRevocationCoordinates());
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', {x: 150, y: 405}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', getRevocationCoordinates());
         })
     }
  
@@ -183,6 +183,11 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
         }
         return coordinates 
     }
+}
+
+const getRevocationCoordinates = () => {
+    const coordinates = [{x: 150, y: 400}, {x1: 150, y1: 425}];
+    return coordinates;
 }
 
 const renderDownload = async (participant, timeStamp, fileLocation, coordinates) => {
