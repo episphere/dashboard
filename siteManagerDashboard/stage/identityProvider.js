@@ -29,7 +29,7 @@ export const SSOConfig = (inputValue) => {
         tenantID = 'HFHS-SSO-eq1fj';
         provider = 'saml.connect-hfhs';
     };
-    if(/marshfieldresearch.org/i.test(inputValue)) {
+    if(/marshfieldresearch.org/i.test(inputValue) || /marshfieldclinic.org/i.test(inputValue)) {
         tenantID = 'MFC-SSO-6x4zy';
         provider = 'saml.connect-mfc'
     }
