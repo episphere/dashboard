@@ -112,7 +112,7 @@ const renderSiteLocation = (participant) => {
     return keyToNameObj[siteHealthcareProvider];
 }
 
-const getParticipationStatus = (participant) => {
+export const getParticipationStatus = (participant) => {
    if (typeof participant !== "string") {
         const statusValue = participant[fieldMapping.participationStatus];
         if (statusValue !== undefined)  return fieldMapping[statusValue];

@@ -1,5 +1,6 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
-import { renderParticipantHeader } from './participantHeader.js';
+import fieldMapping from './fieldToConceptIdMapping.js';
+import { renderParticipantHeader, getParticipationStatus } from './participantHeader.js';
 import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToNextPage, autoSelectOptions, addEventMonthSelection } from './participantWithdrawalForm.js'
 
 
@@ -13,6 +14,7 @@ export const renderParticipantWithdrawal = (participant) => {
     viewOptionsSelected();
     proceedToNextPage();
     addEventMonthSelection('UPMonth', 'UPDay');
+    checkPreviousWithdrawalStatus(participant);
 }
 
 
@@ -30,14 +32,24 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
+        template += `<div id="alert_placeholder"></div>`
         template += `<div id="formMainPage">
-                    ${renderParticipantWithdrawalLandingPage(participant)}
+                    ${renderParticipantWithdrawalLandingPage()}
                     </div></div>`
 }
 return template;
     }
 
-
-
-
-
+const checkPreviousWithdrawalStatus = (participant) => {
+    let template = ``;
+    let alertList = document.getElementById('alert_placeholder');
+    if (participant[fieldMapping.participationStatus] !== fieldMapping.noRefusal) {
+        template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        Previously Selected Refusal Option: <b> ${getParticipationStatus(participant)} </b>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+    } 
+    alertList.innerHTML = template;
+}

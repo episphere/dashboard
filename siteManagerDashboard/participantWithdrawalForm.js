@@ -100,7 +100,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 &nbsp;
-                                ${  (participant[fieldMapping.participationStatus] === fieldMapping.noRefusal) && (participant[fieldMapping.suspendContact] === "") ?
+                                ${  (participant[fieldMapping.suspendContact] === "") ?
                                         (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
                                         class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>`)
                                   :
