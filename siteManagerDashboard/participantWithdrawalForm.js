@@ -3,7 +3,6 @@ import { showAnimation, hideAnimation, baseAPI, getAccessToken } from './utils.j
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
-    let participant = JSON.parse(localStorage.getItem("participant"))
     let template = ``;
     template = `        
                 <div class="row">
@@ -100,12 +99,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 &nbsp;
-                                ${  (participant[fieldMapping.participationStatus] === fieldMapping.noRefusal) && (participant[fieldMapping.suspendContact] === "") ?
-                                        (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
-                                        class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>`)
-                                  :
-                                        (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
-                                  }  
+                                <button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
+                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>
                                 </div>
                         </div>
                     </div>
@@ -431,6 +426,13 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         })
     }
     if (suspendDate !== '//' && source !== 'page2') sendRefusalData[fieldMapping.suspendContact] = suspendDate
+
+    const previousSuspendedStatus = localStorage.getItem('suspendContact');
+    if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
+
+    const previousRefusalStatus = localStorage.getItem('participationStatus');
+    if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = ``
+    
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
     ) : (
