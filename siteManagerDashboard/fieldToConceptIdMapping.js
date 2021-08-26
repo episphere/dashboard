@@ -184,8 +184,9 @@ export default
     //unavailable
     "unavailable": 178420302,
 
-
     // sanford health
+    "sanfordReportedSex": 435027713,
+    "sanfordReportedRace": 119643471,
 	"africanAmericanSH": 232334767,
 	"americanIndianSH": 211228524,
 	"asianSH": 308427446,
@@ -249,6 +250,7 @@ export default
     'datePreConsentOptOut': 697256759,
     'duplicateType': 148197146,
     'previousCancer': 452166062,
+    'maxNumContactsReached': 875549268,
 
     'signedHIPAARevoc': 153713899,
     'dateHIPAARevoc': 613641698,
@@ -358,15 +360,38 @@ export default
     'campaignType': 667474224,
     'random':926338735,
     'screeningAppointment': 348281054,
-    'nonScreeningAppointment':324692899,
+    'nonScreeningAppointment':324692899, 
     'demographicGroup': 351257378,
     'agingOutofStudy': 647148178,
     'geographicGroup': 834544960,
     'postScreeningAppointment': 682916147,
     'technologyAdapters': 153365143,
     'lowIncomeAreas': 663706936,
-
-    'studyIdTimeStamp': 521025370
-
-
+    'studyIdTimeStamp': 521025370,
+    'automatedVerification': 444699761,
+    'outreachRequiredForVerification': 188797763,
+    'manualVerification': 953614051,
+    'duplicateType': 148197146,
+    'updateRecruitType': 793822265,
+    'firstNameMatch': 147176963,
+    'lastNameMatch': 557461333,
+    'dobMatch': 725929722,
+    'pinMatch': 711794630,
+    'tokenMatch': 679832994,
+    'zipCodeMatch': 559534463,
+    'siteMatch': 570452130,
+    'ageMatch': 629484663,
+    'cancerStatusMatch': 547895941,
+    'notMatched': 356674370,
+    'matched': 219803804,
+    'methodNotUsed': 734437214,
+    'methodUsed': 426360242,
+    'activeSignedAsPassive': 638335430,
+    'notActiveSignedAsPassive': 283434980,
+    'alreadyEnrolled': 654558118,
+    'noChangeNeeded': 132080040,
+    'passiveToActive': 854903954,
+    'activeToPassive': 965707001,
+    'criteriumNotMet': 539025306,
+    'criteriumMet': 427405444
 }
