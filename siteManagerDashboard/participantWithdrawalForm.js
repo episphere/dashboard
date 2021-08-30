@@ -273,7 +273,6 @@ const optionsHandler = (suspendDate) => {
             template += `<span>${x.value}</span> <br />`
             retainOptions.forEach(i => i.value === 'Participant Deceased' ?  skipRequestedBy = true  :  skipRequestedBy = false) }
     })
-    console.log('retainOptions', retainOptions)
     const a = document.getElementById('defaultRequest7')
     a.value && requestedHolder.push(a)
     requestedOption.forEach(x => { 
@@ -444,8 +443,6 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         sendRefusalData[fieldMapping.suspendContact] = suspendDate
         sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
     }
-
-    console.log('ref', sendRefusalData)
     const previousSuspendedStatus = localStorage.getItem('suspendContact');
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
 
