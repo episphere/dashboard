@@ -393,5 +393,19 @@ export default
     'passiveToActive': 854903954,
     'activeToPassive': 965707001,
     'criteriumNotMet': 539025306,
-    'criteriumMet': 427405444
+    'criteriumMet': 427405444,
+
+    // refusal auto timestamps
+    'refBaselineSurveyTimeStamp': 982105411,
+    'refBaselineBloodTimeStamp': 390198398,
+    'refBaselineUrineTimeStamp': 808663245,
+    'refBaselineMouthwashTimeStamp': 262357957,
+    'refBaselineAllFutureSurveysTimeStamp': 974100830,
+    'refBaselineAllFutureSpecimensTimeStamp': 711256590,
+    'refBaselineSpecimenSurveysTimeStamp': 657475009,
+    'refAllFutureActivitesTimeStamp': 614264509,
+
+    // remaining withdrawal
+    'contactSuspended': 726389747
+    
 }
