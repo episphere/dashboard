@@ -5,16 +5,18 @@ import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToN
 
 
 export const renderParticipantWithdrawal = (participant) => {
-    const isParent = localStorage.getItem('isParent')
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-    removeActiveClass('nav-link', 'active');
-    document.getElementById('participantWithdrawalBtn').classList.add('active');
-    mainContent.innerHTML = render(participant);
-    autoSelectOptions();
-    viewOptionsSelected();
-    proceedToNextPage();
-    addEventMonthSelection('UPMonth', 'UPDay');
-    checkPreviousWithdrawalStatus(participant);
+    if (participant !== undefined) {
+        const isParent = localStorage.getItem('isParent')
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
+        removeActiveClass('nav-link', 'active');
+        document.getElementById('participantWithdrawalBtn').classList.add('active');
+        mainContent.innerHTML = render(participant);
+        autoSelectOptions();
+        viewOptionsSelected();
+        proceedToNextPage();
+        addEventMonthSelection('UPMonth', 'UPDay');
+        checkPreviousWithdrawalStatus(participant);
+    }
 }
 
 
