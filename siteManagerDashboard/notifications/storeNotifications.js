@@ -14,7 +14,6 @@ export const renderStoreNotificationSchema = async () => {
     const concepts = await getConcepts();  
     init(concepts);
     if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
-    clearNotificationSchemaForm();  
 }
 
 const init = (concepts) => { 
@@ -28,6 +27,7 @@ const init = (concepts) => {
     conceptDropdown(concepts, 'phone-concept');
     addEventNotificationCheckbox();
     formSubmit();
+    clearNotificationSchemaForm();
 }
 
 
@@ -36,7 +36,7 @@ export const render = () => {
                         <div id="root root-margin"> 
                         <div id="alert_placeholder"></div>
                         <br />
-                        <span> <h4 style="text-align: center;">Create Notification Schema</h4> </span>
+                        <span> <h4 style="text-align: center;" id="getCurrentTitle">Create Notification Schema</h4> </span>
                             <form method="post" class="mt-3" id="configForm">
                                 <div class="row form-group">
                                     <label class="col-form-label col-md-4" for="attempt">Attempt</label>
@@ -112,7 +112,7 @@ export const render = () => {
                                 </div>
                                 
                                 <div class="mt-4 mb-4" style="display:inline-block;">
-                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                    <button type="submit" class="btn btn-primary" id="updateId">Submit</button>
                                     <button type="button" class="btn btn-danger" id="clearForm">Clear</button>
                                 </div>
         
@@ -128,6 +128,8 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
     document.getElementById("attempt").value = updateSchemaNotification.attempt;
     document.getElementById("description").value = updateSchemaNotification.description;
     document.getElementById("category").value = updateSchemaNotification.category;
+    const titleElement = document.getElementById("getCurrentTitle");
+    titleElement.innerHTML = "Update Notification Schema";
 
     (updateSchemaNotification.notificationType).forEach(i => {
         if (i === "email") {
@@ -189,9 +191,9 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
     document.getElementById('days').value = updateSchemaNotification.time['day'];
     document.getElementById('hours').value = updateSchemaNotification.time['hour'];
     document.getElementById('minutes').value = updateSchemaNotification.time['minute'];
-
+    const a = document.getElementById('updateId');
+    a.dataset.id = updateSchemaNotification.id;
     localStorage.setItem("idFlag", true);
-
 }
 
 
@@ -237,7 +239,6 @@ const formSubmit = () => {
             obj['conditions'][e.value] = {};
             obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value)
         })
-        
         storeNotificationSchema(obj, 'notification_specification')
     })
 }
@@ -386,8 +387,9 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 }
 
 const storeNotificationSchema = async (schema) => {
+    const a = document.getElementById('updateId').getAttribute('data-id');
     const idFlag = localStorage.getItem("idFlag");
-    if(idFlag == "true") { 
+    if(idFlag == "true" || a && a.length != 0) { 
         let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
         localStorage.setItem("idFlag", false);
         schema.id = updateSchemaNotification.id;

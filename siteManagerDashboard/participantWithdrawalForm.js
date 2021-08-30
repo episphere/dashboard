@@ -401,17 +401,31 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     let highestStatus = [];
     sendRefusalData[fieldMapping.refusalOptions] = {};
     retainOptions.forEach(x => {
-        switch (parseInt(x.dataset.optionkey)) {
-            case fieldMapping.refusedSurvey:
-            case fieldMapping.refusedBlood:
-            case fieldMapping.refusedUrine:
-            case fieldMapping.refusedMouthwash:
-            case fieldMapping.refusedSpecimenSurevys:
-            case fieldMapping.refusedSpecimenSurevys:
-            case fieldMapping.refusedFutureSamples:
-                sendRefusalData[fieldMapping.refusalOptions][x.dataset.optionkey] = fieldMapping.yes
-                break;
-            default:
+        if (parseInt(x.dataset.optionkey) === fieldMapping.refusedSurvey) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedBlood) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedUrine) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedMouthwash) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurevys) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSurveys) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureActivities) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureActivitesTimeStamp);
+        }
+        else {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
     })
@@ -425,8 +439,10 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
             }
         })
     }
-    if (suspendDate !== '//' && source !== 'page2') sendRefusalData[fieldMapping.suspendContact] = suspendDate
-
+    if (suspendDate !== '//' && source !== 'page2') { 
+        sendRefusalData[fieldMapping.suspendContact] = suspendDate
+        sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
+    }
     const previousSuspendedStatus = localStorage.getItem('suspendContact');
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
 
@@ -453,8 +469,18 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
+<<<<<<< HEAD
     const siteKey = await getAccessToken(); 
     clickHandler(sendRefusalData, siteKey, token);
+=======
+    const siteKey = await getAccessToken();
+  //  clickHandler(sendRefusalData, siteKey, token);
+}
+
+const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+    sendRefusalData[fieldMapping.refusalOptions][refusalOptionTimeStamp] = new Date().toISOString();
+    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
+>>>>>>> 4476919... [SiteManager Dashboard] Addressed issues raised in Participant Withdrawal & Notification schema (#199)
 }
 
 const getComputeScore = (retainOptions, highestStatus) => {
