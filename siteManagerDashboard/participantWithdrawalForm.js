@@ -474,7 +474,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 =======
     const siteKey = await getAccessToken();
-  //  clickHandler(sendRefusalData, siteKey, token);
+    clickHandler(sendRefusalData, siteKey, token);
 }
 
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
