@@ -469,10 +469,6 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-<<<<<<< HEAD
-    const siteKey = await getAccessToken(); 
-    clickHandler(sendRefusalData, siteKey, token);
-=======
     const siteKey = await getAccessToken();
     clickHandler(sendRefusalData, siteKey, token);
 }
@@ -480,7 +476,6 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
     sendRefusalData[fieldMapping.refusalOptions][refusalOptionTimeStamp] = new Date().toISOString();
     sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
->>>>>>> 4476919... [SiteManager Dashboard] Addressed issues raised in Participant Withdrawal & Notification schema (#199)
 }
 
 const getComputeScore = (retainOptions, highestStatus) => {
