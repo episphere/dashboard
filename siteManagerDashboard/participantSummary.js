@@ -41,7 +41,6 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
-
         template += `<div class="table-responsive">
 
                         <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
@@ -160,33 +159,33 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
     if (source === 'consent') {
         switch(healthcareProvider) {
             case 'Sanford':
-                coordinates = [{x: 110, y: 400}, {x1: 110, y1: 330}]
+                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 360}, {x1: 110, y1: 330}]
                 break;
             case 'HP':
-                coordinates = [{x: 110, y: 410}, {x1: 110, y1: 340}]
+                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
                 break;
             default:
-                coordinates = [{x: 110, y: 400}, {x1: 110, y1: 330}]
+                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
 
         }
         return coordinates 
     } else {
         switch(healthcareProvider) {
             case 'Sanford':
-                coordinates = [{x: 100, y: 400}, {x1: 100, y1: 450}]
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 452}]
                 break;
             case 'HP':
-                coordinates = [{x: 100, y: 400}, {x1: 100, y1: 465}]
+                coordinates = [{x: 100, y: 415}, {x0: 100, y0: 370}, {x1: 100, y1: 465}]
                 break;
             default:
-                coordinates = [{x: 100, y: 410}, {x1: 100, y1: 450}]
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
         }
         return coordinates 
     }
 }
 
 const getRevocationCoordinates = () => {
-    const coordinates = [{x: 150, y: 400}, {x1: 150, y1: 425}];
+    const coordinates = [{x: 150, y: 425}, {x0: 150, y0: 380}, {x1: 150, y1: 405}];
     return coordinates;
 }
 
@@ -202,19 +201,24 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates)
     const pages = pdfDoc.getPages();
     for (let i = 0; i <= pages.length; i++) {seekLastPage = i}
     const editPage = pages[seekLastPage-1];
-
     editPage.drawText(`
-    ${participantPrintName} 
-    ${timeStamp}`, {
+    ${participantPrintName}`, {
                 x: coordinates[0].x,
                 y: coordinates[0].y,
                 size: 24,
       });
 
     editPage.drawText(`
+    ${timeStamp}`, {
+                x: coordinates[1].x0,
+                y: coordinates[1].y0,
+                size: 24,
+    });
+
+    editPage.drawText(`
     ${participantSignature}`, {
-        x: coordinates[1].x1,
-        y: coordinates[1].y1,
+        x: coordinates[2].x1,
+        y: coordinates[2].y1,
         size: 20,
         font: helveticaFont,
       });

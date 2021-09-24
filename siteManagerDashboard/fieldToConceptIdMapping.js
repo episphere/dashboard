@@ -312,7 +312,6 @@ export default
     'other': 181769837,
 
     'participationStatus': 912301837,
-    'enrollmentStatus': 507120821,
 
     "0": 208325815,
     "1": 622008261,	
@@ -406,6 +405,26 @@ export default
     'refAllFutureActivitesTimeStamp': 614264509,
 
     // remaining withdrawal
-    'contactSuspended': 726389747
+    'contactSuspended': 726389747,
+
+    // Enrollment Status
+    'enrollmentStatus': 507120821,
+    'signedInEnrollment': 238916532,
+	'consentedEnrollment': 165539416,
+    'userProfileCompleteEnrollment': 232581561,
+    'verificationCompleteEnrollment': 593616423,
+    'cannotBeVerifiedEnrollment': 289729076,
+	'verifiedMimimallyEnrolledEnrollment': 800366201,
+    'fullyEnrolledEnrollment': 116215611,	
+
+
+    238916532 : 'Signed In',
+	165539416 : 'Consented',
+    232581561 : 'User Profile Complete' ,
+    593616423 : 'Verification Complete',
+    289729076 : 'Cannot Be Verified' ,
+	800366201 : 'Verified Mimimally Enrolled',
+    116215611 : 'Fully Enrolled' 	
+    
     
 }
