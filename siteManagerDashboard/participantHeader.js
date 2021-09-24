@@ -12,6 +12,7 @@ export const headerImportantColumns = [
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
     { field: 'Participation Status'},
+    { field: 'Enrollment Status'},
      { field: 'Suspended Contact'}
 ];
 
@@ -29,6 +30,10 @@ export const renderParticipantHeader = (participant) => {
 
         (headerImportantColumns[x].field === 'Participation Status' ) ?
             template += `<span><b>Participation Status </b></span> : ${getParticipantStatus(participant)}  &nbsp;`
+        :
+
+        (headerImportantColumns[x].field === 'Enrollment Status' ) ?
+            template += `<span><b>Enrollment Status </b></span> : ${getEnrollmentStatus(participant)}  &nbsp;`
         :
 
         (headerImportantColumns[x].field === 'Suspended Contact'  ) ?
@@ -117,6 +122,14 @@ export const getParticipantStatus = (participant) => {
         const statusValue = participant[fieldMapping.participationStatus];
         if (statusValue !== undefined && statusValue !== ``)  return fieldMapping[statusValue];
         else return `No Refusal`;
+    }
+}
+
+const getEnrollmentStatus = (participant) => {
+    if (typeof participant !== "string") {
+        const statusValue = participant[fieldMapping.enrollmentStatus];
+        if (statusValue !== undefined && statusValue !== `` )  return fieldMapping[statusValue];
+        else return `Error`;
     }
 }
 

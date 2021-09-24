@@ -21,9 +21,9 @@ export const renderTable = (data, source) => {
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.prefEmail, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
     fieldMapping.participationStatus,  fieldMapping.enrollmentStatus ,fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
-    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag ,fieldMapping.refusedFutureSamples, fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, 
-    fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrawConsent, fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, 
-    fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, 
+    fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
+    fieldMapping.dateWithdrawConsent, fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -239,7 +239,7 @@ const tableTemplate = (data, showButtons) => {
                 template += `<td>${participant[x] ? 'Destroy Data Status'  : ''}</td>`
                 : (participant[x] === fieldMapping.deceased) ?
                     template += `<td>${participant[x] ? 'Deceased'  : ''}</td>` 
-                : `ERROR`
+                : template += `<td> ERROR </td>`
             )
             : (x === (fieldMapping.bohStatusFlag1).toString() || x === (fieldMapping.mreStatusFlag1).toString() 
             || x === (fieldMapping.lawStausFlag1).toString() || x === (fieldMapping.sasStatusFlag1).toString()) ?
@@ -249,6 +249,16 @@ const tableTemplate = (data, showButtons) => {
                 : (participant[x] === fieldMapping.started1) ?
                 (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
+            )
+            :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
+                x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
+                x === (fieldMapping.refusedFutureSurveys).toString() || x === (fieldMapping.refusedAllFutureActivities).toString()) ?
+            (
+                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
+                    :
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
             : (x === fieldMapping.siteReportedAge.toString()) ? 
@@ -358,6 +368,24 @@ const tableTemplate = (data, showButtons) => {
                     :
                         template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Other` : ``}</td>`)
                     )
+            : (x === (fieldMapping.enrollmentStatus).toString()) ? 
+            (   
+                (participant[x] === fieldMapping.signedInEnrollment) ?
+                template += `<td>${participant[x] ? 'Signed In'  : ''}</td>`
+                : (participant[x] === fieldMapping.consentedEnrollment) ?
+                    template += `<td>${participant[x] ? 'Consented'  : ''}</td>`
+                : (participant[x] === fieldMapping.userProfileCompleteEnrollment) ?
+                    template += `<td>${participant[x] ? 'User Profile Complete'  : ''}</td>`
+                : (participant[x] === fieldMapping.verificationCompleteEnrollment) ?
+                    template += `<td>${participant[x] ? 'Verification Complete'  : ''}</td>`
+                : (participant[x] === fieldMapping.cannotBeVerifiedEnrollment) ?
+                template += `<td>${participant[x] ? 'Cannot Be Verified'  : ''}</td>`
+                : (participant[x] === fieldMapping.verifiedMimimallyEnrolledEnrollment) ?
+                template += `<td>${participant[x] ? 'Verified Mimimally Enrolled'  : ''}</td>`
+                : (participant[x] === fieldMapping.fullyEnrolledEnrollment) ?
+                    template += `<td>${participant[x] ? 'Fully Enrolled'  : ''}</td>` 
+                : template += `<td> ERROR </td>` 
+            )
                     // part of state & default value???
             : (x === fieldMapping.automatedVerification.toString()) ? (
                 ( participant['state'][fieldMapping.automatedVerification.toString()] === fieldMapping.methodUsed ) ?
