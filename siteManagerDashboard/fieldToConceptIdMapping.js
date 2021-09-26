@@ -255,7 +255,6 @@ export default
     'signedHIPAARevoc': 153713899,
     'dateHIPAARevoc': 613641698,
     'versionHIPAARevoc': 407743866,
-    'dateWithdrawConsent': 659990606,
 
     'signedDataDestroy': 359404406,
     'dateDataDestroy': 119449326,
