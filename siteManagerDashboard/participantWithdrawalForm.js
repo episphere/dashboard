@@ -463,12 +463,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     
     if (computeScore === fieldMapping.withdrewConsent) { 
         sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
-        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 
     }
     if (computeScore === fieldMapping.destroyDataStatus) { 
         sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
-        sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
-        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 
     }
     if (computeScore === fieldMapping.revokeHIPAAOnly) { 
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 

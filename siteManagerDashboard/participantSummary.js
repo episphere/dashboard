@@ -231,17 +231,16 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates)
 }
 
 const createSignature = (participant) => {
-    const middleName = participant[headerImportantColumns[1].field] !== undefined ? participant[headerImportantColumns[1].field] : ``
-    const createParticipantSignature = participant[headerImportantColumns[0].field] + " " + middleName + " " + participant[headerImportantColumns[2].field]
+    const middleName = participant[fieldMapping.consentMiddleName] !== undefined ? participant[fieldMapping.consentMiddleName] : ``
+    const createParticipantSignature = participant[fieldMapping.consentFirstName] + " " + middleName + " " + participant[fieldMapping.consentLastName]
     return createParticipantSignature;
 }
 
 const createPrintName = (participant) => {
-    const firstName = participant[headerImportantColumns[0].field]
-    const middleName = participant[headerImportantColumns[1].field] !== undefined ? participant[headerImportantColumns[1].field] : ``
-    const lastName = participant[headerImportantColumns[2].field]
-    const suffix = participant[headerImportantColumns[3].field] !== undefined ? participant[headerImportantColumns[3].field] : ``
-
+    const firstName = participant[fieldMapping.consentFirstName]
+    const middleName = participant[fieldMapping.consentMiddleName] !== undefined ? participant[fieldMapping.consentMiddleName] : ``
+    const lastName = participant[fieldMapping.consentLastName]
+    const suffix = participant[fieldMapping.consentSuffix] !== undefined ? participant[fieldMapping.consentSuffix] : ``
     const createParticipantPrintName = firstName +  " " + middleName + " " + lastName + " " + suffix
     return createParticipantPrintName;
 }
