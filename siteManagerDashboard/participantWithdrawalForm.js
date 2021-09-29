@@ -441,6 +441,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     }
     if (suspendDate !== '//' && source !== 'page2') { 
         sendRefusalData[fieldMapping.suspendContact] = suspendDate
+        sendRefusalData[fieldMapping.startDateSuspendedContact] = new Date().toISOString();
         sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
     }
     const previousSuspendedStatus = localStorage.getItem('suspendContact');
