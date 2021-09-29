@@ -347,6 +347,7 @@ export default
     'dateOfDeath': 123868967,
 
     'suspendContact': 113579866,
+    'startDateSuspendedContact': 161366008,
     'whoRequested': 297147359,
     'requestParticipant': 648459216,
     'requestPrincipalInvestigator': 658808644,
