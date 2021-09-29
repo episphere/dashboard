@@ -480,7 +480,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
 }
 
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
-    sendRefusalData[fieldMapping.refusalOptions][refusalOptionTimeStamp] = new Date().toISOString();
+    sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
     sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
 }
 
