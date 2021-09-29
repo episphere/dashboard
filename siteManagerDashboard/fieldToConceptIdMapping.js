@@ -409,22 +409,22 @@ export default
 
     // Enrollment Status
     'enrollmentStatus': 507120821,
-    'signedInEnrollment': 238916532,
-	'consentedEnrollment': 165539416,
-    'userProfileCompleteEnrollment': 232581561,
-    'verificationCompleteEnrollment': 593616423,
-    'cannotBeVerifiedEnrollment': 289729076,
-	'verifiedMimimallyEnrolledEnrollment': 800366201,
-    'fullyEnrolledEnrollment': 116215611,	
+    'signedInEnrollment': 939311541,
+	'consentedEnrollment': 554563961,
+    'userProfileCompleteEnrollment': 928145508,
+    'verificationCompleteEnrollment': 959657954,
+    'cannotBeVerifiedEnrollment': 850536553,
+	'verifiedMimimallyEnrolledEnrollment': 364179400,
+    'fullyEnrolledEnrollment': 485892221,	
 
 
-    238916532 : 'Signed In',
-	165539416 : 'Consented',
-    232581561 : 'User Profile Complete' ,
-    593616423 : 'Verification Complete',
-    289729076 : 'Cannot Be Verified' ,
-	800366201 : 'Verified Mimimally Enrolled',
-    116215611 : 'Fully Enrolled' 	
+    939311541 : 'Signed In',
+	554563961 : 'Consented',
+    928145508 : 'User Profile Complete' ,
+    959657954 : 'Verification Complete',
+    850536553 : 'Cannot Be Verified' ,
+	364179400 : 'Verified - mimimally Enrolled',
+    485892221 : 'Fully Enrolled' 	
     
     
 }
