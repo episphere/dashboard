@@ -12,7 +12,7 @@ export const headerImportantColumns = [
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
     { field: 'Participation Status'},
-    { field: 'Enrollment Status'},
+   // { field: 'Enrollment Status'},
      { field: 'Suspended Contact'}
 ];
 
@@ -32,9 +32,9 @@ export const renderParticipantHeader = (participant) => {
             template += `<span><b>Participation Status </b></span> : ${getParticipantStatus(participant)}  &nbsp;`
         :
 
-        (headerImportantColumns[x].field === 'Enrollment Status' ) ?
-            template += `<span><b>Enrollment Status </b></span> : ${getEnrollmentStatus(participant)}  &nbsp;`
-        :
+        // (headerImportantColumns[x].field === 'Enrollment Status' ) ?
+        //     template += `<span><b>Enrollment Status </b></span> : ${getEnrollmentStatus(participant)}  &nbsp;`
+        // :
 
         (headerImportantColumns[x].field === 'Suspended Contact'  ) ?
             template += getParticipantSuspendedDate(participant)
