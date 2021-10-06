@@ -164,6 +164,9 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'HP':
                 coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
                 break;
+            case 'MFC':
+                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
+                break;
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
 
@@ -176,6 +179,9 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 break;
             case 'HP':
                 coordinates = [{x: 100, y: 415}, {x0: 100, y0: 370}, {x1: 100, y1: 465}]
+                break;
+            case 'MFC':
+                coordinates = [{x: 100, y: 425}, {x0: 100, y0: 380}, {x1: 100, y1: 465}]
                 break;
             default:
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
@@ -240,7 +246,7 @@ const createPrintName = (participant) => {
     const firstName = participant[fieldMapping.consentFirstName]
     const middleName = participant[fieldMapping.consentMiddleName] !== undefined ? participant[fieldMapping.consentMiddleName] : ``
     const lastName = participant[fieldMapping.consentLastName]
-    const suffix = participant[fieldMapping.consentSuffix] !== undefined ? participant[fieldMapping.consentSuffix] : ``
+    const suffix = participant[fieldMapping.consentSuffix] !== undefined ? fieldMapping[participant[fieldMapping.consentSuffix]] : ``
     const createParticipantPrintName = firstName +  " " + middleName + " " + lastName + " " + suffix
     return createParticipantPrintName;
 }
