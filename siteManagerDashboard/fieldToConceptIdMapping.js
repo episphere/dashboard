@@ -350,7 +350,7 @@ export default
     'dateDataDestroyRequested': 269050420,
     'dateHipaaRevokeRequested': 664453818,
 
-
+    'dateParticipantDeceasedSubmitted': 672401635,
     'sourceOfDeath': 764403541,
     'dateOfDeath': 123868967,
 

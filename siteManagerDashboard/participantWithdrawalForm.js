@@ -514,7 +514,10 @@ const getComputeScore = (retainOptions, highestStatus) => {
 const combineResponses = (finalOptions, sendRefusalData, suspendDate) => {
     finalOptions.forEach(x => {
         sendRefusalData[fieldMapping.sourceOfDeath] = parseInt(x.dataset.optionkey) })
-    if (suspendDate !== '//') sendRefusalData[fieldMapping.dateOfDeath] = suspendDate
+    if (suspendDate !== '//') {
+        sendRefusalData[fieldMapping.dateOfDeath] = suspendDate    
+        sendRefusalData[fieldMapping.dateParticipantDeceasedSubmitted] = new Date().toISOString();
+    }
 }
 
 async function clickHandler(sendRefusalData, idToken, token) {
