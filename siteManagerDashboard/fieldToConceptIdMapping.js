@@ -374,6 +374,7 @@ export default
     'geographicGroup': 834544960,
     'postScreeningAppointment': 682916147,
     'technologyAdapters': 153365143,
+    'noneOftheAbove': 398561594,
     'lowIncomeAreas': 663706936,
     'studyIdTimeStamp': 521025370,
     'automatedVerification': 444699761,
@@ -399,7 +400,6 @@ export default
     'passiveSignedAsActive': 979256174,
     'notActiveSignedAsPassive': 283434980,
     'notActiveSignedAsActive': 866029623,
-    'noneOftheAbove': 398561594,
 
     'alreadyEnrolled': 654558118,
     'noChangeNeeded': 132080040,
