@@ -394,8 +394,13 @@ export default
     'matched': 219803804,
     'methodNotUsed': 734437214,
     'methodUsed': 426360242,
+
     'activeSignedAsPassive': 638335430,
+    'passiveSignedAsActive': 979256174,
     'notActiveSignedAsPassive': 283434980,
+    'notActiveSignedAsActive': 866029623,
+    'noneOftheAbove': 398561594,
+
     'alreadyEnrolled': 654558118,
     'noChangeNeeded': 132080040,
     'passiveToActive': 854903954,
