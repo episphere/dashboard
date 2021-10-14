@@ -409,7 +409,15 @@ const tableTemplate = (data, showButtons) => {
                     template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Not Active recruit signed in as Passive recruit` : ``}</td>`
                 : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.alreadyEnrolled ) ?
                 template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Already Enrolled` : ``}</td>`
-                :  template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Active recruit signed in as Passive recruit` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.notActiveSignedAsActive ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Not Active recruit signed in as Active recruit` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.noneOftheAbove ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `None of the Above` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.passiveSignedAsActive ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Passive recruit signed in as Active recruit` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.activeSignedAsPassive ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Active recruit signed in as Passive recruit` : ``}</td>`
+                :  template += `<td></td>`
             )
             : (x === fieldMapping.updateRecruitType.toString()) ? (
                 ( participant['state'][fieldMapping.updateRecruitType.toString()] === fieldMapping.passiveToActive ) ?
