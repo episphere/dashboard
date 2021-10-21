@@ -12,6 +12,7 @@ export const headerImportantColumns = [
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
     { field: 'Participation Status'},
+   // { field: 'Enrollment Status'},
      { field: 'Suspended Contact'}
 ];
 
@@ -28,11 +29,15 @@ export const renderParticipantHeader = (participant) => {
         :
 
         (headerImportantColumns[x].field === 'Participation Status' ) ?
-            template += `<span><b>Participation Status </b></span> : ${getParticipationStatus(participant)}  &nbsp;`
+            template += `<span><b>Participation Status </b></span> : ${getParticipantStatus(participant)}  &nbsp;`
         :
 
+        // (headerImportantColumns[x].field === 'Enrollment Status' ) ?
+        //     template += `<span><b>Enrollment Status </b></span> : ${getEnrollmentStatus(participant)}  &nbsp;`
+        // :
+
         (headerImportantColumns[x].field === 'Suspended Contact'  ) ?
-            template += getParticipationSuspendedDate(participant)
+            template += getParticipantSuspendedDate(participant)
         :
 
         (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
@@ -112,15 +117,23 @@ const renderSiteLocation = (participant) => {
     return keyToNameObj[siteHealthcareProvider];
 }
 
-const getParticipationStatus = (participant) => {
+export const getParticipantStatus = (participant) => {
    if (typeof participant !== "string") {
         const statusValue = participant[fieldMapping.participationStatus];
-        if (statusValue !== undefined)  return fieldMapping[statusValue];
+        if (statusValue !== undefined && statusValue !== ``)  return fieldMapping[statusValue];
         else return `No Refusal`;
     }
 }
 
-const getParticipationSuspendedDate = (participant) => {
+const getEnrollmentStatus = (participant) => {
+    if (typeof participant !== "string") {
+        const statusValue = participant[fieldMapping.enrollmentStatus];
+        if (statusValue !== undefined && statusValue !== `` )  return fieldMapping[statusValue];
+        else return `Error`;
+    }
+}
+
+export const getParticipantSuspendedDate = (participant) => {
     if (participant[fieldMapping.suspendContact] !== "" && participant[fieldMapping.suspendContact] !== undefined ) {
         let currentTimeStamp = humanReadableMDY(new Date().toISOString());
         let suspendedDate = participant[fieldMapping.suspendContact]

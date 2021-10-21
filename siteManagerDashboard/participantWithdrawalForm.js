@@ -1,9 +1,8 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { showAnimation, hideAnimation, baseAPI } from './utils.js';
+import { showAnimation, hideAnimation, baseAPI, getAccessToken } from './utils.js';
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
-    let participant = JSON.parse(localStorage.getItem("participant"))
     let template = ``;
     template = `        
                 <div class="row">
@@ -100,12 +99,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </label>
                                 </div>
                                 &nbsp;
-                                ${  (participant[fieldMapping.participationStatus] === fieldMapping.noRefusal) && (participant[fieldMapping.suspendContact] === "") ?
-                                        (`<button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
-                                        class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>`)
-                                  :
-                                        (`<button type="button" class="btn btn-secondary" disabled>Next</button>`)
-                                  }  
+                                <button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
+                                    class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>
                                 </div>
                         </div>
                     </div>
@@ -207,7 +202,7 @@ export const addEventMonthSelection = (month, day) => {
     UPMonth.addEventListener('change', () => {
         const value = UPMonth.value;
 
-        let template = '<option class="option-dark-mode" value="">Select birth day</option>';
+        let template = '<option class="option-dark-mode" value="">Select day</option>';
 
         if(value === '02'){
             for(let i = 1; i < 30; i++){
@@ -289,7 +284,7 @@ const optionsHandler = (suspendDate) => {
     if (suspendDate !== '//') template += `<span>Suspend all contact on case until ${suspendDate}</span> <br />`
     template += `
         <div style="display:inline-block; margin-top:20px;">
-            ${ ( skipRequestedBy === true &&  requestedHolder.length >= 0) ?  
+            ${ ( suspendDate !== '//' || (skipRequestedBy === true && requestedHolder.length >= 0)) ?  
                 ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             :  ( retainOptions.length === 0 || requestedHolder.length === 0 ) ? 
             `<span><b>Select an option & requested by before proceeding!</b></span> <br />
@@ -387,49 +382,74 @@ export const causeOfDeathPage = (retainOptions) => {
         const UPDay = document.getElementById('page2Day').value;
         const UPYear = document.getElementById('page2Year').value;
         let suspendDate = UPMonth +'/'+ UPDay +'/'+ UPYear
-        collectFinalResponse(retainOptions, source, suspendDate)
+        collectFinalResponse(retainOptions, [], source, suspendDate)
     })
  
 }
 
 const collectFinalResponse = (retainOptions, requestedHolder, source, suspendDate) => {
     let finalOptions = []
-    const a = document.getElementById('defaultCheck24')
-    a.value && finalOptions.push(a)
+    const a = document.getElementById('defaultCheck24');
+    if (a !== null) a.value && finalOptions.push(a)
     let checkboxes = document.getElementsByName('options');
     checkboxes.forEach(x => { if (x.checked) {  finalOptions.push(x)} })
     sendResponses(finalOptions, retainOptions, requestedHolder, source, suspendDate);
 }
 
-const sendResponses = (finalOptions, retainOptions, requestedHolder, source, suspendDate) => {
+const sendResponses = async (finalOptions, retainOptions, requestedHolder, source, suspendDate) => {
     let sendRefusalData = {};
     let highestStatus = [];
     sendRefusalData[fieldMapping.refusalOptions] = {};
     retainOptions.forEach(x => {
-        switch (parseInt(x.dataset.optionkey)) {
-            case fieldMapping.refusedSurvey:
-            case fieldMapping.refusedBlood:
-            case fieldMapping.refusedUrine:
-            case fieldMapping.refusedMouthwash:
-            case fieldMapping.refusedSpecimenSurevys:
-            case fieldMapping.refusedSpecimenSurevys:
-            case fieldMapping.refusedFutureSamples:
-                sendRefusalData[fieldMapping.refusalOptions][x.dataset.optionkey] = fieldMapping.yes
-                break;
-            default:
+        if (parseInt(x.dataset.optionkey) === fieldMapping.refusedSurvey) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedBlood) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedUrine) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedMouthwash) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
+            }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurevys) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSurveys) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureActivities) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureActivitesTimeStamp);
+        }
+        else {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
     })
-   
-    requestedHolder.forEach(x => {
-        switch (parseInt(x.dataset.optionkey)) {
-           case fieldMapping.requestOtherText:
-                sendRefusalData[fieldMapping.requestOtherText] = x.value
-           default:
-                sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
-        }
-    })
-    if (suspendDate !== '//' && source !== 'page2') sendRefusalData[fieldMapping.suspendContact] = suspendDate
+    if (requestedHolder.length != 0) {
+        requestedHolder.forEach(x => {
+            switch (parseInt(x.dataset.optionkey)) {
+            case fieldMapping.requestOtherText:
+                    sendRefusalData[fieldMapping.requestOtherText] = x.value
+            default:
+                    sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
+            }
+        })
+    }
+    if (suspendDate !== '//' && source !== 'page2') { 
+        sendRefusalData[fieldMapping.suspendContact] = suspendDate
+        sendRefusalData[fieldMapping.startDateSuspendedContact] = new Date().toISOString();
+        sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
+    }
+    const previousSuspendedStatus = localStorage.getItem('suspendContact');
+    if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
+
+    const previousRefusalStatus = localStorage.getItem('participationStatus');
+    if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = ``
+    
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
     ) : (
@@ -439,16 +459,33 @@ const sendResponses = (finalOptions, retainOptions, requestedHolder, source, sus
         :
             ( sendRefusalData[x.dataset.optionkey] = fieldMapping.yes )
         }))
-    if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore(retainOptions, highestStatus);
+    const computeScore = getComputeScore(retainOptions, highestStatus);
+    if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore
+    
+    if (computeScore === fieldMapping.withdrewConsent) { 
+        sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
+    }
+    if (computeScore === fieldMapping.destroyDataStatus) { 
+        sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
+    }
+    if (computeScore === fieldMapping.revokeHIPAAOnly) { 
+        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 
+    }
+    
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-    const siteKey = JSON.parse(localStorage.dashboard).siteKey
+    const siteKey = await getAccessToken();
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-const computeScore = (retainOptions, highestStatus) => {
+const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+    sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
+    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
+}
+
+const getComputeScore = (retainOptions, highestStatus) => {
     retainOptions.forEach(x => {
         switch (x.value) {
             case "Refusing all future activities":
@@ -477,7 +514,10 @@ const computeScore = (retainOptions, highestStatus) => {
 const combineResponses = (finalOptions, sendRefusalData, suspendDate) => {
     finalOptions.forEach(x => {
         sendRefusalData[fieldMapping.sourceOfDeath] = parseInt(x.dataset.optionkey) })
-    if (suspendDate !== '//') sendRefusalData[fieldMapping.dateOfDeath] = suspendDate
+    if (suspendDate !== '//') {
+        sendRefusalData[fieldMapping.dateOfDeath] = suspendDate    
+        sendRefusalData[fieldMapping.dateParticipantDeceasedSubmitted] = new Date().toISOString();
+    }
 }
 
 async function clickHandler(sendRefusalData, idToken, token) {

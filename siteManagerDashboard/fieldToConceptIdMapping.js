@@ -64,6 +64,14 @@ export default
     'second': 643664527,
     'third': 537892528,
 
+    612166858 : 'Jr.',
+    255907182 : 'Sr.',
+    226924545 : 'I',
+    270793412 : 'II',
+    959021713: 'III',
+    643664527: '2nd',
+    537892528: '3rd',
+
     'prefPhone': 127547625,
     'prefEmail': 357184057,
 
@@ -101,27 +109,27 @@ export default
     "lawCompletedDate1": 264644252,
     "lawStartDate1": 452942800,
 
-    "boh": "D_726699695",
-    "bohStatusFlag": "D_949302066",
-    "bohCompletedDate": "D_517311251",
-    "bohStartDate": "D_205553981",
+    // "boh": "D_726699695",
+    // "bohStatusFlag": "D_949302066",
+    // "bohCompletedDate": "D_517311251",
+    // "bohStartDate": "D_205553981",
 
-    "mre": "D_745268907",
-    "mreStatusFlag": "D_536735468",
-    "mreCompletedDate": "D_832139544",
-    "mreStartDate": "D_541836531",
+    // "mre": "D_745268907",
+    // "mreStatusFlag": "D_536735468",
+    // "mreCompletedDate": "D_832139544",
+    // "mreStartDate": "D_541836531",
 
-    "sas": "D_965707586",
-    "sasStatusFlag": "D_976570371",
-    "sasCompletedDate": "D_770257102",
-    "sasStartDate": "D_386488297",
+    // "sas": "D_965707586",
+    // "sasStatusFlag": "D_976570371",
+    // "sasCompletedDate": "D_770257102",
+    // "sasStartDate": "D_386488297",
 
-    "law": "D_716117817",
-    "lawStausFlag": "D_663265240",
-    "lawCompletedDate": "D_264644252",
-    "lawStartDate": "D_452942800",
+    // "law": "D_716117817",
+    // "lawStausFlag": "D_663265240",
+    // "lawCompletedDate": "D_264644252",
+    // "lawStartDate": "D_452942800",
 
-    "ssn": "D_716117818",
+    // "ssn": "D_716117818",
     "ssnFullflag": 311580100,
     "ssnFulldate": 454067894,
 
@@ -184,8 +192,9 @@ export default
     //unavailable
     "unavailable": 178420302,
 
-
     // sanford health
+    "sanfordReportedSex": 435027713,
+    "sanfordReportedRace": 119643471,
 	"africanAmericanSH": 232334767,
 	"americanIndianSH": 211228524,
 	"asianSH": 308427446,
@@ -243,17 +252,18 @@ export default
     'accountPhone': 348474836,
     'accountName': 756862764,
     'consentFirstName': 471168198,
-    'consentMiddleName': 736251808,
-    'consentLastName': 436680969,
+    'consentMiddleName': 436680969,
+    'consentLastName': 736251808,
+    'consentSuffix': 480305327,
     'preConsentOptOut': 158291096,
     'datePreConsentOptOut': 697256759,
     'duplicateType': 148197146,
     'previousCancer': 452166062,
+    'maxNumContactsReached': 875549268,
 
     'signedHIPAARevoc': 153713899,
     'dateHIPAARevoc': 613641698,
     'versionHIPAARevoc': 407743866,
-    'dateWithdrawConsent': 659990606,
 
     'signedDataDestroy': 359404406,
     'dateDataDestroy': 119449326,
@@ -310,7 +320,6 @@ export default
     'other': 181769837,
 
     'participationStatus': 912301837,
-    'enrollmentStatus': 507120821,
 
     "0": 208325815,
     "1": 622008261,	
@@ -337,11 +346,16 @@ export default
     "destroyDataStatus": 241236037,
     "deceased": 987563196,
 
+    'dateWithdrewConsentRequested': 659990606,
+    'dateDataDestroyRequested': 269050420,
+    'dateHipaaRevokeRequested': 664453818,
 
+    'dateParticipantDeceasedSubmitted': 672401635,
     'sourceOfDeath': 764403541,
     'dateOfDeath': 123868967,
 
     'suspendContact': 113579866,
+    'startDateSuspendedContact': 161366008,
     'whoRequested': 297147359,
     'requestParticipant': 648459216,
     'requestPrincipalInvestigator': 658808644,
@@ -349,5 +363,82 @@ export default
     'requestPIListed': 786757575,
     'requestChairSite': 847056701,
     'requestOther': 181769837,
-    'requestOtherText': 366295286
+    'requestOtherText': 366295286,
+
+    'campaignType': 667474224,
+    'random':926338735,
+    'screeningAppointment': 348281054,
+    'nonScreeningAppointment':324692899, 
+    'demographicGroup': 351257378,
+    'agingOutofStudy': 647148178,
+    'geographicGroup': 834544960,
+    'postScreeningAppointment': 682916147,
+    'technologyAdapters': 153365143,
+    'noneOftheAbove': 398561594,
+    'lowIncomeAreas': 663706936,
+    'studyIdTimeStamp': 521025370,
+    'automatedVerification': 444699761,
+    'outreachRequiredForVerification': 188797763,
+    'manualVerification': 953614051,
+    'duplicateType': 148197146,
+    'updateRecruitType': 793822265,
+    'firstNameMatch': 147176963,
+    'lastNameMatch': 557461333,
+    'dobMatch': 725929722,
+    'pinMatch': 711794630,
+    'tokenMatch': 679832994,
+    'zipCodeMatch': 559534463,
+    'siteMatch': 570452130,
+    'ageMatch': 629484663,
+    'cancerStatusMatch': 547895941,
+    'notMatched': 356674370,
+    'matched': 219803804,
+    'methodNotUsed': 734437214,
+    'methodUsed': 426360242,
+
+    'activeSignedAsPassive': 638335430,
+    'passiveSignedAsActive': 979256174,
+    'notActiveSignedAsPassive': 283434980,
+    'notActiveSignedAsActive': 866029623,
+
+    'alreadyEnrolled': 654558118,
+    'noChangeNeeded': 132080040,
+    'passiveToActive': 854903954,
+    'activeToPassive': 965707001,
+    'criteriumNotMet': 539025306,
+    'criteriumMet': 427405444,
+
+    // refusal auto timestamps
+    'refBaselineSurveyTimeStamp': 982105411,
+    'refBaselineBloodTimeStamp': 390198398,
+    'refBaselineUrineTimeStamp': 808663245,
+    'refBaselineMouthwashTimeStamp': 262357957,
+    'refBaselineAllFutureSurveysTimeStamp': 974100830,
+    'refBaselineAllFutureSpecimensTimeStamp': 711256590,
+    'refBaselineSpecimenSurveysTimeStamp': 657475009,
+    'refAllFutureActivitesTimeStamp': 614264509,
+
+    // remaining withdrawal
+    'contactSuspended': 726389747,
+
+    // Enrollment Status
+    'enrollmentStatus': 507120821,
+    'signedInEnrollment': 939311541,
+	'consentedEnrollment': 554563961,
+    'userProfileCompleteEnrollment': 928145508,
+    'verificationCompleteEnrollment': 959657954,
+    'cannotBeVerifiedEnrollment': 850536553,
+	'verifiedMimimallyEnrolledEnrollment': 364179400,
+    'fullyEnrolledEnrollment': 485892221,	
+
+
+    939311541 : 'Signed In',
+	554563961 : 'Consented',
+    928145508 : 'User Profile Complete' ,
+    959657954 : 'Verification Complete',
+    850536553 : 'Cannot Be Verified' ,
+	364179400 : 'Verified - mimimally Enrolled',
+    485892221 : 'Fully Enrolled' 	
+    
+    
 }

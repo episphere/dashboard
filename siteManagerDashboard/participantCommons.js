@@ -3,7 +3,7 @@ import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getIdToken, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
@@ -11,24 +11,28 @@ export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [ 'Connect_ID', 'pin', 'token', 'studyId', fieldMapping.timeStudyIdSubmitted, fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
-    fieldMapping.siteReportedSex, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
+    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
     fieldMapping.consentDate, fieldMapping.consentVersion, fieldMapping.hippaFlag, fieldMapping.hippaDate, fieldMapping.hippaVersion, fieldMapping.userProfileFlag, 
-    fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.duplicateType, fieldMapping.updateRecruitType, 
-    fieldMapping.preConsentOptOut, fieldMapping.datePreConsentOptOut, fieldMapping.signInMechansim, fieldMapping.consentFirstName, 
+    fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.automatedVerification, fieldMapping.outreachRequiredForVerification, fieldMapping.manualVerification,
+    fieldMapping.duplicateType, fieldMapping.firstNameMatch, fieldMapping.lastNameMatch, fieldMapping.dobMatch, fieldMapping.pinMatch, fieldMapping.tokenMatch, 
+    fieldMapping.zipCodeMatch, fieldMapping.siteMatch, fieldMapping.ageMatch, fieldMapping.cancerStatusMatch, fieldMapping.updateRecruitType, 
+    fieldMapping.preConsentOptOut, fieldMapping.datePreConsentOptOut, fieldMapping.maxNumContactsReached, fieldMapping.signInMechansim, fieldMapping.consentFirstName, 
     fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.prefEmail, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus,  fieldMapping.enrollmentStatus ,fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
-    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag ,fieldMapping.refusedFutureSamples, fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, 
-    fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrawConsent, fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, 
-    fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+    fieldMapping.participationStatus, /* fieldMapping.enrollmentStatus, */ fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
+    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, 
+    fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
+    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     if(array.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
-                ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</button>`)}
+                ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
+                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested) ? 
+                        conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</button>`)}
             </div>
         </div>`
     }
@@ -173,6 +177,7 @@ const paginationTemplate = (array) => {
     return template;
 }
 
+// TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
     let template = '';
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -233,9 +238,10 @@ const tableTemplate = (data, showButtons) => {
                 : (participant[x] === fieldMapping.withdrewConsent) ?
                 template += `<td>${participant[x] ? 'Withdrew Consent'  : ''}</td>`
                 : (participant[x] === fieldMapping.destroyDataStatus) ?
-                template += `<td>${participant[x] ? 'Destroy DataS tatus'  : ''}</td>`
-                : (
-                    template += `<td>${participant[x] ? 'Deceased'  : ''}</td>` )
+                template += `<td>${participant[x] ? 'Destroy Data Status'  : ''}</td>`
+                : (participant[x] === fieldMapping.deceased) ?
+                    template += `<td>${participant[x] ? 'Deceased'  : ''}</td>` 
+                : template += `<td> ERROR </td>`
             )
             : (x === (fieldMapping.bohStatusFlag1).toString() || x === (fieldMapping.mreStatusFlag1).toString() 
             || x === (fieldMapping.lawStausFlag1).toString() || x === (fieldMapping.sasStatusFlag1).toString()) ?
@@ -246,7 +252,225 @@ const tableTemplate = (data, showButtons) => {
                 (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
+            :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
+                x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
+                x === (fieldMapping.refusedFutureSurveys).toString() || x === (fieldMapping.refusedAllFutureActivities).toString()) ?
+            (
+                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
+                    :
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                )
+            )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
+            : (x === fieldMapping.siteReportedAge.toString()) ? 
+            (
+                ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `40-45` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange2 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `46-50` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange3 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `51-55` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange4 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `56-60` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange5 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `61-65` : ``}</td>`
+                :   (
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `ERROR` : ``}</td>`)
+                )
+            : (x === fieldMapping.siteReportedSex.toString()  ) ? (
+            (  
+                ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.female ) ?
+                template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `Female` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.male ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `Male` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.intersex ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `Intersex` : ``}</td>`
+                :
+                    template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                )
+            : (x === fieldMapping.sanfordReportedSex.toString()  ) ? (
+                (  
+                    ( participant['state'][fieldMapping.sanfordReportedSex.toString()] === fieldMapping.female ) ?
+                    template += `<td>${participant['state'][fieldMapping.sanfordReportedSex.toString()] ? `Female` : ``}</td>`
+                    :   ( participant['state'][fieldMapping.sanfordReportedSex.toString()] === fieldMapping.male ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedSex.toString()] ? `Male` : ``}</td>`
+                    :
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                    )
+            : (x === fieldMapping.siteReportedRace.toString()) ? (
+                (  
+                    ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.white ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `White` : ``}</td>`
+                    :   ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.other ) ?
+                        template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `Other` : ``}</td>`
+                    :
+                        template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                    )
+            : (x === fieldMapping.sanfordReportedRace.toString()) ? (
+                (  
+                    ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.africanAmericanSH ) ?
+                    template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `African American` : ``}</td>`
+                    :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.americanIndianSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `American Indian or Alaskan Native` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.asianSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Asian` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.whiteSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Caucasian/White` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.hispanicLBSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Hispanic/Latino/Black` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.hispanicLDSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Hispanic/Latino/Declined` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.hispanicLWSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Hispanic/Latino/White` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.nativeHawaiianSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Native Hawaiian/Pacific Islander` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.nativeHawaiianPISH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Pacific Islander` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.blankSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Blank` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.sanfordReportedRace.toString()] === fieldMapping.declinedSH ) ?
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Declined` : ``}</td>`
+                    :
+                        template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                    )
+            : (x === fieldMapping.preConsentOptOut.toString()) ? (
+                    ( participant['state'][fieldMapping.preConsentOptOut.toString()] === fieldMapping.yes ) ?
+                        template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `Yes` : ``}</td>`
+                    : template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `No` : ``}</td>`
+                    )
+            : (x === fieldMapping.maxNumContactsReached.toString()) ? (
+                ( participant['state'][fieldMapping.maxNumContactsReached.toString()] === fieldMapping.yes ) ?
+                    template += `<td>${participant['state'][fieldMapping.maxNumContactsReached.toString()] ? `Yes` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.maxNumContactsReached.toString()] ? `No` : ``}</td>`
+                )
+            :(x === fieldMapping.studyIdTimeStamp.toString()) ? (
+                template += `<td>${participant['state'][fieldMapping.studyIdTimeStamp.toString()] ? participant['state'][fieldMapping.studyIdTimeStamp.toString()] : ``}</td>`
+            ) 
+            : (x === fieldMapping.campaignType.toString()) ? (
+                (  
+                    ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.random ) ?
+                    template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Random` : ``}</td>`
+                    :   ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.screeningAppointment ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Screening Appointment` : ``}</td>`
+                    :   ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.nonScreeningAppointment ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Non Screening Appointment` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.demographicGroup ) ?
+                            template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Demographic Group` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.agingOutofStudy ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Aging Out of Study` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.geographicGroup ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Geographic Group` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.postScreeningAppointment ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Post Screening Appointment` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.technologyAdapters ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Technology Adapters` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.lowIncomeAreas ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Low Income Areas/Health Professional Shortage Areas` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.noneOftheAbove ) ?
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `None of the Above` : ``}</td>`
+                    :
+                        template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Other` : ``}</td>`)
+                    )
+            : (x === (fieldMapping.enrollmentStatus).toString()) ? 
+            (   
+                (participant[x] === fieldMapping.signedInEnrollment) ?
+                template += `<td>${participant[x] ? 'Signed In'  : ''}</td>`
+                : (participant[x] === fieldMapping.consentedEnrollment) ?
+                    template += `<td>${participant[x] ? 'Consented'  : ''}</td>`
+                : (participant[x] === fieldMapping.userProfileCompleteEnrollment) ?
+                    template += `<td>${participant[x] ? 'User Profile Complete'  : ''}</td>`
+                : (participant[x] === fieldMapping.verificationCompleteEnrollment) ?
+                    template += `<td>${participant[x] ? 'Verification Complete'  : ''}</td>`
+                : (participant[x] === fieldMapping.cannotBeVerifiedEnrollment) ?
+                template += `<td>${participant[x] ? 'Cannot Be Verified'  : ''}</td>`
+                : (participant[x] === fieldMapping.verifiedMimimallyEnrolledEnrollment) ?
+                template += `<td>${participant[x] ? 'Verified Mimimally Enrolled'  : ''}</td>`
+                : (participant[x] === fieldMapping.fullyEnrolledEnrollment) ?
+                    template += `<td>${participant[x] ? 'Fully Enrolled'  : ''}</td>` 
+                : template += `<td> ERROR </td>` 
+            )
+                    // part of state & default value???
+            : (x === fieldMapping.automatedVerification.toString()) ? (
+                ( participant['state'][fieldMapping.automatedVerification.toString()] === fieldMapping.methodUsed ) ?
+                    template += `<td>${participant['state'][fieldMapping.automatedVerification.toString()] ? `Method Used` : ``}</td>`
+                :    template += `<td>${participant['state'][fieldMapping.automatedVerification.toString()] ? `Method Not Used` : ``}</td>`            
+            )
+            : (x === fieldMapping.manualVerification.toString()) ? (
+                ( participant['state'][fieldMapping.manualVerification.toString()] === fieldMapping.methodUsed ) ?
+                template += `<td>${participant['state'][fieldMapping.manualVerification.toString()] ? `Method Used` : ``}</td>`
+                :   template += `<td>${participant['state'][fieldMapping.manualVerification.toString()] ? `Method Not Used` : ``}</td>`
+            )
+            : (x === fieldMapping.outreachRequiredForVerification.toString()) ? (
+                ( participant['state'][fieldMapping.outreachRequiredForVerification.toString()] === fieldMapping.yes ) ?
+                    template += `<td>${participant['state'][fieldMapping.outreachRequiredForVerification.toString()] ? `Yes` : ``}</td>`
+                :   template += `<td>${participant['state'][fieldMapping.outreachRequiredForVerification.toString()] ? `No` : ``}</td>`
+            )
+            : (x === fieldMapping.duplicateType.toString()) ? (
+                ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.notActiveSignedAsPassive ) ?
+                    template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Not Active recruit signed in as Passive recruit` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.alreadyEnrolled ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Already Enrolled` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.notActiveSignedAsActive ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Not Active recruit signed in as Active recruit` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.passiveSignedAsActive ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Passive recruit signed in as Active recruit` : ``}</td>`
+                : ( participant['state'][fieldMapping.duplicateType.toString()] === fieldMapping.activeSignedAsPassive ) ?
+                template += `<td>${participant['state'][fieldMapping.duplicateType.toString()] ? `Active recruit signed in as Passive recruit` : ``}</td>`
+                :  template += `<td></td>`
+            )
+            : (x === fieldMapping.updateRecruitType.toString()) ? (
+                ( participant['state'][fieldMapping.updateRecruitType.toString()] === fieldMapping.passiveToActive ) ?
+                    template += `<td>${participant['state'][fieldMapping.updateRecruitType.toString()] ? `Passive To Active` : ``}</td>`
+                : ( participant['state'][fieldMapping.updateRecruitType.toString()] === fieldMapping.activeToPassive ) ?
+                template += `<td>${participant['state'][fieldMapping.updateRecruitType.toString()] ? `Active To Passive` : ``}</td>`
+                :  template += `<td>${participant['state'][fieldMapping.updateRecruitType.toString()] ? `No Change Needed` : ``}</td>`
+            )
+            : (x === fieldMapping.firstNameMatch.toString()) ? (
+                ( participant['state'][fieldMapping.firstNameMatch.toString()] === fieldMapping.matched ) ?
+                    template += `<td>${participant['state'][fieldMapping.firstNameMatch.toString()] ? `Matched` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.firstNameMatch.toString()] ? `Not Matched` : ``}</td>`
+            )
+            : (x === fieldMapping.lastNameMatch.toString()) ? (
+                ( participant['state'][fieldMapping.lastNameMatch.toString()] === fieldMapping.matched ) ?
+                    template += `<td>${participant['state'][fieldMapping.lastNameMatch.toString()] ? `Matched` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.lastNameMatch.toString()] ? `Not Matched` : ``}</td>`
+            )
+            : (x === fieldMapping.dobMatch.toString()) ? (
+                ( participant['state'][fieldMapping.dobMatch.toString()] === fieldMapping.matched ) ?
+                    template += `<td>${participant['state'][fieldMapping.dobMatch.toString()] ? `Matched` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.dobMatch.toString()] ? `Not Matched` : ``}</td>`
+            )
+            : (x === fieldMapping.pinMatch.toString()) ? (
+                ( participant['state'][fieldMapping.pinMatch.toString()] === fieldMapping.matched ) ?
+                    template += `<td>${participant['state'][fieldMapping.pinMatch.toString()] ? `Matched` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.pinMatch.toString()] ? `Not Matched` : ``}</td>`
+            )
+            : (x === fieldMapping.tokenMatch.toString()) ? (
+                ( participant['state'][fieldMapping.tokenMatch.toString()] === fieldMapping.matched ) ?
+                    template += `<td>${participant['state'][fieldMapping.tokenMatch.toString()] ? `Matched` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.tokenMatch.toString()] ? `Not Matched` : ``}</td>`
+            )
+            : (x === fieldMapping.zipCodeMatch.toString()) ? (
+                ( participant['state'][fieldMapping.zipCodeMatch.toString()] === fieldMapping.matched ) ?
+                    template += `<td>${participant['state'][fieldMapping.zipCodeMatch.toString()] ? `Matched` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.zipCodeMatch.toString()] ? `Not Matched` : ``}</td>`
+            )
+            : (x === fieldMapping.siteMatch.toString()) ? (
+                ( participant['state'][fieldMapping.siteMatch.toString()] === fieldMapping.criteriumMet ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteMatch.toString()] ? `CriteriumMet` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.siteMatch.toString()] ? `Not Criterium Met` : ``}</td>`
+            )
+            : (x === fieldMapping.ageMatch.toString()) ? (
+                ( participant['state'][fieldMapping.ageMatch.toString()] === fieldMapping.criteriumMet ) ?
+                    template += `<td>${participant['state'][fieldMapping.ageMatch.toString()] ? `CriteriumMet` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.ageMatch.toString()] ? `Not Criterium Met` : ``}</td>`
+            )
+            : (x === fieldMapping.cancerStatusMatch.toString()) ? (
+                ( participant['state'][fieldMapping.cancerStatusMatch.toString()] === fieldMapping.criteriumMet ) ?
+                    template += `<td>${participant['state'][fieldMapping.cancerStatusMatch.toString()] ? `CriteriumMet` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.cancerStatusMatch.toString()] ? `Not Criterium Met` : ``}</td>`
+            )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
         template += `</tr>`; 
@@ -289,9 +513,7 @@ const addEventShowMoreInfo = data => {
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
             location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
-            const access_token = await getIdToken();
-            const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-            const siteKey = access_token ? access_token : localStr.siteKey;
+            const siteKey = await getAccessToken();
             renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, siteKey);
         });
     });
@@ -444,3 +666,11 @@ export const renderLookupSiteDropdown = () => {
         document.getElementById("siteDropdownLookup").hidden = false }
 }
 
+const getCustomVariableNames = (x) => {
+    if (x === fieldMapping.refusedSpecimenSurevys)
+        return 'Refused baseline specimen surveys'
+    else if (x === fieldMapping.dateHipaaRevokeRequested)
+        return 'Date revoked HIPAA'
+    else {}
+
+}

@@ -33,13 +33,6 @@ export const renderRefusalOptions = () => {
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="I don’t want to participate in the study for other reasons" name="options" 
-                        data-optionKey=${fieldMapping.otherReasons} id="defaultCheck5">
-                        <label class="form-check-label" for="defaultCheck5">
-                            I don’t want to participate in the study for other reasons
-                        </label>
-                    </div>
-                    <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="I think the payment or benefit to participate is not great enough" name="options" 
                         data-optionKey=${fieldMapping.participantGreedy} id="defaultCheck6">
                         <label class="form-check-label" for="defaultCheck6">

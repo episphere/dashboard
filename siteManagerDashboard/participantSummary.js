@@ -41,7 +41,6 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
-
         template += `<div class="table-responsive">
 
                         <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
@@ -131,31 +130,72 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, {x: 110, y: 400}, {x1: 110, y1: 330});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, {x: 100, y: 410}, {x1: 100, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', {x: 150, y: 425}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', getRevocationCoordinates());
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', {x: 150, y: 405}, {x1: 150, y1: 450});
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', getRevocationCoordinates());
         })
     }
  
 }
 
-const renderDownload = async (participant, timeStamp, fileLocation, nameCoordinates, signatureCoordinates) => {
+const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
+    let coordinates = ``;
+    if (source === 'consent') {
+        switch(healthcareProvider) {
+            case 'Sanford':
+                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 360}, {x1: 110, y1: 330}]
+                break;
+            case 'HP':
+                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
+                break;
+            case 'MFC':
+                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
+                break;
+            default:
+                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
+
+        }
+        return coordinates 
+    } else {
+        switch(healthcareProvider) {
+            case 'Sanford':
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 452}]
+                break;
+            case 'HP':
+                coordinates = [{x: 100, y: 415}, {x0: 100, y0: 370}, {x1: 100, y1: 465}]
+                break;
+            case 'MFC':
+                coordinates = [{x: 100, y: 425}, {x0: 100, y0: 380}, {x1: 100, y1: 465}]
+                break;
+            default:
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
+        }
+        return coordinates 
+    }
+}
+
+const getRevocationCoordinates = () => {
+    const coordinates = [{x: 150, y: 425}, {x0: 150, y0: 380}, {x1: 150, y1: 405}];
+    return coordinates;
+}
+
+const renderDownload = async (participant, timeStamp, fileLocation, coordinates) => {
     let fileLocationDownload = fileLocation.slice(2)
     const participantPrintName = createPrintName(participant)
     const participantSignature = createSignature(participant)
@@ -167,19 +207,24 @@ const renderDownload = async (participant, timeStamp, fileLocation, nameCoordina
     const pages = pdfDoc.getPages();
     for (let i = 0; i <= pages.length; i++) {seekLastPage = i}
     const editPage = pages[seekLastPage-1];
-
     editPage.drawText(`
-    ${participantPrintName} 
-    ${timeStamp}`, {
-                x: nameCoordinates.x,
-                y: nameCoordinates.y,
+    ${participantPrintName}`, {
+                x: coordinates[0].x,
+                y: coordinates[0].y,
                 size: 24,
       });
 
     editPage.drawText(`
+    ${timeStamp}`, {
+                x: coordinates[1].x0,
+                y: coordinates[1].y0,
+                size: 24,
+    });
+
+    editPage.drawText(`
     ${participantSignature}`, {
-        x: signatureCoordinates.x1,
-        y: signatureCoordinates.y1,
+        x: coordinates[2].x1,
+        y: coordinates[2].y1,
         size: 20,
         font: helveticaFont,
       });
@@ -192,17 +237,16 @@ const renderDownload = async (participant, timeStamp, fileLocation, nameCoordina
 }
 
 const createSignature = (participant) => {
-    const middleName = participant[headerImportantColumns[1].field] !== undefined ? participant[headerImportantColumns[1].field] : ``
-    const createParticipantSignature = participant[headerImportantColumns[0].field] + " " + middleName + " " + participant[headerImportantColumns[2].field]
+    const middleName = participant[fieldMapping.consentMiddleName] !== undefined ? participant[fieldMapping.consentMiddleName] : ``
+    const createParticipantSignature = participant[fieldMapping.consentFirstName] + " " + middleName + " " + participant[fieldMapping.consentLastName]
     return createParticipantSignature;
 }
 
 const createPrintName = (participant) => {
-    const firstName = participant[headerImportantColumns[0].field]
-    const middleName = participant[headerImportantColumns[1].field] !== undefined ? participant[headerImportantColumns[1].field] : ``
-    const lastName = participant[headerImportantColumns[2].field]
-    const suffix = participant[headerImportantColumns[3].field] !== undefined ? participant[headerImportantColumns[3].field] : ``
-
+    const firstName = participant[fieldMapping.consentFirstName]
+    const middleName = participant[fieldMapping.consentMiddleName] !== undefined ? participant[fieldMapping.consentMiddleName] : ``
+    const lastName = participant[fieldMapping.consentLastName]
+    const suffix = participant[fieldMapping.consentSuffix] !== undefined ? fieldMapping[participant[fieldMapping.consentSuffix]] : ``
     const createParticipantPrintName = firstName +  " " + middleName + " " + lastName + " " + suffix
     return createParticipantPrintName;
 }
@@ -269,20 +313,29 @@ const hippaHandler = (participant) => {
 const hipaaRevocation = (participant) => {
     let template = ``;
     participant && 
-    participant[fieldMapping.revokeHIPAA] === (fieldMapping.yes)?
-    ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Revocation</td>
-                    <td>Agreement</td>
-                    <td>HIPAA Revoc Form</td>
-                    <td>${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? `Signed`: `Not Signed`}</td>
-                    <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
-                    <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
-                    <td>N/A</td>
-                    ${participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ? 
-                    `<td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHipaaRevoc">Download Link</a></td>`
-                    : `<td style="color: grey; text-decoration: underline;">Download Link</td>`}</td>
-    ` ) : 
-    (
+    participant[fieldMapping.revokeHIPAA] === (fieldMapping.yes) ?
+    ( participant[fieldMapping.signedHIPAARevoc] === fieldMapping.yes ?
+        ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                        <td>Revocation</td>
+                        <td>Agreement</td>
+                        <td>HIPAA Revoc Form</td>
+                        <td>Signed</td>
+                        <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
+                        <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
+                        <td>N/A</td>
+                        <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHipaaRevoc">Download Link</a></td>
+        ` ) : 
+        ( template += `<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                        <td>Revocation</td>
+                        <td>Agreement</td>
+                        <td>HIPAA Revoc Form</td>
+                        <td>Not Signed</td>
+                        <td>${(participant[fieldMapping.dateHIPAARevoc] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]) : `N/A`}</td>
+                        <td>${(participant[fieldMapping.versionHIPAARevoc] !== undefined) ? participant[fieldMapping.versionHIPAARevoc] : `N/A`}</td>
+                        <td>N/A</td>
+                        <td style="color: grey; text-decoration: underline;">Download Link</td>` 
+    ) ):
+     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Revocation</td>
                     <td>Agreement</td>
@@ -299,19 +352,29 @@ const hipaaRevocation = (participant) => {
 const dataDestroy = (participant) => {
     let template = ``;
     participant && 
-    participant[fieldMapping.destroyData] === (fieldMapping.yes)?
-    ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
-                    <td>Destruction</td>
-                    <td>Agreement</td>
-                    <td>Data Destroy Form</td>
-                    <td>${participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ? `Signed`: 'Not Signed'}</td>
-                    <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
-                    <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
-                    <td>N/A</td>
-                    ${participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ? 
-                    `<td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyDataDestroy">Download Link</a></td>`
-                    : `<td style="color: grey; text-decoration: underline;">Download Link</td>`}</td>
-    ` ) : 
+    participant[fieldMapping.destroyData] === (fieldMapping.yes) ?
+        ( participant[fieldMapping.signedDataDestroy] === fieldMapping.yes ?
+            ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
+                            <td>Destruction</td>
+                            <td>Agreement</td>
+                            <td>Data Destroy Form</td>
+                            <td>Signed</td>
+                            <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
+                            <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
+                            <td>N/A</td>
+                            <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyDataDestroy">Download Link</a></td>
+            ` ) : 
+        ( template += `<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
+                        <td>Destruction</td>
+                        <td>Agreement</td>
+                        <td>Data Destroy Form</td>
+                        <td>Not Signed</td>
+                        <td>${(participant[fieldMapping.dateDataDestroy] !== undefined) ? humanReadableMDY(participant[fieldMapping.dateDataDestroy]) : `N/A`}</td>
+                        <td>${(participant[fieldMapping.versionDataDestroy] !== undefined) ? participant[fieldMapping.versionDataDestroy] : `N/A` }</td>      
+                        <td>N/A</td>
+                        <td style="color: grey; text-decoration: underline;">Download Link</td>
+        ` )  )
+    : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
                     <td>Destruction</td>
