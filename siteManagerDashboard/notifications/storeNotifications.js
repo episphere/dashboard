@@ -134,7 +134,6 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
     titleElement.innerHTML = "Update Notification Schema";
 
     (updateSchemaNotification.notificationType).forEach(i => {
-        console.log('i', i)
         if (i === "email") {
             document.getElementById('emailCheckBox').checked = true
             renderDivs("email");
@@ -145,7 +144,6 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
         if (i === "sms") {
             document.getElementById('smsCheckBox').checked = true
             renderDivs("sms");
-            console.log('updateSchemaNotification', updateSchemaNotification, i)
             document.getElementById('smsBody').value = updateSchemaNotification.sms.body
             localStorage.setItem("smsCheck", true);
         } 
@@ -293,10 +291,8 @@ const getDataListTemplate = (concepts, id, name) => {
 
 const addEventNotificationCheckbox = () => {
     const chkbs = document.getElementsByName('notification-checkbox');
-    console.log('chkbs', chkbs)
     Array.from(chkbs).forEach(box => {
         box.addEventListener('click', () => {
-            console.log('box', chkbs)
             const checked = Array.from(chkbs).filter(cb => cb.checked).map(dt => dt.dataset.type);
             renderDivs(checked);
         })
@@ -304,10 +300,7 @@ const addEventNotificationCheckbox = () => {
 }
 
 const renderDivs = (array) => {
-    const emailFlag = localStorage.getItem('emailCheck')
-    console.log('arr', array)
     if(array.includes('email') && localStorage.getItem('emailCheck') === 'false'){
-        console.log('em123456', emailFlag)
         let template = `
             <div class="row">
                 <div class="col">
@@ -324,7 +317,6 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        console.log('1234')
         document.getElementById('emailDiv').innerHTML = template
         localStorage.setItem("emailCheck", true);
     }
@@ -332,8 +324,6 @@ const renderDivs = (array) => {
     //     document.getElementById('emailDiv').innerHTML = '';
     //     localStorage.setItem("emailCheck", false);
     // }
-    const smsFlag = localStorage.getItem('smsCheck')
-    console.log('esm', smsFlag, array)
     if(array.includes('sms') && localStorage.getItem('smsCheck') === 'false'){
         let template = `
             <div class="row">
@@ -346,7 +336,6 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        console.log('56789')
         document.getElementById('smsDiv').innerHTML = template
         localStorage.setItem("smsCheck", true);
     }
@@ -373,7 +362,7 @@ const renderDivs = (array) => {
         `
         document.getElementById('pushDiv').innerHTML = template;
     }
-   else document.getElementById('pushDiv').innerHTML = '';
+  // else document.getElementById('pushDiv').innerHTML = '';
 
     const emailBody = document.getElementById('emailBody');
     if(emailBody) addEmailPreview(emailBody);
