@@ -11,6 +11,8 @@ export const renderStoreNotificationSchema = async () => {
     let updateCounter = localStorage.getItem("updateFlag");
     localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
+    localStorage.setItem("emailCheck", false);
+    localStorage.setItem("smsCheck", false);
     const concepts = await getConcepts();  
     init(concepts);
     if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
@@ -137,13 +139,15 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
             renderDivs("email");
             document.getElementById('emailSubject').value = updateSchemaNotification.email.subject
             document.getElementById('emailBody').value = updateSchemaNotification.email.body
+            localStorage.setItem("emailCheck", true);
         }
-        else if (i === "sms") {
+        if (i === "sms") {
             document.getElementById('smsCheckBox').checked = true
             renderDivs("sms");
             document.getElementById('smsBody').value = updateSchemaNotification.sms.body
+            localStorage.setItem("smsCheck", true);
         } 
-        else if (i === "push") {
+        if (i === "push") {
             document.getElementById('pushCheckBox').checked = true
             renderDivs("push");
             document.getElementById('pushSubject').value = updateSchemaNotification.push.subject
@@ -296,7 +300,7 @@ const addEventNotificationCheckbox = () => {
 }
 
 const renderDivs = (array) => {
-    if(array.includes('email')){
+    if(array.includes('email') && localStorage.getItem('emailCheck') === 'false'){
         let template = `
             <div class="row">
                 <div class="col">
@@ -314,10 +318,13 @@ const renderDivs = (array) => {
             </div>
         `
         document.getElementById('emailDiv').innerHTML = template
+        localStorage.setItem("emailCheck", true);
     }
-    else document.getElementById('emailDiv').innerHTML = '';
-
-    if(array.includes('sms')){
+    // else { 
+    //     document.getElementById('emailDiv').innerHTML = '';
+    //     localStorage.setItem("emailCheck", false);
+    // }
+    if(array.includes('sms') && localStorage.getItem('smsCheck') === 'false'){
         let template = `
             <div class="row">
                 <div class="col">
@@ -330,8 +337,12 @@ const renderDivs = (array) => {
             </div>
         `
         document.getElementById('smsDiv').innerHTML = template
+        localStorage.setItem("smsCheck", true);
     }
-    else document.getElementById('smsDiv').innerHTML = '';
+    // else {
+    //     document.getElementById('smsDiv').innerHTML = '';
+    //     localStorage.setItem("smsCheck", false);
+    // } 
 
     if(array.includes('push')){
         let template = `
@@ -351,7 +362,7 @@ const renderDivs = (array) => {
         `
         document.getElementById('pushDiv').innerHTML = template;
     }
-    else document.getElementById('pushDiv').innerHTML = '';
+  // else document.getElementById('pushDiv').innerHTML = '';
 
     const emailBody = document.getElementById('emailBody');
     if(emailBody) addEmailPreview(emailBody);
