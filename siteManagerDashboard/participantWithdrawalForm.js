@@ -143,7 +143,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest6" name="whoRequested" value="Other (specify):"
                                                 data-optionKey=${fieldMapping.requestOther}>
-                                                <label for="defaultRequest6">Other (specify):</label> 
+                                                <label for="defaultRequest6">Other (specify):</label>
+
                                                 <input type="text" id="defaultRequest7" name="defaultRequest7" data-optionKey=${fieldMapping.requestOtherText}><br>
                                             </div>
                                         </div>
@@ -433,9 +434,10 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         requestedHolder.forEach(x => {
             switch (parseInt(x.dataset.optionkey)) {
             case fieldMapping.requestOtherText:
+                    sendRefusalData[fieldMapping.whoRequested] = fieldMapping.requestOther
                     sendRefusalData[fieldMapping.requestOtherText] = x.value
             default:
-                    sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
+                    if (parseInt(requestedHolder[0].dataset.optionkey) != fieldMapping.requestOtherText) sendRefusalData[fieldMapping.whoRequested] = parseInt(requestedHolder[0].dataset.optionkey)
             }
         })
     }
@@ -476,8 +478,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-    const siteKey = await getAccessToken();
-    clickHandler(sendRefusalData, siteKey, token);
+
+    // const siteKey = await getAccessToken();
+    // clickHandler(sendRefusalData, siteKey, token);
 }
 
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
