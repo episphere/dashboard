@@ -622,7 +622,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
 
         labels: [ `None: N=${modulesSurvey.noModulesSubmitted }`, 
                 `BOH only: N=${modulesSurvey.moduleOneSubmitted}`, 
-                `2 or 3 of SAS/MRE/LAW : N=${modulesSurvey.modulesTwoThreeSubmitted}`, 
+                `2 or 3 sections : N=${modulesSurvey.modulesTwoThreeSubmitted}`, 
                 `All: N=${modulesSurvey.modulesSubmitted}`],
         hoverinfo: 'label+value',
         type: 'pie'
