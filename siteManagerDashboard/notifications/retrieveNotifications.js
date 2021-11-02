@@ -17,6 +17,7 @@ export const renderRetrieveNotificationSchema = async () => {
 }
 
 const triggerSchemaEdit = (categoriesHolder, categoryName) => {
+    viewNotificationSchema();
     editNotificationSchema();
     renderCategorydDropdown(categoriesHolder);
     dropdownTrigger(categoriesHolder, categoryName);
@@ -41,6 +42,15 @@ const render = async (response) => {
                     </div> 
                         ${renderNotificationCards(response.data)}
                 </div></div>`
+        template += ` <div class="modal fade" id="modalShowSchema" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content sub-div-shadow">
+                <div class="modal-header" id="modalHeader"></div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>`
+         
  
     return template;
 }
@@ -69,11 +79,54 @@ const renderNotificationCards = (data) => {
                             <div class="card-body">
                                 <h5 class="card-title">Category: ${i.category} </h5>
                                 <p class="card-text">${i.description}</p>
+                                <button type="button" class="btn btn-success viewSchema" data-toggle="modal" data-target="#modalShowSchema"  data-schema=${schemaInfo} >View</button>
                                 <button type="button" class="btn btn-primary editSchema" data-schema=${schemaInfo}>Edit</button>
                             </div>
                         </div>`
     });
     return template;
+}
+
+const viewNotificationSchema = () => {
+    const a = Array.from(document.getElementsByClassName('detailedRow'));
+    if (a) {
+        a.forEach(element => {
+            let viewCard = element.getElementsByClassName('viewSchema')[0];
+            viewCard.addEventListener('click', () => {
+                let viewSelectedSchema = getDataAttributes(viewCard);
+                const setSelectedData  = JSON.parse(unescape(viewSelectedSchema.schema));
+                const header = document.getElementById('modalHeader');
+                const body = document.getElementById('modalBody');
+                header.innerHTML = `<h5>View Schema</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+                
+                let template = '<div>'
+                template += `
+                    <h5 class="card-title">Category: ${setSelectedData.category} | Attempt: ${setSelectedData.attempt}   </h5>
+                    <p class="card-text">${setSelectedData.description} <br />
+                    <h6> Time - Days: ${setSelectedData.time.day} | Hours: ${setSelectedData.time.hour} | Minutes:${setSelectedData.time.minute} </h6>
+                    <h6>Notification Type: ${setSelectedData.notificationType[0] && setSelectedData.notificationType[0]} ${setSelectedData.notificationType[1] != undefined ? i.notificationType[1] : ``} ${setSelectedData.notificationType[2] != undefined ? setSelectedData.notificationType[2] : ``} <br /> </h6>
+                    ${setSelectedData.email ?
+                       ( `<i> Subject:  ${setSelectedData.email.subject} <br/> 
+                        Body: ${addNotificationPreview(setSelectedData.email.body)} <br /> </i> ` )
+                        :
+                    setSelectedData.sms ?  ( ` Body: ${addNotificationPreview(setSelectedData.sms.body)} <br /> </i> ` )
+                        : 
+                    setSelectedData.push ?   ( `<i> Subject:  ${setSelectedData.email.subject} <br/> 
+                        Body: ${addNotificationPreview(setSelectedData.email.body)} <br /> </i> ` ) : ``
+                    }
+                    </p>
+               </div>`
+                body.innerHTML = template;
+                
+            })
+        })
+    }
+}
+
+const addNotificationPreview = (body) => {
+    const converter = new showdown.Converter()
+    const html = converter.makeHtml(body);
+    return html;
 }
 
 const editNotificationSchema = () => {
@@ -83,8 +136,8 @@ const editNotificationSchema = () => {
             a.forEach(element => {
                 let editRow = element.getElementsByClassName('editSchema')[0];
                 editRow.addEventListener('click', () => {
-                    const t = getDataAttributes(editRow);
-                    localStorage.setItem("updateNotificationSchema", unescape(t.schema));
+                    const editSelectedSchema = getDataAttributes(editRow);
+                    localStorage.setItem("updateNotificationSchema", unescape(editSelectedSchema.schema));
                     updateCounter--;
                     localStorage.setItem("updateFlag", updateCounter);
                     redirectToStoreSchema();

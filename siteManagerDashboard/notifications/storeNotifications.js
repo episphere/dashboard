@@ -13,6 +13,7 @@ export const renderStoreNotificationSchema = async () => {
     mainContent.innerHTML = render();
     localStorage.setItem("emailCheck", false);
     localStorage.setItem("smsCheck", false);
+    localStorage.setItem("pushNotificationCheck", false);
     const concepts = await getConcepts();  
     init(concepts);
     if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
@@ -152,6 +153,7 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
             renderDivs("push");
             document.getElementById('pushSubject').value = updateSchemaNotification.push.subject
             document.getElementById('pushBody').value = updateSchemaNotification.push.body
+            localStorage.setItem("pushNotificationCheck", true);
         }
     })
 
@@ -299,9 +301,8 @@ const addEventNotificationCheckbox = () => {
     })
 }
 
-const renderDivs = (array) => {
-    if(array.includes('email') && localStorage.getItem('emailCheck') === 'false'){
-        let template = `
+const emailNotificationTemplate = () => {
+    let template = `
             <div class="row">
                 <div class="col">
                     <h5>Email</h5>
@@ -317,15 +318,11 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        document.getElementById('emailDiv').innerHTML = template
-        localStorage.setItem("emailCheck", true);
-    }
-    // else { 
-    //     document.getElementById('emailDiv').innerHTML = '';
-    //     localStorage.setItem("emailCheck", false);
-    // }
-    if(array.includes('sms') && localStorage.getItem('smsCheck') === 'false'){
-        let template = `
+    return template;
+}
+
+const smsNotificationTemplate = () => {
+    let template = `
             <div class="row">
                 <div class="col">
                     <h5>SMS</h5><small id="characterCounts">0/160 characters</small>
@@ -336,16 +333,11 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        document.getElementById('smsDiv').innerHTML = template
-        localStorage.setItem("smsCheck", true);
-    }
-    // else {
-    //     document.getElementById('smsDiv').innerHTML = '';
-    //     localStorage.setItem("smsCheck", false);
-    // } 
+    return template;
+}
 
-    if(array.includes('push')){
-        let template = `
+const pushNotificationTemplate = () => {
+    let template = `
             <div class="row">
                 <div class="col">
                     <h5>Push notification</h5>
@@ -360,14 +352,64 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        document.getElementById('pushDiv').innerHTML = template;
+    return template;
+}
+
+const renderDivs = (array) => {
+    if(array.includes('email') && localStorage.getItem('emailCheck') === 'false'){
+        let template = emailNotificationTemplate();
+        document.getElementById('emailDiv').innerHTML = template
+        localStorage.setItem("emailCheck", true);
+        reRenderNotficationDivs();
     }
-  // else document.getElementById('pushDiv').innerHTML = '';
+
+    if(array.includes('sms') && localStorage.getItem('smsCheck') === 'false'){
+        let template = smsNotificationTemplate();
+        document.getElementById('smsDiv').innerHTML = template
+        localStorage.setItem("smsCheck", true);
+        reRenderNotficationDivs(template);
+
+    }
+
+    if(array.includes('push') && localStorage.getItem('pushNotificationCheck') === 'false'){
+        let template = pushNotificationTemplate();
+        document.getElementById('pushDiv').innerHTML = template;
+        localStorage.setItem("pushNotificationCheck", true);
+        reRenderNotficationDivs(template);
+    }
 
     const emailBody = document.getElementById('emailBody');
     if(emailBody) addEmailPreview(emailBody);
 
     addEventSMSCharacterCount();
+}
+
+
+const reRenderNotficationDivs = () => {
+    const emailRecheck = document.getElementById('emailCheckBox');
+    emailRecheck.addEventListener('click', () => {
+        if (emailRecheck.checked === false) document.getElementById('emailDiv').innerHTML = '';
+        if (emailRecheck.checked === true) {
+            let template = emailNotificationTemplate();
+            document.getElementById('emailDiv').innerHTML = template; 
+        }
+    })
+    const smsRecheck = document.getElementById('smsCheckBox');
+    smsRecheck.addEventListener('click', () => {
+        if (smsRecheck.checked === false) document.getElementById('smsDiv').innerHTML = '';
+        if (smsRecheck.checked === true) {
+            let template = smsNotificationTemplate();
+            document.getElementById('smsDiv').innerHTML = template;
+        }
+    })
+    const pushRecheck = document.getElementById('pushNotificationCheckBox');
+    pushRecheck.addEventListener('click', () => {
+        if (pushRecheck.checked === false) document.getElementById('pushDiv').innerHTML = '';
+        if (pushRecheck.checked === true) {
+            let template = pushNotificationTemplate();
+        document.getElementById('pushDiv').innerHTML = template;
+        }
+    })
 }
 
 const addEventSMSCharacterCount = () => {
@@ -380,7 +422,7 @@ const addEventSMSCharacterCount = () => {
 
 const addEmailPreview = (emailBody) => {
     const converter = new showdown.Converter()
-    emailBody.addEventListener('keyup', () => {
+    emailBody.addEventListener('mouseenter', () => {
         const text = emailBody.value;
         const html = converter.makeHtml(text);
         document.getElementById('emailBodyPreview').innerHTML = html;
