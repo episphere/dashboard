@@ -1,5 +1,6 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
+import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
+import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
 
 
 export const renderRetrieveNotificationSchema = async () => {
@@ -13,11 +14,12 @@ export const renderRetrieveNotificationSchema = async () => {
     let categoriesHolder = getNotificationSchemaCategories(response.data);
     hideAnimation();
     mainContent.innerHTML = await render(response);
-    triggerSchemaEdit(categoriesHolder, 'Filter by Category');
+    const concepts = await getConcepts();  
+    triggerSchemaEdit(categoriesHolder, 'Filter by Category', concepts);
 }
 
-const triggerSchemaEdit = (categoriesHolder, categoryName) => {
-    viewNotificationSchema();
+const triggerSchemaEdit = (categoriesHolder, categoryName, concepts) => {
+    viewNotificationSchema(concepts);
     editNotificationSchema();
     renderCategorydDropdown(categoriesHolder);
     dropdownTrigger(categoriesHolder, categoryName);
@@ -87,7 +89,7 @@ const renderNotificationCards = (data) => {
     return template;
 }
 
-const viewNotificationSchema = () => {
+const viewNotificationSchema = (concepts) => {
     const a = Array.from(document.getElementsByClassName('detailedRow'));
     if (a) {
         a.forEach(element => {
@@ -101,32 +103,89 @@ const viewNotificationSchema = () => {
                 
                 let template = '<div>'
                 template += `
-                    <h5 class="card-title">Category: ${setSelectedData.category} | Attempt: ${setSelectedData.attempt}   </h5>
-                    <p class="card-text">${setSelectedData.description} <br />
-                    <h6> Time - Days: ${setSelectedData.time.day} | Hours: ${setSelectedData.time.hour} | Minutes:${setSelectedData.time.minute} </h6>
-                    <h6>Notification Type: ${setSelectedData.notificationType[0] && setSelectedData.notificationType[0]} ${setSelectedData.notificationType[1] != undefined ? i.notificationType[1] : ``} ${setSelectedData.notificationType[2] != undefined ? setSelectedData.notificationType[2] : ``} <br /> </h6>
-                    ${setSelectedData.email ?
-                       ( `<i> Subject:  ${setSelectedData.email.subject} <br/> 
-                        Body: ${addNotificationPreview(setSelectedData.email.body)} <br /> </i> ` )
-                        :
-                    setSelectedData.sms ?  ( ` Body: ${addNotificationPreview(setSelectedData.sms.body)} <br /> </i> ` )
-                        : 
-                    setSelectedData.push ?   ( `<i> Subject:  ${setSelectedData.email.subject} <br/> 
-                        Body: ${addNotificationPreview(setSelectedData.email.body)} <br /> </i> ` ) : ``
-                    }
-                    </p>
-               </div>`
-                body.innerHTML = template;
+                    <div class="row form-group">
+                    <label class="col-form-label col-md-4" for="attempt">Attempt</label> 
+                    <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" value=${unescape(JSON.stringify(setSelectedData.attempt))} readonly>
+                </div>
                 
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4" for="description">Description</label>
+                    <textarea class="col-md-8" required id="description" cols="30" rows="3" readonly>${setSelectedData.description}</textarea>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4" for="category">Category</label>
+                    <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" value=${unescape(JSON.stringify(setSelectedData.category))} readonly>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Notification type</label>
+                    <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="emailCheckBox" readonly>Email</label>
+                    <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="smsCheckBox" readonly>SMS</label>
+                    <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;" readonly>&nbsp;<label for="pushNotificationCheckBox" readonly>Push Notification</label>
+                </div>
+    
+                <div id="emailDiv"></div>
+                <div id="smsDiv"></div>
+                <div id="pushDiv"></div>
+    
+                <div id="conditionsDiv">
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-4">Condition</label>
+                        <div class="condition-key col-md-3 mr-2 p-0"></div>
+                        <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
+                            <option value="equals">equals</option>
+                            <option value="notequals">notequals</option>
+                        </select>
+                        <div class="condition-value col-md-3 mr-2 p-0"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="1">Add more condition</button>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Email field concept</label>
+                    <div class="email-concept col-md-8 p-0"></div>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Phone no. concept</label>
+                    <div class="phone-concept col-md-8 p-0"></div>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">First name concept</label>
+                    <div class="first-name-concept col-md-8 p-0"></div>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Preferred name concept</label>
+                    <div class="preferred-name-concept col-md-8 p-0"></div>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Primary field</label>
+                    <div class="primary-field col-md-8 p-0"></div>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Time</label>
+                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" readonly>
+                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" readonly>
+                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" readonly>
+                </div>
+               </div>`
+
+                body.innerHTML = template;
+                addEventMoreCondition(concepts, true);
+                conceptDropdown(concepts, 'condition-key');
+                conceptDropdown(concepts, 'condition-value');
+                mapSchemaNotificaiton(setSelectedData, concepts, true);
+                document.getElementById('addConditions').disabled = true; 
             })
         })
     }
-}
-
-const addNotificationPreview = (body) => {
-    const converter = new showdown.Converter()
-    const html = converter.makeHtml(body);
-    return html;
 }
 
 const editNotificationSchema = () => {
