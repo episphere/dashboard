@@ -323,7 +323,7 @@ export default
 
     "0": 208325815,
     "1": 622008261,	
-    "2": 134659217,
+    "2": 906417725,
     "3": 872012139,
     "4": 854021266,
     "5": 241236037,
@@ -331,7 +331,7 @@ export default
 
     208325815 :  "No Refusal",
     622008261 : "Refused some activities",  
-    134659217 : "Refused all future activities",
+    906417725 : "Refused all future activities",
     872012139 : "Revoked HIPAA only",
     854021266 : "Withdrew Consent",
     241236037 :  "Destroy Data",
@@ -340,7 +340,7 @@ export default
 
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
-    "refusedAll": 134659217,
+    "refusedAll": 906417725,
     "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
     "destroyDataStatus": 241236037,
