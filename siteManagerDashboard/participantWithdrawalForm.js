@@ -478,7 +478,6 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-
     const siteKey = await getAccessToken();
     clickHandler(sendRefusalData, siteKey, token);
 }
