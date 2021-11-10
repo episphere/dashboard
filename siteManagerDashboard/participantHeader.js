@@ -135,9 +135,9 @@ const getEnrollmentStatus = (participant) => {
 
 export const getParticipantSuspendedDate = (participant) => {
     if (participant[fieldMapping.suspendContact] !== "" && participant[fieldMapping.suspendContact] !== undefined ) {
-        let currentTimeStamp = humanReadableMDY(new Date().toISOString());
-        let suspendedDate = participant[fieldMapping.suspendContact]
-        return `<span><b>Suspended Contact </b></span> : From:  ${currentTimeStamp}  To:  ${suspendedDate}`
+        let suspendContactRequestedFrom  = humanReadableMDY(participant[fieldMapping.startDateSuspendedContact]);
+        let suspendedDate = participant[fieldMapping.suspendContact].split('T')[0]
+        return `<span><b>Suspended Contact </b></span> : From:  ${suspendContactRequestedFrom}  To:  ${suspendedDate}`
     } else {
         return ``
     }

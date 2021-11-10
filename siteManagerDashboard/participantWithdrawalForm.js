@@ -264,15 +264,13 @@ const optionsHandler = (suspendDate) => {
     const body = document.getElementById('modalBody');
     let checkboxes = document.getElementsByName('options');
     let requestedOption = document.getElementsByName('whoRequested');
-    let skipRequestedBy = false
     header.innerHTML = `<h5>Options Selected</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     // if (retainOptions.length === 0 || suspendDate === '//' ) { template += `<span><b>Select requested by before proceeding!</b></span> <br />`}
     checkboxes.forEach(x => { 
         if (x.checked) {  
             retainOptions.push(x)
-            template += `<span>${x.value}</span> <br />`
-            retainOptions.forEach(i => i.value === 'Participant Deceased' ?  skipRequestedBy = true  :  skipRequestedBy = false) }
+            template += `<span>${x.value}</span> <br />` }
     })
     const a = document.getElementById('defaultRequest7')
     a.value && requestedHolder.push(a)
@@ -285,10 +283,13 @@ const optionsHandler = (suspendDate) => {
     if (suspendDate !== '//') template += `<span>Suspend all contact on case until ${suspendDate}</span> <br />`
     template += `
         <div style="display:inline-block; margin-top:20px;">
-            ${ ( suspendDate !== '//' || (skipRequestedBy === true && requestedHolder.length >= 0)) ?  
+        ${  ( suspendDate !== '//' && requestedHolder.length > 0 ) ?  
                 ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
-            :  ( retainOptions.length === 0 || requestedHolder.length === 0 ) ? 
-            `<span><b>Select an option & requested by before proceeding!</b></span> <br />
+            :  ( retainOptions.length === 0 && requestedHolder.length === 0 && suspendDate === '//' )  ? 
+            `<span><b>Make a selection before proceeding!</b></span> <br />
+             <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
+            :  ( retainOptions.length > 0 && requestedHolder.length === 0 ) || ( suspendDate !== '//' && requestedHolder.length === 0 )  ? 
+            `<span><b>Select requested by before proceeding!</b></span> <br />
              <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
             : ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             }
@@ -423,9 +424,6 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
                 setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
         }
-        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureActivities) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureActivitesTimeStamp);
-        }
         else {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
@@ -442,7 +440,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         })
     }
     if (suspendDate !== '//' && source !== 'page2') { 
-        sendRefusalData[fieldMapping.suspendContact] = suspendDate
+        sendRefusalData[fieldMapping.suspendContact] = suspendDate+'T00:00:00.000Z'
         sendRefusalData[fieldMapping.startDateSuspendedContact] = new Date().toISOString();
         sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
     }
@@ -473,17 +471,19 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (computeScore === fieldMapping.revokeHIPAAOnly) { 
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 
     }
-    
+    if (computeScore === fieldMapping.refusedAllFutureActivities) { 
+        sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
+    }
+
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-
     const siteKey = await getAccessToken();
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
     sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
 }
