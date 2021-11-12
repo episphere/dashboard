@@ -3,7 +3,7 @@ import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
@@ -632,21 +632,13 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
 
 const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSelection) => {
     showAnimation();
-    const response = await findParticipant(query);
+    const sitePrefId = nameToKeyObj[sitePref];
+    const response = await getParticipantFromSites(sitePrefId);
     hideAnimation();
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
         let filterRawData = filterdata(response.data);
-        if (sitePref !== undefined && sitePref != null && sitePref !== 'allResults') {
-            const sitePrefId = nameToKeyObj[sitePref];
-            const tempFilterRawData = filterBySiteKey(filterRawData, sitePrefId);
-            if (tempFilterRawData.length !== 0 ) {
-                filterRawData = tempFilterRawData;
-            }
-            else if (tempFilterRawData.length === 0) {
-                return alertTrigger();
-            }
-        }
+        if (filterRawData.length === 0)  return alertTrigger();
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
@@ -654,6 +646,9 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
         dropdownTriggerAllParticipants(currentSiteSelection);
+    }
+    else if(response.code === 200 && response.data.length === 0) {
+        return alertTrigger();
     }
     else if(response.code != 200 && response.data.length === 0) {
         clearLocalStorage();
@@ -673,4 +668,17 @@ const getCustomVariableNames = (x) => {
         return 'Date revoked HIPAA'
     else {}
 
+}
+
+const getParticipantFromSites = async (query) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
 }
