@@ -41,7 +41,7 @@ export const renderTable = (data, source) => {
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
                     <div class="form-group dropdown" id="siteDropdownLookup" hidden>
-                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px;">
                         Filter by Site
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
@@ -57,7 +57,35 @@ export const renderTable = (data, source) => {
                         <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
-                </div>`: ``} </div>`
+                </div>
+
+                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
+                                                                                                margin-left:25px;
+                                                                                                padding: 10px 20px;
+                                                                                                border-radius: 10px;
+                                                                                                width:50%;
+                                                                                                height:50%;">
+                    <button type="button" class="btn btn-light btn-lg" id="activeFilter">Active</button>
+                    <button type="button" class="btn btn-light btn-lg" id="passiveFilter">Passive</button>
+                </div>
+
+                <form class="form-inline">
+                    <h5 style="margin-right:25px;">From:</h5>
+                    <div class="form-group mb-2">
+                        <input type="datetime-local" class="form-control" id="startDate" style="
+                                                                                                width:200px;
+                                                                                                height:50px;">
+                    </div>
+                    <h5 style="margin-left:15px;">To:</h5>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="datetime-local" class="form-control" id="endDate" style="
+                                                                                                width:200px;
+                                                                                                height:50px;">
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
+                </form>
+
+                `: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
@@ -108,6 +136,17 @@ export  const renderData = (data, showButtons) => {
 
     document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
     addEventShowMoreInfo(data);
+
+    getActiveParticipants();
+}
+
+const getActiveParticipants = () => {
+    const a = document.getElementById('activeFilter');
+    a.addEventListener('click', () => {
+        a.classList.remove('btn-light');
+        a.classList.add('btn-dark');
+        console.log('abcdef')
+    })
 }
 
 const addEventPageBtns = (pageSize, data, showButtons) => {
