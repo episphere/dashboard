@@ -138,14 +138,60 @@ export  const renderData = (data, showButtons) => {
     addEventShowMoreInfo(data);
 
     getActiveParticipants();
+    getPassiveParticipants();
 }
 
 const getActiveParticipants = () => {
-    const a = document.getElementById('activeFilter');
-    a.addEventListener('click', () => {
-        a.classList.remove('btn-light');
-        a.classList.add('btn-dark');
-        console.log('abcdef')
+    let activeButton = document.getElementById('activeFilter');
+    let passiveButton = document.getElementById('passiveFilter');
+    activeButton.addEventListener('click', async () => {
+        if ([...passiveButton.classList].includes('btn-dark')) {
+            passiveButton.classList.remove('btn-dark');
+            passiveButton.classList.add('btn-light'); 
+        }
+        let siteKey = localStorage.getItem('siteKey');
+        let siteKeyId = ``
+        console.log('siteKeydd', siteKey)
+        if (siteKey !== null) {
+            localStorage.removeItem('siteKey');
+            siteKeyId = nameToKeyObj[siteKey];
+            console.log('siteKey', siteKey)
+        } else {
+            siteKeyId = 'Filter by Site'
+        }
+        const response = await getParticipants('passive', siteKeyId);
+        hideAnimation();
+        if(response.code === 200 && response.data.length > 0) {
+            const mainContent = document.getElementById('mainContent')
+            let filterRawData = filterdata(response.data);
+            if (filterRawData.length === 0)  return alertTrigger();
+            localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+            mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+            addEventFilterData(filterRawData);
+            renderData(filterRawData);
+            activeColumns(filterRawData);
+            renderLookupSiteDropdown();
+            dropdownTriggerAllParticipants(siteKey);
+        }
+        else if(response.code === 200 && response.data.length === 0) {
+            return alertTrigger();
+        }
+        activeButton.classList.remove('btn-light');
+        activeButton.classList.add('btn-dark');
+        console.log('activeButton', activeButton.classList)
+    })
+}
+
+const getPassiveParticipants = () => {
+    let passiveButton = document.getElementById('passiveFilter');
+    let activeButton = document.getElementById('activeFilter');
+    passiveButton.addEventListener('click', () => {
+        passiveButton.classList.remove('btn-light');
+        passiveButton.classList.add('btn-dark');
+        if ([...activeButton.classList].includes('btn-dark')) {
+            activeButton.classList.remove('btn-dark');
+            activeButton.classList.add('btn-light'); 
+        }
     })
 }
 
@@ -663,6 +709,8 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
+                    console.log('dd', t.sitekey)
+                    localStorage.setItem('sitekey', t.sitekey)
                     reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
                 }
             })
@@ -713,6 +761,19 @@ const getParticipantFromSites = async (query) => {
     const siteKey = await getAccessToken();
     let template = ``;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipants = async (type, sitePref) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
