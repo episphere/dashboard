@@ -132,7 +132,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                 <div class="col-lg">
                                     <div class="row form-row">
                                         <span> <b>
-                                            Refusal/Withdrawal Requested By: </b>
+                                            <u> Refusal/Withdrawal Requested By: </u> </b>
                                         </span>
                                         <div style="position:relative; left:10px; top:4px;">
                                             <div class="form-check">
@@ -429,7 +429,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     sendRefusalData[fieldMapping.refusalOptions] = {};
     retainOptions.forEach(x => {
         if (parseInt(x.dataset.optionkey) === fieldMapping.refusedSurvey) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp, fieldMapping.whoRequested, requestedHolder);
             }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedBlood) {
                 setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
@@ -504,13 +504,18 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
+    console.log('re', sendRefusalData)
     const siteKey = await getAccessToken();
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp, whoRequestedId, requestedHolder) =>{
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
-    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
+    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = {
+        [optionSelected]: fieldMapping.yes,
+        [refusalOptionTimeStamp]: new Date().toISOString(),
+        [whoRequestedId] : requestedHolder[0].dataset.optionkey      
+    }
 }
 
 const getComputeScore = (retainOptions, highestStatus) => {
