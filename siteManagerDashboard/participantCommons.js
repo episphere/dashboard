@@ -1,11 +1,10 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -69,7 +68,7 @@ export const renderTable = (data, source) => {
                     <button type="button" class="btn btn-light btn-lg" id="passiveFilter">Passive</button>
                 </div>
 
-                <form class="form-inline">
+                <form class="form-inline" id="dateFilters">
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
                         <input type="datetime-local" class="form-control" id="startDate" style="
@@ -139,29 +138,47 @@ export  const renderData = (data, showButtons) => {
 
     getActiveParticipants();
     getPassiveParticipants();
+    getDateFilters();
 }
 
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
+    activeButton.addEventListener('click', () => {   
+        reRenderParticipantsTableBasedOFilter('active');
+        localStorage.setItem('active', true);
+    })
+}
+
+const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
-    activeButton.addEventListener('click', async () => {
-        if ([...passiveButton.classList].includes('btn-dark')) {
-            passiveButton.classList.remove('btn-dark');
-            passiveButton.classList.add('btn-light'); 
+    passiveButton.addEventListener('click', () => {
+        reRenderParticipantsTableBasedOFilter('passive');
+        localStorage.setItem('passive', false);
+    })
+}
+
+const getDateFilters = () => {
+    const dateFilters = document.getElementById('dateFilters');
+    dateFilters.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        let dropdownMenuButton = document.getElementById('dropdownSites').innerHTML;
+        let response = ``;
+        let filter = ``;
+        if (localStorage.getItem('active') === 'true') {
+            response = await getParticipantsWithDateFilters('active', dropdownMenuButton, startDate, endDate);
+            filter = 'active';
+            localStorage.removeItem('active');
+        } 
+        else if (localStorage.getItem('passive') === 'true') {
+            response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
+            filter = 'passive';
+            localStorage.removeItem('passive');
         }
-        let siteKey = localStorage.getItem('siteKey');
-        let siteKeyId = ``
-        console.log('siteKeydd', siteKey)
-        if (siteKey !== null) {
-            localStorage.removeItem('siteKey');
-            siteKeyId = nameToKeyObj[siteKey];
-            console.log('siteKey', siteKey)
-        } else {
-            siteKeyId = 'Filter by Site'
-        }
-        const response = await getParticipants('passive', siteKeyId);
-        hideAnimation();
+        else { response = await getParticipantsWithDateFilters(dropdownMenuButton, startDate, endDate); }
         if(response.code === 200 && response.data.length > 0) {
+            console.log('res', response.data)
             const mainContent = document.getElementById('mainContent')
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
@@ -171,29 +188,87 @@ const getActiveParticipants = () => {
             renderData(filterRawData);
             activeColumns(filterRawData);
             renderLookupSiteDropdown();
-            dropdownTriggerAllParticipants(siteKey);
+            if (dropdownMenuButton !== 'Filter by Site' && dropdownMenuButton !== 'All') dropdownMenuButton = keyToShortNameObj[dropdownMenuButton]
+            dropdownTriggerAllParticipants(dropdownMenuButton);
+            if (filter === 'active') {
+                let activeButton = document.getElementById('activeFilter');
+                activeButton.classList.remove('btn-light');
+                activeButton.classList.add('btn-dark');
+                let passiveButton = document.getElementById('passiveFilter');
+                if ([...passiveButton.classList].includes('btn-dark')) {
+                    passiveButton.classList.remove('btn-dark');
+                    passiveButton.classList.add('btn-light'); 
+                }
+            }
+            else {
+                let passiveButton = document.getElementById('passiveFilter');
+                passiveButton.classList.remove('btn-light');
+                passiveButton.classList.add('btn-dark');
+                let activeButton = document.getElementById('activeFilter');
+                if ([...activeButton.classList].includes('btn-dark')) {
+                    activeButton.classList.remove('btn-dark');
+                    activeButton.classList.add('btn-light'); 
+                }
+            }
+            return successTrigger();
         }
         else if(response.code === 200 && response.data.length === 0) {
             return alertTrigger();
         }
-        activeButton.classList.remove('btn-light');
-        activeButton.classList.add('btn-dark');
-        console.log('activeButton', activeButton.classList)
     })
 }
 
-const getPassiveParticipants = () => {
-    let passiveButton = document.getElementById('passiveFilter');
-    let activeButton = document.getElementById('activeFilter');
-    passiveButton.addEventListener('click', () => {
-        passiveButton.classList.remove('btn-light');
-        passiveButton.classList.add('btn-dark');
-        if ([...activeButton.classList].includes('btn-dark')) {
-            activeButton.classList.remove('btn-dark');
-            activeButton.classList.add('btn-light'); 
+const reRenderParticipantsTableBasedOFilter = async (filter) => {
+    let siteKey = localStorage.getItem('sitekey');
+    let siteKeyId = ``
+    if (siteKey !== null && siteKey !== 'allResults') {
+        localStorage.removeItem('sitekey');
+        siteKeyId = nameToKeyObj[siteKey];
+    } else {
+        siteKeyId = 'Filter by Site'
+    }
+    showAnimation();
+    const response = await getParticipantsWithFilters(filter, siteKeyId);
+    hideAnimation();
+    if(response.code === 200 && response.data.length > 0) {
+        const mainContent = document.getElementById('mainContent')
+        let filterRawData = filterdata(response.data);
+        if (filterRawData.length === 0)  return alertTrigger();
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+        addEventFilterData(filterRawData);
+        renderData(filterRawData);
+        activeColumns(filterRawData);
+        renderLookupSiteDropdown();
+        if (siteKeyId !== 'Filter by Site' && siteKeyId !== 'allResults') siteKeyId = keyToShortNameObj[siteKeyId]
+        dropdownTriggerAllParticipants(siteKeyId);
+        if (filter === 'active') {
+            let activeButton = document.getElementById('activeFilter');
+            activeButton.classList.remove('btn-light');
+            activeButton.classList.add('btn-dark');
+            let passiveButton = document.getElementById('passiveFilter');
+            if ([...passiveButton.classList].includes('btn-dark')) {
+                passiveButton.classList.remove('btn-dark');
+                passiveButton.classList.add('btn-light'); 
+            }
         }
-    })
+        else {
+            let passiveButton = document.getElementById('passiveFilter');
+            passiveButton.classList.remove('btn-light');
+            passiveButton.classList.add('btn-dark');
+            let activeButton = document.getElementById('activeFilter');
+            if ([...activeButton.classList].includes('btn-dark')) {
+                activeButton.classList.remove('btn-dark');
+                activeButton.classList.add('btn-light'); 
+            }
+        }
+        return successTrigger();
+    }
+    else if(response.code === 200 && response.data.length === 0) {
+        return alertTrigger();
+    }
 }
+
 
 const addEventPageBtns = (pageSize, data, showButtons) => {
     const elements = document.getElementsByClassName('page-link');
@@ -698,6 +773,20 @@ const alertTrigger = () => {
     return template;
 }
 
+const successTrigger = () => {
+    let alertList = document.getElementById('alert_placeholder');
+    let template = ``;
+    template += `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Results found!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`
+    alertList.innerHTML = template;
+    return template;
+}
+
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
     if (a) {
@@ -709,7 +798,6 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
-                    console.log('dd', t.sitekey)
                     localStorage.setItem('sitekey', t.sitekey)
                     reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
                 }
@@ -770,10 +858,26 @@ const getParticipantFromSites = async (query) => {
     return await response.json();
 }
 
-const getParticipants = async (type, sitePref) => {
+const getParticipantsWithFilters = async (type, sitePref) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}`
+    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}` : template += `/dashboard?api=getParticipants&type=${type}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
+    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
+    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}`:
+    template += `/dashboard?api=getParticipants&from=${startDate}&to=${endDate}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
