@@ -34,7 +34,6 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
-        console.log('pa', participant)
         template += `<div id="alert_placeholder"></div>`
         template += `<div id="formMainPage">
                     ${renderParticipantWithdrawalLandingPage()}
