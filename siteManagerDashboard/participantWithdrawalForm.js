@@ -8,96 +8,121 @@ export const renderParticipantWithdrawalLandingPage = () => {
                 <div class="row">
                     <div class="col-lg">
                         <div class="row form-row">
-                            <div>
-                                <h4><b>Select all that apply</b></h4>
-                        
-                                <span><h6>Refusing specific activity or activities (limited participation)</h6></span>
+                            <div>                    
+                                <h6><b><u>Refusal of Study Activites</u></b></h6>
+                                <span style="font: 12px; margin-top: 0px"><i>Select all that apply</i></span>
+                                <br />
+                                <span style="position:relative; left:30px; top:2px;"><b>Baseline Activities</b></span>
                                 <div style="position:relative; left:80px; top:2px;">
                                     <div class="form-check">
+                                        <span><i><b>Surveys</b></i></span>
+                                        <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="Baseline survey​" 
                                         data-optionKey=${fieldMapping.refusedSurvey} id="defaultCheck1">
                                         <label class="form-check-label" for="defaultCheck1">
-                                            Baseline survey​
+                                            Initial Survey​
                                         </label>
                                     </div>
+                                    <br />
                                     <div class="form-check">
+                                        <span><i><b>Specimen Donations</b></i></span>
+                                        <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="Baseline blood collection" 
                                         data-optionKey=${fieldMapping.refusedBlood} id="defaultCheck2">
                                         <label class="form-check-label" for="defaultCheck2">
-                                            Baseline blood collection​
+                                            Baseline Blood Donation
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" name="options" type="checkbox" value="Baseline urine collection" 
                                         data-optionKey=${fieldMapping.refusedUrine} id="defaultCheck3">
                                         <label class="form-check-label" for="defaultCheck3">
-                                            Baseline urine collection​
+                                            Baseline Urine Donation
                                         </label>
                                     </div>
                                     <div class="form-check">
                                         <input class="form-check-input" name="options" type="checkbox" value="Baseline mouthwash collection​" 
                                         data-optionKey=${fieldMapping.refusedMouthwash} id="defaultCheck4">
                                         <label class="form-check-label" for="defaultCheck4">
-                                            Baseline mouthwash collection​
+                                            Baseline Mouthwash (Saliva) Donation
                                         </label>
                                     </div>
+                                    <br />
                                     <div class="form-check">
+                                        <span><i><b>Specimen Surveys</b></i></span>
+                                        <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="Baseline specimen surveys" 
                                         data-optionKey=${fieldMapping.refusedSpecimenSurevys} id="defaultCheck5">
                                         <label class="form-check-label" for="defaultCheck5">
-                                            Baseline specimen surveys
+                                            Baseline Specimen Surveys
                                         </label>
                                     </div>
+                                </div>
+                                <br />
+                                <span style="position:relative; left:30px; top:2px;"><b>Follow Up Activities</b></span>
+                                <div style="position:relative; left:80px; top:2px;">
                                     <div class="form-check">
+                                        <span><i><b>Surveys</b></i></span>
+                                        <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="All future surveys (willing to do specimens)" 
                                         data-optionKey=${fieldMapping.refusedFutureSurveys} id="defaultCheck6">
                                         <label class="form-check-label" for="defaultCheck6">
                                             All future surveys (willing to do specimens)​
                                         </label>
                                     </div>
+                                    <br />
                                     <div class="form-check">
+                                        <span><i><b>Specimen Donations and Specimen Surveys</b></i></span>
+                                        <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="All future specimens (willing to do surveys)" 
                                         data-optionKey=${fieldMapping.refusedFutureSamples} id="defaultCheck7">
                                         <label class="form-check-label" for="defaultCheck7">
-                                            All future specimens (willing to do surveys)
+                                            All future specimens (willing to do surveys)​
+                                        </label>
+                                    </div>
+                                    <br />
+                                    <div class="form-check">
+                                        <span><i><b>All Follow Up Activities</b></i></span>
+                                        <br />
+                                        <input class="form-check-input" name="options" type="checkbox" value="All Future Study Activities" 
+                                        data-optionKey=${fieldMapping.refusedAllFutureActivities} id="defaultCheck8">
+                                        <label class="form-check-label" for="defaultCheck8">
+                                            All Future Study Activities​
                                         </label>
                                     </div>
                                 </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Refusing all future activities" 
-                                    data-optionKey=${fieldMapping.refusedAllFutureActivities} id="defaultCheck8">
-                                    <label class="form-check-label" for="defaultCheck8">
-                                        Refusing all future activities​
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Revoke HIPAA authorization (no medical records)​" 
-                                    data-optionKey=${fieldMapping.revokeHIPAA} id="defaultCheck9">
-                                    <label class="form-check-label" for="defaultCheck9">
-                                        Revoke HIPAA authorization (no medical records)
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Withdraw consent" 
-                                    data-optionKey=${fieldMapping.withdrawConsent} id="defaultCheck10">
-                                    <label class="form-check-label" for="defaultCheck10">
-                                        Withdraw consent
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="options" type="checkbox" value="Destroy data" 
-                                    data-optionKey=${fieldMapping.destroyData} id="defaultCheck11">
-                                    <label class="form-check-label" for="defaultCheck11">
-                                            Destroy data
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" name="options" id = "messageCheckbox" type="checkbox" 
-                                    data-optionKey=${fieldMapping.participantDeceased} value="Participant Deceased">
-                                    <label class="form-check-label" for="defaultCheck12">
-                                        Participant Deceased
-                                    </label>
-                                </div>
+                                <br />
+                                <h6><b><u>Revocation and Withdrawal Options</u></b></h6>
+                                <span style="font: 12px; margin-top: 0px"><i>Select all that apply</i></span>
+                                <br />
+                                    <div style="position:relative; left:30px; top:2px; class="form-check">
+                                        <input class="form-check-input" name="options" type="checkbox" value="Revoke HIPAA authorization​" 
+                                        data-optionKey=${fieldMapping.revokeHIPAA} id="defaultCheck9">
+                                        <label class="form-check-label" for="defaultCheck9">
+                                            Revoke HIPAA Authorization
+                                        </label>
+                                    </div>
+                                    <div style="position:relative; left:30px; top:2px; class="form-check">
+                                        <input class="form-check-input" name="options" type="checkbox" value="Withdraw Consent" 
+                                        data-optionKey=${fieldMapping.withdrawConsent} id="defaultCheck10">
+                                        <label class="form-check-label" for="defaultCheck10">
+                                            Withdraw Consent
+                                        </label>
+                                    </div>
+                                    <div style="position:relative; left:30px; top:2px; class="form-check">
+                                        <input class="form-check-input" name="options" type="checkbox" value="Destroy Data" 
+                                        data-optionKey=${fieldMapping.destroyData} id="defaultCheck11">
+                                        <label class="form-check-label" for="defaultCheck11">
+                                                Destroy Data
+                                        </label>
+                                    </div>
+                                    <div style="position:relative; left:30px; top:2px; class="form-check">
+                                        <input class="form-check-input" name="options" id = "messageCheckbox" type="checkbox" 
+                                        data-optionKey=${fieldMapping.participantDeceased} value="Participant Deceased">
+                                        <label class="form-check-label" for="defaultCheck12">
+                                            Participant Deceased
+                                        </label>
+                                    </div>
                                 &nbsp;
                                 <button type="button" data-toggle="modal" data-target="#modalShowSelectedData"
                                     class="btn btn-primary next-btn" id="nextFormPage" style="margin-top:40px;">Next</button>
@@ -107,7 +132,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                 <div class="col-lg">
                                     <div class="row form-row">
                                         <span> <b>
-                                            Who requested? </b>
+                                            <u> Refusal/Withdrawal Requested By: </u> </b>
                                         </span>
                                         <div style="position:relative; left:10px; top:4px;">
                                             <div class="form-check">
@@ -151,8 +176,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     </div>
                                     <div class="row form-row">
                                     <span> <b>
-                                        SUPERVISOR USE ONLY​ <br />
-                                        Suspend all contact with participant until
+                                        <u> SUPERVISOR USE ONLY​ </u><br />
+                                        <b> Suspend all contact with participant until: </b>
                                         date </b> <br />
                                         <div class="form-group row">
                                         <label class="col-md-4 col-form-label">Month</label>
@@ -403,25 +428,25 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     sendRefusalData[fieldMapping.refusalOptions] = {};
     retainOptions.forEach(x => {
         if (parseInt(x.dataset.optionkey) === fieldMapping.refusedSurvey) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp, fieldMapping.whoRequested, requestedHolder);
             }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedBlood) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp, fieldMapping.whoRequested, requestedHolder);
             }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedUrine) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp, fieldMapping.whoRequested, requestedHolder);
             }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedMouthwash) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp, fieldMapping.whoRequested, requestedHolder);
             }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurevys) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp, fieldMapping.whoRequested, requestedHolder);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSurveys) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp, fieldMapping.whoRequested, requestedHolder);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp, fieldMapping.whoRequested, requestedHolder);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureActivities) {
                 setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureActivitesTimeStamp);
@@ -482,9 +507,17 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 }
 
+<<<<<<< HEAD
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+=======
+const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp, whoRequestedId, requestedHolder) =>{
+>>>>>>> f06e61e... SiteManager Dashboard: Rework Refusal/Withdrawal Screen (#251)
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
-    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
+    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = {
+        [optionSelected]: fieldMapping.yes,
+        [refusalOptionTimeStamp]: new Date().toISOString(),
+        [whoRequestedId] : parseInt(requestedHolder[0].dataset.optionkey)
+    }
 }
 
 const getComputeScore = (retainOptions, highestStatus) => {
