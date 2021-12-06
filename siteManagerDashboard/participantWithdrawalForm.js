@@ -17,7 +17,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     <div class="form-check">
                                         <span><i><b>Surveys</b></i></span>
                                         <br />
-                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline survey​" 
+                                        <input class="form-check-input" name="options" type="checkbox" value="Initial Survey​" 
                                         data-optionKey=${fieldMapping.refusedSurvey} id="defaultCheck1">
                                         <label class="form-check-label" for="defaultCheck1">
                                             Initial Survey​
@@ -27,21 +27,21 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     <div class="form-check">
                                         <span><i><b>Specimen Donations</b></i></span>
                                         <br />
-                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline blood collection" 
+                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline Blood Donation" 
                                         data-optionKey=${fieldMapping.refusedBlood} id="defaultCheck2">
                                         <label class="form-check-label" for="defaultCheck2">
                                             Baseline Blood Donation
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline urine collection" 
+                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline Urine Donation" 
                                         data-optionKey=${fieldMapping.refusedUrine} id="defaultCheck3">
                                         <label class="form-check-label" for="defaultCheck3">
                                             Baseline Urine Donation
                                         </label>
                                     </div>
                                     <div class="form-check">
-                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline mouthwash collection​" 
+                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline Mouthwash (Saliva) Donation" 
                                         data-optionKey=${fieldMapping.refusedMouthwash} id="defaultCheck4">
                                         <label class="form-check-label" for="defaultCheck4">
                                             Baseline Mouthwash (Saliva) Donation
@@ -51,7 +51,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     <div class="form-check">
                                         <span><i><b>Specimen Surveys</b></i></span>
                                         <br />
-                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline specimen surveys" 
+                                        <input class="form-check-input" name="options" type="checkbox" value="Baseline Specimen Surveys" 
                                         data-optionKey=${fieldMapping.refusedSpecimenSurevys} id="defaultCheck5">
                                         <label class="form-check-label" for="defaultCheck5">
                                             Baseline Specimen Surveys
@@ -330,8 +330,7 @@ export const proceedToNextPage = (retainOptions, requestedHolder, suspendDate) =
     const a = document.getElementById('proceedFormPage');
     if (a) {
         a.addEventListener('click',  () => { 
-            let checkedValue = document.getElementById('messageCheckbox').checked
-            ;
+            let checkedValue = document.getElementById('messageCheckbox').checked;
             checkedValue ? causeOfDeathPage(retainOptions) : reasonForRefusalPage(retainOptions, requestedHolder, suspendDate);
         })
     }
