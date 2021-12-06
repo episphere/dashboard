@@ -163,7 +163,13 @@ const getDateFilters = () => {
         const endDate = document.getElementById('endDate').value;
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
-        let dropdownMenuButton = document.getElementById('dropdownSites').innerHTML;
+        let dropdownMenuButton = ``
+        let siteKey = localStorage.getItem('sitekey');
+        if (siteKey !== null && siteKey !== 'allResults') {
+            dropdownMenuButton = nameToKeyObj[siteKey];
+        } else {
+            dropdownMenuButton = 'Filter by Site'
+        }
         let response = ``;
         let filter = ``;
         if (localStorage.getItem('active') === 'true') {
@@ -306,7 +312,6 @@ const paginationTemplate = (array) => {
     let template = `
         <nav aria-label="Page navigation example">
             <ul class="pagination">`
-    
     array.forEach((a,i) => {
         if(i === 0){
             template += `<li class="page-item">

@@ -32,7 +32,6 @@ export const keyToShortNameObj =
 
 }
 
-
 export const nameToKeyObj = 
 {
     "kpNW": 452412599,
