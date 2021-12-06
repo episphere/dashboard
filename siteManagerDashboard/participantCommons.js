@@ -1,11 +1,10 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -41,7 +40,7 @@ export const renderTable = (data, source) => {
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
                     <div class="form-group dropdown" id="siteDropdownLookup" hidden>
-                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px;">
                         Filter by Site
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
@@ -57,7 +56,35 @@ export const renderTable = (data, source) => {
                         <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
-                </div>`: ``} </div>`
+                </div>
+
+                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
+                                                                                                margin-left:25px;
+                                                                                                padding: 10px 20px;
+                                                                                                border-radius: 10px;
+                                                                                                width:50%;
+                                                                                                height:50%;">
+                    <button type="button" class="btn btn-light btn-lg" id="activeFilter">Active</button>
+                    <button type="button" class="btn btn-light btn-lg" id="passiveFilter">Passive</button>
+                </div>
+
+                <form class="form-inline" id="dateFilters">
+                    <h5 style="margin-right:25px;">From:</h5>
+                    <div class="form-group mb-2">
+                        <input type="datetime-local" class="form-control" id="startDate" style="
+                                                                                                width:200px;
+                                                                                                height:50px;">
+                    </div>
+                    <h5 style="margin-left:15px;">To:</h5>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="datetime-local" class="form-control" id="endDate" style="
+                                                                                                width:200px;
+                                                                                                height:50px;">
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
+                </form>
+
+                `: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
@@ -100,15 +127,152 @@ export  const renderData = (data, showButtons) => {
     const pages = Math.ceil(dataLength/pageSize);
     const array = [];
 
-    for(let i = 0; i< pages; i++){
-        array.push(i+1);
-    }
+    for (let i = 0; i< pages; i++) { array.push(i+1)}
     document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
     addEventPageBtns(pageSize, data, showButtons);
 
     document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
     addEventShowMoreInfo(data);
+
+    getActiveParticipants();
+    getPassiveParticipants();
+    getDateFilters();
 }
+
+const getActiveParticipants = () => {
+    let activeButton = document.getElementById('activeFilter');
+    activeButton.addEventListener('click', () => {   
+        reRenderParticipantsTableBasedOFilter('active');
+        localStorage.setItem('active', true);
+    })
+}
+
+const getPassiveParticipants = () => {
+    let passiveButton = document.getElementById('passiveFilter');
+    passiveButton.addEventListener('click', () => {
+        reRenderParticipantsTableBasedOFilter('passive');
+        localStorage.setItem('passive', true);
+    })
+}
+
+const getDateFilters = () => {
+    const dateFilters = document.getElementById('dateFilters');
+    dateFilters.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        document.getElementById('startDate').value = ``
+        document.getElementById('endDate').value = ``
+        let dropdownMenuButton = ``
+        let siteKey = localStorage.getItem('sitekey');
+        if (siteKey !== null && siteKey !== 'allResults') {
+            dropdownMenuButton = nameToKeyObj[siteKey];
+        } else {
+            dropdownMenuButton = 'Filter by Site'
+        }
+        let response = ``;
+        let filter = ``;
+        if (localStorage.getItem('active') === 'true') {
+            response = await getParticipantsWithDateFilters('active', dropdownMenuButton, startDate, endDate);
+            filter = 'active';
+            localStorage.removeItem('active');
+        } 
+        else if (localStorage.getItem('passive') === 'true') {
+            response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
+            filter = 'passive';
+            localStorage.removeItem('passive');
+        }
+        else { response = await getParticipantsWithDateFilters(dropdownMenuButton, startDate, endDate); }
+        if(response.code === 200 && response.data.length > 0) {
+            const mainContent = document.getElementById('mainContent')
+            let filterRawData = filterdata(response.data);
+            if (filterRawData.length === 0)  return alertTrigger();
+            localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+            mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+            addEventFilterData(filterRawData);
+            renderData(filterRawData);
+            activeColumns(filterRawData);
+            renderLookupSiteDropdown();
+            if (dropdownMenuButton !== 'Filter by Site' && dropdownMenuButton !== 'All') dropdownMenuButton = keyToShortNameObj[dropdownMenuButton]
+            dropdownTriggerAllParticipants(dropdownMenuButton);
+            if (filter === 'active') {
+                let activeButton = document.getElementById('activeFilter');
+                activeButton.classList.remove('btn-light');
+                activeButton.classList.add('btn-dark');
+                let passiveButton = document.getElementById('passiveFilter');
+                if ([...passiveButton.classList].includes('btn-dark')) {
+                    passiveButton.classList.remove('btn-dark');
+                    passiveButton.classList.add('btn-light'); 
+                }
+            }
+            else {
+                let passiveButton = document.getElementById('passiveFilter');
+                passiveButton.classList.remove('btn-light');
+                passiveButton.classList.add('btn-dark');
+                let activeButton = document.getElementById('activeFilter');
+                if ([...activeButton.classList].includes('btn-dark')) {
+                    activeButton.classList.remove('btn-dark');
+                    activeButton.classList.add('btn-light'); 
+                }
+            }
+            return successTrigger();
+        }
+        else if(response.code === 200 && response.data.length === 0) {
+            return alertTrigger();
+        }
+    })
+}
+
+const reRenderParticipantsTableBasedOFilter = async (filter) => {
+    let siteKey = localStorage.getItem('sitekey');
+    let siteKeyId = ``
+    if (siteKey !== null && siteKey !== 'allResults') {
+        siteKeyId = nameToKeyObj[siteKey];
+    } else {
+        siteKeyId = 'Filter by Site'
+    }
+    showAnimation();
+    const response = await getParticipantsWithFilters(filter, siteKeyId);
+    hideAnimation();
+    if(response.code === 200 && response.data.length > 0) {
+        const mainContent = document.getElementById('mainContent')
+        let filterRawData = filterdata(response.data);
+        if (filterRawData.length === 0)  return alertTrigger();
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+        addEventFilterData(filterRawData);
+        renderData(filterRawData);
+        activeColumns(filterRawData);
+        renderLookupSiteDropdown();
+        if (siteKeyId !== 'Filter by Site' && siteKeyId !== 'allResults') siteKeyId = keyToShortNameObj[siteKeyId]
+        dropdownTriggerAllParticipants(siteKeyId);
+        if (filter === 'active') {
+            let activeButton = document.getElementById('activeFilter');
+            activeButton.classList.remove('btn-light');
+            activeButton.classList.add('btn-dark');
+            let passiveButton = document.getElementById('passiveFilter');
+            if ([...passiveButton.classList].includes('btn-dark')) {
+                passiveButton.classList.remove('btn-dark');
+                passiveButton.classList.add('btn-light'); 
+            }
+        }
+        else {
+            let passiveButton = document.getElementById('passiveFilter');
+            passiveButton.classList.remove('btn-light');
+            passiveButton.classList.add('btn-dark');
+            let activeButton = document.getElementById('activeFilter');
+            if ([...activeButton.classList].includes('btn-dark')) {
+                activeButton.classList.remove('btn-dark');
+                activeButton.classList.add('btn-light'); 
+            }
+        }
+        return successTrigger();
+    }
+    else if(response.code === 200 && response.data.length === 0) {
+        return alertTrigger();
+    }
+}
+
 
 const addEventPageBtns = (pageSize, data, showButtons) => {
     const elements = document.getElementsByClassName('page-link');
@@ -148,7 +312,6 @@ const paginationTemplate = (array) => {
     let template = `
         <nav aria-label="Page navigation example">
             <ul class="pagination">`
-    
     array.forEach((a,i) => {
         if(i === 0){
             template += `<li class="page-item">
@@ -613,6 +776,20 @@ const alertTrigger = () => {
     return template;
 }
 
+const successTrigger = () => {
+    let alertList = document.getElementById('alert_placeholder');
+    let template = ``;
+    template += `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Results found!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`
+    alertList.innerHTML = template;
+    return template;
+}
+
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
     if (a) {
@@ -624,6 +801,7 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
+                    localStorage.setItem('sitekey', t.sitekey)
                     reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
                 }
             })
@@ -674,6 +852,35 @@ const getParticipantFromSites = async (query) => {
     const siteKey = await getAccessToken();
     let template = ``;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantsWithFilters = async (type, sitePref) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}` : template += `/dashboard?api=getParticipants&type=${type}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
+    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
+    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}`:
+    template += `/dashboard?api=getParticipants&from=${startDate}&to=${endDate}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {

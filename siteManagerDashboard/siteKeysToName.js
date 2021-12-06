@@ -16,6 +16,22 @@ export const keyToNameObj =
 
 }
 
+export const keyToShortNameObj = 
+{
+
+    452412599 : "KP NW",
+    531629870 : "HealthPartners",
+    657167265 : "Sanford Health",
+    548392715 : "Henry Ford Health System",
+    303349821 : "Marshfield Clinic",
+    125001209 : "KP CO",
+    809703864 : "UofC Medicine",
+    13 : "NCI",
+    300267574 : "KP HI",
+    327912200 : "KP GA"
+
+}
+
 export const nameToKeyObj = 
 {
     "kpNW": 452412599,
