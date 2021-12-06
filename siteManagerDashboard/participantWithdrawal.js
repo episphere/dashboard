@@ -67,18 +67,18 @@ const checkPreviousWithdrawalStatus = (participant) => {
 
 const getParticipantSelectedRefusals = (participant) => {
     let template = ``
-
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Baseline survey​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline blood collection, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline urine collection, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline mouthwash collection​, ` 
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline specimen surveys, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future specimens (willing to do specimens)​, ` 
-    if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `Refusing all future activities​​, ` 
-    if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ) template += `Revoke HIPAA authorization (no medical records), `
-    if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes ) template += `Withdraw consent​, `
-    if (participant[fieldMapping.destroyData] === fieldMapping.yes ) template += `Destroy data​, `
+    console.log('participant', participant)
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Initial Survey​, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline Mouthwash (Saliva) Donation, ` 
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​​, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​, ` 
+    if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `All Future Study Activities​ , ` 
+    if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ) template += `Revoke HIPAA Authorization, `
+    if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes ) template += `Withdraw Consent​, `
+    if (participant[fieldMapping.destroyData] === fieldMapping.yes ) template += `Destroy Data​, `
     if (participant[fieldMapping.participantDeceased] === fieldMapping.yes ) template += `Participant Deceased, ` 
 
     template = template.replace(/,\s*$/, "") // removes comma from the end
