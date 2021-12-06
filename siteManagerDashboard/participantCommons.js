@@ -127,9 +127,7 @@ export  const renderData = (data, showButtons) => {
     const pages = Math.ceil(dataLength/pageSize);
     const array = [];
 
-    for(let i = 0; i< pages; i++){
-        array.push(i+1);
-    }
+    for (let i = 0; i< pages; i++) { array.push(i+1)}
     document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
     addEventPageBtns(pageSize, data, showButtons);
 
@@ -153,7 +151,7 @@ const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
     passiveButton.addEventListener('click', () => {
         reRenderParticipantsTableBasedOFilter('passive');
-        localStorage.setItem('passive', false);
+        localStorage.setItem('passive', true);
     })
 }
 
@@ -163,6 +161,8 @@ const getDateFilters = () => {
         e.preventDefault();
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
+        document.getElementById('startDate').value = ``
+        document.getElementById('endDate').value = ``
         let dropdownMenuButton = document.getElementById('dropdownSites').innerHTML;
         let response = ``;
         let filter = ``;
@@ -178,7 +178,6 @@ const getDateFilters = () => {
         }
         else { response = await getParticipantsWithDateFilters(dropdownMenuButton, startDate, endDate); }
         if(response.code === 200 && response.data.length > 0) {
-            console.log('res', response.data)
             const mainContent = document.getElementById('mainContent')
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
@@ -222,7 +221,6 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     let siteKey = localStorage.getItem('sitekey');
     let siteKeyId = ``
     if (siteKey !== null && siteKey !== 'allResults') {
-        localStorage.removeItem('sitekey');
         siteKeyId = nameToKeyObj[siteKey];
     } else {
         siteKeyId = 'Filter by Site'
