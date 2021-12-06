@@ -67,7 +67,6 @@ const checkPreviousWithdrawalStatus = (participant) => {
 
 const getParticipantSelectedRefusals = (participant) => {
     let template = ``
-    console.log('participant', participant)
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Initial Survey​, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
