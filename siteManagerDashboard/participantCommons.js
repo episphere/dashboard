@@ -498,10 +498,13 @@ const tableTemplate = (data, showButtons) => {
                         template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                     )
             : (x === fieldMapping.preConsentOptOut.toString()) ? (
-                    ( participant['state'][fieldMapping.preConsentOptOut.toString()] === fieldMapping.yes ) ?
-                        template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `Yes` : ``}</td>`
-                    : template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `No` : ``}</td>`
-                    )
+                ( participant['state'][fieldMapping.preConsentOptOut.toString()] === fieldMapping.yes ) ?
+                template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `Yes` : ``}</td>`
+                : template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `No` : ``}</td>`
+                )
+            : (x === fieldMapping.datePreConsentOptOut.toString()) ? (
+                template += `<td>${participant['state'][fieldMapping.datePreConsentOptOut.toString()] ? participant['state'][fieldMapping.datePreConsentOptOut.toString()] : ``}</td>`
+                )
             : (x === fieldMapping.maxNumContactsReached.toString()) ? (
                 ( participant['state'][fieldMapping.maxNumContactsReached.toString()] === fieldMapping.yes ) ?
                     template += `<td>${participant['state'][fieldMapping.maxNumContactsReached.toString()] ? `Yes` : ``}</td>`
