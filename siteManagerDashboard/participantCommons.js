@@ -115,33 +115,36 @@ export const renderTable = (data, source) => {
 }
 
 
-export  const renderData = (data, showButtons) => {
+export  const renderData = (data, nextPageCounter, prevPageCounter, showButtons) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
         animation(false);
         return;
     }
-    const pageSize = 10;
+    let limit = ``
+    localStorage.getItem('recordLimit') !== undefined ? (limit = parseInt(localStorage.getItem('recordLimit'))) : (limit = 10)
+    const pageSize = limit;
     const dataLength = data.length;
     const pages = Math.ceil(dataLength/pageSize);
     const array = [];
 
     for (let i = 0; i< pages; i++) { array.push(i+1)}
-    document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
-    addEventPageBtns(pageSize, data, showButtons);
-
+    document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
+    pagninationNextTrigger();
+    pagninationPreviousTrigger();
+   // addEventPageBtns(pageSize, data, showButtons);
     document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
     addEventShowMoreInfo(data);
-
     getActiveParticipants();
     getPassiveParticipants();
     getDateFilters();
+    dropdownTrigger();
 }
 
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
-    activeButton.addEventListener('click', () => {   
+    activeButton && activeButton.addEventListener('click', () => {   
         reRenderParticipantsTableBasedOFilter('active');
         localStorage.setItem('active', true);
     })
@@ -149,7 +152,7 @@ const getActiveParticipants = () => {
 
 const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
-    passiveButton.addEventListener('click', () => {
+    passiveButton && passiveButton.addEventListener('click', () => {
         reRenderParticipantsTableBasedOFilter('passive');
         localStorage.setItem('passive', true);
     })
@@ -157,7 +160,7 @@ const getPassiveParticipants = () => {
 
 const getDateFilters = () => {
     const dateFilters = document.getElementById('dateFilters');
-    dateFilters.addEventListener('submit', async (e) => {
+    dateFilters && dateFilters.addEventListener('submit', async (e) => {
         e.preventDefault();
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
@@ -183,43 +186,7 @@ const getDateFilters = () => {
             localStorage.removeItem('passive');
         }
         else { response = await getParticipantsWithDateFilters(dropdownMenuButton, startDate, endDate); }
-        if(response.code === 200 && response.data.length > 0) {
-            const mainContent = document.getElementById('mainContent')
-            let filterRawData = filterdata(response.data);
-            if (filterRawData.length === 0)  return alertTrigger();
-            localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
-            mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
-            addEventFilterData(filterRawData);
-            renderData(filterRawData);
-            activeColumns(filterRawData);
-            renderLookupSiteDropdown();
-            if (dropdownMenuButton !== 'Filter by Site' && dropdownMenuButton !== 'All') dropdownMenuButton = keyToShortNameObj[dropdownMenuButton]
-            dropdownTriggerAllParticipants(dropdownMenuButton);
-            if (filter === 'active') {
-                let activeButton = document.getElementById('activeFilter');
-                activeButton.classList.remove('btn-light');
-                activeButton.classList.add('btn-dark');
-                let passiveButton = document.getElementById('passiveFilter');
-                if ([...passiveButton.classList].includes('btn-dark')) {
-                    passiveButton.classList.remove('btn-dark');
-                    passiveButton.classList.add('btn-light'); 
-                }
-            }
-            else {
-                let passiveButton = document.getElementById('passiveFilter');
-                passiveButton.classList.remove('btn-light');
-                passiveButton.classList.add('btn-dark');
-                let activeButton = document.getElementById('activeFilter');
-                if ([...activeButton.classList].includes('btn-dark')) {
-                    activeButton.classList.remove('btn-dark');
-                    activeButton.classList.add('btn-light'); 
-                }
-            }
-            return successTrigger();
-        }
-        else if(response.code === 200 && response.data.length === 0) {
-            return alertTrigger();
-        }
+        reRenderMainTable(response, filter, dropdownMenuButton);
     })
 }
 
@@ -234,6 +201,10 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     showAnimation();
     const response = await getParticipantsWithFilters(filter, siteKeyId);
     hideAnimation();
+    reRenderMainTable(response, filter, siteKeyId);
+}
+
+const reRenderMainTable = (response, filter, siteKeyId) => {
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
         let filterRawData = filterdata(response.data);
@@ -253,7 +224,7 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
             let passiveButton = document.getElementById('passiveFilter');
             if ([...passiveButton.classList].includes('btn-dark')) {
                 passiveButton.classList.remove('btn-dark');
-                passiveButton.classList.add('btn-light'); 
+                passiveButton.classList.add('btn-light');  
             }
         }
         else {
@@ -308,37 +279,127 @@ const dataPagination = (start, end, data) => {
     return paginatedData;
 }
 
-const paginationTemplate = (array) => {
+const paginationTemplate = (nextPageCounter, prevPageCounter) => {
+    if (nextPageCounter === undefined || nextPageCounter === null) nextPageCounter = 2
+    if (prevPageCounter === undefined || prevPageCounter === null) prevPageCounter = 1
+    
     let template = `
-        <nav aria-label="Page navigation example">
-            <ul class="pagination">`
-    array.forEach((a,i) => {
-        if(i === 0){
-            template += `<li class="page-item">
-                            <a class="page-link" id="previousPage" data-previous="1" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                            </a>
-                        </li>`
-        }
-        template += `<li class="page-item"><a class="page-link ${i === 0 ? 'active-page':''}" data-page=${a}>${a}</a></li>`;
 
-        if(i === (array.length - 1)){
-            template += `
-            <li class="page-item">
-                <a class="page-link" id="nextPage" data-next="1" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
-                </a>
-            </li>`
-        }
-    });
-    template += `
-            </ul>
-        </nav>
+    <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
+        <div style="display:inline-block;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter} data-nextpage=${nextPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
+                    <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div style="padding-left: 30px" class="dropdown">
+        <button class="btn btn-primary dropdown-toggle dropdown-toggle-sites" id="dropdownPageSize" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Page 
+        </button>
+        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" data-pagesize="10">10</a></li>
+            <li><a class="dropdown-item" data-pagesize="20">20</a></li>
+            <li><a class="dropdown-item" data-pagesize="50">50</a></li>
+            <li><a class="dropdown-item" data-pagesize="100">100</a></li>
+        </ul>
+    </div>
+    </div>
+
     `;
     return template;
 }
+
+const dropdownTrigger = () => {
+    let a = document.getElementById('dropdownPageSize');
+    let dropdownMenuButton = document.getElementById('dropdownMenuButtonSizes');
+    localStorage.getItem('recordLimit') !== undefined ? (a.innerHTML = localStorage.getItem('recordLimit')) : (a.innerHTML = 'Page')
+    if (dropdownMenuButton) {
+        dropdownMenuButton.addEventListener('click', async (e) => {
+            a.innerHTML = e.target.textContent;
+            localStorage.setItem('recordLimit', e.target.textContent)
+            showAnimation();
+            const sitePref = localStorage.getItem('sitekey');
+            const sitePrefId = nameToKeyObj[sitePref];
+            const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
+            hideAnimation();
+            if(response.code === 200 && response.data.length > 0) {
+                let filterRawData = filterdata(response.data);
+                if (filterRawData.length === 0)  return alertTrigger();
+                addEventFilterData(filterRawData);
+                renderData(filterRawData);
+            }
+            else if(response.code === 200 && response.data.length === 0) {
+                return alertTrigger();
+            }
+            else if(response.code != 200 && response.data.length === 0) {
+                clearLocalStorage();
+            }
+        })
+
+    }
+}
+
+const pagninationNextTrigger = () => {
+    const a = document.getElementById('nextLink')
+    a && a.addEventListener('click', async () => {
+        let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
+        showAnimation();
+        const sitePref = localStorage.getItem('sitekey');
+        const sitePrefId = nameToKeyObj[sitePref];
+        const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
+        hideAnimation();
+        if(response.code === 200 && response.data.length > 0) {
+            let filterRawData = filterdata(response.data);
+            if (filterRawData.length === 0)  return alertTrigger();
+            addEventFilterData(filterRawData);
+            nextPageCounter = nextPageCounter + 1
+            renderData(filterRawData, nextPageCounter);
+        }
+        else if(response.code === 200 && response.data.length === 0) {
+            return alertTrigger();
+        }
+        else if(response.code != 200 && response.data.length === 0) {
+            clearLocalStorage();
+        }
+    })
+
+}
+
+const pagninationPreviousTrigger = () => {
+    const a = document.getElementById('previousLink')
+    a && a.addEventListener('click', async () => {
+        let pageCounter = parseInt(a.getAttribute('data-prevpage')); // 1
+        let nextPageCounter = parseInt(a.getAttribute('data-nextpage')); /// 4
+        pageCounter = nextPageCounter - pageCounter // 3
+        nextPageCounter = nextPageCounter - 1
+        showAnimation();
+        const sitePref = localStorage.getItem('sitekey');
+        const sitePrefId = nameToKeyObj[sitePref];
+        if (pageCounter >= 1) {
+        const response = await getParticipantFromSites(sitePrefId ,pageCounter);
+        hideAnimation();
+        if(response.code === 200 && response.data.length > 0) {
+            let filterRawData = filterdata(response.data);
+            if (filterRawData.length === 0)  return alertTrigger();
+            addEventFilterData(filterRawData);
+            pageCounter = pageCounter - 1
+            renderData(filterRawData, nextPageCounter, pageCounter);
+        }
+        else if(response.code === 200 && response.data.length === 0) {
+            return alertTrigger();
+        }
+        else if(response.code != 200 && response.data.length === 0) {
+            clearLocalStorage();
+        }
+    } else {
+        hideAnimation();
+    } })
+}
+
+
 
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
@@ -848,10 +909,29 @@ const getCustomVariableNames = (x) => {
 
 }
 
-const getParticipantFromSites = async (query) => {
+const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    let limit = parseInt(localStorage.getItem('recordLimit'));
+    if (limit === undefined) limit = 10 
+    if (nextPageCounter === undefined ) {
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    } else {
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
+    }
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantWithLimit = async (query, limit) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
