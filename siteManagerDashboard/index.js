@@ -240,6 +240,7 @@ const renderCharts = async (siteKey, isParent) => {
     const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
     const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
     const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
+    console.log('ssn', ssnMetric.stats)
     const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
 
@@ -524,8 +525,8 @@ const filterSsnMetrics = (participantsSsnMetrics, activeVerifiedParticipants, pa
     const verifiedParticipants = activeVerifiedParticipants +  passiveVerifiedParticipants
 
     participantsSsnMetrics && participantsSsnMetrics.filter( i => {
-        if (i.ssnFlag === null &&  i.ssnFlagCount === 0) {  ssnHalfFlagCounter += i.ssnHalfFlagCount }
-        if (i.ssnHalfFlag === null &&  i.ssnHalfFlagCount === 0) {  ssnFullFlagCounter += i.ssnFlagCount }
+        if (i.ssnFlag === fieldMapping.yes) {  ssnHalfFlagCounter += i.ssnHalfFlagCount }
+        if (i.ssnHalfFlag === fieldMapping.yes) {  ssnFullFlagCounter += i.ssnFlagCount }
 
     })
     currentWorflowObj.ssnNoFlagCounter = verifiedParticipants - (ssnFullFlagCounter + ssnHalfFlagCounter);
