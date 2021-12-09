@@ -240,7 +240,6 @@ const renderCharts = async (siteKey, isParent) => {
     const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
     const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
     const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
-    console.log('ssn', ssnMetric.stats)
     const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
 
