@@ -48,7 +48,7 @@ const checkPreviousWithdrawalStatus = (participant) => {
     if (participant[fieldMapping.participationStatus] !== fieldMapping.noRefusal && participant[fieldMapping.participationStatus] !== ``) {
         localStorage.setItem('participationStatus', true)
         template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Previously Selected Refusal Option: <b> ${getParticipantStatus(participant)} </b>
+                        Previously Selected Refusal Option: <b> ${getParticipantSelectedRefusals(participant)} </b>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
