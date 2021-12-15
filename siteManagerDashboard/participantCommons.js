@@ -125,8 +125,8 @@ export  const renderData = (data, showButtons) => {
     const pageSize = 10;
     const dataLength = data.length;
     data.splice(pageSize, dataLength);
-    let nextPageCounter = 2;
-    let prevPageCounter = 1;
+    let nextPageCounter = 1;
+    let prevPageCounter = 0;
     document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
     pagninationNextTrigger();
     pagninationPreviousTrigger();
@@ -342,13 +342,13 @@ const pagninationNextTrigger = () => {
         showAnimation();
         const sitePref = localStorage.getItem('sitekey');
         const sitePrefId = nameToKeyObj[sitePref];
+        nextPageCounter = nextPageCounter + 1
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
             addEventFilterData(filterRawData);
-            nextPageCounter = nextPageCounter + 1
             a.setAttribute('data-nextpage', nextPageCounter);
             renderDataTable(filterRawData);
         }
@@ -374,7 +374,7 @@ const pagninationPreviousTrigger = () => {
         const sitePref = localStorage.getItem('sitekey');
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
-        const response = await getParticipantFromSites(sitePrefId ,pageCounter);
+        const response = await getParticipantFromSites(sitePrefId, pageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
