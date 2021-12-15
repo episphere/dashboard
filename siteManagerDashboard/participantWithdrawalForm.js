@@ -177,8 +177,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     <div class="row form-row">
                                     <span> <b>
                                         <u> SUPERVISOR USE ONLY​ </u><br />
-                                        <b> Suspend all contact with participant until: </b>
-                                        date </b> <br />
+                                        <b> Suspend all contact with participant until: </b> <br />
                                         <div class="form-group row">
                                         <label class="col-md-4 col-form-label">Month</label>
                                         <select id="UPMonth" class="form-control required-field col-md-4" data-error-required='Please select your month.'>
@@ -507,7 +506,11 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 }
 
+<<<<<<< HEAD
+const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+=======
 const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp, whoRequestedId, requestedHolder) =>{
+>>>>>>> f06e61e... SiteManager Dashboard: Rework Refusal/Withdrawal Screen (#251)
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
     sendRefusalData[fieldMapping.refusalOptions][optionSelected] = {
         [optionSelected]: fieldMapping.yes,
