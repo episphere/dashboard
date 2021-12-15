@@ -506,11 +506,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-<<<<<<< HEAD
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
-=======
-const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp, whoRequestedId, requestedHolder) =>{
->>>>>>> f06e61e... SiteManager Dashboard: Rework Refusal/Withdrawal Screen (#251)
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
     sendRefusalData[fieldMapping.refusalOptions][optionSelected] = {
         [optionSelected]: fieldMapping.yes,
