@@ -115,38 +115,39 @@ export const renderTable = (data, source) => {
 }
 
 
-export  const renderData = (data, nextPageCounter, prevPageCounter, showButtons) => {
+export  const renderData = (data, showButtons) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
         animation(false);
         return;
     }
-    let limit = ``
-    localStorage.getItem('recordLimit') !== undefined ? (limit = parseInt(localStorage.getItem('recordLimit'))) : (limit = 10)
-    const pageSize = limit;
+    const pageSize = 10;
     const dataLength = data.length;
-    const pages = Math.ceil(dataLength/pageSize);
-    const array = [];
-
-    for (let i = 0; i< pages; i++) { array.push(i+1)}
+    data.splice(pageSize, dataLength);
+    let nextPageCounter = 2;
+    let prevPageCounter = 1;
     document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
     pagninationNextTrigger();
     pagninationPreviousTrigger();
    // addEventPageBtns(pageSize, data, showButtons);
-    document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
+    renderDataTable(data, showButtons)
     addEventShowMoreInfo(data);
     getActiveParticipants();
     getPassiveParticipants();
     getDateFilters();
-    dropdownTrigger();
+    pageLimitDropdownTrigger();
+}
+
+const renderDataTable = (data, showButtons) => {
+    document.getElementById('dataTable').innerHTML = tableTemplate(data, showButtons);
 }
 
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
     activeButton && activeButton.addEventListener('click', () => {   
         reRenderParticipantsTableBasedOFilter('active');
-        localStorage.setItem('active', true);
+        activeButton.setAttribute('active', true);
     })
 }
 
@@ -154,7 +155,7 @@ const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
     passiveButton && passiveButton.addEventListener('click', () => {
         reRenderParticipantsTableBasedOFilter('passive');
-        localStorage.setItem('passive', true);
+        passiveButton.setAttribute('passive', true);
     })
 }
 
@@ -175,15 +176,15 @@ const getDateFilters = () => {
         }
         let response = ``;
         let filter = ``;
-        if (localStorage.getItem('active') === 'true') {
+        let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
+        let activeButton = document.getElementById('activeFilter').getAttribute('active');
+        if (activeButton === 'true') {
             response = await getParticipantsWithDateFilters('active', dropdownMenuButton, startDate, endDate);
             filter = 'active';
-            localStorage.removeItem('active');
         } 
-        else if (localStorage.getItem('passive') === 'true') {
+        else if (passiveButton === 'true') {
             response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
             filter = 'passive';
-            localStorage.removeItem('passive');
         }
         else { response = await getParticipantsWithDateFilters(dropdownMenuButton, startDate, endDate); }
         reRenderMainTable(response, filter, dropdownMenuButton);
@@ -201,22 +202,16 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     showAnimation();
     const response = await getParticipantsWithFilters(filter, siteKeyId);
     hideAnimation();
-    reRenderMainTable(response, filter, siteKeyId);
+    reRenderMainTable(response, filter);
 }
 
-const reRenderMainTable = (response, filter, siteKeyId) => {
+const reRenderMainTable = (response, filter) => {
     if(response.code === 200 && response.data.length > 0) {
-        const mainContent = document.getElementById('mainContent')
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
-        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
-        renderData(filterRawData);
-        activeColumns(filterRawData);
-        renderLookupSiteDropdown();
-        if (siteKeyId !== 'Filter by Site' && siteKeyId !== 'allResults') siteKeyId = keyToShortNameObj[siteKeyId]
-        dropdownTriggerAllParticipants(siteKeyId);
+        renderDataTable(filterRawData);
         if (filter === 'active') {
             let activeButton = document.getElementById('activeFilter');
             activeButton.classList.remove('btn-light');
@@ -245,43 +240,41 @@ const reRenderMainTable = (response, filter, siteKeyId) => {
 }
 
 
-const addEventPageBtns = (pageSize, data, showButtons) => {
-    const elements = document.getElementsByClassName('page-link');
-    Array.from(elements).forEach(element => {
-        element.addEventListener('click', async () => {
-            const previous = element.dataset.previous;
-            const next = element.dataset.next;
-            const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
+// const addEventPageBtns = (pageSize, data, showButtons) => {
+//     const elements = document.getElementsByClassName('page-link');
+//     Array.from(elements).forEach(element => {
+//         element.addEventListener('click', async () => {
+//             const previous = element.dataset.previous;
+//             const next = element.dataset.next;
+//             const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
             
-            if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
+//             if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
             
-            if(!element.classList.contains('active-page')){
-                let start = (pageNumber - 1) * pageSize;
-                let end = pageNumber * pageSize;
-                document.getElementById('previousPage').dataset.previous = pageNumber;
-                document.getElementById('nextPage').dataset.next = pageNumber;
-                document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
-                addEventShowMoreInfo(data);
-                Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
-                document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
-            }
-        })
-    });
-}
+//             if(!element.classList.contains('active-page')){
+//                 let start = (pageNumber - 1) * pageSize;
+//                 let end = pageNumber * pageSize;
+//                 document.getElementById('previousPage').dataset.previous = pageNumber;
+//                 document.getElementById('nextPage').dataset.next = pageNumber;
+//                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
+//                 addEventShowMoreInfo(data);
+//                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
+//                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
+//             }
+//         })
+//     });
+// }
 
 
 
-const dataPagination = (start, end, data) => {
-    const paginatedData = [];
-    for(let i=start; i<end; i++){
-        if(data[i]) paginatedData.push(data[i]);
-    }
-    return paginatedData;
-}
+// const dataPagination = (start, end, data) => {
+//     const paginatedData = [];
+//     for(let i=start; i<end; i++){
+//         if(data[i]) paginatedData.push(data[i]);
+//     }
+//     return paginatedData;
+// }
 
 const paginationTemplate = (nextPageCounter, prevPageCounter) => {
-    if (nextPageCounter === undefined || nextPageCounter === null) nextPageCounter = 2
-    if (prevPageCounter === undefined || prevPageCounter === null) prevPageCounter = 1
     
     let template = `
 
@@ -289,7 +282,7 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
         <div style="display:inline-block;">
             <nav aria-label="Page navigation example">
                 <ul class="pagination">
-                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter} data-nextpage=${nextPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
+                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
                     <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
                 </ul>
             </nav>
@@ -299,7 +292,7 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
         <button class="btn btn-primary dropdown-toggle dropdown-toggle-sites" id="dropdownPageSize" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Page 
         </button>
-        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" aria-labelledby="dropdownMenuButton">
+        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" data-pagelimit='page' aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" data-pagesize="10">10</a></li>
             <li><a class="dropdown-item" data-pagesize="20">20</a></li>
             <li><a class="dropdown-item" data-pagesize="50">50</a></li>
@@ -312,14 +305,14 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
     return template;
 }
 
-const dropdownTrigger = () => {
+const pageLimitDropdownTrigger = () => {
     let a = document.getElementById('dropdownPageSize');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSizes');
-    localStorage.getItem('recordLimit') !== undefined ? (a.innerHTML = localStorage.getItem('recordLimit')) : (a.innerHTML = 'Page')
+    (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = 'Page')
     if (dropdownMenuButton) {
         dropdownMenuButton.addEventListener('click', async (e) => {
             a.innerHTML = e.target.textContent;
-            localStorage.setItem('recordLimit', e.target.textContent)
+            a.setAttribute('data-pagelimit', e.target.textContent);
             showAnimation();
             const sitePref = localStorage.getItem('sitekey');
             const sitePrefId = nameToKeyObj[sitePref];
@@ -329,7 +322,7 @@ const dropdownTrigger = () => {
                 let filterRawData = filterdata(response.data);
                 if (filterRawData.length === 0)  return alertTrigger();
                 addEventFilterData(filterRawData);
-                renderData(filterRawData);
+                renderDataTable(filterRawData);
             }
             else if(response.code === 200 && response.data.length === 0) {
                 return alertTrigger();
@@ -343,7 +336,7 @@ const dropdownTrigger = () => {
 }
 
 const pagninationNextTrigger = () => {
-    const a = document.getElementById('nextLink')
+    let a = document.getElementById('nextLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
         showAnimation();
@@ -356,7 +349,8 @@ const pagninationNextTrigger = () => {
             if (filterRawData.length === 0)  return alertTrigger();
             addEventFilterData(filterRawData);
             nextPageCounter = nextPageCounter + 1
-            renderData(filterRawData, nextPageCounter);
+            a.setAttribute('data-nextpage', nextPageCounter);
+            renderDataTable(filterRawData);
         }
         else if(response.code === 200 && response.data.length === 0) {
             return alertTrigger();
@@ -369,11 +363,12 @@ const pagninationNextTrigger = () => {
 }
 
 const pagninationPreviousTrigger = () => {
-    const a = document.getElementById('previousLink')
+    let a = document.getElementById('previousLink');
+    let b = document.getElementById('nextLink');
     a && a.addEventListener('click', async () => {
-        let pageCounter = parseInt(a.getAttribute('data-prevpage')); // 1
-        let nextPageCounter = parseInt(a.getAttribute('data-nextpage')); /// 4
-        pageCounter = nextPageCounter - pageCounter // 3
+        let pageCounter = parseInt(a.getAttribute('data-prevpage'));
+        let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
+        pageCounter = nextPageCounter - 1
         nextPageCounter = nextPageCounter - 1
         showAnimation();
         const sitePref = localStorage.getItem('sitekey');
@@ -385,8 +380,10 @@ const pagninationPreviousTrigger = () => {
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
             addEventFilterData(filterRawData);
-            pageCounter = pageCounter - 1
-            renderData(filterRawData, nextPageCounter, pageCounter);
+            b.setAttribute('data-nextpage', nextPageCounter);
+            a.setAttribute('data-prevpage', pageCounter);
+            renderDataTable(filterRawData);
+
         }
         else if(response.code === 200 && response.data.length === 0) {
             return alertTrigger();
@@ -912,8 +909,8 @@ const getCustomVariableNames = (x) => {
 const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    let limit = parseInt(localStorage.getItem('recordLimit'));
-    if (limit === undefined) limit = 10 
+    let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
+    if (limit === null) limit = 10 
     if (nextPageCounter === undefined ) {
         (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
     } else {
