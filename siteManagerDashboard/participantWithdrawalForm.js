@@ -518,16 +518,16 @@ const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTime
 const getComputeScore = (retainOptions, highestStatus) => {
     retainOptions.forEach(x => {
         switch (x.value) {
-            case "Refusing all future activities":
+            case "All Future Study Activities":
                 highestStatus.push(2)
                 break;
-            case "Revoke HIPAA authorization (no medical records)​":
+            case "Revoke HIPAA Authorization":
                 highestStatus.push(3)
                 break;
-            case "Withdraw consent":
+            case "Withdraw Consent":
                 highestStatus.push(4)
                 break;
-            case "Destroy data":
+            case "Destroy Data":
                 highestStatus.push(5)
                 break;
             case "Participant Deceased":

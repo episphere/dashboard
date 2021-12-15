@@ -74,7 +74,7 @@ const getParticipantSelectedRefusals = (participant) => {
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​​, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​, ` 
-    if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `All Future Study Activities​ , ` 
+    if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `All Future Study Activities, ` 
     if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ) template += `Revoke HIPAA Authorization, `
     if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes ) template += `Withdraw Consent​, `
     if (participant[fieldMapping.destroyData] === fieldMapping.yes ) template += `Destroy Data​, `
