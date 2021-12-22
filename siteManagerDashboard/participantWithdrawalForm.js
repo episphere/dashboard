@@ -96,7 +96,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                 <span style="font: 12px; margin-top: 0px"><i>Select all that apply</i></span>
                                 <br />
                                     <div style="position:relative; left:30px; top:2px; class="form-check">
-                                        <input class="form-check-input" name="options" type="checkbox" value="Revoke HIPAA authorization​" 
+                                        <input class="form-check-input" name="options" type="checkbox"
+                                        value="Revoke HIPAA Authorization"
                                         data-optionKey=${fieldMapping.revokeHIPAA} id="defaultCheck9">
                                         <label class="form-check-label" for="defaultCheck9">
                                             Revoke HIPAA Authorization
@@ -471,6 +472,19 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
 
     const previousRefusalStatus = localStorage.getItem('participationStatus');
+    if (previousRefusalStatus === 'true') {
+        const prevParticipantStatusScore =   { "No Refusal": 0,
+                                            "Refused some activities": 1,  
+                                            "Refused all future activities": 2,
+                                            "Revoked HIPAA only": 3,
+                                            "Withdrew Consent": 4,
+                                            "Destroy Data": 5,
+                                            "Deceased": 6, }
+        const participant = JSON.parse(localStorage.getItem('participant'));
+        let prevParticipantStatusSelection = fieldMapping[participant[fieldMapping.participationStatus]]
+        prevParticipantStatusSelection = prevParticipantStatusScore[prevParticipantStatusSelection]
+        highestStatus.push(parseInt(prevParticipantStatusSelection))
+    }
     if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = ``
     
     source === 'page2' ? (
@@ -535,7 +549,7 @@ const getComputeScore = (retainOptions, highestStatus) => {
                 break;
             default:
                 highestStatus.push(1)
-            }
+        }
     })
     let participationStatusScore = Math.max(...highestStatus);
     return fieldMapping[participationStatusScore.toString()];

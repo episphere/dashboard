@@ -29,7 +29,6 @@ export const renderParticipantSummary = (participant) => {
 }
 
 export const render = (participant) => {
-    console.log('participant', participant)
     let template = `<div class="container-fluid">`
     if (!participant) {
         template +=` 

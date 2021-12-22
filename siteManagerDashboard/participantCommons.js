@@ -62,22 +62,23 @@ export const renderTable = (data, source) => {
                                                                                                 margin-left:25px;
                                                                                                 padding: 10px 20px;
                                                                                                 border-radius: 10px;
-                                                                                                width:50%;
-                                                                                                height:50%;">
-                    <button type="button" class="btn btn-light btn-lg" id="activeFilter">Active</button>
-                    <button type="button" class="btn btn-light btn-lg" id="passiveFilter">Passive</button>
+                                                                                                width:25%;
+                                                                                                height:25%;">
+                    <button type="button" class="btn btn-outline-info btn-lg" id="activeFilter">Active</button>
+                    <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
                 </div>
 
                 <form class="form-inline" id="dateFilters">
+                    <h5>Filter by Date Recruitment Type Assigned:  &nbsp;</h5>
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
-                        <input type="datetime-local" class="form-control" id="startDate" style="
+                        <input type="date" class="form-control" id="startDate" style="
                                                                                                 width:200px;
                                                                                                 height:50px;">
                     </div>
                     <h5 style="margin-left:15px;">To:</h5>
                     <div class="form-group mx-sm-3 mb-2">
-                        <input type="datetime-local" class="form-control" id="endDate" style="
+                        <input type="date" class="form-control" id="endDate" style="
                                                                                                 width:200px;
                                                                                                 height:50px;">
                     </div>
@@ -133,6 +134,7 @@ export  const renderData = (data, showButtons) => {
    // addEventPageBtns(pageSize, data, showButtons);
     renderDataTable(data, showButtons)
     addEventShowMoreInfo(data);
+    activeColumns(data);
     getActiveParticipants();
     getPassiveParticipants();
     getDateFilters();
@@ -141,6 +143,7 @@ export  const renderData = (data, showButtons) => {
 
 const renderDataTable = (data, showButtons) => {
     document.getElementById('dataTable').innerHTML = tableTemplate(data, showButtons);
+    addEventShowMoreInfo(data);
 }
 
 const getActiveParticipants = () => {
@@ -186,7 +189,7 @@ const getDateFilters = () => {
             response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
             filter = 'passive';
         }
-        else { response = await getParticipantsWithDateFilters(dropdownMenuButton, startDate, endDate); }
+        else { response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
         reRenderMainTable(response, filter, dropdownMenuButton);
     })
 }
@@ -212,27 +215,28 @@ const reRenderMainTable = (response, filter) => {
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         addEventFilterData(filterRawData);
         renderDataTable(filterRawData);
+        activeColumns(filterRawData);
         if (filter === 'active') {
             let activeButton = document.getElementById('activeFilter');
-            activeButton.classList.remove('btn-light');
-            activeButton.classList.add('btn-dark');
+            activeButton.classList.remove('btn-outline-info'); 
+            activeButton.classList.add('btn-info');
             let passiveButton = document.getElementById('passiveFilter');
-            if ([...passiveButton.classList].includes('btn-dark')) {
-                passiveButton.classList.remove('btn-dark');
-                passiveButton.classList.add('btn-light');  
+            if ([...passiveButton.classList].includes('btn-info')) {
+                passiveButton.classList.remove('btn-info');
+                passiveButton.classList.add('btn-outline-info');  
             }
         }
         else {
             let passiveButton = document.getElementById('passiveFilter');
-            passiveButton.classList.remove('btn-light');
-            passiveButton.classList.add('btn-dark');
+            passiveButton.classList.remove('btn-outline-info');
+            passiveButton.classList.add('btn-info');
             let activeButton = document.getElementById('activeFilter');
-            if ([...activeButton.classList].includes('btn-dark')) {
-                activeButton.classList.remove('btn-dark');
-                activeButton.classList.add('btn-light'); 
+            if ([...activeButton.classList].includes('btn-info')) {
+                activeButton.classList.remove('btn-info');
+                activeButton.classList.add('btn-outline-info'); 
             }
         }
-        return successTrigger();
+        return;
     }
     else if(response.code === 200 && response.data.length === 0) {
         return alertTrigger();
@@ -323,6 +327,7 @@ const pageLimitDropdownTrigger = () => {
                 if (filterRawData.length === 0)  return alertTrigger();
                 addEventFilterData(filterRawData);
                 renderDataTable(filterRawData);
+                activeColumns(filterRawData);
             }
             else if(response.code === 200 && response.data.length === 0) {
                 return alertTrigger();
@@ -351,6 +356,8 @@ const pagninationNextTrigger = () => {
             addEventFilterData(filterRawData);
             a.setAttribute('data-nextpage', nextPageCounter);
             renderDataTable(filterRawData);
+            activeColumns(filterRawData);
+            addEventFilterData(filterRawData);
         }
         else if(response.code === 200 && response.data.length === 0) {
             return alertTrigger();
@@ -378,11 +385,12 @@ const pagninationPreviousTrigger = () => {
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
-            if (filterRawData.length === 0)  return alertTrigger();
-            addEventFilterData(filterRawData);
+            if (filterRawData.length === 0)  return alertTrigger()
             b.setAttribute('data-nextpage', nextPageCounter);
             a.setAttribute('data-prevpage', pageCounter);
             renderDataTable(filterRawData);
+            activeColumns(filterRawData);
+            addEventFilterData(filterRawData);
 
         }
         else if(response.code === 200 && response.data.length === 0) {
@@ -475,7 +483,15 @@ const tableTemplate = (data, showButtons) => {
             )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
-                x === (fieldMapping.refusedFutureSurveys).toString() || x === (fieldMapping.refusedAllFutureActivities).toString()) ?
+                x === (fieldMapping.refusedFutureSurveys).toString()) ?
+            (
+                (participant[fieldMapping.refusalOptions][x][x] === fieldMapping.yes ?
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
+                    :
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                )
+            )
+            :  (x === (fieldMapping.refusedAllFutureActivities).toString()) ?
             (
                 (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
@@ -960,7 +976,7 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
     (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
     (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}`:
-    template += `/dashboard?api=getParticipants&from=${startDate}&to=${endDate}`
+    template += `/dashboard?api=getParticipants&type=all&from=${startDate}&to=${endDate}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
