@@ -129,6 +129,7 @@ export const render = (participant) => {
         </div>
         `
     } else {
+        console.log('pa', participant)
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`

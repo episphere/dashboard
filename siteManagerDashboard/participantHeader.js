@@ -120,6 +120,7 @@ const renderSiteLocation = (participant) => {
 export const getParticipantStatus = (participant) => {
    if (typeof participant !== "string") {
         const statusValue = participant[fieldMapping.participationStatus];
+        console.log('status', statusValue)
         if (statusValue !== undefined && statusValue !== ``)  return fieldMapping[statusValue];
         else return `No Refusal`;
     }

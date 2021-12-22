@@ -96,7 +96,8 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                 <span style="font: 12px; margin-top: 0px"><i>Select all that apply</i></span>
                                 <br />
                                     <div style="position:relative; left:30px; top:2px; class="form-check">
-                                        <input class="form-check-input" name="options" type="checkbox" value="Revoke HIPAA authorization​" 
+                                        <input class="form-check-input" name="options" type="checkbox"
+                                        value="Revoke HIPAA Authorization"
                                         data-optionKey=${fieldMapping.revokeHIPAA} id="defaultCheck9">
                                         <label class="form-check-label" for="defaultCheck9">
                                             Revoke HIPAA Authorization
@@ -517,27 +518,19 @@ const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTime
 
 const getComputeScore = (retainOptions, highestStatus) => {
     retainOptions.forEach(x => {
-        switch (x.value) {
-            case "All Future Study Activities":
-                highestStatus.push(2)
-                break;
-            case "Revoke HIPAA Authorization":
-                highestStatus.push(3)
-                break;
-            case "Withdraw Consent":
-                highestStatus.push(4)
-                break;
-            case "Destroy Data":
-                highestStatus.push(5)
-                break;
-            case "Participant Deceased":
-                highestStatus.push(6)
-                break;
-            default:
-                highestStatus.push(1)
-            }
+        if (x.value === "All Future Study Activities") highestStatus.push(2)
+        if (x.value === "Revoke HIPAA Authorization") highestStatus.push(3)
+        if (x.value === "Withdraw Consent") highestStatus.push(4)
+        if (x.value === "Destroy Data") highestStatus.push(5)
+        if (x.value === "Participant Deceased") highestStatus.push(6)
+        else {
+            highestStatus.push(1)
+            console.log('x88888')
+        }
     })
+    console.log('wwwx', highestStatus)
     let participationStatusScore = Math.max(...highestStatus);
+    console.log('wwcccwx', participationStatusScore)
     return fieldMapping[participationStatusScore.toString()];
 }
 
