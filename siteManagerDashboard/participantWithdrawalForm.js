@@ -518,19 +518,27 @@ const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTime
 
 const getComputeScore = (retainOptions, highestStatus) => {
     retainOptions.forEach(x => {
-        if (x.value === "All Future Study Activities") highestStatus.push(2)
-        if (x.value === "Revoke HIPAA Authorization") highestStatus.push(3)
-        if (x.value === "Withdraw Consent") highestStatus.push(4)
-        if (x.value === "Destroy Data") highestStatus.push(5)
-        if (x.value === "Participant Deceased") highestStatus.push(6)
-        else {
-            highestStatus.push(1)
-            console.log('x88888')
+        switch (x.value) {
+            case "All Future Study Activities":
+                highestStatus.push(2)
+                break;
+            case "Revoke HIPAA Authorization":
+                highestStatus.push(3)
+                break;
+            case "Withdraw Consent":
+                highestStatus.push(4)
+                break;
+            case "Destroy Data":
+                highestStatus.push(5)
+                break;
+            case "Participant Deceased":
+                highestStatus.push(6)
+                break;
+            default:
+                highestStatus.push(1)
         }
     })
-    console.log('wwwx', highestStatus)
     let participationStatusScore = Math.max(...highestStatus);
-    console.log('wwcccwx', participationStatusScore)
     return fieldMapping[participationStatusScore.toString()];
 }
 
