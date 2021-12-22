@@ -472,6 +472,19 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
 
     const previousRefusalStatus = localStorage.getItem('participationStatus');
+    if (previousRefusalStatus === 'true') {
+        const prevParticipantStatusScore =   { "No Refusal": 0,
+                                            "Refused some activities": 1,  
+                                            "Refused all future activities": 2,
+                                            "Revoked HIPAA only": 3,
+                                            "Withdrew Consent": 4,
+                                            "Destroy Data": 5,
+                                            "Deceased": 6, }
+        const participant = JSON.parse(localStorage.getItem('participant'));
+        let prevParticipantStatusSelection = fieldMapping[participant[fieldMapping.participationStatus]]
+        prevParticipantStatusSelection = prevParticipantStatusScore[prevParticipantStatusSelection]
+        highestStatus.push(parseInt(prevParticipantStatusSelection))
+    }
     if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = ``
     
     source === 'page2' ? (
