@@ -134,7 +134,6 @@ export  const renderData = (data, showButtons) => {
    // addEventPageBtns(pageSize, data, showButtons);
     renderDataTable(data, showButtons)
     addEventShowMoreInfo(data);
-    activeColumns(data);
     getActiveParticipants();
     getPassiveParticipants();
     getDateFilters();
@@ -215,7 +214,6 @@ const reRenderMainTable = (response, filter) => {
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         addEventFilterData(filterRawData);
         renderDataTable(filterRawData);
-        activeColumns(filterRawData);
         if (filter === 'active') {
             let activeButton = document.getElementById('activeFilter');
             activeButton.classList.remove('btn-outline-info'); 
@@ -327,7 +325,6 @@ const pageLimitDropdownTrigger = () => {
                 if (filterRawData.length === 0)  return alertTrigger();
                 addEventFilterData(filterRawData);
                 renderDataTable(filterRawData);
-                activeColumns(filterRawData);
             }
             else if(response.code === 200 && response.data.length === 0) {
                 return alertTrigger();
@@ -356,7 +353,6 @@ const pagninationNextTrigger = () => {
             addEventFilterData(filterRawData);
             a.setAttribute('data-nextpage', nextPageCounter);
             renderDataTable(filterRawData);
-            activeColumns(filterRawData);
             addEventFilterData(filterRawData);
         }
         else if(response.code === 200 && response.data.length === 0) {
@@ -389,7 +385,6 @@ const pagninationPreviousTrigger = () => {
             b.setAttribute('data-nextpage', nextPageCounter);
             a.setAttribute('data-prevpage', pageCounter);
             renderDataTable(filterRawData);
-            activeColumns(filterRawData);
             addEventFilterData(filterRawData);
 
         }
