@@ -45,8 +45,8 @@ export const renderTable = (data, source) => {
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
@@ -148,16 +148,32 @@ const renderDataTable = (data, showButtons) => {
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
     activeButton && activeButton.addEventListener('click', () => {   
-        reRenderParticipantsTableBasedOFilter('active');
-        activeButton.setAttribute('active', true);
+        if (activeButton.getAttribute('active') === 'true') {
+            activeButton.classList.add('btn-outline-info'); 
+            activeButton.classList.remove('btn-info');
+            reRenderParticipantsTableBasedOFilter('all');
+            activeButton.setAttribute('active', false);
+        }
+        else {
+            reRenderParticipantsTableBasedOFilter('active');
+            activeButton.setAttribute('active', true);
+        }
     })
 }
 
 const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
     passiveButton && passiveButton.addEventListener('click', () => {
-        reRenderParticipantsTableBasedOFilter('passive');
-        passiveButton.setAttribute('passive', true);
+        if (passiveButton.getAttribute('passive') === 'true') {
+            passiveButton.classList.add('btn-outline-info'); 
+            passiveButton.classList.remove('btn-info');
+            reRenderParticipantsTableBasedOFilter('all');
+            passiveButton.setAttribute('passive', false);
+        }
+        else {
+            reRenderParticipantsTableBasedOFilter('passive');
+            passiveButton.setAttribute('passive', true);
+        }
     })
 }
 
@@ -224,7 +240,7 @@ const reRenderMainTable = (response, filter) => {
                 passiveButton.classList.add('btn-outline-info');  
             }
         }
-        else {
+        else if (filter === 'passive') {
             let passiveButton = document.getElementById('passiveFilter');
             passiveButton.classList.remove('btn-outline-info');
             passiveButton.classList.add('btn-info');
@@ -898,6 +914,7 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         dropdownTriggerAllParticipants(currentSiteSelection);
     }
     else if(response.code === 200 && response.data.length === 0) {
+        renderDataTable([])
         return alertTrigger();
     }
     else if(response.code != 200 && response.data.length === 0) {
