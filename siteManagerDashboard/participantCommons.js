@@ -308,9 +308,9 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
 
         <div style="padding-left: 30px" class="dropdown">
         <button class="btn btn-primary dropdown-toggle dropdown-toggle-sites" id="dropdownPageSize" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Page 
+        10
         </button>
-        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" data-pagelimit='page' aria-labelledby="dropdownMenuButton">
+        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" data-pagelimit='10' aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" data-pagesize="10">10</a></li>
             <li><a class="dropdown-item" data-pagesize="20">20</a></li>
             <li><a class="dropdown-item" data-pagesize="50">50</a></li>
@@ -326,7 +326,7 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
 const pageLimitDropdownTrigger = () => {
     let a = document.getElementById('dropdownPageSize');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSizes');
-    (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = 'Page')
+    (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
     if (dropdownMenuButton) {
         dropdownMenuButton.addEventListener('click', async (e) => {
             a.innerHTML = e.target.textContent;
@@ -943,7 +943,7 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
     let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
     if (limit === null) limit = 10 
     if (nextPageCounter === undefined ) {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     } else {
         (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
     }
@@ -972,7 +972,8 @@ const getParticipantWithLimit = async (query, limit) => {
 const getParticipantsWithFilters = async (type, sitePref) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}` : template += `/dashboard?api=getParticipants&type=${type}`
+    const limit = 10;
+    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -985,10 +986,11 @@ const getParticipantsWithFilters = async (type, sitePref) => {
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
-    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}`:
-    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}`:
-    template += `/dashboard?api=getParticipants&type=all&from=${startDate}&to=${endDate}`
+    const limit = 10;
+    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}&limit=${limit}`:
+    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}&limit=${limit}`:
+    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}&limit=${limit}`:
+    template += `/dashboard?api=getParticipants&type=all&from=${startDate}&to=${endDate}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
