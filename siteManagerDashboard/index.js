@@ -280,14 +280,14 @@ const renderSiteKeyList = () => {
                 </button>
                 <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                     <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
-                    <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
-                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
+                    <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
+                    <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
                     <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
                     <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
-                    <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
+                    ${((location.host !== urls.prod) && (location.host !== urls.stage)) ? `<li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>` : ``}
                     <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                     <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                 </ul>
@@ -295,6 +295,11 @@ const renderSiteKeyList = () => {
             `
     return template;
 }
+
+
+
+
+
 
 const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, 
     recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults) => {
