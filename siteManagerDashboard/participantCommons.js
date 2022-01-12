@@ -186,12 +186,13 @@ const getDateFilters = () => {
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
         let dropdownMenuButton = ``
-        let siteKey = localStorage.getItem('sitekey');
+        let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite')
         if (siteKey !== null && siteKey !== 'allResults') {
             dropdownMenuButton = nameToKeyObj[siteKey];
         } else {
             dropdownMenuButton = 'Filter by Site'
         }
+
         let response = ``;
         let filter = ``;
         let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
@@ -332,7 +333,9 @@ const pageLimitDropdownTrigger = () => {
             a.innerHTML = e.target.textContent;
             a.setAttribute('data-pagelimit', e.target.textContent);
             showAnimation();
-            const sitePref = localStorage.getItem('sitekey');
+            let sitePref = document.getElementById('dropdownMenuButtonSites');
+            sitePref && sitePref.getAttribute('selectedsite');
+            if (sitePref === null) sitePref = 'allResults'
             const sitePrefId = nameToKeyObj[sitePref];
             const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
             hideAnimation();
@@ -358,7 +361,9 @@ const pagninationNextTrigger = () => {
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
         showAnimation();
-        const sitePref = localStorage.getItem('sitekey');
+        let sitePref = document.getElementById('dropdownMenuButtonSites');
+        sitePref && sitePref.getAttribute('selectedsite');
+        if (sitePref === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
@@ -390,7 +395,9 @@ const pagninationPreviousTrigger = () => {
         pageCounter = nextPageCounter - 1
         nextPageCounter = nextPageCounter - 1
         showAnimation();
-        const sitePref = localStorage.getItem('sitekey');
+        let sitePref = document.getElementById('dropdownMenuButtonSites')
+        sitePref && sitePref.getAttribute('selectedsite');
+        if (sitePref === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
         const response = await getParticipantFromSites(sitePrefId, pageCounter);
@@ -469,6 +476,8 @@ const tableTemplate = (data, showButtons) => {
             (
                 (participant[x] === fieldMapping.noRefusal) ?
                     template += `<td>${participant[x] ? 'No Refusal'  : ''}</td>`
+                : (participant[x] === ``) ?
+                    template += `<td>No Refusal</td>`
                 : (participant[x] === fieldMapping.refusedSome) ?
                     template += `<td>${participant[x] ? 'Refused Some'  : ''}</td>`
                 : (participant[x] === fieldMapping.refusedAll) ?
@@ -511,6 +520,8 @@ const tableTemplate = (data, showButtons) => {
                 )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
+            : (x === fieldMapping.suspendContact.toString()) ? (
+                template += `<td>${participant[fieldMapping.suspendContact.toString()] ? participant[fieldMapping.suspendContact.toString()].split('T')[0] : ``}</td>`)
             : (x === fieldMapping.siteReportedAge.toString()) ? 
             (
                 ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
@@ -911,6 +922,8 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         renderData(filterRawData);
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
+        let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
+        dropdownMenuButton.setAttribute('selectedsite',sitePref)  
         dropdownTriggerAllParticipants(currentSiteSelection);
     }
     else if(response.code === 200 && response.data.length === 0) {
