@@ -67,13 +67,13 @@ const checkPreviousWithdrawalStatus = (participant) => {
 
 const getParticipantSelectedRefusals = (participant) => {
     let template = ``
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Initial Survey​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline Mouthwash (Saliva) Donation, ` 
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​, ` 
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Initial Survey​, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline Mouthwash (Saliva) Donation, ` 
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​​, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​, ` 
     if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `All Future Study Activities, ` 
     if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ) template += `Revoke HIPAA Authorization, `
     if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes ) template += `Withdraw Consent​, `

@@ -333,9 +333,10 @@ const pageLimitDropdownTrigger = () => {
             a.innerHTML = e.target.textContent;
             a.setAttribute('data-pagelimit', e.target.textContent);
             showAnimation();
-            let sitePref = document.getElementById('dropdownMenuButtonSites');
-            sitePref && sitePref.getAttribute('selectedsite');
-            if (sitePref === null) sitePref = 'allResults'
+            let sitePref = ``
+            let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
+            if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr === null) sitePref = 'allResults'
             const sitePrefId = nameToKeyObj[sitePref];
             const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
             hideAnimation();
@@ -361,9 +362,10 @@ const pagninationNextTrigger = () => {
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
         showAnimation();
-        let sitePref = document.getElementById('dropdownMenuButtonSites');
-        sitePref && sitePref.getAttribute('selectedsite');
-        if (sitePref === null) sitePref = 'allResults'
+        let sitePref = ``;
+        let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
+        if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        else if (sitePrefAttr === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
@@ -395,9 +397,10 @@ const pagninationPreviousTrigger = () => {
         pageCounter = nextPageCounter - 1
         nextPageCounter = nextPageCounter - 1
         showAnimation();
-        let sitePref = document.getElementById('dropdownMenuButtonSites')
-        sitePref && sitePref.getAttribute('selectedsite');
-        if (sitePref === null) sitePref = 'allResults'
+        let sitePref = ``;
+        let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
+        if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        else if (sitePrefAttr === null) sitePref = 'allResults';
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
         const response = await getParticipantFromSites(sitePrefId, pageCounter);
@@ -505,7 +508,7 @@ const tableTemplate = (data, showButtons) => {
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
                 x === (fieldMapping.refusedFutureSurveys).toString()) ?
             (
-                (participant[fieldMapping.refusalOptions][x][x] === fieldMapping.yes ?
+                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
                     :
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )

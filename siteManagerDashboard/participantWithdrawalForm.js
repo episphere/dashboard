@@ -428,25 +428,25 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     sendRefusalData[fieldMapping.refusalOptions] = {};
     retainOptions.forEach(x => {
         if (parseInt(x.dataset.optionkey) === fieldMapping.refusedSurvey) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
             }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedBlood) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
             }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedUrine) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp);
             }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedMouthwash) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
             }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurevys) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSurveys) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp, fieldMapping.whoRequested, requestedHolder);
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
         }
         else {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
@@ -520,13 +520,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp, whoRequestedId, requestedHolder) =>{
+const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
-    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = {
-        [optionSelected]: fieldMapping.yes,
-        [refusalOptionTimeStamp]: new Date().toISOString(),
-        [whoRequestedId] : parseInt(requestedHolder[0].dataset.optionkey)
-    }
+    sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
 }
 
 const getComputeScore = (retainOptions, highestStatus) => {
