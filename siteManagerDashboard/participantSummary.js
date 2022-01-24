@@ -167,7 +167,6 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'MFC':
                 coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
                 break;
-<<<<<<< HEAD
             case 'KPCO':
                 coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
                 break;
@@ -180,18 +179,12 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
                 break;
-=======
->>>>>>> dev
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
 
         }
-<<<<<<< HEAD
         return coordinates  // x0/y0: date x/y: name x1/y1: signature
         // to go down - decrease the number & vice-versa
-=======
-        return coordinates 
->>>>>>> dev
     } else {
         switch(healthcareProvider) {
             case 'Sanford':
@@ -203,7 +196,6 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'MFC':
                 coordinates = [{x: 100, y: 425}, {x0: 100, y0: 380}, {x1: 100, y1: 465}]
                 break;
-<<<<<<< HEAD
             case 'KPCO':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
@@ -216,8 +208,6 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
-=======
->>>>>>> dev
             default:
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
         }
