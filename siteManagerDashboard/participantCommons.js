@@ -1,11 +1,10 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -41,23 +40,52 @@ export const renderTable = (data, source) => {
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
                     <div class="form-group dropdown" id="siteDropdownLookup" hidden>
-                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px;">
                         Filter by Site
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
                         <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
-                        <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
+                        ${((location.host !== urls.prod) && (location.host !== urls.stage)) ? `<li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>` : ``}
                         <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
-                </div>`: ``} </div>`
+                </div>
+
+                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
+                                                                                                margin-left:25px;
+                                                                                                padding: 10px 20px;
+                                                                                                border-radius: 10px;
+                                                                                                width:25%;
+                                                                                                height:25%;">
+                    <button type="button" class="btn btn-outline-info btn-lg" id="activeFilter">Active</button>
+                    <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
+                </div>
+
+                <form class="form-inline" id="dateFilters">
+                    <h5>Filter by Date Recruitment Type Assigned:  &nbsp;</h5>
+                    <h5 style="margin-right:25px;">From:</h5>
+                    <div class="form-group mb-2">
+                        <input type="date" class="form-control" id="startDate" style="
+                                                                                                width:200px;
+                                                                                                height:50px;">
+                    </div>
+                    <h5 style="margin-left:15px;">To:</h5>
+                    <div class="form-group mx-sm-3 mb-2">
+                        <input type="date" class="form-control" id="endDate" style="
+                                                                                                width:200px;
+                                                                                                height:50px;">
+                    </div>
+                    <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
+                </form>
+
+                `: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
@@ -97,84 +125,304 @@ export  const renderData = (data, showButtons) => {
     }
     const pageSize = 10;
     const dataLength = data.length;
-    const pages = Math.ceil(dataLength/pageSize);
-    const array = [];
+    data.splice(pageSize, dataLength);
+    let nextPageCounter = 1;
+    let prevPageCounter = 0;
+    document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
+    pagninationNextTrigger();
+    pagninationPreviousTrigger();
+   // addEventPageBtns(pageSize, data, showButtons);
+    renderDataTable(data, showButtons)
+    addEventShowMoreInfo(data);
+    getActiveParticipants();
+    getPassiveParticipants();
+    getDateFilters();
+    pageLimitDropdownTrigger();
+}
 
-    for(let i = 0; i< pages; i++){
-        array.push(i+1);
-    }
-    document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
-    addEventPageBtns(pageSize, data, showButtons);
-
-    document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
+const renderDataTable = (data, showButtons) => {
+    document.getElementById('dataTable').innerHTML = tableTemplate(data, showButtons);
     addEventShowMoreInfo(data);
 }
 
-const addEventPageBtns = (pageSize, data, showButtons) => {
-    const elements = document.getElementsByClassName('page-link');
-    Array.from(elements).forEach(element => {
-        element.addEventListener('click', async () => {
-            const previous = element.dataset.previous;
-            const next = element.dataset.next;
-            const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
-            
-            if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
-            
-            if(!element.classList.contains('active-page')){
-                let start = (pageNumber - 1) * pageSize;
-                let end = pageNumber * pageSize;
-                document.getElementById('previousPage').dataset.previous = pageNumber;
-                document.getElementById('nextPage').dataset.next = pageNumber;
-                document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
-                addEventShowMoreInfo(data);
-                Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
-                document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
-            }
-        })
-    });
+const getActiveParticipants = () => {
+    let activeButton = document.getElementById('activeFilter');
+    activeButton && activeButton.addEventListener('click', () => {   
+        if (activeButton.getAttribute('active') === 'true') {
+            activeButton.classList.add('btn-outline-info'); 
+            activeButton.classList.remove('btn-info');
+            reRenderParticipantsTableBasedOFilter('all');
+            activeButton.setAttribute('active', false);
+        }
+        else {
+            reRenderParticipantsTableBasedOFilter('active');
+            activeButton.setAttribute('active', true);
+        }
+    })
 }
 
+const getPassiveParticipants = () => {
+    let passiveButton = document.getElementById('passiveFilter');
+    passiveButton && passiveButton.addEventListener('click', () => {
+        if (passiveButton.getAttribute('passive') === 'true') {
+            passiveButton.classList.add('btn-outline-info'); 
+            passiveButton.classList.remove('btn-info');
+            reRenderParticipantsTableBasedOFilter('all');
+            passiveButton.setAttribute('passive', false);
+        }
+        else {
+            reRenderParticipantsTableBasedOFilter('passive');
+            passiveButton.setAttribute('passive', true);
+        }
+    })
+}
 
+const getDateFilters = () => {
+    const dateFilters = document.getElementById('dateFilters');
+    dateFilters && dateFilters.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        document.getElementById('startDate').value = ``
+        document.getElementById('endDate').value = ``
+        let dropdownMenuButton = ``
+        let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite')
+        if (siteKey !== null && siteKey !== 'allResults') {
+            dropdownMenuButton = nameToKeyObj[siteKey];
+        } else {
+            dropdownMenuButton = 'Filter by Site'
+        }
 
-const dataPagination = (start, end, data) => {
-    const paginatedData = [];
-    for(let i=start; i<end; i++){
-        if(data[i]) paginatedData.push(data[i]);
+        let response = ``;
+        let filter = ``;
+        let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
+        let activeButton = document.getElementById('activeFilter').getAttribute('active');
+        if (activeButton === 'true') {
+            response = await getParticipantsWithDateFilters('active', dropdownMenuButton, startDate, endDate);
+            filter = 'active';
+        } 
+        else if (passiveButton === 'true') {
+            response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
+            filter = 'passive';
+        }
+        else { response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
+        reRenderMainTable(response, filter, dropdownMenuButton);
+    })
+}
+
+const reRenderParticipantsTableBasedOFilter = async (filter) => {
+    let siteKey = localStorage.getItem('sitekey');
+    let siteKeyId = ``
+    if (siteKey !== null && siteKey !== 'allResults') {
+        siteKeyId = nameToKeyObj[siteKey];
+    } else {
+        siteKeyId = 'Filter by Site'
     }
-    return paginatedData;
+    showAnimation();
+    const response = await getParticipantsWithFilters(filter, siteKeyId);
+    hideAnimation();
+    reRenderMainTable(response, filter);
 }
 
-const paginationTemplate = (array) => {
-    let template = `
-        <nav aria-label="Page navigation example">
-            <ul class="pagination">`
-    
-    array.forEach((a,i) => {
-        if(i === 0){
-            template += `<li class="page-item">
-                            <a class="page-link" id="previousPage" data-previous="1" aria-label="Previous">
-                            <span aria-hidden="true">&laquo;</span>
-                            <span class="sr-only">Previous</span>
-                            </a>
-                        </li>`
+const reRenderMainTable = (response, filter) => {
+    if(response.code === 200 && response.data.length > 0) {
+        let filterRawData = filterdata(response.data);
+        if (filterRawData.length === 0)  return alertTrigger();
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        addEventFilterData(filterRawData);
+        renderDataTable(filterRawData);
+        if (filter === 'active') {
+            let activeButton = document.getElementById('activeFilter');
+            activeButton.classList.remove('btn-outline-info'); 
+            activeButton.classList.add('btn-info');
+            let passiveButton = document.getElementById('passiveFilter');
+            if ([...passiveButton.classList].includes('btn-info')) {
+                passiveButton.classList.remove('btn-info');
+                passiveButton.classList.add('btn-outline-info');  
+            }
         }
-        template += `<li class="page-item"><a class="page-link ${i === 0 ? 'active-page':''}" data-page=${a}>${a}</a></li>`;
+        else if (filter === 'passive') {
+            let passiveButton = document.getElementById('passiveFilter');
+            passiveButton.classList.remove('btn-outline-info');
+            passiveButton.classList.add('btn-info');
+            let activeButton = document.getElementById('activeFilter');
+            if ([...activeButton.classList].includes('btn-info')) {
+                activeButton.classList.remove('btn-info');
+                activeButton.classList.add('btn-outline-info'); 
+            }
+        }
+        return;
+    }
+    else if(response.code === 200 && response.data.length === 0) {
+        return alertTrigger();
+    }
+}
 
-        if(i === (array.length - 1)){
-            template += `
-            <li class="page-item">
-                <a class="page-link" id="nextPage" data-next="1" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-                <span class="sr-only">Next</span>
-                </a>
-            </li>`
-        }
-    });
-    template += `
-            </ul>
-        </nav>
+
+// const addEventPageBtns = (pageSize, data, showButtons) => {
+//     const elements = document.getElementsByClassName('page-link');
+//     Array.from(elements).forEach(element => {
+//         element.addEventListener('click', async () => {
+//             const previous = element.dataset.previous;
+//             const next = element.dataset.next;
+//             const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
+            
+//             if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
+            
+//             if(!element.classList.contains('active-page')){
+//                 let start = (pageNumber - 1) * pageSize;
+//                 let end = pageNumber * pageSize;
+//                 document.getElementById('previousPage').dataset.previous = pageNumber;
+//                 document.getElementById('nextPage').dataset.next = pageNumber;
+//                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
+//                 addEventShowMoreInfo(data);
+//                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
+//                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
+//             }
+//         })
+//     });
+// }
+
+
+
+// const dataPagination = (start, end, data) => {
+//     const paginatedData = [];
+//     for(let i=start; i<end; i++){
+//         if(data[i]) paginatedData.push(data[i]);
+//     }
+//     return paginatedData;
+// }
+
+const paginationTemplate = (nextPageCounter, prevPageCounter) => {
+    
+    let template = `
+
+    <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
+        <div style="display:inline-block;">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
+                    <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div style="padding-left: 30px" class="dropdown">
+        <button class="btn btn-primary dropdown-toggle dropdown-toggle-sites" id="dropdownPageSize" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        10
+        </button>
+        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" data-pagelimit='10' aria-labelledby="dropdownMenuButton">
+            <li><a class="dropdown-item" data-pagesize="10">10</a></li>
+            <li><a class="dropdown-item" data-pagesize="20">20</a></li>
+            <li><a class="dropdown-item" data-pagesize="50">50</a></li>
+            <li><a class="dropdown-item" data-pagesize="100">100</a></li>
+        </ul>
+    </div>
+    </div>
+
     `;
     return template;
+}
+
+const pageLimitDropdownTrigger = () => {
+    let a = document.getElementById('dropdownPageSize');
+    let dropdownMenuButton = document.getElementById('dropdownMenuButtonSizes');
+    (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
+    if (dropdownMenuButton) {
+        dropdownMenuButton.addEventListener('click', async (e) => {
+            a.innerHTML = e.target.textContent;
+            a.setAttribute('data-pagelimit', e.target.textContent);
+            showAnimation();
+            let sitePref = ``
+            let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
+            if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr === null) sitePref = 'allResults'
+            const sitePrefId = nameToKeyObj[sitePref];
+            const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
+            hideAnimation();
+            if(response.code === 200 && response.data.length > 0) {
+                let filterRawData = filterdata(response.data);
+                if (filterRawData.length === 0)  return alertTrigger();
+                addEventFilterData(filterRawData);
+                renderDataTable(filterRawData);
+            }
+            else if(response.code === 200 && response.data.length === 0) {
+                return alertTrigger();
+            }
+            else if(response.code != 200 && response.data.length === 0) {
+                clearLocalStorage();
+            }
+        })
+
+    }
+}
+
+const pagninationNextTrigger = () => {
+    let a = document.getElementById('nextLink');
+    a && a.addEventListener('click', async () => {
+        let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
+        showAnimation();
+        let sitePref = ``;
+        let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
+        if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        else if (sitePrefAttr === null) sitePref = 'allResults'
+        const sitePrefId = nameToKeyObj[sitePref];
+        nextPageCounter = nextPageCounter + 1
+        const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
+        hideAnimation();
+        if(response.code === 200 && response.data.length > 0) {
+            let filterRawData = filterdata(response.data);
+            if (filterRawData.length === 0)  return alertTrigger();
+            addEventFilterData(filterRawData);
+            a.setAttribute('data-nextpage', nextPageCounter);
+            renderDataTable(filterRawData);
+            addEventFilterData(filterRawData);
+        }
+        else if(response.code === 200 && response.data.length === 0) {
+            return alertTrigger();
+        }
+        else if(response.code != 200 && response.data.length === 0) {
+            clearLocalStorage();
+        }
+    })
+
+}
+
+const pagninationPreviousTrigger = () => {
+    let a = document.getElementById('previousLink');
+    let b = document.getElementById('nextLink');
+    a && a.addEventListener('click', async () => {
+        let pageCounter = parseInt(a.getAttribute('data-prevpage'));
+        let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
+        pageCounter = nextPageCounter - 1
+        nextPageCounter = nextPageCounter - 1
+        showAnimation();
+        let sitePref = ``;
+        let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
+        if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        else if (sitePrefAttr === null) sitePref = 'allResults';
+        const sitePrefId = nameToKeyObj[sitePref];
+        if (pageCounter >= 1) {
+        const response = await getParticipantFromSites(sitePrefId, pageCounter);
+        hideAnimation();
+        if(response.code === 200 && response.data.length > 0) {
+            let filterRawData = filterdata(response.data);
+            if (filterRawData.length === 0)  return alertTrigger()
+            b.setAttribute('data-nextpage', nextPageCounter);
+            a.setAttribute('data-prevpage', pageCounter);
+            renderDataTable(filterRawData);
+            addEventFilterData(filterRawData);
+
+        }
+        else if(response.code === 200 && response.data.length === 0) {
+            return alertTrigger();
+        }
+        else if(response.code != 200 && response.data.length === 0) {
+            clearLocalStorage();
+        }
+    } else {
+        hideAnimation();
+    } })
 }
 
 // TODO: needs code refactoring
@@ -229,6 +477,8 @@ const tableTemplate = (data, showButtons) => {
             (
                 (participant[x] === fieldMapping.noRefusal) ?
                     template += `<td>${participant[x] ? 'No Refusal'  : ''}</td>`
+                : (participant[x] === ``) ?
+                    template += `<td>No Refusal</td>`
                 : (participant[x] === fieldMapping.refusedSome) ?
                     template += `<td>${participant[x] ? 'Refused Some'  : ''}</td>`
                 : (participant[x] === fieldMapping.refusedAll) ?
@@ -254,7 +504,15 @@ const tableTemplate = (data, showButtons) => {
             )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
-                x === (fieldMapping.refusedFutureSurveys).toString() || x === (fieldMapping.refusedAllFutureActivities).toString()) ?
+                x === (fieldMapping.refusedFutureSurveys).toString()) ?
+            (
+                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
+                    :
+                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                )
+            )
+            :  (x === (fieldMapping.refusedAllFutureActivities).toString()) ?
             (
                 (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
@@ -263,6 +521,8 @@ const tableTemplate = (data, showButtons) => {
                 )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
+            : (x === fieldMapping.suspendContact.toString()) ? (
+                template += `<td>${participant[fieldMapping.suspendContact.toString()] ? participant[fieldMapping.suspendContact.toString()].split('T')[0] : ``}</td>`)
             : (x === fieldMapping.siteReportedAge.toString()) ? 
             (
                 ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
@@ -616,6 +876,20 @@ const alertTrigger = () => {
     return template;
 }
 
+const successTrigger = () => {
+    let alertList = document.getElementById('alert_placeholder');
+    let template = ``;
+    template += `
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            Results found!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`
+    alertList.innerHTML = template;
+    return template;
+}
+
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
     if (a) {
@@ -627,6 +901,7 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
+                    localStorage.setItem('sitekey', t.sitekey)
                     reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
                 }
             })
@@ -648,9 +923,12 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         renderData(filterRawData);
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
+        let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
+        dropdownMenuButton.setAttribute('selectedsite',sitePref)  
         dropdownTriggerAllParticipants(currentSiteSelection);
     }
     else if(response.code === 200 && response.data.length === 0) {
+        renderDataTable([])
         return alertTrigger();
     }
     else if(response.code != 200 && response.data.length === 0) {
@@ -673,10 +951,60 @@ const getCustomVariableNames = (x) => {
 
 }
 
-const getParticipantFromSites = async (query) => {
+const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
+    if (limit === null) limit = 10 
+    if (nextPageCounter === undefined ) {
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
+    } else {
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
+    }
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantWithLimit = async (query, limit) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantsWithFilters = async (type, sitePref) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    const limit = 10;
+    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
+    const siteKey = await getAccessToken();
+    let template = ``;
+    const limit = 10;
+    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}&limit=${limit}`:
+    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}&limit=${limit}`:
+    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}&limit=${limit}`:
+    template += `/dashboard?api=getParticipants&type=all&from=${startDate}&to=${endDate}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
