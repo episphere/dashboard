@@ -399,12 +399,10 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
 
         (parseInt(i.race) === fieldMapping.white) ?
         raceObject['white'] += parseInt(i.raceCount)
-
         :  (parseInt(i.shRace) === fieldMapping.whiteSH) ?
         raceObject['white'] += parseInt(i.shRaceCount)
         :  (parseInt(i.hfRace) === fieldMapping.whiteNHHF) ?
         raceObject['white'] += parseInt(i.hfRaceCount)
-
         :  (parseInt(i.race) === fieldMapping.other) ?
         raceObject['other'] += parseInt(i.raceCount)
 
@@ -426,7 +424,6 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
         raceObject['other'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.pacificIslanderSH) ?
         raceObject['other'] += parseInt(i.shRaceCount)
-
         :  (parseInt(i.shRace) === fieldMapping.blankSH) ?
         raceObject['unavailable'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.declinedSH) ?

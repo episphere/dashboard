@@ -448,6 +448,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
                 setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
         }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureActivities) {
+                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureActivitesTimeStamp);
+        }
         else {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }

@@ -425,8 +425,6 @@ const pagninationPreviousTrigger = () => {
     } })
 }
 
-
-
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
     let template = '';

@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
 import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
+=======
+import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
+import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
+>>>>>>> dev
 
 
 export const renderRetrieveNotificationSchema = async () => {
@@ -14,12 +19,19 @@ export const renderRetrieveNotificationSchema = async () => {
     let categoriesHolder = getNotificationSchemaCategories(response.data);
     hideAnimation();
     mainContent.innerHTML = await render(response);
+<<<<<<< HEAD
     const concepts = await getConcepts();  
     triggerSchemaEdit(categoriesHolder, 'Filter by Category', concepts);
 }
 
 const triggerSchemaEdit = (categoriesHolder, categoryName, concepts) => {
     viewNotificationSchema(concepts);
+=======
+    triggerSchemaEdit(categoriesHolder, 'Filter by Category');
+}
+
+const triggerSchemaEdit = (categoriesHolder, categoryName) => {
+>>>>>>> dev
     editNotificationSchema();
     renderCategorydDropdown(categoriesHolder);
     dropdownTrigger(categoriesHolder, categoryName);
@@ -44,6 +56,7 @@ const render = async (response) => {
                     </div> 
                         ${renderNotificationCards(response.data)}
                 </div></div>`
+<<<<<<< HEAD
         template += ` <div class="modal fade" id="modalShowSchema" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
         <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
             <div class="modal-content sub-div-shadow">
@@ -53,6 +66,8 @@ const render = async (response) => {
         </div>
     </div>`
          
+=======
+>>>>>>> dev
  
     return template;
 }
@@ -81,7 +96,10 @@ const renderNotificationCards = (data) => {
                             <div class="card-body">
                                 <h5 class="card-title">Category: ${i.category} </h5>
                                 <p class="card-text">${i.description}</p>
+<<<<<<< HEAD
                                 <button type="button" class="btn btn-success viewSchema" data-toggle="modal" data-target="#modalShowSchema"  data-schema=${schemaInfo} >View</button>
+=======
+>>>>>>> dev
                                 <button type="button" class="btn btn-primary editSchema" data-schema=${schemaInfo}>Edit</button>
                             </div>
                         </div>`
@@ -89,6 +107,7 @@ const renderNotificationCards = (data) => {
     return template;
 }
 
+<<<<<<< HEAD
 const viewNotificationSchema = (concepts) => {
     const a = Array.from(document.getElementsByClassName('detailedRow'));
     if (a) {
@@ -188,6 +207,8 @@ const viewNotificationSchema = (concepts) => {
     }
 }
 
+=======
+>>>>>>> dev
 const editNotificationSchema = () => {
     let updateCounter = 1;
     const a = Array.from(document.getElementsByClassName('detailedRow'));
@@ -195,8 +216,13 @@ const editNotificationSchema = () => {
             a.forEach(element => {
                 let editRow = element.getElementsByClassName('editSchema')[0];
                 editRow.addEventListener('click', () => {
+<<<<<<< HEAD
                     const editSelectedSchema = getDataAttributes(editRow);
                     localStorage.setItem("updateNotificationSchema", unescape(editSelectedSchema.schema));
+=======
+                    const t = getDataAttributes(editRow);
+                    localStorage.setItem("updateNotificationSchema", unescape(t.schema));
+>>>>>>> dev
                     updateCounter--;
                     localStorage.setItem("updateFlag", updateCounter);
                     redirectToStoreSchema();

@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+=======
+import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
+>>>>>>> dev
 import { showAnimation, hideAnimation, baseAPI, getAccessToken } from '../utils.js';
 
 
@@ -11,9 +15,12 @@ export const renderStoreNotificationSchema = async () => {
     let updateCounter = localStorage.getItem("updateFlag");
     localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
+<<<<<<< HEAD
     localStorage.setItem("emailCheck", false);
     localStorage.setItem("smsCheck", false);
     localStorage.setItem("pushNotificationCheck", false);
+=======
+>>>>>>> dev
     const concepts = await getConcepts();  
     init(concepts);
     if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
@@ -127,16 +134,25 @@ export const render = () => {
 
 }
 
+<<<<<<< HEAD
 export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) => {
+=======
+const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
+>>>>>>> dev
     document.getElementById("attempt").value = updateSchemaNotification.attempt;
     document.getElementById("description").value = updateSchemaNotification.description;
     document.getElementById("category").value = updateSchemaNotification.category;
     const titleElement = document.getElementById("getCurrentTitle");
+<<<<<<< HEAD
     if (titleElement != null) titleElement.innerHTML = "Update Notification Schema";
+=======
+    titleElement.innerHTML = "Update Notification Schema";
+>>>>>>> dev
 
     (updateSchemaNotification.notificationType).forEach(i => {
         if (i === "email") {
             document.getElementById('emailCheckBox').checked = true
+<<<<<<< HEAD
             renderDivs("email", flag);
             document.getElementById('emailSubject').value = updateSchemaNotification.email.subject
             document.getElementById('emailBody').value = updateSchemaNotification.email.body
@@ -154,6 +170,22 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
             document.getElementById('pushSubject').value = updateSchemaNotification.push.subject
             document.getElementById('pushBody').value = updateSchemaNotification.push.body
             localStorage.setItem("pushNotificationCheck", true);
+=======
+            renderDivs("email");
+            document.getElementById('emailSubject').value = updateSchemaNotification.email.subject
+            document.getElementById('emailBody').value = updateSchemaNotification.email.body
+        }
+        else if (i === "sms") {
+            document.getElementById('smsCheckBox').checked = true
+            renderDivs("sms");
+            document.getElementById('smsBody').value = updateSchemaNotification.sms.body
+        } 
+        else if (i === "push") {
+            document.getElementById('pushCheckBox').checked = true
+            renderDivs("push");
+            document.getElementById('pushSubject').value = updateSchemaNotification.push.subject
+            document.getElementById('pushBody').value = updateSchemaNotification.push.body
+>>>>>>> dev
         }
     })
 
@@ -198,10 +230,15 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
     document.getElementById('hours').value = updateSchemaNotification.time['hour'];
     document.getElementById('minutes').value = updateSchemaNotification.time['minute'];
     const a = document.getElementById('updateId');
+<<<<<<< HEAD
     if (a != null) {
         a.dataset.id = updateSchemaNotification.id;
         localStorage.setItem("idFlag", true);
     }
+=======
+    a.dataset.id = updateSchemaNotification.id;
+    localStorage.setItem("idFlag", true);
+>>>>>>> dev
 }
 
 
@@ -251,7 +288,11 @@ const formSubmit = () => {
     })
 }
 
+<<<<<<< HEAD
 export const addEventMoreCondition = (concepts, flag) => {
+=======
+const addEventMoreCondition = (concepts) => {
+>>>>>>> dev
     const btn = document.getElementById('addConditions');
     btn.addEventListener('click', () => {
         const conditionNo = parseInt(btn.dataset.condition);
@@ -260,31 +301,52 @@ export const addEventMoreCondition = (concepts, flag) => {
         div.classList = ['row form-group'];
         div.innerHTML = `
             <label class="col-form-label col-md-4">Condition</label>
+<<<<<<< HEAD
             <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
+=======
+            <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key')}</div>
+>>>>>>> dev
             <select name="condition-operator" class="col-md-1 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
             </select>
+<<<<<<< HEAD
             <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
+=======
+            <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value')}</div>
+>>>>>>> dev
         `
         conditionDiv.appendChild(div);
         btn.dataset.condition = conditionNo + 1;
     });
 }
 
+<<<<<<< HEAD
 export const getConcepts = async () => {
     return await (await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/jsons/varToConcept.json')).json()
 }
 
 export const conceptDropdown = (concepts, name) => {
+=======
+const getConcepts = async () => {
+    return await (await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/jsons/varToConcept.json')).json()
+}
+
+const conceptDropdown = (concepts, name) => {
+>>>>>>> dev
     const elements = document.getElementsByClassName(name);
     Array.from(elements).forEach((ele, i) => {
         ele.innerHTML = getDataListTemplate(concepts, `${name.replace(/-/g, '')}${i}`, name);
     })
 }
 
+<<<<<<< HEAD
 const getDataListTemplate = (concepts, id, name, flag) => {
     let template = `<input ${id !== 'preferrednameconcept0'? 'required': ''} list="dataList${id}" id="${id}" class="form-control" ${name ? `name="${name}"`: ''} ${flag === true ? `readonly`: ``}>`;
+=======
+const getDataListTemplate = (concepts, id, name) => {
+    let template = `<input ${id !== 'preferrednameconcept0'? 'required': ''} list="dataList${id}" id="${id}" class="form-control" ${name ? `name="${name}"`: ''}>`;
+>>>>>>> dev
     template += `<datalist id="dataList${id}">`
     for(let key in concepts) {
         template += `<option value="${concepts[key]}">${key}</option>`
@@ -303,8 +365,14 @@ const addEventNotificationCheckbox = () => {
     })
 }
 
+<<<<<<< HEAD
 const getEmailNotificationTemplate = () => {
     let template = `
+=======
+const renderDivs = (array) => {
+    if(array.includes('email')){
+        let template = `
+>>>>>>> dev
             <div class="row">
                 <div class="col">
                     <h5>Email</h5>
@@ -320,11 +388,20 @@ const getEmailNotificationTemplate = () => {
                 </div>
             </div>
         `
+<<<<<<< HEAD
     return template;
 }
 
 const getSmsNotificationTemplate = () => {
     let template = `
+=======
+        document.getElementById('emailDiv').innerHTML = template
+    }
+    else document.getElementById('emailDiv').innerHTML = '';
+
+    if(array.includes('sms')){
+        let template = `
+>>>>>>> dev
             <div class="row">
                 <div class="col">
                     <h5>SMS</h5><small id="characterCounts">0/160 characters</small>
@@ -335,11 +412,20 @@ const getSmsNotificationTemplate = () => {
                 </div>
             </div>
         `
+<<<<<<< HEAD
     return template;
 }
 
 const getPushNotificationTemplate = () => {
     let template = `
+=======
+        document.getElementById('smsDiv').innerHTML = template
+    }
+    else document.getElementById('smsDiv').innerHTML = '';
+
+    if(array.includes('push')){
+        let template = `
+>>>>>>> dev
             <div class="row">
                 <div class="col">
                     <h5>Push notification</h5>
@@ -354,6 +440,7 @@ const getPushNotificationTemplate = () => {
                 </div>
             </div>
         `
+<<<<<<< HEAD
     return template;
 }
 
@@ -399,12 +486,19 @@ const renderDivs = (array, flag) => {
             reRenderNotficationDivs();
         }
     }
+=======
+        document.getElementById('pushDiv').innerHTML = template;
+    }
+    else document.getElementById('pushDiv').innerHTML = '';
+
+>>>>>>> dev
     const emailBody = document.getElementById('emailBody');
     if(emailBody) addEmailPreview(emailBody);
 
     addEventSMSCharacterCount();
 }
 
+<<<<<<< HEAD
 
 const reRenderNotficationDivs = () => {
     const emailRecheck = document.getElementById('emailCheckBox');
@@ -436,6 +530,11 @@ const reRenderNotficationDivs = () => {
 const addEventSMSCharacterCount = () => {
     if(document.getElementById('smsBody')){
         document.getElementById('smsBody').addEventListener('mouseenter', () => {
+=======
+const addEventSMSCharacterCount = () => {
+    if(document.getElementById('smsBody')){
+        document.getElementById('smsBody').addEventListener('keyup', () => {
+>>>>>>> dev
             document.getElementById('characterCounts').innerHTML = `${document.getElementById('smsBody').value.length}/160 characters`;
         })
     }
@@ -443,7 +542,11 @@ const addEventSMSCharacterCount = () => {
 
 const addEmailPreview = (emailBody) => {
     const converter = new showdown.Converter()
+<<<<<<< HEAD
     emailBody.addEventListener('mouseenter', () => {
+=======
+    emailBody.addEventListener('keyup', () => {
+>>>>>>> dev
         const text = emailBody.value;
         const html = converter.makeHtml(text);
         document.getElementById('emailBodyPreview').innerHTML = html;
