@@ -289,27 +289,33 @@ const optionsHandler = (suspendDate) => {
     const body = document.getElementById('modalBody');
     let checkboxes = document.getElementsByName('options');
     let requestedOption = document.getElementsByName('whoRequested');
+    let skipRequestedBy = false
     header.innerHTML = `<h5>Options Selected</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     // if (retainOptions.length === 0 || suspendDate === '//' ) { template += `<span><b>Select requested by before proceeding!</b></span> <br />`}
     checkboxes.forEach(x => { 
         if (x.checked) {  
             retainOptions.push(x)
+            retainOptions.forEach(i => i.value === 'Participant Deceased' ? skipRequestedBy = true : skipRequestedBy = false)
             template += `<span>${x.value}</span> <br />` }
     })
-    const a = document.getElementById('defaultRequest7')
+    const a = document.getElementById('defaultRequest7');
     a.value && requestedHolder.push(a)
     requestedOption.forEach(x => { 
         if (x.checked) {  
             requestedHolder.push(x)
-            template += `<span>Requested by: ${x.value} </span> ${a && a.value} </br>`}
+            template += `<span>Requested by: ${x.value} </span> ${a && a.value} </br>`
+     }
     })
 
     if (suspendDate !== '//') template += `<span>Suspend all contact on case until ${suspendDate}</span> <br />`
     template += `
         <div style="display:inline-block; margin-top:20px;">
-        ${  ( suspendDate !== '//' && requestedHolder.length > 0 ) ?  
+        ${
+            ( suspendDate !== '//' && requestedHolder.length > 0 ) ?  
                 ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
+            : ( skipRequestedBy === true && requestedHolder.length >= 0) ?  
+            ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             :  ( retainOptions.length === 0 && requestedHolder.length === 0 && suspendDate === '//' )  ? 
             `<span><b>Make a selection before proceeding!</b></span> <br />
              <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
@@ -448,9 +454,6 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
                 setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
         }
-        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureActivities) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureActivitesTimeStamp);
-        }
         else {
                 sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
             }
@@ -473,6 +476,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     }
     const previousSuspendedStatus = localStorage.getItem('suspendContact');
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
+    localStorage.removeItem('suspendContact');
 
     const previousRefusalStatus = localStorage.getItem('participationStatus');
     if (previousRefusalStatus === 'true') {
@@ -504,15 +508,19 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     
     if (computeScore === fieldMapping.withdrewConsent) { 
         sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedWithdrewConsent, fieldMapping.whoRequestedWithdrewConsentOther)
     }
     if (computeScore === fieldMapping.destroyDataStatus) { 
         sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedDataDestruction, fieldMapping.whoRequestedDataDestructionOther)
     }
     if (computeScore === fieldMapping.revokeHIPAAOnly) { 
-        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 
+        sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedHIPAArevocation, fieldMapping.whoRequestedHIPAArevocationOther)
     }
     if (computeScore === fieldMapping.refusedAllFutureActivities) { 
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivities)
     }
 
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
@@ -523,7 +531,12 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     clickHandler(sendRefusalData, siteKey, token);
 }
 
-const setRefusalTimeStamp =  (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
+const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
+    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested]})[fieldMapping.whoRequested]
+    sendRefusalData[fieldMapping.requestOtherText] && delete Object.assign(sendRefusalData, { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})[fieldMapping.requestOtherText]
+}
+
+const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
     sendRefusalData[refusalOptionTimeStamp] = new Date().toISOString();
     sendRefusalData[fieldMapping.refusalOptions][optionSelected] = fieldMapping.yes
 }
@@ -550,6 +563,7 @@ const getComputeScore = (retainOptions, highestStatus) => {
                 highestStatus.push(1)
         }
     })
+    highestStatus = highestStatus.filter( value => !Number.isNaN(value) ); // removw NaN from array
     let participationStatusScore = Math.max(...highestStatus);
     return fieldMapping[participationStatusScore.toString()];
 }

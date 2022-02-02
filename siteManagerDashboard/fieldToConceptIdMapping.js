@@ -356,14 +356,34 @@ export default
 
     'suspendContact': 113579866,
     'startDateSuspendedContact': 161366008,
-    'whoRequested': 678208830,
-    'requestParticipant': 990304236,
-    'requestPrincipalInvestigator': 711721942,
-    'requestConnectIRB': 290977684,
-    'requestPIListed': 149224829,
-    'requestChairSite': 869233107,
-    'requestOther': 951080629,
+    // 'whoRequested': 678208830,
+    // 'requestParticipant': 990304236,
+    // 'requestPrincipalInvestigator': 711721942,
+    // 'requestConnectIRB': 290977684,
+    // 'requestPIListed': 149224829,
+    // 'requestChairSite': 869233107,
+    // 'requestOther': 951080629,
+    // 'requestOtherText': 366295286,
+
+
+    'requestParticipant': 648459216,
+    'requestPrincipalInvestigator': 658808644,
+    'requestConnectIRB': 745366882,
+    'requestPIListed': 786757575,
+    'requestChairSite': 847056701,
+    'requestOther': 807835037,
+
+    'whoRequested': 297147359,
     'requestOtherText': 366295286,
+
+    'whoRequestedAllFutureActivities': 603278289,
+    'whoRequestedAllFutureActivitiesOther': 821930940,
+    'whoRequestedHIPAArevocation': 175506524,
+    'whoRequestedHIPAArevocationOther': 905787778,
+    'whoRequestedWithdrewConsent': 299274441,
+    'whoRequestedWithdrewConsentOther': 457532784,
+    'whoRequestedDataDestruction': 524352591,
+    'whoRequestedDataDestructionOther': 902332801,
 
     'campaignType': 667474224,
     'random':926338735,
@@ -438,7 +458,9 @@ export default
     959657954 : 'Verification Complete',
     850536553 : 'Cannot Be Verified' ,
 	364179400 : 'Verified - mimimally Enrolled',
-    485892221 : 'Fully Enrolled' 	
+    485892221 : 'Fully Enrolled'
+
+
     
     
 }
