@@ -130,13 +130,13 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/UCM_consent_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/UCM_HIPAA_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
