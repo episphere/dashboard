@@ -179,9 +179,11 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
                 break;
+            case 'UCM':
+                coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 310}]
+                break;
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
-
         }
         return coordinates  // x0/y0: date x/y: name x1/y1: signature
         // to go down - decrease the number & vice-versa
@@ -206,6 +208,9 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'KPNW':
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
+                break;
+            case 'UCM':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             default:
