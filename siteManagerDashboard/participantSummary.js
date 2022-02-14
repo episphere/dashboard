@@ -168,7 +168,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
                 break;
             case 'KPCO':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
+                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
                 break;
             case 'KPGA':
                 coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
@@ -197,7 +197,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 100, y: 425}, {x0: 100, y0: 380}, {x1: 100, y1: 465}]
                 break;
             case 'KPCO':
-                coordinates = [{x: 100, y: 415}, {x0: 100, y0: 370}, {x1: 100, y1: 465}]
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'KPGA':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
