@@ -182,6 +182,9 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'UCM':
                 coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
                 break;
+            case 'HFHS':
+                coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
+                break;
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
         }
@@ -212,6 +215,9 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 break;
             case 'UCM':
                 coordinates = [{x: 100, y: 425}, {x0: 100, y0: 385}, {x1: 100, y1: 465}]
+                break;
+            case 'HFHS':
+                coordinates = [{x: 100, y: 440}, {x0: 100, y0: 400}, {x1: 100, y1: 480}]
                 break;
             default:
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
