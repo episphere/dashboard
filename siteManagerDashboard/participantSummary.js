@@ -187,7 +187,6 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 break;
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
-
         }
         return coordinates  // x0/y0: date x/y: name x1/y1: signature
         // to go down - decrease the number & vice-versa
