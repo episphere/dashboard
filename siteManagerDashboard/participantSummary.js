@@ -130,13 +130,13 @@ const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
     if (a) {
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/UCM_consent_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/UCM_HIPAA_V1.0.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
@@ -180,7 +180,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
                 break;
             case 'UCM':
-                coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 310}]
+                coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
                 break;
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
@@ -211,7 +211,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'UCM':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
+                coordinates = [{x: 100, y: 425}, {x0: 100, y0: 385}, {x1: 100, y1: 465}]
                 break;
             default:
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
