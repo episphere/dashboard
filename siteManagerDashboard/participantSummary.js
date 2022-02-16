@@ -174,7 +174,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
                 break;
             case 'KPHI':
-                coordinates = [{x: 110, y: 365}, {x0: 110, y0: 325}, {x1: 110, y1: 285}]
+                coordinates = [{x: 110, y: 410}, {x0: 110, y0: 370}, {x1: 110, y1: 450}]
                 break;
             case 'KPNW':
                 coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
