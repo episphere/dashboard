@@ -6,7 +6,6 @@ import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAP
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
-
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
@@ -117,7 +116,6 @@ export const renderTable = (data, source) => {
 }
 
 export  const renderData = (data, showButtons, flag) => {
-    
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
@@ -139,8 +137,6 @@ export  const renderData = (data, showButtons, flag) => {
     getPassiveParticipants();
     getDateFilters();
     pageLimitDropdownTrigger();
-      
-    
 }
 
 const renderDataTable = (data, showButtons) => {
@@ -220,7 +216,6 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     if (siteKey !== null && siteKey !== 'allResults') {
         siteKeyId = nameToKeyObj[siteKey];
         siteKeyId = keyToShortNameObj[siteKeyId];
-        
     } else {
         siteKeyId = 'Filter by Site'
     }
@@ -355,7 +350,6 @@ const pageLimitDropdownTrigger = () => {
                 let filterRawData = filterdata(response.data);
                 if (filterRawData.length === 0)  return alertTrigger();
                 addEventFilterData(filterRawData);
-            
                 renderDataTable(filterRawData);
             }
             else if(response.code === 200 && response.data.length === 0) {
@@ -826,7 +820,6 @@ export const filterBySiteKey = (data, sitePref) => {
 
 export const activeColumns = (data, showButtons) => {
     let btns = document.getElementsByName('column-filter');
-    console.log('1')
     Array.from(btns).forEach(btn => {
         let value = btn.dataset.column;
         if(importantColumns.indexOf(value) !== -1) {
@@ -987,7 +980,6 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
 }
 
 const getParticipantWithLimit = async (query, limit) => {
-    console.log('q', query)
     const siteKey = await getAccessToken();
     let template = ``;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
