@@ -115,8 +115,7 @@ export const renderTable = (data, source) => {
     return template;
 }
 
-
-export  const renderData = (data, showButtons) => {
+export  const renderData = (data, showButtons, flag) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
@@ -131,7 +130,7 @@ export  const renderData = (data, showButtons) => {
     document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
     pagninationNextTrigger();
     pagninationPreviousTrigger();
-   // addEventPageBtns(pageSize, data, showButtons);
+    // addEventPageBtns(pageSize, data, showButtons);
     renderDataTable(data, showButtons)
     addEventShowMoreInfo(data);
     getActiveParticipants();
@@ -186,9 +185,10 @@ const getDateFilters = () => {
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
         let dropdownMenuButton = ``
-        let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite')
+        let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
         if (siteKey !== null && siteKey !== 'allResults') {
             dropdownMenuButton = nameToKeyObj[siteKey];
+            dropdownMenuButton = keyToShortNameObj[siteKeyId]
         } else {
             dropdownMenuButton = 'Filter by Site'
         }
@@ -211,26 +211,31 @@ const getDateFilters = () => {
 }
 
 const reRenderParticipantsTableBasedOFilter = async (filter) => {
-    let siteKey = localStorage.getItem('sitekey');
+    let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
     let siteKeyId = ``
     if (siteKey !== null && siteKey !== 'allResults') {
         siteKeyId = nameToKeyObj[siteKey];
+        siteKeyId = keyToShortNameObj[siteKeyId];
     } else {
         siteKeyId = 'Filter by Site'
     }
     showAnimation();
     const response = await getParticipantsWithFilters(filter, siteKeyId);
     hideAnimation();
-    reRenderMainTable(response, filter);
+    reRenderMainTable(response, filter, siteKeyId);
 }
 
-const reRenderMainTable = (response, filter) => {
+const reRenderMainTable =  (response, filter, selectedSite) => {
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
-        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
-        renderDataTable(filterRawData);
+        renderData(filterRawData, true);
+        activeColumns(filterRawData);
+        renderLookupSiteDropdown();
+        dropdownTriggerAllParticipants(selectedSite);
         if (filter === 'active') {
             let activeButton = document.getElementById('activeFilter');
             activeButton.classList.remove('btn-outline-info'); 
@@ -254,6 +259,7 @@ const reRenderMainTable = (response, filter) => {
         return;
     }
     else if(response.code === 200 && response.data.length === 0) {
+        renderDataTable([]);
         return alertTrigger();
     }
 }
@@ -335,8 +341,8 @@ const pageLimitDropdownTrigger = () => {
             showAnimation();
             let sitePref = ``
             let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-            if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
-            else if (sitePrefAttr === null) sitePref = 'allResults'
+            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
             const sitePrefId = nameToKeyObj[sitePref];
             const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
             hideAnimation();
@@ -347,6 +353,7 @@ const pageLimitDropdownTrigger = () => {
                 renderDataTable(filterRawData);
             }
             else if(response.code === 200 && response.data.length === 0) {
+                renderDataTable([]);
                 return alertTrigger();
             }
             else if(response.code != 200 && response.data.length === 0) {
@@ -364,8 +371,8 @@ const pagninationNextTrigger = () => {
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr === null) sitePref = 'allResults'
+        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
@@ -379,6 +386,7 @@ const pagninationNextTrigger = () => {
             addEventFilterData(filterRawData);
         }
         else if(response.code === 200 && response.data.length === 0) {
+            renderDataTable([]);
             return alertTrigger();
         }
         else if(response.code != 200 && response.data.length === 0) {
@@ -399,8 +407,8 @@ const pagninationPreviousTrigger = () => {
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr === null) sitePref = 'allResults';
+        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
         const response = await getParticipantFromSites(sitePrefId, pageCounter);
@@ -415,6 +423,7 @@ const pagninationPreviousTrigger = () => {
 
         }
         else if(response.code === 200 && response.data.length === 0) {
+            renderDataTable([])
             return alertTrigger();
         }
         else if(response.code != 200 && response.data.length === 0) {
@@ -810,13 +819,14 @@ export const filterBySiteKey = (data, sitePref) => {
 }
 
 export const activeColumns = (data, showButtons) => {
-    const btns = document.getElementsByName('column-filter');
+    let btns = document.getElementsByName('column-filter');
     Array.from(btns).forEach(btn => {
-        const value = btn.dataset.column;
+        let value = btn.dataset.column;
         if(importantColumns.indexOf(value) !== -1) {
             btn.classList.add('filter-active');
         }
-        btn.addEventListener('click', async () => {
+        btn.addEventListener('click', async (e) => {
+            e.stopPropagation()
             if(!btn.classList.contains('filter-active')){
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
@@ -901,7 +911,6 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
-                    localStorage.setItem('sitekey', t.sitekey)
                     reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
                 }
             })
@@ -928,7 +937,7 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         dropdownTriggerAllParticipants(currentSiteSelection);
     }
     else if(response.code === 200 && response.data.length === 0) {
-        renderDataTable([])
+        renderDataTable([]);
         return alertTrigger();
     }
     else if(response.code != 200 && response.data.length === 0) {
@@ -1001,10 +1010,10 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     const siteKey = await getAccessToken();
     let template = ``;
     const limit = 10;
-    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}&to=${endDate}&limit=${limit}`:
-    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}&to=${endDate}&limit=${limit}`:
-    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}&to=${endDate}&limit=${limit}`:
-    template += `/dashboard?api=getParticipants&type=all&from=${startDate}&to=${endDate}&limit=${limit}`
+    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
+    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
+    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
+    template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
