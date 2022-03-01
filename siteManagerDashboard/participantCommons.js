@@ -158,7 +158,6 @@ const getActiveParticipants = () => {
             activeButton.setAttribute('active', false);
         }
         else {
-            console.log('yoyoyyoossssssssy')
             reRenderParticipantsTableBasedOFilter('active');
             activeButton.setAttribute('active', true);
         }
@@ -193,6 +192,7 @@ const getDateFilters = () => {
         let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
         if (siteKey !== null && siteKey !== 'allResults') {
             dropdownMenuButton = nameToKeyObj[siteKey];
+            dropdownMenuButton = keyToShortNameObj[siteKeyId]
         } else {
             dropdownMenuButton = 'Filter by Site'
         }
@@ -219,25 +219,28 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     let siteKeyId = ``
     if (siteKey !== null && siteKey !== 'allResults') {
         siteKeyId = nameToKeyObj[siteKey];
+        siteKeyId = keyToShortNameObj[siteKeyId];
+        
     } else {
         siteKeyId = 'Filter by Site'
     }
     showAnimation();
     const response = await getParticipantsWithFilters(filter, siteKeyId);
     hideAnimation();
-    reRenderMainTable(response, filter);
+    reRenderMainTable(response, filter, siteKeyId);
 }
 
-const reRenderMainTable =  (response, filter) => {
+const reRenderMainTable =  (response, filter, selectedSite) => {
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
-        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
         renderData(filterRawData, true);
-        console.log('flagggggg')
         activeColumns(filterRawData);
-       // renderDataTable(filterRawData);
+        renderLookupSiteDropdown();
+        dropdownTriggerAllParticipants(selectedSite);
         if (filter === 'active') {
             let activeButton = document.getElementById('activeFilter');
             activeButton.classList.remove('btn-outline-info'); 
@@ -832,19 +835,16 @@ export const activeColumns = (data, showButtons) => {
         btn.addEventListener('click', async (e) => {
             e.stopPropagation()
             if(!btn.classList.contains('filter-active')){
-                console.log('1234567', btn)
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                 }
                 else {
-                    console.log('123', btn)
                     renderData(data, showButtons);
                 }
             }
             else{
-                console.log('test')
                 btn.classList.remove('filter-active');
                 importantColumns.splice(importantColumns.indexOf(value), 1);
                 if(document.getElementById('filterData').value.trim().length >= 3) {

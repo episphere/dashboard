@@ -245,13 +245,11 @@ const renderLookupSiteDropdown = () => {
 }
 
 export const renderLookupResultsTable = () => {
+    const loadDetailsPage = '#participants/all'
+    location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantSummary
     let filterRawData = JSON.parse(localStorage.getItem('filterRawData'));
     mainContent.innerHTML = renderTable(filterRawData, 'participantLookup');
     addEventFilterData(filterRawData);
     renderData(filterRawData);
     activeColumns(filterRawData);
-    const element = document.getElementById('back-to-search');
-    element.addEventListener('click', () => { 
-        renderParticipantLookup();
-    });
 }
