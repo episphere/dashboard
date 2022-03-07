@@ -136,6 +136,10 @@ export  const renderData = (data, showButtons, flag) => {
     getActiveParticipants();
     getPassiveParticipants();
     getDateFilters();
+    let a = document.getElementById('dropdownPageSize');
+    //  (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
+    console.log('a', a.getAttribute('data-pagelimit'))
+   
     pageLimitDropdownTrigger();
 }
 
@@ -230,6 +234,9 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
+        let a = document.getElementById('dropdownPageSize');
+      //  (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
+      console.log('a', a.getAttribute('data-pagelimit'))
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
         renderData(filterRawData, true);
