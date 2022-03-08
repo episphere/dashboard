@@ -135,11 +135,7 @@ export  const renderData = (data, showButtons, flag) => {
     addEventShowMoreInfo(data);
     getActiveParticipants();
     getPassiveParticipants();
-    getDateFilters();
-    let a = document.getElementById('dropdownPageSize');
-    //  (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
-    console.log('a', a.getAttribute('data-pagelimit'))
-   
+    getDateFilters();   
     pageLimitDropdownTrigger();
 }
 
@@ -217,16 +213,18 @@ const getDateFilters = () => {
 const reRenderParticipantsTableBasedOFilter = async (filter) => {
     let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
     let siteKeyId = ``
+    let siteKeyName = ``
     if (siteKey !== null && siteKey !== 'allResults') {
         siteKeyId = nameToKeyObj[siteKey];
-        siteKeyId = keyToShortNameObj[siteKeyId];
+        siteKeyName = keyToShortNameObj[siteKeyId];
     } else {
         siteKeyId = 'Filter by Site'
+        siteKeyName = 'Filter by Site'
     }
     showAnimation();
     const response = await getParticipantsWithFilters(filter, siteKeyId);
     hideAnimation();
-    reRenderMainTable(response, filter, siteKeyId);
+    reRenderMainTable(response, filter, siteKeyName);
 }
 
 const reRenderMainTable =  (response, filter, selectedSite) => {
@@ -234,9 +232,6 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
-        let a = document.getElementById('dropdownPageSize');
-      //  (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
-      console.log('a', a.getAttribute('data-pagelimit'))
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
         renderData(filterRawData, true);
