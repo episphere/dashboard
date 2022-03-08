@@ -213,18 +213,16 @@ const getDateFilters = () => {
 const reRenderParticipantsTableBasedOFilter = async (filter) => {
     let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
     let siteKeyId = ``
-    let siteKeyName = ``
     if (siteKey !== null && siteKey !== 'allResults') {
         siteKeyId = nameToKeyObj[siteKey];
-        siteKeyName = keyToShortNameObj[siteKeyId];
+        siteKeyId = keyToShortNameObj[siteKeyId];
     } else {
         siteKeyId = 'Filter by Site'
-        siteKeyName = 'Filter by Site'
     }
     showAnimation();
     const response = await getParticipantsWithFilters(filter, siteKeyId);
     hideAnimation();
-    reRenderMainTable(response, filter, siteKeyName);
+    reRenderMainTable(response, filter, siteKeyId);
 }
 
 const reRenderMainTable =  (response, filter, selectedSite) => {
