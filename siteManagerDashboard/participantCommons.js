@@ -135,7 +135,7 @@ export  const renderData = (data, showButtons, flag) => {
     addEventShowMoreInfo(data);
     getActiveParticipants();
     getPassiveParticipants();
-    getDateFilters();
+    getDateFilters();   
     pageLimitDropdownTrigger();
 }
 

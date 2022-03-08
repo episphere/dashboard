@@ -304,6 +304,42 @@ export const baselineSSN = (participant) => {
     return template;
 }
 
+
+export const baselineBiospecSurvey = (participant) => {
+    let combinedBoodUrineMouthwashSurvey = participant[fieldMapping.combinedBoodUrineMouthwashSurvey] && participant[fieldMapping.combinedBoodUrineMouthwashSurvey]
+    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
+    let template = ``;
+
+    refusedSpecimenOption === (fieldMapping.yes) ?
+    (
+        template += `
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A")}`
+    ) :
+    !combinedBoodUrineMouthwashSurvey ?  
+    (
+        template += `
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
+    ) : 
+    (
+        (participantModule[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted)  ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Blood/Blood/Urine/Mouthwash", "Submitted",
+                    humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyCompletedDate]), "N/A", "N", "N/A")}`
+
+        ) :
+        (participantModule[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.started)  ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Started",
+                    humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyStartedDate]), "N/A", "N", "N/A")}`
+        ) : 
+        ( template += `
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Not Started", "N/A", "N/A", "N", "N/A")}`
+        ))
+    return template;
+}
+
 export const baselineBloodUrineSurvey = (participant) => {
     let participantModule = participant[fieldMapping.bloodUrineSurvey]
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
@@ -312,29 +348,29 @@ export const baselineBloodUrineSurvey = (participant) => {
     refusedSpecimenOption === (fieldMapping.yes) ?
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "N/A", "N/A", "N/A", "Y", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "Y", "N/A")}`
     ) :
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (
         (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.submitted)  ?
         (
             template += `
-                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Blood/Urine", "Submitted",
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Clinical Blood/Urine", "Submitted",
                     humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyCompletedDate]), "N/A", "N", "N/A")}`
 
         ) :
         (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.started)  ?
         (
             template += `
-                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Blood/Urine", "Started",
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Clinical Blood/Urine", "Started",
                     humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyStartedDate]), "N/A", "N", "N/A")}`
         ) : 
         ( template += `
-                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "Not Started", "N/A", "N/A", "N", "N/A")}`
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "Not Started", "N/A", "N/A", "N", "N/A")}`
         ))
     return template;
     
@@ -347,29 +383,29 @@ export const baselineMouthwashSurvey = (participant) => {
     refusedSpecimenOption === (fieldMapping.yes) ?
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A")}`
     ) :
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (
         (participantModule[fieldMapping.mouthwashSurveyFlag] === fieldMapping.submitted)  ?
         (
             template += `
-                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Mouthwash", "Submitted",
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Home Mouthwash", "Submitted",
                     humanReadableMDY(participantModule[fieldMapping.mouthwashSurveyCompletedDate]), "N/A", "N", "N/A")}`
 
         ) :
         (participantModule[fieldMapping.mouthwashSurveyFlag] === fieldMapping.started) ?
         (
             template += `
-                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Mouthwash", "Started",
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Home Mouthwash", "Started",
                     humanReadableMDY(participantModule[fieldMapping.mouthwashSurveyStartedDate]), "N/A", "N", "N/A")}`
         ) : 
         ( template += `
-                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "Not Started", "N/A", "N/A", "N", "N/A")}`
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "Not Started", "N/A", "N/A", "N", "N/A")}`
         ))
     return template;
     
