@@ -143,7 +143,7 @@ export default
 
     "urineFlag": 167958071,
     "urineDateTime": 847159717,
-    "refusedUrine": 949501163,
+    "refusedUrine": 685002411,
 
     "mouthwash": 684635302,
     "mouthwashDateTime": 448660695,
@@ -158,6 +158,10 @@ export default
     "mouthwashSurveyFlag": 547363263,
     "mouthwashSurveyStartedDate": 286191859,
     "mouthwashSurveyCompletedDate": 195145666,
+
+    'combinedBoodUrineMouthwashSurvey': 265193023,
+    'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
+    'combinedBoodUrineMouthwashSurveyCompleteDate': 222161762,
 
     'combinedBoodUrineMouthwashSurvey': 265193023,
     'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
