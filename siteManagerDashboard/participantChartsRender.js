@@ -2,7 +2,7 @@
 
 export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
     participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, 
-    modulesSurvey, ssnSurvey, optOuts  ) => {
+    modulesSurvey, ssnSurvey, optOuts, biospecimenMetrics  ) => {
 
    const row = document.createElement('div');
    row.classList = ['row'];
@@ -200,17 +200,18 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subPieChartSsn.setAttribute('id', 'ssnMetrics');
    pieChartSsn.appendChild(subPieChartSsn);
 
-//    let pieChartSex = document.createElement('div');
-//    pieChartSex.classList = ['col-lg-4 charts'];
-//    let subPieChartSex = document.createElement('div');
-//    subPieChartSex.classList = ['col-lg-12 viz-div sub-div-shadow'];
-//    subPieChartSex.setAttribute('id', 'sexMetrics');
-//    pieChartSex.appendChild(subPieChartSex);
+   let pieChartBiopspecimen = document.createElement('div');
+   pieChartBiopspecimen.classList = ['col-lg-4 charts'];
+
+   let subPieChartBiopspecimen = document.createElement('div');
+   subPieChartBiopspecimen.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subPieChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
+   pieChartBiopspecimen.appendChild(subPieChartBiopspecimen);
 
 
    row5.appendChild(pieChartModule);
    row5.appendChild(pieChartSsn);
-//    row4.appendChild(pieChartRace);
+   row5.appendChild(pieChartBiopspecimen);
 
    mainContent.appendChild(row5); // Misc.
 
@@ -234,6 +235,7 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    renderModuleChart(modulesSurvey, 'moduleMetrics');
    renderSsnChart(ssnSurvey, 'ssnMetrics');
+   renderBiospecimenChart(biospecimenMetrics, 'biospecimenMetrics');
 }
 
 const renderLabel = (count, recruitType) => {
@@ -664,3 +666,32 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
  
+  const renderBiospecimenChart = (biospecimenMetrics, id) => {
+    const verifiedParticipants =  biospecimenMetrics ? (biospecimenMetrics.all + biospecimenMetrics.none + biospecimenMetrics.bloodUrine + biospecimenMetrics.bloodMouthwash + biospecimenMetrics.urineMouthwash) : 0
+    const all =  biospecimenMetrics.all ? ((biospecimenMetrics.all )/(verifiedParticipants)*100).toFixed(1) : 0
+    const none =  biospecimenMetrics.none ? ((biospecimenMetrics.none)/(verifiedParticipants)*100).toFixed(1) : 0
+    const bloodUrine = biospecimenMetrics.bloodUrine ? ((biospecimenMetrics.bloodUrine )/(verifiedParticipants)*100).toFixed(1) : 0
+    const bloodMouthwash =  biospecimenMetrics.bloodMouthwash ? ((biospecimenMetrics.bloodMouthwash)/(verifiedParticipants)*100).toFixed(1) : 0
+    const urineMouthwash =  biospecimenMetrics.urineMouthwash ? ((biospecimenMetrics.urineMouthwash)/(verifiedParticipants)*100).toFixed(1) : 0
+    
+       let data = [{
+        values: [all, none, bloodUrine, bloodMouthwash, urineMouthwash],
+
+        labels: [ `All: N=${biospecimenMetrics.all}`,
+                `None: N=${biospecimenMetrics.none}`,
+                `Blood/Urine only: N=${biospecimenMetrics.bloodUrine}`, 
+                `Blood/Mouthwash only: N=${biospecimenMetrics.bloodMouthwash}`,
+                `Urine/Mouthwash only: N=${biospecimenMetrics.urineMouthwash}` ],
+        hoverinfo: 'label+value',
+        type: 'pie'
+      }];
+
+      const layout = {
+        showlegend: true,
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        title: `Baseline biospecimens collected among verified participants N=${verifiedParticipants}`
+    };
+      
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
