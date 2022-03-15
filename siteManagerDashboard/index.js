@@ -334,7 +334,7 @@ const fetchData = async (siteKey, type) => {
 }
 
 const fetchStats = async (siteKey, type) => {
-    const response = await fetch(`http://localhost:5001/nih-nci-dceg-connect-dev/us-central1/dashboard?api=stats&type=${type}`, {
+    const response = await fetch(`${baseAPI}/dashboard?api=stats&type=${type}`, {
         method: 'GET',
         headers: {
             Authorization: "Bearer " + siteKey
