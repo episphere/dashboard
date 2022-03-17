@@ -73,7 +73,6 @@ export default
     537892528: '3rd',
 
     'prefPhone': 127547625,
-    'prefEmail': 357184057,
 
     "notStarted": 0,
     "started": 1,
