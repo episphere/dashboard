@@ -63,6 +63,21 @@ export const render = () => {
                                     <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
                                 </div>
                     
+                                <div class="row">
+                                    <label class="col-form-label col-md-4" for="condition-key">Schedule at (EST)</label>
+                                    <div class="col-md-1 form-check">
+                                        <input class="form-check-input" checked value="15:00" type="radio" name="scheduleAt" id="scheduleAt1">
+                                        <label class="form-check-label" for="scheduleAt1">
+                                            3:00 PM
+                                        </label>
+                                    </div>
+                                    <div class="col-md-1 form-check">
+                                        <input class="form-check-input" type="radio" value="20:00" name="scheduleAt" id="scheduleAt2">
+                                        <label class="form-check-label" for="scheduleAt2">
+                                            8:00 PM
+                                        </label>
+                                    </div>
+                                </div>
                                 <div id="emailDiv"></div>
                                 <div id="smsDiv"></div>
                                 <div id="pushDiv"></div>
@@ -193,7 +208,9 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
     conceptDropdown(concepts, 'primary-field');
     const primaryfield = document.getElementById('primaryfield0');
     if (primaryfield) {primaryfield.value = updateSchemaNotification.primaryField}
-
+    Array.from(document.getElementsByName('scheduleAt')).forEach(dt => {
+        if(dt.value === updateSchemaNotification.scheduleAt) dt.checked = true;
+    });
     document.getElementById('days').value = updateSchemaNotification.time['day'];
     document.getElementById('hours').value = updateSchemaNotification.time['hour'];
     document.getElementById('minutes').value = updateSchemaNotification.time['minute'];
@@ -216,6 +233,7 @@ const formSubmit = () => {
         obj['notificationType'] = Array.from(document.getElementsByName('notification-checkbox')).filter(dt => dt.checked).map(dt => dt.dataset.type);
         obj['emailField'] = document.getElementById('emailconcept0').value;
         obj['firstNameField'] = document.getElementById('firstnameconcept0').value;
+        obj['scheduleAt'] = Array.from(document.getElementsByName('scheduleAt')).filter(dt => dt.checked)[0].value;
         if(document.getElementById('preferrednameconcept0').value) obj['preferredNameField'] = document.getElementById('preferrednameconcept0').value;
         obj['phoneField'] = document.getElementById('phoneconcept0').value;
         obj['primaryField'] = document.getElementById('primaryfield0').value;
