@@ -242,7 +242,6 @@ const renderCharts = async (siteKey, isParent) => {
     const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
     const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
-
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
     const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats)
 
@@ -837,7 +836,6 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
 
     const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(resultSsn, activeVerificationStatus.verified, passiveVerificationStatus.verified);
-
     const biospecimenStats = filterBiospecimenStats(resultBiospecimen);
 
     const siteSelectionRow = document.createElement('div');

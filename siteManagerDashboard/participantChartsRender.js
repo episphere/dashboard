@@ -232,10 +232,10 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    renderActiveVerificationStatus(activeVerificationStatus, denominatorVerificationStatus, 'activeVerificationStatus');
    renderPassiveVerificationStatus(passiveVerificationStatus, denominatorVerificationStatus, 'passiveVerificationStatus');
-
    renderModuleChart(modulesSurvey, 'moduleMetrics');
    renderSsnChart(ssnSurvey, 'ssnMetrics');
-   renderBiospecimenChart(biospecimenMetrics, 'biospecimenMetrics');
+   const verifiedPts = ssnSurvey.verifiedParticipants
+   renderBiospecimenChart(biospecimenMetrics, verifiedPts, 'biospecimenMetrics');
 }
 
 const renderLabel = (count, recruitType) => {
@@ -666,8 +666,8 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
  
-  const renderBiospecimenChart = (biospecimenMetrics, id) => {
-    const verifiedParticipants =  biospecimenMetrics ? (biospecimenMetrics.all + biospecimenMetrics.none + biospecimenMetrics.bloodUrine + biospecimenMetrics.bloodMouthwash + biospecimenMetrics.urineMouthwash) : 0
+  const renderBiospecimenChart = (biospecimenMetrics, verifiedPts, id) => {
+    const verifiedParticipants =  verifiedPts ? verifiedPts : 0
     const all =  biospecimenMetrics.all ? ((biospecimenMetrics.all )/(verifiedParticipants)*100).toFixed(1) : 0
     const none =  biospecimenMetrics.none ? ((biospecimenMetrics.none)/(verifiedParticipants)*100).toFixed(1) : 0
     const bloodUrine = biospecimenMetrics.bloodUrine ? ((biospecimenMetrics.bloodUrine )/(verifiedParticipants)*100).toFixed(1) : 0
