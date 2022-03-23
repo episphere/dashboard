@@ -520,7 +520,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     }
     if (computeScore === fieldMapping.refusedAllFutureActivities) { 
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
-        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivities)
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
     }
 
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
