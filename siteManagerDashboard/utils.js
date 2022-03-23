@@ -156,11 +156,13 @@ export const checkDefaultFlags = (data) => {
     914639140: 104430631
   }
 
+  let missingDefaults = {};
+
   Object.entries(defaultFlags).forEach(item => {
     if(!data[item[0]]) {
-        data[item[0]] = item[1];
+      missingDefaults[item[0]] = item[1];
     }
   });
 
-  return data;
+  return missingDefaults;
 }
