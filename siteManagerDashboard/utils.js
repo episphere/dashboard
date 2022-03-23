@@ -136,3 +136,31 @@ export const getAccessToken = async () => {
   const siteKey = access_token !== null ? access_token : localStr.siteKey
   return siteKey;
 }
+
+export const checkDefaultFlags = (data) => {
+  const defaultFlags = {
+    948195369: 104430631,
+    919254129: 104430631,
+    821247024: 875007964,
+    828729648: 104430631,
+    699625233: 104430631,
+    912301837: 208325815,
+    253883960: 972455046,
+    547363263: 972455046,
+    949302066: 972455046,
+    536735468: 972455046,
+    976570371: 972455046,
+    663265240: 972455046,
+    265193023: 972455046,
+    311580100: 104430631,
+    914639140: 104430631
+  }
+
+  Object.entries(defaultFlags).forEach(item => {
+    if(!data[item[0]]) {
+        data[item[0]] = item[1];
+    }
+  });
+
+  return data;
+}
