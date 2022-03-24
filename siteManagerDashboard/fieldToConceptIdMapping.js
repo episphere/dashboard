@@ -171,14 +171,6 @@ export default
     'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
     'combinedBoodUrineMouthwashSurveyCompleteDate': 222161762,
 
-    'combinedBoodUrineMouthwashSurvey': 265193023,
-    'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
-    'combinedBoodUrineMouthwashSurveyCompleteDate': 222161762,
-
-    'combinedBoodUrineMouthwashSurvey': 265193023,
-    'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
-    'combinedBoodUrineMouthwashSurveyCompleteDate': 222161762,
-
     "baselineEMR": 209454331,
     "baselineEMRflag": 101170406,
     "baselineEMRpushDate": 143523420,
