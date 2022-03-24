@@ -89,13 +89,13 @@ export const render = (participant) => {
                                 <tr class="row-color-survey-dark">
                                     ${baselineSSN(participant)}
                                 </tr>
-                                <tr class="row-color-survey-dark">
+                                <tr class="row-color-survey-light">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
-                                <tr class="row-color-survey-light">
+                                <tr class="row-color-survey-dark">
                                     ${baselineBloodUrineSurvey(participant)}
                                 </tr>
-                                <tr class="row-color-survey-dark">
+                                <tr class="row-color-survey-light">
                                     ${baselineMouthwashSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-sample-dark">
