@@ -321,14 +321,14 @@ export const baselineBiospecSurvey = (participant) => {
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (
-        (participantModule[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted)  ?
+        (participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted)  ?
         (
             template += `
                     ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Blood/Blood/Urine/Mouthwash", "Submitted",
                     humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyCompletedDate]), "N/A", "N", "N/A")}`
 
         ) :
-        (participantModule[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.started)  ?
+        (participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.started)  ?
         (
             template += `
                     ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Started",
@@ -468,7 +468,6 @@ const checkEligibilty = (eligiblePayment) => {
 }
 const biospecimenStatus = (biospecimenRow) => {
     let template = ``;
-    console.log('biospecimenRow[fieldMapping.biospecimenFlag]', biospecimenRow)
     !(biospecimenRow) ?  
     (
         template += `N/A`
