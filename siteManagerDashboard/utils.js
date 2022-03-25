@@ -138,6 +138,9 @@ export const getAccessToken = async () => {
 }
 
 export const checkDefaultFlags = (data) => {
+  
+  if(!data) return {};
+  
   const defaultFlags = {
     948195369: 104430631,
     919254129: 104430631,
