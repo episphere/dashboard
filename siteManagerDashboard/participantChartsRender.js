@@ -673,20 +673,28 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
     const bloodUrine = biospecimenMetrics.bloodUrine ? ((biospecimenMetrics.bloodUrine )/(verifiedParticipants)*100).toFixed(1) : 0
     const bloodMouthwash =  biospecimenMetrics.bloodMouthwash ? ((biospecimenMetrics.bloodMouthwash)/(verifiedParticipants)*100).toFixed(1) : 0
     const urineMouthwash =  biospecimenMetrics.urineMouthwash ? ((biospecimenMetrics.urineMouthwash)/(verifiedParticipants)*100).toFixed(1) : 0
-    
-       let data = [{
-        values: [all, none, bloodUrine, bloodMouthwash, urineMouthwash],
+    const blood = biospecimenMetrics.blood ? ((biospecimenMetrics.blood )/(verifiedParticipants)*100).toFixed(1) : 0
+    const mouthwash =  biospecimenMetrics.mouthwash ? ((biospecimenMetrics.mouthwash)/(verifiedParticipants)*100).toFixed(1) : 0
+    const urine =  biospecimenMetrics.urine ? ((biospecimenMetrics.urine)/(verifiedParticipants)*100).toFixed(1) : 0
+    let data = [{
+        values: [all, none, bloodUrine, bloodMouthwash, urineMouthwash, mouthwash, urine, blood],
 
-        labels: [ `All: N=${biospecimenMetrics.all}`,
-                `None: N=${biospecimenMetrics.none}`,
-                `Blood/Urine only: N=${biospecimenMetrics.bloodUrine}`, 
-                `Blood/Mouthwash only: N=${biospecimenMetrics.bloodMouthwash}`,
-                `Urine/Mouthwash only: N=${biospecimenMetrics.urineMouthwash}` ],
+        labels: [ 
+            `All: N=${biospecimenMetrics.all}`,
+            `None: N=${biospecimenMetrics.none}`,
+            `Blood/Urine only: N=${biospecimenMetrics.bloodUrine}`, 
+            `Blood/Mouthwash only: N=${biospecimenMetrics.bloodMouthwash}`,
+            `Urine/Mouthwash only: N=${biospecimenMetrics.urineMouthwash}`,
+            `Mouthwash only: N=${biospecimenMetrics.mouthwash}`, 
+            `Urine only: N=${biospecimenMetrics.urine}`,
+            `Blood only: N=${biospecimenMetrics.blood}` ],
+
+
         hoverinfo: 'label+value',
         type: 'pie'
       }];
 
-      const layout = {
+    const layout = {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
