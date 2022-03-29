@@ -1,4 +1,4 @@
-import { workflows } from "https://episphere.github.io/dashboard/biospecimen/src/tubeValidation.js";
+import { workflows } from "https://episphere.github.io/biospecimen/src/tubeValidation.js";
 
 export const getCurrentTimeStamp = () => {
   const date = new Date(new Date().toISOString());
