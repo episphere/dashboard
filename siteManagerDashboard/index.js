@@ -396,7 +396,7 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
         raceObject['white'] += parseInt(i.raceCount)
         :  (parseInt(i.shRace) === fieldMapping.whiteSH) ?
         raceObject['white'] += parseInt(i.shRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.whiteNHHF) ?
+        :  (parseInt(i.hfRace) === fieldMapping.whiteHF) ?
         raceObject['white'] += parseInt(i.hfRaceCount)
         :  (parseInt(i.race) === fieldMapping.other) ?
         raceObject['other'] += parseInt(i.raceCount)
@@ -424,33 +424,18 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
         :  (parseInt(i.shRace) === fieldMapping.declinedSH) ?
         raceObject['unavailable'] += parseInt(i.shRaceCount)
         :  (parseInt(i.shRace) === fieldMapping.unavailable) ?
-        raceObject['unavailable'] += parseInt(i.shRaceCount)   
-      
-        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBLHHF) ? // HF Harmonization
+        raceObject['unavailable'] += parseInt(i.shRaceCount)
+        
+        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanHF) ? // HF Harmonization
         raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBNLHHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBEUHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.otherHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.otherNHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.otherEUHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.whiteHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.whiteEUHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.unaviableHLHF) ?
+        :  (parseInt(i.hfRace) === fieldMapping.otherHF) ?
         raceObject['other'] += parseInt(i.hfRaceCount)
       
         :  (parseInt(i.race) === fieldMapping.unavailable) ?
         raceObject['unavailable'] += parseInt(i.raceCount)
-        : (parseInt(i.hfRace) === fieldMapping.unaviableNHLHF) ?
+        : (parseInt(i.hfRace) === fieldMapping.unavailable) ?
         raceObject['unavailable'] += parseInt(i.hfRaceCount)
-        : (parseInt(i.hfRace) === fieldMapping.unaviableEUHF) ?
-        raceObject['unavailable'] += parseInt(i.hfRaceCount) :``
+     :``
 })
     raceObject.verifiedParticipants = verifiedParticipants
     return raceObject;
