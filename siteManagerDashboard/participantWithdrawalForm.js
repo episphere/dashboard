@@ -285,10 +285,10 @@ const optionsHandler = (suspendDate) => {
     if (suspendDate !== '//') template += `<span>Suspend all contact on case until ${suspendDate}</span> <br />`
     template += `
         <div style="display:inline-block; margin-top:20px;">
-            ${ ( suspendDate !== '//' || (skipRequestedBy === true && requestedHolder.length == 0)) ?  
+            ${ ( suspendDate !== '//' || (skipRequestedBy === true && requestedHolder.length === 0)) ?  // requestedHolder.length >= 0))
                 ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
-            :  ( retainOptions.length === 0 ) ? 
-            `<span><b>Select an option & requested by before proceeding!</b></span> <br />
+            :  ( retainOptions.length === 0 ) ? // ||requestedHolder.length === 0 -->Select an option & requested by before proceeding!
+            `<span><b>Select an option before proceeding!</b></span> <br /> 
              <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
             : ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             }
