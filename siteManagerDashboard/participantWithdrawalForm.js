@@ -508,32 +508,36 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     
     if (computeScore === fieldMapping.withdrewConsent) { 
         sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
-        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedWithdrewConsent, fieldMapping.whoRequestedWithdrewConsentOther)
+        updateWhoRequested(sendRefusalData, 'kermit', fieldMapping.whoRequestedWithdrewConsentOther)
     }
     if (computeScore === fieldMapping.destroyDataStatus) { 
         sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
-        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedDataDestruction, fieldMapping.whoRequestedDataDestructionOther)
+        updateWhoRequested(sendRefusalData, 'elmo', fieldMapping.whoRequestedDataDestructionOther)
     }
     if (computeScore === fieldMapping.revokeHIPAAOnly) { 
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
-        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedHIPAArevocation, fieldMapping.whoRequestedHIPAArevocationOther)
+        updateWhoRequested(sendRefusalData, 'cookieMonster', fieldMapping.whoRequestedHIPAArevocationOther)
     }
-    if (computeScore === fieldMapping.refusedAllFutureActivities) { 
+    if (computeScore === fieldMapping.refusedAllFutureActivities) {
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
-        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
+        updateWhoRequested(sendRefusalData, 'bigBird', fieldMapping.whoRequestedAllFutureActivitiesOther)
     }
 
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-    const siteKey = await getAccessToken();
-    clickHandler(sendRefusalData, siteKey, token);
+    // const siteKey = await getAccessToken();
+    // clickHandler(sendRefusalData, siteKey, token);
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
-    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested]})[fieldMapping.whoRequested]
-    sendRefusalData[fieldMapping.requestOtherText] && delete Object.assign(sendRefusalData, { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})[fieldMapping.requestOtherText]
+    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})[fieldMapping.whoRequested]
+    if (sendRefusalData[fieldMapping.requestOtherText]) {
+        Object.assign(sendRefusalData[updatedWhoRequested], { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})
+        delete sendRefusalData[fieldMapping.requestOtherText]
+    }
+    console.log('sendRefusalData.....', sendRefusalData)
 }
 
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
