@@ -455,7 +455,7 @@ export const baselinePayment = (participantModule) => {
     (
         template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Eligible", 
-                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", checkIncentiveIssued(participantModule[fieldMapping.norcIssuePayment]))}`
+                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", checkIncentiveIssued(participantModule))}`
     ) :
     (
         template += `
@@ -465,8 +465,9 @@ export const baselinePayment = (participantModule) => {
     return template;
 }
 
-const checkIncentiveIssued = (issuePayment) => {
-    return issuePayment === (fieldMapping.yes) ? 'Issued' : 'Not Issued'
+const checkIncentiveIssued = (participantModule) => {
+    return  participantModule[fieldMapping.norcIssuePayment] === (fieldMapping.yes) ?`Issued on ${participantModule[fieldMapping.datePaymentIssued] && humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate])}`: 
+    participantModule[fieldMapping.refusedBaselinePayment] === (fieldMapping.yes) ? `Declined on ${participantModule[fieldMapping.refusedBaselinePaymentDate] && humanReadableMDY(participantModule[fieldMapping.refusedBaselinePaymentDate])}`: `N/A`
 }
 const biospecimenStatus = (biospecimenRow) => {
     let template = ``;
