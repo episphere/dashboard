@@ -435,6 +435,7 @@ export const baselineEMR = (participantModule) => {
 
 
 export const baselinePayment = (participantModule) => {
+    console.log('participantModule', participantModule)
     let template = ``;
     !participantModule ?  
     (
@@ -449,22 +450,23 @@ export const baselinePayment = (participantModule) => {
                 humanReadableMDY(participantModule[fieldMapping.refusedBaselinePaymentDate]), "N/A", "Y", "N/A")}`
     )
     :
-    participantModule[fieldMapping.issuePayment] === (fieldMapping.yes) ?
+    participantModule[fieldMapping.eligiblePayment] === (fieldMapping.yes) ?
     (
         template += `
-                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Issued", 
-                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", checkEligibilty(participantModule[fieldMapping.eligiblePayment]))}`
+                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Eligible", 
+                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", checkIncentiveIssued(participantModule))}`
     ) :
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Issued", 
-                "N/A", "N/A", "N", checkEligibilty(participantModule[fieldMapping.eligiblePayment]))}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Eligible", 
+                "N/A", "N/A", "N", checkIncentiveIssued(participantModule[fieldMapping.norcIssuePayment]))}`
     )
     return template;
 }
 
-const checkEligibilty = (eligiblePayment) => {
-    return eligiblePayment === (fieldMapping.yes) ? 'Eligible' : 'Not Eligible'
+const checkIncentiveIssued = (participantModule) => {
+    return  participantModule[fieldMapping.norcIssuePayment] === (fieldMapping.yes) ?`Issued on ${participantModule[fieldMapping.datePaymentIssued] && humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate])}`: 
+    participantModule[fieldMapping.refusedBaselinePayment] === (fieldMapping.yes) ? `Declined on ${participantModule[fieldMapping.refusedBaselinePaymentDate] && humanReadableMDY(participantModule[fieldMapping.refusedBaselinePaymentDate])}`: `N/A`
 }
 const biospecimenStatus = (biospecimenRow, biospecimenFlag) => {
     let template = ``;
