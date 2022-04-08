@@ -179,6 +179,46 @@ const renderActivityCheck = () => {
     return template;
 }
 
+const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, baselineCompleteParticipants}) => {
+    let template = `
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value">${activeRecruits}</div>
+      <div>
+        <h4 class="metrics-value-description">
+          Active Recruits
+          <div>
+          </div>
+      </div>
+    </div>
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value">${verifiedParticipants}</div>
+      <div>
+        <h4 class="metrics-value-description">Verified Participants</h4>
+      </div>
+      <p>
+      <span class="hovertext" data-hover="out of Active and Passive Recruits">      
+          Response Ratio:</span>
+          ${(verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
+      </p>
+    </div>
+    <div class="metrics-card">
+      <div class="card-top"></div>
+
+      <div class="metrics-value"> ${baselineCompleteParticipants} (${(baselineCompleteParticipants/verifiedParticipants*100).toFixed(1)}%)</div>
+      <div>
+        <p class="metrics-value-description">Completed Baseline Activities
+          Among Verified
+          Participants</p>
+      </div>
+    </div>`
+    let divElement = document.createElement('div');
+    divElement.className = 'row d-flex justify-content-center';
+    divElement.innerHTML = template;
+    return divElement;
+ }
+
 const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
@@ -244,6 +284,10 @@ const renderCharts = async (siteKey, isParent) => {
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
     const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats)
+
+    // Add metrics cards at top of home page
+    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, baselineCompleteParticipants: biospecimenStats.all });
+    mainContent.appendChild(metricsCards);
 
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
