@@ -179,7 +179,7 @@ const renderActivityCheck = () => {
     return template;
 }
 
-const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, baselineCompleteParticipants}) => {
+const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, modulesAndBaselinesCompletedParticipants}) => {
     let template = `
     <div class="metrics-card">
       <div class="card-top"></div>
@@ -200,13 +200,13 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
       <p>
       <span class="hovertext" data-hover="out of Active and Passive Recruits">      
           Response Ratio:</span>
-          ${(verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
+          ${activeRecruits + passiveRecruits === 0 || verifiedParticipants ===0? 0 : (verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
       </p>
     </div>
     <div class="metrics-card">
       <div class="card-top"></div>
 
-      <div class="metrics-value"> ${baselineCompleteParticipants} (${(baselineCompleteParticipants/verifiedParticipants*100).toFixed(1)}%)</div>
+      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} (${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%)</div>
       <div>
         <p class="metrics-value-description">Completed Baseline Activities
           Among Verified
@@ -285,10 +285,6 @@ const renderCharts = async (siteKey, isParent) => {
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
     const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats)
 
-    // Add metrics cards at top of home page
-    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, baselineCompleteParticipants: biospecimenStats.all });
-    mainContent.appendChild(metricsCards);
-
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
     siteSelectionRow.id = 'siteSelection';
@@ -306,6 +302,11 @@ const renderCharts = async (siteKey, isParent) => {
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
                 filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats);
         }
+
+        // Add metrics cards at top of dashboard
+        const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: Math.min(biospecimenStats.all, modulesStats.modulesSubmitted) });
+        mainContent.appendChild(metricsCards);
+
         renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
             genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats, biospecimenStats);
 
@@ -874,7 +875,11 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     mainContent.appendChild(siteSelectionRow);
     dropdownTrigger(siteTextContent, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
         participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults);
-
+    
+    // Add metrics cards at top of dashboard
+    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: Math.min(biospecimenStats.all, modulesStats.modulesSubmitted) });
+    mainContent.appendChild(metricsCards);
+    
     renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
         genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats, biospecimenStats);
 
