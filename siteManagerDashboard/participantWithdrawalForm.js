@@ -473,13 +473,25 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (computeScore === fieldMapping.revokeHIPAAOnly) { 
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString(); 
     }
-    
+    if (computeScore === fieldMapping.refusedAllFutureActivities) {
+        sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
+    }
+
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
     const siteKey = await getAccessToken();
     clickHandler(sendRefusalData, siteKey, token);
+}
+
+const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
+    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})[fieldMapping.whoRequested]
+    if (sendRefusalData[fieldMapping.requestOtherText]) {
+        Object.assign(sendRefusalData[updatedWhoRequested], { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})
+        delete sendRefusalData[fieldMapping.requestOtherText]
+    }
 }
 
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
