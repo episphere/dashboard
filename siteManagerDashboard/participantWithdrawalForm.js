@@ -518,7 +518,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedHIPAArevocation, fieldMapping.whoRequestedHIPAArevocationOther)
     }
-    if (computeScore === fieldMapping.refusedAllFutureActivities) { 
+    if (computeScore === fieldMapping.refusedAllFutureActivities) {
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
     }
@@ -532,8 +532,11 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
-    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested]})[fieldMapping.whoRequested]
-    sendRefusalData[fieldMapping.requestOtherText] && delete Object.assign(sendRefusalData, { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})[fieldMapping.requestOtherText]
+    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})[fieldMapping.whoRequested]
+    if (sendRefusalData[fieldMapping.requestOtherText]) {
+        Object.assign(sendRefusalData[updatedWhoRequested], { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})
+        delete sendRefusalData[fieldMapping.requestOtherText]
+    }
 }
 
 const setRefusalTimeStamp = (sendRefusalData, optionSelected, refusalOptionTimeStamp) =>{
