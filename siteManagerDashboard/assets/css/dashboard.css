@@ -272,7 +272,6 @@ table {
     position: relative;
   }
 
-  
   .hovertext:before {
     content: attr(data-hover);
     visibility: hidden;
@@ -281,24 +280,23 @@ table {
     background-color: white;
     color: black;
     text-align: center;
-    font-size: 1rem;
     border-radius: 2px;
     padding: 5px 5px;
     transition: opacity ease-in-out;
     position: absolute;
-    left: -20%;
-    top: 110%;
+    left: -30%;
+    top: 170%;
   }
   
   .hovertext:hover:before {
     opacity: 0.8;
     visibility: visible;
   }
+
 .metrics-card p {
     margin: 0;
     padding: 0;
     text-align: center;
-    font-size: large;
 }
 
   .metrics-card {
@@ -308,9 +306,6 @@ table {
     border-radius: 8px;
     box-shadow: 5px 3px 6px rgb(0 0 0 / 12%), 0 1px 4px rgb(0 0 0 / 24%);
 }
-
-
-  
 
   .card-top {
     width: 350px;
@@ -328,7 +323,10 @@ table {
 
   .metrics-value-description {
     color: hsl(228, 12%, 44%);
-    font-size: 1rem;
     text-align: center;
-    top: -20px;
+  }
+
+  .ratio-value {
+    font-size: large;
+    text-align: center;
   }

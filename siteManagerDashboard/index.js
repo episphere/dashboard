@@ -184,20 +184,15 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
     <div class="metrics-card">
       <div class="card-top"></div>
       <div class="metrics-value">${activeRecruits}</div>
-      <div>
-        <h4 class="metrics-value-description">
+        <p class="metrics-value-description">
           Active Recruits
-          <div>
-          </div>
-      </div>
+        </p>
     </div>
     <div class="metrics-card">
       <div class="card-top"></div>
       <div class="metrics-value">${verifiedParticipants}</div>
-      <div>
-        <h4 class="metrics-value-description">Verified Participants</h4>
-      </div>
-      <p>
+        <p class="metrics-value-description">Verified Participants</p>
+      <p class="ratio-value">
       <span class="hovertext" data-hover="out of Active and Passive Recruits">      
           Response Ratio:</span>
           ${activeRecruits + passiveRecruits === 0 || verifiedParticipants ===0? 0 : (verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
@@ -205,11 +200,9 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
     </div>
     <div class="metrics-card">
       <div class="card-top"></div>
-
-      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} (${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%)</div>
-      <div>
-        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Completed Baseline Activities Among Verified Participants</span></p>
-      </div>
+      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} </div>
+        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Verified Participants who Completed Baseline Survey and Samples</span></p>
+        <p class="ratio-value">Completion Ratio: ${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%</p>
     </div>`
     let divElement = document.createElement('div');
     divElement.className = 'row d-flex justify-content-center';
