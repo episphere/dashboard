@@ -209,6 +209,18 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    pieChartBiopspecimen.appendChild(subPieChartBiopspecimen);
 
 
+
+   let barChart2 = document.createElement('div');
+   barChart2.classList = ['col-lg-4 charts'];
+
+   let subBarChart2 = document.createElement('div');
+   subBarChart2.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subBarChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
+   subBarChart2.setAttribute('id', 'totalBarChart');
+   barChart2.appendChild(subBarChart2);
+
+   
+
    row5.appendChild(pieChartModule);
    row5.appendChild(pieChartSsn);
    row5.appendChild(pieChartBiopspecimen);

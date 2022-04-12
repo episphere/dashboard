@@ -243,7 +243,7 @@ const renderCharts = async (siteKey, isParent) => {
     const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
-    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats)
+    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats, (activeVerificationStatus.verified + passiveVerificationStatus.verified))
 
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
@@ -750,7 +750,7 @@ const filterRecruits = (data) => {
     return currentObj;
 }
 
-const filterBiospecimenStats = (data) => {
+const filterBiospecimenStats = (data, verifiedParticipants) => {
     let currenntBiospecimenStats = {};
     let all = 0;
     let bloodUrine = 0;
@@ -778,7 +778,7 @@ const filterBiospecimenStats = (data) => {
     currenntBiospecimenStats.urine = urine;
     currenntBiospecimenStats.mouthwash = mouthwash;
     currenntBiospecimenStats.blood = blood;
-    currenntBiospecimenStats.none = none;
+    currenntBiospecimenStats.none = (verifiedParticipants + none - (all + bloodUrine + bloodMouthwash + urineMouthwash + urine + mouthwash + blood ));
     return currenntBiospecimenStats;
 }
 
