@@ -343,8 +343,11 @@ const pageLimitDropdownTrigger = () => {
             showAnimation();
             let sitePref = ``
             let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+            if (sitePrefAttr === null) sitePref = 'allResults'
+            else {
+                if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+                else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+            }
             const sitePrefId = nameToKeyObj[sitePref];
             const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
             hideAnimation();
@@ -373,8 +376,11 @@ const pagninationNextTrigger = () => {
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr === null) sitePref = 'allResults'
+        else {
+            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        }
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
@@ -409,8 +415,11 @@ const pagninationPreviousTrigger = () => {
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr === null) sitePref = 'allResults'
+        else {
+            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        }
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
         const response = await getParticipantFromSites(sitePrefId, pageCounter);
@@ -512,6 +521,12 @@ const tableTemplate = (data, showButtons) => {
                 : (participant[x] === fieldMapping.started1) ?
                 (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
+            )
+            : ( x === (fieldMapping.allBaselineSurveysCompleted).toString()) ?
+            (
+                (participant[x] === fieldMapping.yes) ?
+                    ( template += `<td>${participant[x] ? 'Yes'  : ''}</td>` )
+                : (template += `<td>${participant[x] ? 'No'  : ''}</td>` )
             )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
