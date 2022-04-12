@@ -522,11 +522,11 @@ const tableTemplate = (data, showButtons) => {
                 (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
-            : ( x === (fieldMapping.allBaselineSurveysCompleted).toString()) ?
+            : ( x === fieldMapping.allBaselineSurveysCompleted.toString()) ?
             (
-                (participant[x] === fieldMapping.yes) ?
-                    ( template += `<td>${participant[x] ? 'Yes'  : ''}</td>` )
-                : (template += `<td>${participant[x] ? 'No'  : ''}</td>` )
+                (participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] === fieldMapping.yes) ?
+                    ( template += `<td>${participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] ? 'Yes'  : ''}</td>` )
+                    : (template += `<td>${participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] ? 'No'  : ''}</td>` )
             )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
