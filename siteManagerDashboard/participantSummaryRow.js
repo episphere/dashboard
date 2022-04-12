@@ -436,7 +436,6 @@ export const baselineEMR = (participantModule) => {
 
 
 export const baselinePayment = (participantModule) => {
-    console.log('participantModule', participantModule)
     let template = ``;
     !participantModule ?  
     (

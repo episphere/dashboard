@@ -6,6 +6,7 @@ import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAP
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
+let filterHolder = {}
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
@@ -977,7 +978,9 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
     let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
-    if (limit === null) limit = 10 
+    filterHolder['siteCode'] = query
+    filterHolder['nextPageCounter'] = nextPageCounter
+    (limit === null) ? limit = 10 : filterHolder['limit'] = limit
     if (nextPageCounter === undefined ) {
         (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     } else {
@@ -995,7 +998,12 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
 const getParticipantWithLimit = async (query, limit) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
+    filterHolder['siteCode'] = query
+    filterHolder['limit'] = limit
+    if (query === nameToKeyObj.allResults) 
+        template += `/dashboard?api=getParticipants&type=all&limit=${limit}`
+    else 
+        template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -1008,8 +1016,20 @@ const getParticipantWithLimit = async (query, limit) => {
 const getParticipantsWithFilters = async (type, sitePref) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 10;
-    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
+    let limit = ``;
+    filterHolder['siteCode'] = sitePref
+    filterHolder['type'] = type
+    if (filterHolder['limit'] !== undefined)
+        limit = filterHolder['limit']
+    else
+        limit = 10
+    if (sitePref !== 'Filter by Site') {
+        template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}`
+    }
+    else {
+        console.log('kkk', limit)
+        template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
+    }
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -1023,6 +1043,11 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     const siteKey = await getAccessToken();
     let template = ``;
     const limit = 10;
+    filterHolder['siteCode'] = sitePref
+    filterHolder['limit'] = limit
+    filterHolder['type'] = type
+    filterHolder['startDate'] = startDate
+    filterHolder['endDate'] = endDate
     (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
     (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
     (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
