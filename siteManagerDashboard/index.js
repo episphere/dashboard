@@ -768,7 +768,8 @@ const filterBiospecimenStats = (data, verifiedParticipants) => {
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.no) { blood += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.no) { urine += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.yes) { mouthwash += i.verfiedPts }
-        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.no) { none += i.verfiedPts }
+        if ((i.baselineBlood === fieldMapping.no || i.baselineBlood === null) && (i.baselineUrine === fieldMapping.no || i.baselineUrine === null) 
+            && (i.baselineMouthwash === fieldMapping.no || i.baselineMouthwash === null)) { none += i.verfiedPts }
     })
 
     currenntBiospecimenStats.all = all;
@@ -778,7 +779,7 @@ const filterBiospecimenStats = (data, verifiedParticipants) => {
     currenntBiospecimenStats.urine = urine;
     currenntBiospecimenStats.mouthwash = mouthwash;
     currenntBiospecimenStats.blood = blood;
-    currenntBiospecimenStats.none = (verifiedParticipants + none - (all + bloodUrine + bloodMouthwash + urineMouthwash + urine + mouthwash + blood ));
+    currenntBiospecimenStats.none = none;
     return currenntBiospecimenStats;
 }
 
