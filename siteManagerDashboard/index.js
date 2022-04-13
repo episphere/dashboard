@@ -274,7 +274,7 @@ const renderCharts = async (siteKey, isParent) => {
     const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
-    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats)
+    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats, (activeVerificationStatus.verified + passiveVerificationStatus.verified))
 
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
@@ -770,25 +770,35 @@ const filterRecruits = (data) => {
     return currentObj;
 }
 
-const filterBiospecimenStats = (data) => {
+const filterBiospecimenStats = (data, verifiedParticipants) => {
     let currenntBiospecimenStats = {};
     let all = 0;
     let bloodUrine = 0;
     let bloodMouthwash = 0;
     let urineMouthwash = 0;
+    let mouthwash = 0;
+    let urine = 0;
+    let blood = 0;
     let none = 0;
     data && data.filter( i => {
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.yes) { all += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.no) { bloodUrine += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.yes) { bloodMouthwash += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.yes) { urineMouthwash += i.verfiedPts }
-        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.no) { none += i.verfiedPts }
+        if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.no) { blood += i.verfiedPts }
+        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.no) { urine += i.verfiedPts }
+        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.yes) { mouthwash += i.verfiedPts }
+        if ((i.baselineBlood === fieldMapping.no || i.baselineBlood === null) && (i.baselineUrine === fieldMapping.no || i.baselineUrine === null) 
+            && (i.baselineMouthwash === fieldMapping.no || i.baselineMouthwash === null)) { none += i.verfiedPts }
     })
 
     currenntBiospecimenStats.all = all;
     currenntBiospecimenStats.bloodUrine = bloodUrine;
     currenntBiospecimenStats.bloodMouthwash = bloodMouthwash;
     currenntBiospecimenStats.urineMouthwash = urineMouthwash;
+    currenntBiospecimenStats.urine = urine;
+    currenntBiospecimenStats.mouthwash = mouthwash;
+    currenntBiospecimenStats.blood = blood;
     currenntBiospecimenStats.none = none;
     return currenntBiospecimenStats;
 }
