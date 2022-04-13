@@ -179,6 +179,37 @@ const renderActivityCheck = () => {
     return template;
 }
 
+const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, modulesAndBaselinesCompletedParticipants}) => {
+    let template = `
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value">${activeRecruits}</div>
+        <p class="metrics-value-description">
+          Active Recruits
+        </p>
+    </div>
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value">${verifiedParticipants}</div>
+        <p class="metrics-value-description">Verified Participants</p>
+      <p class="ratio-value">
+      <span class="hovertext" data-hover="out of Active and Passive Recruits">      
+          Response Ratio:</span>
+          ${activeRecruits + passiveRecruits === 0 || verifiedParticipants ===0? 0 : (verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
+      </p>
+    </div>
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} </div>
+        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Verified Participants who Completed Baseline Survey and Samples</span></p>
+        <p class="ratio-value">Completion Ratio: ${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%</p>
+    </div>`
+    let divElement = document.createElement('div');
+    divElement.className = 'row d-flex justify-content-center';
+    divElement.innerHTML = template;
+    return divElement;
+ }
+
 const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
@@ -262,6 +293,11 @@ const renderCharts = async (siteKey, isParent) => {
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
                 filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats);
         }
+
+        // Add metrics cards at top of dashboard
+        const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: Math.min(biospecimenStats.all, modulesStats.modulesSubmitted) });
+        mainContent.appendChild(metricsCards);
+
         renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
             genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats, biospecimenStats);
 
@@ -403,7 +439,7 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
         raceObject['white'] += parseInt(i.raceCount)
         :  (parseInt(i.shRace) === fieldMapping.whiteSH) ?
         raceObject['white'] += parseInt(i.shRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.whiteNHHF) ?
+        :  (parseInt(i.hfRace) === fieldMapping.whiteHF) ?
         raceObject['white'] += parseInt(i.hfRaceCount)
         :  (parseInt(i.race) === fieldMapping.other) ?
         raceObject['other'] += parseInt(i.raceCount)
@@ -433,32 +469,16 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
         :  (parseInt(i.shRace) === fieldMapping.unavailable) ?
         raceObject['unavailable'] += parseInt(i.shRaceCount)
         
-        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBLHHF) ? // HF Harmonization
+        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanHF) ? // HF Harmonization
         raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBNLHHF) ?
+        :  (parseInt(i.hfRace) === fieldMapping.otherHF) ?
         raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.africanAmericanBEUHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.otherHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.otherNHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.otherEUHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.whiteHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.whiteEUHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-        :  (parseInt(i.hfRace) === fieldMapping.unaviableHLHF) ?
-        raceObject['other'] += parseInt(i.hfRaceCount)
-
+      
         :  (parseInt(i.race) === fieldMapping.unavailable) ?
         raceObject['unavailable'] += parseInt(i.raceCount)
-
-        : (parseInt(i.hfRace) === fieldMapping.unaviableNHLHF) ?
+        : (parseInt(i.hfRace) === fieldMapping.unavailable) ?
         raceObject['unavailable'] += parseInt(i.hfRaceCount)
-        : (parseInt(i.hfRace) === fieldMapping.unaviableEUHF) ?
-        raceObject['unavailable'] += parseInt(i.hfRaceCount) :``
+     :``
 })
     raceObject.verifiedParticipants = verifiedParticipants
     return raceObject;
@@ -856,7 +876,11 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     mainContent.appendChild(siteSelectionRow);
     dropdownTrigger(siteTextContent, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
         participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults);
-
+    
+    // Add metrics cards at top of dashboard
+    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: Math.min(biospecimenStats.all, modulesStats.modulesSubmitted) });
+    mainContent.appendChild(metricsCards);
+    
     renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
         genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats, biospecimenStats);
 

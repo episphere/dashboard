@@ -108,7 +108,7 @@ export const render = (participant) => {
                                     ${baselineMouthwashSample(participant)}
                                 </tr>
                                 <tr class="row-color-payment">
-                                    ${baselinePayment(participant[fieldMapping.baselinePayment])}
+                                    ${baselinePayment(participant[fieldMapping.paymentRoundup][fieldMapping.baselinePayment])}
                                 </tr>
                                 <tr class="row-color-emr-light">
                                     ${baselineEMR(participant[fieldMapping.baselineEMR])}

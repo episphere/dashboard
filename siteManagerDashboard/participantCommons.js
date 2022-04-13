@@ -10,7 +10,7 @@ export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [ 'Connect_ID', 'pin', 'token', 'studyId', fieldMapping.timeStudyIdSubmitted, fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
-    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
+    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.henryFReportedRace, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
     fieldMapping.consentDate, fieldMapping.consentVersion, fieldMapping.hippaFlag, fieldMapping.hippaDate, fieldMapping.hippaVersion, fieldMapping.userProfileFlag, 
     fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.automatedVerification, fieldMapping.outreachRequiredForVerification, fieldMapping.manualVerification,
     fieldMapping.duplicateType, fieldMapping.firstNameMatch, fieldMapping.lastNameMatch, fieldMapping.dobMatch, fieldMapping.pinMatch, fieldMapping.tokenMatch, 
@@ -343,8 +343,11 @@ const pageLimitDropdownTrigger = () => {
             showAnimation();
             let sitePref = ``
             let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+            if (sitePrefAttr === null) sitePref = 'allResults'
+            else {
+                if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+                else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+            }
             const sitePrefId = nameToKeyObj[sitePref];
             const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
             hideAnimation();
@@ -373,8 +376,11 @@ const pagninationNextTrigger = () => {
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr === null) sitePref = 'allResults'
+        else {
+            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        }
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
@@ -409,8 +415,11 @@ const pagninationPreviousTrigger = () => {
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr === null) sitePref = 'allResults'
+        else {
+            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        }
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
         const response = await getParticipantFromSites(sitePrefId, pageCounter);
@@ -513,6 +522,12 @@ const tableTemplate = (data, showButtons) => {
                 (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
+            : ( x === fieldMapping.allBaselineSurveysCompleted.toString()) ?
+            (
+                (participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] === fieldMapping.yes) ?
+                    ( template += `<td>${participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] ? 'Yes'  : ''}</td>` )
+                    : (template += `<td>${participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] ? 'No'  : ''}</td>` )
+            )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
                 x === (fieldMapping.refusedFutureSurveys).toString()) ?
@@ -604,6 +619,17 @@ const tableTemplate = (data, showButtons) => {
                         template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Declined` : ``}</td>`
                     :
                         template += `<td>${participant['state'][fieldMapping.sanfordReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                    )
+            : (x === fieldMapping.henryFReportedRace.toString()) ? (
+                (  
+                    ( participant['state'][fieldMapping.henryFReportedRace.toString()] === fieldMapping.africanAmericanHF ) ?
+                    template += `<td>${participant['state'][fieldMapping.henryFReportedRace.toString()] ? `African American` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.henryFReportedRace.toString()] === fieldMapping.whiteHF ) ?
+                        template += `<td>${participant['state'][fieldMapping.henryFReportedRace.toString()] ? `Caucasian/White` : ``}</td>`
+                        :   ( participant['state'][fieldMapping.henryFReportedRace.toString()] === fieldMapping.otherHF ) ?
+                        template += `<td>${participant['state'][fieldMapping.henryFReportedRace.toString()] ? `Other` : ``}</td>`
+                        :
+                        template += `<td>${participant['state'][fieldMapping.henryFReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                     )
             : (x === fieldMapping.preConsentOptOut.toString()) ? (
                 ( participant['state'][fieldMapping.preConsentOptOut.toString()] === fieldMapping.yes ) ?

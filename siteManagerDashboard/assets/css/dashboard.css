@@ -267,3 +267,66 @@ table {
 .ws-nowrap {
     white-space: nowrap;
 }
+
+.hovertext {
+    position: relative;
+  }
+
+  .hovertext:before {
+    content: attr(data-hover);
+    visibility: hidden;
+    opacity: 0;
+    width: max-content;
+    background-color: white;
+    color: black;
+    text-align: center;
+    border-radius: 2px;
+    padding: 5px 5px;
+    transition: opacity ease-in-out;
+    position: absolute;
+    left: -30%;
+    top: 170%;
+  }
+  
+  .hovertext:hover:before {
+    opacity: 0.8;
+    visibility: visible;
+  }
+
+.metrics-card p {
+    margin: 0;
+    padding: 0;
+    text-align: center;
+}
+
+  .metrics-card {
+    background: #ebf1ff;
+    width: 350px;
+    margin: 10px;
+    border-radius: 8px;
+    box-shadow: 5px 3px 6px rgb(0 0 0 / 12%), 0 1px 4px rgb(0 0 0 / 24%);
+}
+
+  .card-top {
+    width: 350px;
+    height: 5px;
+    background-color: #168ff7;
+    background-image: linear-gradient(to right, #168ff7, #3ecc8e);
+    border-radius: 8px 8px 0px 0px;
+  }
+
+  .metrics-value {
+    text-align: center;
+    font-size: 45px;
+    font-weight: bold;
+  }
+
+  .metrics-value-description {
+    color: hsl(228, 12%, 44%);
+    text-align: center;
+  }
+
+  .ratio-value {
+    font-size: large;
+    text-align: center;
+  }
