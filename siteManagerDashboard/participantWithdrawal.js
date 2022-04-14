@@ -48,7 +48,7 @@ const checkPreviousWithdrawalStatus = (participant) => {
     if (participant[fieldMapping.participationStatus] !== fieldMapping.noRefusal && participant[fieldMapping.participationStatus] !== ``) {
         localStorage.setItem('participationStatus', true)
         template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        Previously Selected Refusal Option: <b> ${getParticipantStatus(participant)} </b>
+                        Previously Selected Refusal Option(s): <b> ${getParticipantSelectedRefusals(participant)} </b>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
@@ -63,4 +63,24 @@ const checkPreviousWithdrawalStatus = (participant) => {
                     </div>`
     }
     alertList.innerHTML = template;
+}
+
+const getParticipantSelectedRefusals = (participant) => {
+    let template = ``
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Initial Survey​, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline Mouthwash (Saliva) Donation, ` 
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​​, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​, ` 
+    if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `All Future Study Activities, ` 
+    if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ) template += `Revoke HIPAA Authorization, `
+    if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes ) template += `Withdraw Consent​, `
+    if (participant[fieldMapping.destroyData] === fieldMapping.yes ) template += `Destroy Data​, `
+    if (participant[fieldMapping.participantDeceased] === fieldMapping.yes ) template += `Participant Deceased, ` 
+
+    template = template.replace(/,\s*$/, "") // removes comma from the end
+
+    return template
 }

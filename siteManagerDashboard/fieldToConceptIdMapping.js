@@ -73,7 +73,6 @@ export default
     537892528: '3rd',
 
     'prefPhone': 127547625,
-    'prefEmail': 357184057,
 
     "notStarted": 0,
     "started": 1,
@@ -153,22 +152,28 @@ export default
     "bloodUrineSurvey": 826163434,
     "bloodUrineSurveyFlag": 253883960,
     "bloodUrineSurveyStartedDate": 534669573,
-    "bloodUrineSurveyCompletedDate": 286191859,
+    "bloodUrineSurveyCompletedDate": 764863765,
 
     "mouthwashSurvey": 390351864,
     "mouthwashSurveyFlag": 547363263,
-    "mouthwashSurveyStartedDate": 534669573,
-    "mouthwashSurveyCompletedDate": 286191859,
+    "mouthwashSurveyStartedDate": 286191859,
+    "mouthwashSurveyCompletedDate": 195145666,
+
+    'combinedBoodUrineMouthwashSurvey': 265193023,
+    'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
+    'combinedBoodUrineMouthwashSurveyCompleteDate': 222161762,
 
     "baselineEMR": 209454331,
     "baselineEMRflag": 101170406,
     "baselineEMRpushDate": 143523420,
 
     "baselinePaymentFlag": 117044491,
+    "paymentRoundup": 130371375,
     "baselinePayment": 266600170,
     "eligiblePayment": 731498909,
-    "issuePayment": 648936790,
-    "baselinePaymentDate": 297462035,
+    "norcIssuePayment": 222373868,
+    "datePaymentIssued": 297462035,
+    "baselinePaymentDate": 787567527,
     "refusedBaselinePayment": 648228701,
     "refusedBaselinePaymentDate": 438636757,
 
@@ -328,7 +333,7 @@ export default
 
     "0": 208325815,
     "1": 622008261,	
-    "2": 134659217,
+    "2": 906417725,
     "3": 872012139,
     "4": 854021266,
     "5": 241236037,
@@ -336,7 +341,7 @@ export default
 
     208325815 :  "No Refusal",
     622008261 : "Refused some activities",  
-    134659217 : "Refused all future activities",
+    906417725 : "Refused all future activities",
     872012139 : "Revoked HIPAA only",
     854021266 : "Withdrew Consent",
     241236037 :  "Destroy Data",
@@ -345,7 +350,7 @@ export default
 
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
-    "refusedAll": 134659217,
+    "refusedAll": 906417725,
     "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
     "destroyDataStatus": 241236037,
@@ -361,14 +366,34 @@ export default
 
     'suspendContact': 113579866,
     'startDateSuspendedContact': 161366008,
-    'whoRequested': 297147359,
+    // 'whoRequested': 678208830,
+    // 'requestParticipant': 990304236,
+    // 'requestPrincipalInvestigator': 711721942,
+    // 'requestConnectIRB': 290977684,
+    // 'requestPIListed': 149224829,
+    // 'requestChairSite': 869233107,
+    // 'requestOther': 951080629,
+    // 'requestOtherText': 366295286,
+
+
     'requestParticipant': 648459216,
     'requestPrincipalInvestigator': 658808644,
     'requestConnectIRB': 745366882,
     'requestPIListed': 786757575,
     'requestChairSite': 847056701,
-    'requestOther': 181769837,
+    'requestOther': 807835037,
+
+    'whoRequested': 297147359,
     'requestOtherText': 366295286,
+
+    'whoRequestedAllFutureActivities': 603278289,
+    'whoRequestedAllFutureActivitiesOther': 821930940,
+    'whoRequestedHIPAArevocation': 175506524,
+    'whoRequestedHIPAArevocationOther': 905787778,
+    'whoRequestedWithdrewConsent': 299274441,
+    'whoRequestedWithdrewConsentOther': 457532784,
+    'whoRequestedDataDestruction': 524352591,
+    'whoRequestedDataDestructionOther': 902332801,
 
     'campaignType': 667474224,
     'random':926338735,
@@ -443,7 +468,5 @@ export default
     959657954 : 'Verification Complete',
     850536553 : 'Cannot Be Verified' ,
 	364179400 : 'Verified - mimimally Enrolled',
-    485892221 : 'Fully Enrolled' 	
-    
-    
+    485892221 : 'Fully Enrolled'   
 }
