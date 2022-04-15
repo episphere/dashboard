@@ -523,7 +523,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
     } 
     if (computeScore === fieldMapping.refusedSome) {
-        updateWhoRequestedRemRefs(sendRefusalData, fieldMapping.whoRequested, fieldMapping.requestOtherText)
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequested, fieldMapping.requestOtherText)
     }
 
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
@@ -535,17 +535,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
-    (updatedWhoRequested === [fieldMapping.whoRequested]) ? (Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }}))
+    (updatedWhoRequested == [fieldMapping.whoRequested]) ? (Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }}))
     :  delete Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})[fieldMapping.whoRequested]
     
-    if (sendRefusalData[fieldMapping.requestOtherText]) {
-        Object.assign(sendRefusalData[updatedWhoRequested], { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})
-        delete sendRefusalData[fieldMapping.requestOtherText]
-    }
-}
-
-const updateWhoRequestedRemRefs = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
-    Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})
     if (sendRefusalData[fieldMapping.requestOtherText]) {
         Object.assign(sendRefusalData[updatedWhoRequested], { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})
         delete sendRefusalData[fieldMapping.requestOtherText]
