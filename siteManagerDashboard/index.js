@@ -529,6 +529,7 @@ const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, pa
     participantModulesTwoThree && participantModulesTwoThree.filter( i => {
         modulesTwoThreeSubmitted += i.countModuleTwo
         modulesTwoThreeSubmitted += i.countModuleThree
+        modulesTwoThreeSubmitted -= i.countModuleTwoAndThree
     })
     const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
     noModulesSubmitted = verifiedParticipants - (modulesSubmitted+moduleOneSubmitted+modulesTwoThreeSubmitted)
