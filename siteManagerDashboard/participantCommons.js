@@ -509,6 +509,7 @@ const tableTemplate = (data, showButtons) => {
                 template += `<td>${participant[x] ? 'Withdrew Consent'  : ''}</td>`
                 : (participant[x] === fieldMapping.destroyDataStatus) ?
                 template += `<td>${participant[x] ? 'Destroy Data Status'  : ''}</td>`
+                : (participant[x] === ``) ? template += `<td>No Refusal</td>` 
                 : (participant[x] === fieldMapping.deceased) ?
                     template += `<td>${participant[x] ? 'Deceased'  : ''}</td>` 
                 : template += `<td> ERROR </td>`
