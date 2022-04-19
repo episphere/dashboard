@@ -486,7 +486,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         prevParticipantStatusSelection = prevParticipantStatusScore[prevParticipantStatusSelection]
         highestStatus.push(parseInt(prevParticipantStatusSelection))
     }
-    if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = ``
+    if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = fieldMapping.noRefusal
     
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
