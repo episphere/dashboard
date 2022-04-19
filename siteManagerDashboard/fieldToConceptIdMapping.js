@@ -333,19 +333,19 @@ export default
 
     "0": 208325815,
     "1": 622008261,	
-    "2": 906417725,
+    "2": 458508122,
     "3": 872012139,
     "4": 854021266,
     "5": 241236037,
-    "6": 987563196,
+    "6": 618686157,
 
     208325815 :  "No Refusal",
     622008261 : "Refused some activities",  
-    906417725 : "Refused all future activities",
+    458508122 : "Refused all future activities",
     872012139 : "Revoked HIPAA only",
     854021266 : "Withdrew Consent",
     241236037 :  "Destroy Data",
-    987563196 : "Deceased",
+    618686157 : "Deceased",
 
 
     "noRefusal": 208325815,
