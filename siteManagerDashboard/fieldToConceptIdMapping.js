@@ -350,11 +350,11 @@ export default
 
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
-    "refusedAll": 906417725,
+    "refusedAll": 458508122,
     "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
     "destroyDataStatus": 241236037,
-    "deceased": 987563196,
+    "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
     'dateDataDestroyRequested': 269050420,
