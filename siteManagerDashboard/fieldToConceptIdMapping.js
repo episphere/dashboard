@@ -394,6 +394,8 @@ export default
     'whoRequestedWithdrewConsentOther': 457532784,
     'whoRequestedDataDestruction': 524352591,
     'whoRequestedDataDestructionOther': 902332801,
+    'whoRequestedSuspendedContact': 719222792,
+    'whoRequestedSuspendedContactOther': 993855378,
 
     'campaignType': 667474224,
     'random':926338735,
