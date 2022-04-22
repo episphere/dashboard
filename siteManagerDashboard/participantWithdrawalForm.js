@@ -473,6 +473,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         sendRefusalData[fieldMapping.suspendContact] = suspendDate
         sendRefusalData[fieldMapping.startDateSuspendedContact] = new Date().toISOString();
         sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequested, fieldMapping.requestOtherText)
     }
     const previousSuspendedStatus = localStorage.getItem('suspendContact');
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
@@ -530,8 +531,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-    const siteKey = await getAccessToken();
-    clickHandler(sendRefusalData, siteKey, token);
+    console.log('dd', sendRefusalData)
+    // const siteKey = await getAccessToken();
+    // clickHandler(sendRefusalData, siteKey, token);
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
