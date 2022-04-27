@@ -82,7 +82,7 @@ export const baselineBloodSample = (participantModule) => {
         ( participantModule[fieldMapping.bloodFlag] === (fieldMapping.yes)) ?
             template += `
                     ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Blood", "Collected", 
-                        humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.bloodDateTime]), biospecimenStatus(participantModule, fieldMapping.biosepcimenBloodCollection), "N", "N/A")}`
+                        humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.bloodDateTime]&& participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.bloodDateTime]), biospecimenStatus(participantModule, fieldMapping.biosepcimenBloodCollection), "N", "N/A")}`
             : (
                 template += `
                     ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Not Collected", "N/A", "N/A", "N", "N/A")}`
