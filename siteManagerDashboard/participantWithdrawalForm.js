@@ -251,22 +251,39 @@ export const addEventMonthSelection = (month, day) => {
 }
 
 export const autoSelectOptions = () => {
-    const a = document.getElementById('defaultCheck11');
-    const b = document.getElementById('defaultCheck10');
-    if (a) {
-        a.addEventListener('change', function() {
+    const selectedDestroyData = document.getElementById('defaultCheck11');
+    const selectedPtWithdrawn = document.getElementById('defaultCheck10');
+    const selectedPtDeceased = document.getElementById('messageCheckbox')
+    if (selectedDestroyData) {
+        selectedDestroyData.addEventListener('change', function() {
             let checkedValue = document.getElementById('defaultCheck10');
             checkedValue.checked = true;
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
           });
     }
-    if (b) {
-        b.addEventListener('change', function() {
+    if (selectedPtWithdrawn) {
+        selectedPtWithdrawn.addEventListener('change', function() {
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
           });
     }
+    if (selectedPtDeceased) {
+        selectedPtDeceased.addEventListener('change', function() {
+            disableEnableWhoRequested('defaultRequest1')
+            disableEnableWhoRequested('defaultRequest2')
+            disableEnableWhoRequested('defaultRequest3')
+            disableEnableWhoRequested('defaultRequest4')
+            disableEnableWhoRequested('defaultRequest5')
+            disableEnableWhoRequested('defaultRequest6')
+            disableEnableWhoRequested('defaultRequest7')
+          });
+    }
+}
+
+const disableEnableWhoRequested = (id) => {
+    let checkedValue = document.getElementById(id);
+    checkedValue.disabled === true ? checkedValue.disabled = false : checkedValue.disabled = true
 }
 
 export const viewOptionsSelected = () => {

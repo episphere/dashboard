@@ -130,8 +130,8 @@ export const render = () => {
                                 </div>
                                 
                                 <div class="mt-4 mb-4" style="display:inline-block;">
-                                    <button type="submit" class="btn btn-primary" id="updateId">Submit</button>
-                                    <button type="button" class="btn btn-danger" id="clearForm">Clear</button>
+                                    <button type="submit" class="btn btn-primary" id="updateId">Save Changes</button>
+                                    <button type="button" class="btn btn-danger" id="exitForm">Exit Without Saving</button>
                                 </div>
         
                             </form>
@@ -535,8 +535,9 @@ const getConditionsResponse = (i) => {
 }
 
 const clearNotificationSchemaForm = () => {
-    const a = document.getElementById('clearForm');
+    const a = document.getElementById('exitForm');
     a.addEventListener("click", () => {
-        window.location.reload();
+        const loadDetailsPage = '#notifications/retrievenotificationschema'
+        location.replace(window.location.origin + window.location.pathname + loadDetailsPage);
     })
 }
