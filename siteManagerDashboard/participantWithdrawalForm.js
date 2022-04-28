@@ -253,6 +253,7 @@ export const addEventMonthSelection = (month, day) => {
 export const autoSelectOptions = () => {
     const a = document.getElementById('defaultCheck11');
     const b = document.getElementById('defaultCheck10');
+    const c = document.getElementById('messageCheckbox')
     if (a) {
         a.addEventListener('change', function() {
             let checkedValue = document.getElementById('defaultCheck10');
@@ -265,6 +266,24 @@ export const autoSelectOptions = () => {
         b.addEventListener('change', function() {
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
+          });
+    }
+    if (c) {
+        c.addEventListener('change', function() {
+            console.log('hey')
+            let checkedValue = document.getElementById('defaultRequest1');
+            console.log('nnnn')
+            checkedValue.disabled = true
+            let checkedValue2 = document.getElementById('defaultRequest2');
+            checkedValue2.disabled = true;
+            let checkedValue3 = document.getElementById('defaultRequest3');
+            checkedValue3.disabled = true
+            let checkedValue4 = document.getElementById('defaultRequest4');
+            checkedValue4.disabled = true;
+            let checkedValue5 = document.getElementById('defaultRequest5');
+            checkedValue5.disabled = true
+            let checkedValue6 = document.getElementById('defaultRequest6');
+            checkedValue6.disabled = true;
           });
     }
 }
