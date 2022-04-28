@@ -271,19 +271,19 @@ export const autoSelectOptions = () => {
     if (selectedPtDeceased) {
         selectedPtDeceased.addEventListener('change', function() {
             let checkedValue = document.getElementById('defaultRequest1');
-            checkedValue.disabled = true
+            checkedValue.disabled === true ? checkedValue.disabled = false : checkedValue.disabled = true
             let checkedValue2 = document.getElementById('defaultRequest2');
-            checkedValue2.disabled = true;
+            checkedValue2.disabled === true ? checkedValue2.disabled = false : checkedValue2.disabled = true
             let checkedValue3 = document.getElementById('defaultRequest3');
-            checkedValue3.disabled = true
+            checkedValue3.disabled === true ? checkedValue3.disabled = false : checkedValue3.disabled = true
             let checkedValue4 = document.getElementById('defaultRequest4');
-            checkedValue4.disabled = true;
+            checkedValue4.disabled === true ? checkedValue4.disabled = false : checkedValue4.disabled = true
             let checkedValue5 = document.getElementById('defaultRequest5');
-            checkedValue5.disabled = true
+            checkedValue5.disabled === true ? checkedValue5.disabled = false : checkedValue5.disabled = true
             let checkedValue6 = document.getElementById('defaultRequest6');
-            checkedValue6.disabled = true;
+            checkedValue6.disabled === true ? checkedValue6.disabled = false : checkedValue6.disabled = true
             let checkedValue7 = document.getElementById('defaultRequest7');
-            checkedValue7.disabled = true;
+            checkedValue7.disabled === true ? checkedValue7.disabled = false : checkedValue7.disabled = true
           });
     }
 }
