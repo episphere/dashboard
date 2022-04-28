@@ -179,6 +179,8 @@ export default
     "paymentRoundup": 130371375,
     "baselinePayment": 266600170,
     "eligiblePayment": 731498909,
+    "paymentIssued": 648936790,
+    "datePaymentIssued": 297462035,
     "norcIssuePayment": 222373868,
     "datePaymentIssued": 297462035,
     "baselinePaymentDate": 787567527,
