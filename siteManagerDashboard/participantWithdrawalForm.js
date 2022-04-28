@@ -251,28 +251,26 @@ export const addEventMonthSelection = (month, day) => {
 }
 
 export const autoSelectOptions = () => {
-    const a = document.getElementById('defaultCheck11');
-    const b = document.getElementById('defaultCheck10');
-    const c = document.getElementById('messageCheckbox')
-    if (a) {
-        a.addEventListener('change', function() {
+    const selectedDestroyData = document.getElementById('defaultCheck11');
+    const selectedPtWithdrawn = document.getElementById('defaultCheck10');
+    const selectedPtDeceased = document.getElementById('messageCheckbox')
+    if (selectedDestroyData) {
+        selectedDestroyData.addEventListener('change', function() {
             let checkedValue = document.getElementById('defaultCheck10');
             checkedValue.checked = true;
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
           });
     }
-    if (b) {
-        b.addEventListener('change', function() {
+    if (selectedPtWithdrawn) {
+        selectedPtWithdrawn.addEventListener('change', function() {
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
           });
     }
-    if (c) {
-        c.addEventListener('change', function() {
-            console.log('hey')
+    if (selectedPtDeceased) {
+        selectedPtDeceased.addEventListener('change', function() {
             let checkedValue = document.getElementById('defaultRequest1');
-            console.log('nnnn')
             checkedValue.disabled = true
             let checkedValue2 = document.getElementById('defaultRequest2');
             checkedValue2.disabled = true;
@@ -284,6 +282,8 @@ export const autoSelectOptions = () => {
             checkedValue5.disabled = true
             let checkedValue6 = document.getElementById('defaultRequest6');
             checkedValue6.disabled = true;
+            let checkedValue7 = document.getElementById('defaultRequest7');
+            checkedValue7.disabled = true;
           });
     }
 }
