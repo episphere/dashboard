@@ -443,15 +443,7 @@ export const baselinePayment = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N", "N/A")}
-                `
-    ) : 
-    participantModule[fieldMapping.paymentRoundup] &&
-    (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ?
-    (
-        template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", 
-                humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePaymentDate]), "N/A", "Y", "N/A")}`
+                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A")}`
     )
     :
     participantModule[fieldMapping.paymentRoundup] &&
@@ -459,12 +451,12 @@ export const baselinePayment = (participantModule) => {
     (
         template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Eligible", 
-                humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.baselinePayment][fieldMapping.baselinePaymentDate]), "N/A", "N", checkIncentiveIssued(participantModule))}`
+                humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.baselinePayment][fieldMapping.baselinePaymentDate]), "N/A", "N/A", checkIncentiveIssued(participantModule))}`
     ) :
     (
         template += `
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Eligible", 
-                "N/A", "N/A", "N", checkIncentiveIssued(participantModule))}`
+                "N/A", "N/A", "N/A", checkIncentiveIssued(participantModule))}`
     )
     return template;
 }
@@ -472,8 +464,12 @@ export const baselinePayment = (participantModule) => {
 const checkIncentiveIssued = (participantModule) => {
     return participantModule[fieldMapping.paymentRoundup] &&
     (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.paymentIssued] === (fieldMapping.yes)) ? 
-    `Issued on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.datePaymentIssued])}`: `N/A`
+    `Issued on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.datePaymentIssued])}`: 
+    (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ? 
+    `Declined on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePaymentDate])}`:
+    `N/A`
 }
+
 const biospecimenStatus = (biospecimenRow, biospecimenFlag) => {
     let template = ``;
     (biospecimenRow[fieldMapping.biospecimenCollectionDetail] &&
