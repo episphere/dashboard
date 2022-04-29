@@ -305,10 +305,9 @@ export default
     'destroyData': 831041022,
     'participantDeceased': 987563196,
 
-    'tooBusy': 851245875,
+    'tooBusy': 141450621,
     'noLongerInterested': 919699172,
-    'participantGreedy': 141450621,
-    'notGreatBenefit': 576083042,
+    'participantGreedy': 576083042,
     'tooSick': 431428747,
     'noInternet': 121430614,
     'worriedAboutResults': 523768810,
