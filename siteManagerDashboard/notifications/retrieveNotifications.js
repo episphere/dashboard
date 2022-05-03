@@ -199,7 +199,6 @@ const editNotificationSchema = () => {
                     localStorage.setItem("updateNotificationSchema", unescape(editSelectedSchema.schema));
                     updateCounter--;
                     localStorage.setItem("updateFlag", updateCounter);
-                    console.log('updateFlag', updateCounter)
                     redirectToStoreSchema();
                 })
             })

@@ -9,7 +9,6 @@ export const renderStoreNotificationSchema = async () => {
     document.getElementById('notifications').classList.add('active');
     let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
     let updateCounter = localStorage.getItem("updateFlag");
-
     localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
     localStorage.setItem("emailCheck", false);

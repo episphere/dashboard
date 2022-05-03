@@ -41,7 +41,6 @@ export const render = (participant) => {
         template += `
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
-        console.log('pa', participant)
         template += `<div class="table-responsive">
 
                         <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
