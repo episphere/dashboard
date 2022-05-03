@@ -20,6 +20,8 @@ export const renderStoreNotificationSchema = async () => {
     const concepts = await getConcepts();  
     init(concepts);
     if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
+    localStorage.setItem("idFlag", false);
+    localStorage.removeItem("updateNotificationSchema")
 }
 
 const init = (concepts) => { 

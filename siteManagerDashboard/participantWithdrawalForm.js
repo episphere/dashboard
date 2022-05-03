@@ -552,8 +552,8 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
     console.log('sendRefusalData', sendRefusalData)
-    // const siteKey = await getAccessToken();
-    // clickHandler(sendRefusalData, siteKey, token);
+    const siteKey = await getAccessToken();
+    clickHandler(sendRefusalData, siteKey, token);
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
