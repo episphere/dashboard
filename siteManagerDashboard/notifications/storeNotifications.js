@@ -9,8 +9,6 @@ export const renderStoreNotificationSchema = async () => {
     document.getElementById('notifications').classList.add('active');
     let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
     let updateCounter = localStorage.getItem("updateFlag");
-    console.log('updateSchemaNotification1', updateSchemaNotification)
-    console.log('updateCounter1', updateCounter)
 
     localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
@@ -20,8 +18,6 @@ export const renderStoreNotificationSchema = async () => {
     const concepts = await getConcepts();  
     init(concepts);
     if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
-    localStorage.setItem("idFlag", false);
-    localStorage.removeItem("updateNotificationSchema")
 }
 
 const init = (concepts) => { 
@@ -223,8 +219,6 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
     if (a != null) {
         a.dataset.id = updateSchemaNotification.id;
         localStorage.setItem("idFlag", true);
-        console.log('a.dataset.id', a.dataset.id)
-        console.log('idflag0', localStorage.getItem("idFlag"))
     }
 }
 
@@ -488,14 +482,10 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 const storeNotificationSchema = async (schema) => {
     const a = document.getElementById('updateId').getAttribute('data-id');
     const idFlag = localStorage.getItem("idFlag");
-    console.log('idFlag2', idFlag)
     if(idFlag == "true" || a && a.length != 0) { 
         let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
         localStorage.setItem("idFlag", false);
         schema.id = updateSchemaNotification.id;
-        localStorage.removeItem("updateNotificationSchema")
-        console.log('tests', localStorage.getItem("idFlag"))
-        console.log('test222', localStorage.getItem("updateNotificationSchema"))
     }
     showAnimation();
     const siteKey = await getAccessToken();  
