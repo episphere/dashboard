@@ -339,6 +339,9 @@ const optionsHandler = (suspendDate) => {
             :  ( retainOptions.length > 0 && requestedHolder.length === 0 ) || ( suspendDate !== '//' && requestedHolder.length === 0 )  ? 
             `<span><b>Select requested by before proceeding!</b></span> <br />
              <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
+            :(( retainOptions.length === 0 && requestedHolder.length >= 0 ) && ( suspendDate === '//' && requestedHolder.length >= 0 ) ) ? 
+            `<span><b>Make a selection before proceeding!</b></span> <br />
+             <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
             : ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             }
             <button type="button" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
@@ -536,7 +539,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedHIPAArevocation, fieldMapping.whoRequestedHIPAArevocationOther)
     }
-    if (computeScore === fieldMapping.refusedAllFutureActivities) {
+    if (computeScore === fieldMapping.refusedAll) {
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
     } 
