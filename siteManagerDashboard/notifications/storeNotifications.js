@@ -16,7 +16,15 @@ export const renderStoreNotificationSchema = async () => {
     localStorage.setItem("pushNotificationCheck", false);
     const concepts = await getConcepts();  
     init(concepts);
-    if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
+    if(updateCounter == 0) {
+        mapSchemaNotificaiton(updateSchemaNotification, concepts);
+    }
+    else {
+        if (localStorage.getItem("updateNotificationSchema") !== null) {
+            localStorage.setItem("idFlag", false);
+            localStorage.removeItem("updateNotificationSchema");
+        }
+    }
 }
 
 const init = (concepts) => { 
@@ -485,6 +493,7 @@ const storeNotificationSchema = async (schema) => {
         let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
         localStorage.setItem("idFlag", false);
         schema.id = updateSchemaNotification.id;
+        localStorage.removeItem("updateNotificationSchema");
     }
     showAnimation();
     const siteKey = await getAccessToken();  
