@@ -1,4 +1,4 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
+import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { showAnimation, hideAnimation, baseAPI, getAccessToken } from '../utils.js';
 
 
@@ -11,9 +11,20 @@ export const renderStoreNotificationSchema = async () => {
     let updateCounter = localStorage.getItem("updateFlag");
     localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
+    localStorage.setItem("emailCheck", false);
+    localStorage.setItem("smsCheck", false);
+    localStorage.setItem("pushNotificationCheck", false);
     const concepts = await getConcepts();  
     init(concepts);
-    if(updateCounter == 0) mapSchemaNotificaiton(updateSchemaNotification, concepts);
+    if(updateCounter == 0) {
+        mapSchemaNotificaiton(updateSchemaNotification, concepts);
+    }
+    else {
+        if (localStorage.getItem("updateNotificationSchema") !== null) {
+            localStorage.setItem("idFlag", false);
+            localStorage.removeItem("updateNotificationSchema");
+        }
+    }
 }
 
 const init = (concepts) => { 
@@ -60,6 +71,21 @@ export const render = () => {
                                     <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
                                 </div>
                     
+                                <div class="row">
+                                    <label class="col-form-label col-md-4" for="condition-key">Schedule at (EST)</label>
+                                    <div class="col-md-1 form-check">
+                                        <input class="form-check-input" checked value="15:00" type="radio" name="scheduleAt" id="scheduleAt1">
+                                        <label class="form-check-label" for="scheduleAt1">
+                                            3:00 PM
+                                        </label>
+                                    </div>
+                                    <div class="col-md-1 form-check">
+                                        <input class="form-check-input" type="radio" value="20:00" name="scheduleAt" id="scheduleAt2">
+                                        <label class="form-check-label" for="scheduleAt2">
+                                            8:00 PM
+                                        </label>
+                                    </div>
+                                </div>
                                 <div id="emailDiv"></div>
                                 <div id="smsDiv"></div>
                                 <div id="pushDiv"></div>
@@ -112,8 +138,8 @@ export const render = () => {
                                 </div>
                                 
                                 <div class="mt-4 mb-4" style="display:inline-block;">
-                                    <button type="submit" class="btn btn-primary" id="updateId">Submit</button>
-                                    <button type="button" class="btn btn-danger" id="clearForm">Clear</button>
+                                    <button type="submit" class="btn btn-primary" id="updateId">Save Changes</button>
+                                    <button type="button" class="btn btn-danger" id="exitForm">Exit Without Saving</button>
                                 </div>
         
                             </form>
@@ -124,30 +150,33 @@ export const render = () => {
 
 }
 
-const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
+export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) => {
     document.getElementById("attempt").value = updateSchemaNotification.attempt;
     document.getElementById("description").value = updateSchemaNotification.description;
     document.getElementById("category").value = updateSchemaNotification.category;
     const titleElement = document.getElementById("getCurrentTitle");
-    titleElement.innerHTML = "Update Notification Schema";
+    if (titleElement != null) titleElement.innerHTML = "Update Notification Schema";
 
     (updateSchemaNotification.notificationType).forEach(i => {
         if (i === "email") {
             document.getElementById('emailCheckBox').checked = true
-            renderDivs("email");
+            renderDivs("email", flag);
             document.getElementById('emailSubject').value = updateSchemaNotification.email.subject
             document.getElementById('emailBody').value = updateSchemaNotification.email.body
+            localStorage.setItem("emailCheck", true);
         }
-        else if (i === "sms") {
+        if (i === "sms") {
             document.getElementById('smsCheckBox').checked = true
-            renderDivs("sms");
+            renderDivs("sms", flag);
             document.getElementById('smsBody').value = updateSchemaNotification.sms.body
+            localStorage.setItem("smsCheck", true);
         } 
-        else if (i === "push") {
+        if (i === "push") {
             document.getElementById('pushCheckBox').checked = true
-            renderDivs("push");
+            renderDivs("push", flag);
             document.getElementById('pushSubject').value = updateSchemaNotification.push.subject
             document.getElementById('pushBody').value = updateSchemaNotification.push.body
+            localStorage.setItem("pushNotificationCheck", true);
         }
     })
 
@@ -187,13 +216,17 @@ const mapSchemaNotificaiton = (updateSchemaNotification, concepts) => {
     conceptDropdown(concepts, 'primary-field');
     const primaryfield = document.getElementById('primaryfield0');
     if (primaryfield) {primaryfield.value = updateSchemaNotification.primaryField}
-
+    Array.from(document.getElementsByName('scheduleAt')).forEach(dt => {
+        if(dt.value === updateSchemaNotification.scheduleAt) dt.checked = true;
+    });
     document.getElementById('days').value = updateSchemaNotification.time['day'];
     document.getElementById('hours').value = updateSchemaNotification.time['hour'];
     document.getElementById('minutes').value = updateSchemaNotification.time['minute'];
     const a = document.getElementById('updateId');
-    a.dataset.id = updateSchemaNotification.id;
-    localStorage.setItem("idFlag", true);
+    if (a != null) {
+        a.dataset.id = updateSchemaNotification.id;
+        localStorage.setItem("idFlag", true);
+    }
 }
 
 
@@ -208,6 +241,7 @@ const formSubmit = () => {
         obj['notificationType'] = Array.from(document.getElementsByName('notification-checkbox')).filter(dt => dt.checked).map(dt => dt.dataset.type);
         obj['emailField'] = document.getElementById('emailconcept0').value;
         obj['firstNameField'] = document.getElementById('firstnameconcept0').value;
+        obj['scheduleAt'] = Array.from(document.getElementsByName('scheduleAt')).filter(dt => dt.checked)[0].value;
         if(document.getElementById('preferrednameconcept0').value) obj['preferredNameField'] = document.getElementById('preferrednameconcept0').value;
         obj['phoneField'] = document.getElementById('phoneconcept0').value;
         obj['primaryField'] = document.getElementById('primaryfield0').value;
@@ -243,7 +277,7 @@ const formSubmit = () => {
     })
 }
 
-const addEventMoreCondition = (concepts) => {
+export const addEventMoreCondition = (concepts, flag) => {
     const btn = document.getElementById('addConditions');
     btn.addEventListener('click', () => {
         const conditionNo = parseInt(btn.dataset.condition);
@@ -252,31 +286,31 @@ const addEventMoreCondition = (concepts) => {
         div.classList = ['row form-group'];
         div.innerHTML = `
             <label class="col-form-label col-md-4">Condition</label>
-            <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key')}</div>
+            <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
             <select name="condition-operator" class="col-md-1 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
             </select>
-            <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value')}</div>
+            <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
         `
         conditionDiv.appendChild(div);
         btn.dataset.condition = conditionNo + 1;
     });
 }
 
-const getConcepts = async () => {
+export const getConcepts = async () => {
     return await (await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/jsons/varToConcept.json')).json()
 }
 
-const conceptDropdown = (concepts, name) => {
+export const conceptDropdown = (concepts, name) => {
     const elements = document.getElementsByClassName(name);
     Array.from(elements).forEach((ele, i) => {
         ele.innerHTML = getDataListTemplate(concepts, `${name.replace(/-/g, '')}${i}`, name);
     })
 }
 
-const getDataListTemplate = (concepts, id, name) => {
-    let template = `<input ${id !== 'preferrednameconcept0'? 'required': ''} list="dataList${id}" id="${id}" class="form-control" ${name ? `name="${name}"`: ''}>`;
+const getDataListTemplate = (concepts, id, name, flag) => {
+    let template = `<input ${id !== 'preferrednameconcept0'? 'required': ''} list="dataList${id}" id="${id}" class="form-control" ${name ? `name="${name}"`: ''} ${flag === true ? `readonly`: ``}>`;
     template += `<datalist id="dataList${id}">`
     for(let key in concepts) {
         template += `<option value="${concepts[key]}">${key}</option>`
@@ -295,9 +329,8 @@ const addEventNotificationCheckbox = () => {
     })
 }
 
-const renderDivs = (array) => {
-    if(array.includes('email')){
-        let template = `
+const getEmailNotificationTemplate = () => {
+    let template = `
             <div class="row">
                 <div class="col">
                     <h5>Email</h5>
@@ -313,12 +346,11 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        document.getElementById('emailDiv').innerHTML = template
-    }
-    else document.getElementById('emailDiv').innerHTML = '';
+    return template;
+}
 
-    if(array.includes('sms')){
-        let template = `
+const getSmsNotificationTemplate = () => {
+    let template = `
             <div class="row">
                 <div class="col">
                     <h5>SMS</h5><small id="characterCounts">0/160 characters</small>
@@ -329,12 +361,11 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        document.getElementById('smsDiv').innerHTML = template
-    }
-    else document.getElementById('smsDiv').innerHTML = '';
+    return template;
+}
 
-    if(array.includes('push')){
-        let template = `
+const getPushNotificationTemplate = () => {
+    let template = `
             <div class="row">
                 <div class="col">
                     <h5>Push notification</h5>
@@ -349,19 +380,88 @@ const renderDivs = (array) => {
                 </div>
             </div>
         `
-        document.getElementById('pushDiv').innerHTML = template;
-    }
-    else document.getElementById('pushDiv').innerHTML = '';
+    return template;
+}
 
+const renderDivs = (array, flag) => {
+
+    if (flag === true) {
+        if(array.includes('email')){
+            let template = getEmailNotificationTemplate();
+            document.getElementById('emailDiv').innerHTML = template
+        }
+    
+        if(array.includes('sms')){
+            let template = getSmsNotificationTemplate();
+            document.getElementById('smsDiv').innerHTML = template
+        }
+    
+        if(array.includes('push')){
+            let template = getPushNotificationTemplate();
+            document.getElementById('pushDiv').innerHTML = template;
+        }
+    }
+
+    else {
+        if(array.includes('email') && localStorage.getItem('emailCheck') === 'false'){
+            let template = getEmailNotificationTemplate();
+            document.getElementById('emailDiv').innerHTML = template
+            localStorage.setItem("emailCheck", true);
+            reRenderNotficationDivs();
+        }
+
+        if(array.includes('sms') && localStorage.getItem('smsCheck') === 'false'){
+            let template = getSmsNotificationTemplate();
+            document.getElementById('smsDiv').innerHTML = template
+            localStorage.setItem("smsCheck", true);
+            reRenderNotficationDivs();
+
+        }
+
+        if(array.includes('push') && localStorage.getItem('pushNotificationCheck') === 'false'){
+            let template = getPushNotificationTemplate();
+            document.getElementById('pushDiv').innerHTML = template;
+            localStorage.setItem("pushNotificationCheck", true);
+            reRenderNotficationDivs();
+        }
+    }
     const emailBody = document.getElementById('emailBody');
     if(emailBody) addEmailPreview(emailBody);
 
     addEventSMSCharacterCount();
 }
 
+
+const reRenderNotficationDivs = () => {
+    const emailRecheck = document.getElementById('emailCheckBox');
+    emailRecheck.addEventListener('click', () => {
+        if (emailRecheck.checked === false) document.getElementById('emailDiv').innerHTML = '';
+        if (emailRecheck.checked === true) {
+            let template = getEmailNotificationTemplate();
+            document.getElementById('emailDiv').innerHTML = template; 
+        }
+    })
+    const smsRecheck = document.getElementById('smsCheckBox');
+    smsRecheck.addEventListener('click', () => {
+        if (smsRecheck.checked === false) document.getElementById('smsDiv').innerHTML = '';
+        if (smsRecheck.checked === true) {
+            let template = getSmsNotificationTemplate();
+            document.getElementById('smsDiv').innerHTML = template;
+        }
+    })
+    const pushRecheck = document.getElementById('pushNotificationCheckBox');
+    pushRecheck.addEventListener('click', () => {
+        if (pushRecheck.checked === false) document.getElementById('pushDiv').innerHTML = '';
+        if (pushRecheck.checked === true) {
+            let template = getPushNotificationTemplate();
+        document.getElementById('pushDiv').innerHTML = template;
+        }
+    })
+}
+
 const addEventSMSCharacterCount = () => {
     if(document.getElementById('smsBody')){
-        document.getElementById('smsBody').addEventListener('keyup', () => {
+        document.getElementById('smsBody').addEventListener('mouseenter', () => {
             document.getElementById('characterCounts').innerHTML = `${document.getElementById('smsBody').value.length}/160 characters`;
         })
     }
@@ -369,7 +469,7 @@ const addEventSMSCharacterCount = () => {
 
 const addEmailPreview = (emailBody) => {
     const converter = new showdown.Converter()
-    emailBody.addEventListener('keyup', () => {
+    emailBody.addEventListener('mouseenter', () => {
         const text = emailBody.value;
         const html = converter.makeHtml(text);
         document.getElementById('emailBodyPreview').innerHTML = html;
@@ -393,6 +493,7 @@ const storeNotificationSchema = async (schema) => {
         let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
         localStorage.setItem("idFlag", false);
         schema.id = updateSchemaNotification.id;
+        localStorage.removeItem("updateNotificationSchema");
     }
     showAnimation();
     const siteKey = await getAccessToken();  
@@ -443,8 +544,9 @@ const getConditionsResponse = (i) => {
 }
 
 const clearNotificationSchemaForm = () => {
-    const a = document.getElementById('clearForm');
+    const a = document.getElementById('exitForm');
     a.addEventListener("click", () => {
-        window.location.reload();
+        const loadDetailsPage = '#notifications/retrievenotificationschema'
+        location.replace(window.location.origin + window.location.pathname + loadDetailsPage);
     })
 }

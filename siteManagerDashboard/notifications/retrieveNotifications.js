@@ -1,5 +1,6 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from '../navigationBar.js';
+import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
+import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
 
 
 export const renderRetrieveNotificationSchema = async () => {
@@ -13,10 +14,12 @@ export const renderRetrieveNotificationSchema = async () => {
     let categoriesHolder = getNotificationSchemaCategories(response.data);
     hideAnimation();
     mainContent.innerHTML = await render(response);
-    triggerSchemaEdit(categoriesHolder, 'Filter by Category');
+    const concepts = await getConcepts();  
+    triggerSchemaEdit(categoriesHolder, 'Filter by Category', concepts);
 }
 
-const triggerSchemaEdit = (categoriesHolder, categoryName) => {
+const triggerSchemaEdit = (categoriesHolder, categoryName, concepts) => {
+    viewNotificationSchema(concepts);
     editNotificationSchema();
     renderCategorydDropdown(categoriesHolder);
     dropdownTrigger(categoriesHolder, categoryName);
@@ -41,6 +44,15 @@ const render = async (response) => {
                     </div> 
                         ${renderNotificationCards(response.data)}
                 </div></div>`
+        template += ` <div class="modal fade" id="modalShowSchema" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content sub-div-shadow">
+                <div class="modal-header" id="modalHeader"></div>
+                <div class="modal-body" id="modalBody"></div>
+            </div>
+        </div>
+    </div>`
+         
  
     return template;
 }
@@ -69,11 +81,111 @@ const renderNotificationCards = (data) => {
                             <div class="card-body">
                                 <h5 class="card-title">Category: ${i.category} </h5>
                                 <p class="card-text">${i.description}</p>
+                                <button type="button" class="btn btn-success viewSchema" data-toggle="modal" data-target="#modalShowSchema"  data-schema=${schemaInfo} >View</button>
                                 <button type="button" class="btn btn-primary editSchema" data-schema=${schemaInfo}>Edit</button>
                             </div>
                         </div>`
     });
     return template;
+}
+
+const viewNotificationSchema = (concepts) => {
+    const a = Array.from(document.getElementsByClassName('detailedRow'));
+    if (a) {
+        a.forEach(element => {
+            let viewCard = element.getElementsByClassName('viewSchema')[0];
+            viewCard.addEventListener('click', () => {
+                let viewSelectedSchema = getDataAttributes(viewCard);
+                const setSelectedData  = JSON.parse(unescape(viewSelectedSchema.schema));
+                const header = document.getElementById('modalHeader');
+                const body = document.getElementById('modalBody');
+                header.innerHTML = `<h5>View Schema</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+                
+                let template = '<div>'
+                template += `
+                    <div class="row form-group">
+                    <label class="col-form-label col-md-4" for="attempt">Attempt</label> 
+                    <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" value=${unescape(JSON.stringify(setSelectedData.attempt))} readonly>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4" for="description">Description</label>
+                    <textarea class="col-md-8" required id="description" cols="30" rows="3" readonly>${setSelectedData.description}</textarea>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4" for="category">Category</label>
+                    <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" value=${unescape(JSON.stringify(setSelectedData.category))} readonly>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Notification type</label>
+                    <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="emailCheckBox" readonly>Email</label>
+                    <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="smsCheckBox" readonly>SMS</label>
+                    <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;" readonly>&nbsp;<label for="pushNotificationCheckBox" readonly>Push Notification</label>
+                </div>
+    
+                <div id="emailDiv"></div>
+                <div id="smsDiv"></div>
+                <div id="pushDiv"></div>
+    
+                <div id="conditionsDiv">
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-4">Condition</label>
+                        <div class="condition-key col-md-3 mr-2 p-0"></div>
+                        <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
+                            <option value="equals">equals</option>
+                            <option value="notequals">notequals</option>
+                        </select>
+                        <div class="condition-value col-md-3 mr-2 p-0"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="1">Add more condition</button>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Email field concept</label>
+                    <div class="email-concept col-md-8 p-0"></div>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Phone no. concept</label>
+                    <div class="phone-concept col-md-8 p-0"></div>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">First name concept</label>
+                    <div class="first-name-concept col-md-8 p-0"></div>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Preferred name concept</label>
+                    <div class="preferred-name-concept col-md-8 p-0"></div>
+                </div>
+    
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Primary field</label>
+                    <div class="primary-field col-md-8 p-0"></div>
+                </div>
+                
+                <div class="row form-group">
+                    <label class="col-form-label col-md-4">Time</label>
+                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" readonly>
+                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" readonly>
+                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" readonly>
+                </div>
+               </div>`
+
+                body.innerHTML = template;
+                addEventMoreCondition(concepts, true);
+                conceptDropdown(concepts, 'condition-key');
+                conceptDropdown(concepts, 'condition-value');
+                mapSchemaNotificaiton(setSelectedData, concepts, true);
+                document.getElementById('addConditions').disabled = true; 
+            })
+        })
+    }
 }
 
 const editNotificationSchema = () => {
@@ -83,8 +195,8 @@ const editNotificationSchema = () => {
             a.forEach(element => {
                 let editRow = element.getElementsByClassName('editSchema')[0];
                 editRow.addEventListener('click', () => {
-                    const t = getDataAttributes(editRow);
-                    localStorage.setItem("updateNotificationSchema", unescape(t.schema));
+                    const editSelectedSchema = getDataAttributes(editRow);
+                    localStorage.setItem("updateNotificationSchema", unescape(editSelectedSchema.schema));
                     updateCounter--;
                     localStorage.setItem("updateFlag", updateCounter);
                     redirectToStoreSchema();
@@ -139,4 +251,3 @@ const dropdownTrigger = (originalCategoriesHolder, categoryName) => {
         })
     }
 }
-
