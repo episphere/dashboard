@@ -74,7 +74,6 @@ export const userLoggedIn = () => {
       const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
           unsubscribe();
           if (user) {
-            console.log('user', user)
               resolve(true);
           } else {
               resolve(false);
