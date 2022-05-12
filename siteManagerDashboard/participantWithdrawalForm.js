@@ -138,32 +138,32 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                         <div style="position:relative; left:10px; top:4px;">
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest1" name="whoRequested" value="The participant (via the CSC directly or via a Connect site staff)"
-                                                data-optionKey=${fieldMapping.requestParticipant}>
+                                                data-optionKey=${fieldMapping.requestParticipant} disabled>
                                                 <label for="defaultRequest1">The participant (via the CSC directly or via a Connect site staff)</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest2" name="whoRequested" value="The Connect Principal Investigator (or designate)"
-                                                data-optionKey=${fieldMapping.requestPrincipalInvestigator}>
+                                                data-optionKey=${fieldMapping.requestPrincipalInvestigator} disabled>
                                                 <label for="defaultRequest2">The Connect Principal Investigator (or designate)</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest3" name="whoRequested" value="The Chair of the Connect IRB-of-record (NIH IRB)"
-                                                data-optionKey=${fieldMapping.requestConnectIRB}>
+                                                data-optionKey=${fieldMapping.requestConnectIRB} disabled>
                                                 <label for="defaultRequest3">The Chair of the Connect IRB-of-record (NIH IRB)</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest4" name="whoRequested" value="Site PI listed on the site-specific consent form"
-                                                data-optionKey=${fieldMapping.requestPIListed}>
+                                                data-optionKey=${fieldMapping.requestPIListed} disabled>
                                                 <label for="defaultRequest4">Site PI listed on the site-specific consent form</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest5" name="whoRequested" value="Chair of the Site IRB"
-                                                data-optionKey=${fieldMapping.requestChairSite}>
+                                                data-optionKey=${fieldMapping.requestChairSite} disabled>
                                                 <label for="defaultRequest5">Chair of the Site IRB</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest6" name="whoRequested" value="Other (specify):"
-                                                data-optionKey=${fieldMapping.requestOther}>
+                                                data-optionKey=${fieldMapping.requestOther} disabled>
                                                 <label for="defaultRequest6">Other (specify):</label>
                                                 <input type="text" id="defaultRequest7" name="defaultRequest7" data-optionKey=${fieldMapping.requestOtherText}><br>
                                             </div>
