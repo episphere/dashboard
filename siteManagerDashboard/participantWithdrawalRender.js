@@ -27,7 +27,7 @@ export const renderRefusalOptions = () => {
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="I’m not able to complete the study activities online" name="options" 
-                        data-optionKey=${fieldMapping.concernedAboutPrivacy} id="defaultCheck4">
+                        data-optionKey=${fieldMapping.unableToCompleteOnlineActivites} id="defaultCheck4">
                         <label class="form-check-label" for="defaultCheck4">
                             I’m not able to complete the study activities online
                         </label>
