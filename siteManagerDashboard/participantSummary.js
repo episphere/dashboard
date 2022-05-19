@@ -42,9 +42,7 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<div class="table-responsive">
-
                         <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
-
                         <div class="sticky-header">
                             <table class="table table-striped">
                                 <thead class="thead-dark sticky-row"> 
@@ -108,7 +106,7 @@ export const render = (participant) => {
                                     ${baselineMouthwashSample(participant)}
                                 </tr>
                                 <tr class="row-color-payment">
-                                    ${baselinePayment(participant[fieldMapping.paymentRoundup][fieldMapping.baselinePayment])}
+                                    ${baselinePayment(participant)}
                                 </tr>
                                 <tr class="row-color-emr-light">
                                     ${baselineEMR(participant[fieldMapping.baselineEMR])}
@@ -208,7 +206,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'KPGA':
-                coordinates = [{x: 100, y: 345}, {x0: 100, y0: 300}, {x1: 100, y1: 385}]
+                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'KPHI':
                 coordinates = [{x: 110, y: 410}, {x0: 110, y0: 370}, {x1: 110, y1: 450}]

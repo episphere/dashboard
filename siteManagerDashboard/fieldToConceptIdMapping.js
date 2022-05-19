@@ -151,7 +151,7 @@ export default
 
     "urineFlag": 167958071,
     "urineDateTime": 847159717,
-    "refusedUrine": 685002411,
+    "refusedUrine": 949501163,
 
     "mouthwash": 684635302,
     "mouthwashDateTime": 448660695,
@@ -179,6 +179,8 @@ export default
     "paymentRoundup": 130371375,
     "baselinePayment": 266600170,
     "eligiblePayment": 731498909,
+    "paymentIssued": 648936790,
+    "datePaymentIssued": 297462035,
     "norcIssuePayment": 222373868,
     "datePaymentIssued": 297462035,
     "baselinePaymentDate": 787567527,
@@ -303,10 +305,9 @@ export default
     'destroyData': 831041022,
     'participantDeceased': 987563196,
 
-    'tooBusy': 851245875,
+    'tooBusy': 141450621,
     'noLongerInterested': 919699172,
-    'participantGreedy': 141450621,
-    'notGreatBenefit': 576083042,
+    'participantGreedy': 576083042,
     'tooSick': 431428747,
     'noInternet': 121430614,
     'worriedAboutResults': 523768810,
