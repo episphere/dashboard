@@ -137,11 +137,7 @@ export const baselineMouthwashSample = (participantModule) => {
         ( participantModule[fieldMapping.mouthwash] === (fieldMapping.yes)) ?
             template += `
             ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
-<<<<<<< HEAD
                     humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.mouthwashDateTime]), biospecimenStatus(participantModule, fieldMapping.biosepcimenMouthwashdCollection), "N", "N/A")}`
-=======
-                    humanReadableMDY(participantModule[fieldMapping.mouthwashDateTime]), biospecimenStatus(participantModule), "N", "N/A")}`
->>>>>>> 3ccb47f... added biospec collection status changes (#308)
             : (
                 template += `
                         ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A")}`
