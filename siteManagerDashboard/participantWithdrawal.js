@@ -83,4 +83,6 @@ const getParticipantSelectedRefusals = (participant) => {
     template = template.replace(/,\s*$/, "") // removes comma from the end
 
     return template
+
 }
+

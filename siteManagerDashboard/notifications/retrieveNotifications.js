@@ -251,4 +251,3 @@ const dropdownTrigger = (originalCategoriesHolder, categoryName) => {
         })
     }
 }
-

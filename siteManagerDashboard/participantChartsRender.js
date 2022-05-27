@@ -1,5 +1,3 @@
-
-
 export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
     participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, 
     modulesSurvey, ssnSurvey, optOuts, biospecimenMetrics  ) => {
@@ -207,7 +205,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 //    subPieChartBiopspecimen.classList = ['col-lg-12 viz-div sub-div-shadow'];
 //    subPieChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
 //    pieChartBiopspecimen.appendChild(subPieChartBiopspecimen);
-
 
    let barChartBiopspecimen = document.createElement('div');
    barChartBiopspecimen.classList = ['col-lg-4 charts'];

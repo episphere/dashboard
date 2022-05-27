@@ -479,9 +479,5 @@ export default
     959657954 : 'Verification Complete',
     850536553 : 'Cannot Be Verified' ,
 	364179400 : 'Verified - mimimally Enrolled',
-    485892221 : 'Fully Enrolled'
-
-
-    
-    
+    485892221 : 'Fully Enrolled'   
 }
