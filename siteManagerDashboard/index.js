@@ -909,7 +909,7 @@ const clearLocalStorage = () => {
 
 const filterDatabySiteCode = (resultHolder, filteredResults, siteKeyFilter) => {
     if (siteKeyFilter !== nameToKeyObj.allResults) {
-        filteredResults.filter(i => {
+        filteredResults && filteredResults.filter(i => {
             if (i.siteCode === siteKeyFilter) {
                 resultHolder.push(i);
             }
