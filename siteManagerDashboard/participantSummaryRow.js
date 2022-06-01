@@ -82,7 +82,8 @@ export const baselineBloodSample = (participantModule) => {
         ( participantModule[fieldMapping.bloodFlag] === (fieldMapping.yes)) ?
             template += `
                     ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Blood", "Collected", 
-                        humanReadableMDY(participantModule[fieldMapping.bloodDateTime]), biospecimenStatus(participantModule), "N", "N/A")}`
+                    participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.bloodDateTime]), 
+                    biospecimenStatus(participantModule, fieldMapping.biosepcimenBloodCollection), "N", "N/A")}`
             : (
                 template += `
                     ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Not Collected", "N/A", "N/A", "N", "N/A")}`
@@ -109,7 +110,8 @@ export const baselineUrineSample = (participantModule) => {
         ( participantModule[fieldMapping.urineFlag] === (fieldMapping.yes)) ?
             template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Urine", "Collected", 
-                    humanReadableMDY(participantModule[fieldMapping.urineDateTime]), biospecimenStatus(participantModule), "N", "N/A")}`
+                participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.urineDateTime]), 
+                    biospecimenStatus(participantModule, fieldMapping.biosepcimenUrineCollection), "N", "N/A")}`
             : (
                 template += `
                         ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "N", "N/A")}`
@@ -137,7 +139,8 @@ export const baselineMouthwashSample = (participantModule) => {
         ( participantModule[fieldMapping.mouthwash] === (fieldMapping.yes)) ?
             template += `
             ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
-                    humanReadableMDY(participantModule[fieldMapping.mouthwashDateTime]), biospecimenStatusMouthwash(participantModule), "N", "N/A")}`
+                    participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.mouthwashDateTime]), 
+                    biospecimenStatus(participantModule, fieldMapping.biosepcimenMouthwashdCollection), "N", "N/A")}`
             : (
                 template += `
                         ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A")}`
@@ -271,7 +274,7 @@ export const baselineLAWSurvey = (participant) => {
                     ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "LAW", "Started",
                     humanReadableMDY(participant[fieldMapping.lawStartDate1]), "N/A", "N", "N/A")}`
         ) : 
-        (participant[fieldMapping.lawStausFlag1] === fieldMapping.notStarted)  ?
+        (participant[fieldMapping.lawStausFlag1] === fieldMapping.notStarted1)  ?
         ( template += `
                     ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "LAW", "Not Started", "N/A", "N/A", "N", "N/A")}`
         )
@@ -304,6 +307,43 @@ export const baselineSSN = (participant) => {
     return template;
 }
 
+
+export const baselineBiospecSurvey = (participant) => {
+    let combinedBoodUrineMouthwashSurvey = participant[fieldMapping.combinedBoodUrineMouthwashSurvey] && participant[fieldMapping.combinedBoodUrineMouthwashSurvey]
+    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
+    let template = ``;
+
+    refusedSpecimenOption === (fieldMapping.yes) ?
+    (
+        template += `
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A")}`
+    ) :
+    !combinedBoodUrineMouthwashSurvey ?  
+    (
+        template += `
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
+    ) : 
+    (
+        (participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted1)  ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Submitted",
+                    humanReadableMDY(participant[fieldMapping.combinedBoodUrineMouthwashSurveyCompleteDate]), "N/A", "N", "N/A")}`
+
+        ) :
+        (participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.started1)  ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Started",
+                    humanReadableMDY(participant[fieldMapping.combinedBoodUrineMouthwashSurveyStartDate]), "N/A", "N", "N/A")}`
+        ) : 
+        ( template += `
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Not Started", "N/A", "N/A", "N", "N/A")}`
+        )
+    )
+    return template;
+}
+
 export const baselineBloodUrineSurvey = (participant) => {
     let participantModule = participant[fieldMapping.bloodUrineSurvey]
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
@@ -312,29 +352,29 @@ export const baselineBloodUrineSurvey = (participant) => {
     refusedSpecimenOption === (fieldMapping.yes) ?
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "N/A", "N/A", "N/A", "Y", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "Y", "N/A")}`
     ) :
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (
-        (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.submitted)  ?
+        (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.submitted1)  ?
         (
             template += `
-                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Blood/Urine", "Submitted",
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Clinical Blood/Urine", "Submitted",
                     humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyCompletedDate]), "N/A", "N", "N/A")}`
 
         ) :
-        (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.started)  ?
+        (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.started1)  ?
         (
             template += `
-                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Blood/Urine", "Started",
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Clinical Blood/Urine", "Started",
                     humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyStartedDate]), "N/A", "N", "N/A")}`
         ) : 
         ( template += `
-                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine", "Not Started", "N/A", "N/A", "N", "N/A")}`
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "Not Started", "N/A", "N/A", "N", "N/A")}`
         ))
     return template;
     
@@ -347,29 +387,29 @@ export const baselineMouthwashSurvey = (participant) => {
     refusedSpecimenOption === (fieldMapping.yes) ?
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A")}`
     ) :
     !participantModule ?  
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (
-        (participantModule[fieldMapping.mouthwashSurveyFlag] === fieldMapping.submitted)  ?
+        (participantModule[fieldMapping.mouthwashSurveyFlag] === fieldMapping.submitted1)  ?
         (
             template += `
-                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Mouthwash", "Submitted",
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Home Mouthwash", "Submitted",
                     humanReadableMDY(participantModule[fieldMapping.mouthwashSurveyCompletedDate]), "N/A", "N", "N/A")}`
 
         ) :
-        (participantModule[fieldMapping.mouthwashSurveyFlag] === fieldMapping.started) ?
+        (participantModule[fieldMapping.mouthwashSurveyFlag] === fieldMapping.started1) ?
         (
             template += `
-                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Mouthwash", "Started",
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Home Mouthwash", "Started",
                     humanReadableMDY(participantModule[fieldMapping.mouthwashSurveyStartedDate]), "N/A", "N", "N/A")}`
         ) : 
         ( template += `
-                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Mouthwash", "Not Started", "N/A", "N/A", "N", "N/A")}`
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "Not Started", "N/A", "N/A", "N", "N/A")}`
         ))
     return template;
     
@@ -403,49 +443,54 @@ export const baselinePayment = (participantModule) => {
     !participantModule ?  
     (
         template += `
-                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N", "N/A")}
-                `
-    ) : 
-    participantModule[fieldMapping.refusedBaselinePayment] === (fieldMapping.yes) ?
-    (
-        template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", 
-                humanReadableMDY(participantModule[fieldMapping.refusedBaselinePaymentDate]), "N/A", "Y", "N/A")}`
+                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A")}`
     )
     :
-    participantModule[fieldMapping.issuePayment] === (fieldMapping.yes) ?
+    participantModule[fieldMapping.paymentRoundup] &&
+    participantModule[fieldMapping.paymentRoundup][fieldMapping.baselinePayment][fieldMapping.eligiblePayment] === (fieldMapping.yes) ?
     (
         template += `
-                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Issued", 
-                humanReadableMDY(participantModule[fieldMapping.baselinePaymentDate]), "N/A", "N", checkEligibilty(participantModule[fieldMapping.eligiblePayment]))}`
+                ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Payment", "N/A", "Eligible", 
+                humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.baselinePayment][fieldMapping.baselinePaymentDate]), "N/A", "N/A", checkIncentiveIssued(participantModule))}`
     ) :
     (
         template += `
-                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Issued", 
-                "N/A", "N/A", "N", checkEligibilty(participantModule[fieldMapping.eligiblePayment]))}`
+                ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Not Eligible", 
+                "N/A", "N/A", "N/A", checkIncentiveIssued(participantModule))}`
     )
     return template;
 }
 
-const checkEligibilty = (eligiblePayment) => {
-    return eligiblePayment === (fieldMapping.yes) ? 'Eligible' : 'Not Eligible'
+const checkIncentiveIssued = (participantModule) => {
+    return participantModule[fieldMapping.paymentRoundup] &&
+    (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.paymentIssued] === (fieldMapping.yes)) ? 
+    `Issued on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.datePaymentIssued])}`: 
+    (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ? 
+    `Declined on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePaymentDate])}`:
+    `N/A`
 }
-const biospecimenStatus = (biospecimenRow) => {
+
+const biospecimenStatus = (biospecimenRow, biospecimenFlag) => {
     let template = ``;
-    !(biospecimenRow) ?  
+    (biospecimenRow[fieldMapping.biospecimenCollectionDetail] &&
+    !(biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp])) ?  
     (
         template += `N/A`
     ) : 
     (
-        (biospecimenRow[fieldMapping.biospecimenFlag]) === (fieldMapping.biospecimenResearch) ?  
+        biospecimenRow[fieldMapping.biospecimenCollectionDetail] && (biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][biospecimenFlag]) === (fieldMapping.biospecimenResearch) ?  
         (   
             template += `Research`
         ) : 
-        (biospecimenRow[fieldMapping.biospecimenFlag]) === (fieldMapping.biospecimenClinical) ?
+        biospecimenRow[fieldMapping.biospecimenCollectionDetail] && (biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][biospecimenFlag]) === (fieldMapping.biospecimenClinical) ?
         (
             template += `Clinical`
-        ) : (
+        ) :  
+        biospecimenRow[fieldMapping.biospecimenCollectionDetail] && (biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][biospecimenFlag]) === (fieldMapping.biospecimenHome) ?
+        (
             template += `Home`
+        ) : (
+            template += `N/A`
         )
     )   
     return template;

@@ -1,8 +1,6 @@
-
-
 export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
     participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, 
-    modulesSurvey, ssnSurvey, optOuts  ) => {
+    modulesSurvey, ssnSurvey, optOuts, biospecimenMetrics  ) => {
 
    const row = document.createElement('div');
    row.classList = ['row'];
@@ -200,17 +198,28 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
    subPieChartSsn.setAttribute('id', 'ssnMetrics');
    pieChartSsn.appendChild(subPieChartSsn);
 
-//    let pieChartSex = document.createElement('div');
-//    pieChartSex.classList = ['col-lg-4 charts'];
-//    let subPieChartSex = document.createElement('div');
-//    subPieChartSex.classList = ['col-lg-12 viz-div sub-div-shadow'];
-//    subPieChartSex.setAttribute('id', 'sexMetrics');
-//    pieChartSex.appendChild(subPieChartSex);
+//    let pieChartBiopspecimen = document.createElement('div');
+//    pieChartBiopspecimen.classList = ['col-lg-4 charts'];
 
+//    let subPieChartBiopspecimen = document.createElement('div');
+//    subPieChartBiopspecimen.classList = ['col-lg-12 viz-div sub-div-shadow'];
+//    subPieChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
+//    pieChartBiopspecimen.appendChild(subPieChartBiopspecimen);
+
+
+   let barChartBiopspecimen = document.createElement('div');
+   barChartBiopspecimen.classList = ['col-lg-4 charts'];
+
+   let subBarChartBiopspecimen = document.createElement('div');
+   subBarChartBiopspecimen.classList = ['col-lg-12 viz-div sub-div-shadow'];
+   subBarChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
+   barChartBiopspecimen.appendChild(subBarChartBiopspecimen);
+
+   
 
    row5.appendChild(pieChartModule);
    row5.appendChild(pieChartSsn);
-//    row4.appendChild(pieChartRace);
+   row5.appendChild(barChartBiopspecimen);
 
    mainContent.appendChild(row5); // Misc.
 
@@ -231,9 +240,10 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 
    renderActiveVerificationStatus(activeVerificationStatus, denominatorVerificationStatus, 'activeVerificationStatus');
    renderPassiveVerificationStatus(passiveVerificationStatus, denominatorVerificationStatus, 'passiveVerificationStatus');
-
    renderModuleChart(modulesSurvey, 'moduleMetrics');
    renderSsnChart(ssnSurvey, 'ssnMetrics');
+   const verifiedPts = ssnSurvey.verifiedParticipants
+   renderBiospecimenChart(biospecimenMetrics, verifiedPts, 'biospecimenMetrics');
 }
 
 const renderLabel = (count, recruitType) => {
@@ -664,3 +674,41 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
   }
  
+  const renderBiospecimenChart = (biospecimenMetrics, verifiedPts, id) => {
+    const verifiedParticipants =  verifiedPts ? verifiedPts : 0
+
+    const all =  biospecimenMetrics.all
+    const none =  biospecimenMetrics.none
+    const bloodUrine = biospecimenMetrics.bloodUrine
+    const bloodMouthwash =  biospecimenMetrics.bloodMouthwash
+    const urineMouthwash =  biospecimenMetrics.urineMouthwash
+    const blood = biospecimenMetrics.blood
+    const mouthwash =  biospecimenMetrics.mouthwash
+    const urine =  biospecimenMetrics.urine
+
+    const trace1 = {
+        x: ['None', 'Blood only', 'Urine only', 'Mouthwash only', 'Blood/Urine only', 'Urine/Mouthwash only', 'Blood/Mouthwash only', 'All'],
+        y: [none, blood, urine, mouthwash, bloodUrine, urineMouthwash, bloodMouthwash, all],
+        type: 'bar',
+    };
+    
+    const data = [trace1];
+    
+
+    const layout = {
+        barmode: 'stack',
+        paper_bgcolor: 'rgba(0,0,0,0)',
+        plot_bgcolor: 'rgba(0,0,0,0)',
+        yaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+        xaxis: {
+            automargin: true,
+            fixedrange: true
+        },
+        title: `Baseline biospecimens collected <br> among verified participants N=${verifiedParticipants}`
+    };
+      
+    Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
+  }
