@@ -6,6 +6,8 @@ import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAP
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
+let filtersSelected = {}
+
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
@@ -147,15 +149,22 @@ const renderDataTable = (data, showButtons) => {
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
     activeButton && activeButton.addEventListener('click', () => {   
-        if (activeButton.getAttribute('active') === 'true') {
+        console.log('testaa', activeButton.getAttribute('active'))
+        if (activeButton.getAttribute('active') == 'true') {
+            console.log('test',activeButton )
             activeButton.classList.add('btn-outline-info'); 
             activeButton.classList.remove('btn-info');
             reRenderParticipantsTableBasedOFilter('all');
             activeButton.setAttribute('active', false);
+            filtersSelected.active = false
+            console.log('test11',activeButton )
         }
-        else {
+        else if (activeButton.getAttribute('active') === null){
+            console.log('test2222',activeButton )
             reRenderParticipantsTableBasedOFilter('active');
             activeButton.setAttribute('active', true);
+            filtersSelected.active = true
+            console.log('testagggga', activeButton.getAttribute('active'))
         }
     })
 }
@@ -168,10 +177,12 @@ const getPassiveParticipants = () => {
             passiveButton.classList.remove('btn-info');
             reRenderParticipantsTableBasedOFilter('all');
             passiveButton.setAttribute('passive', false);
+            filtersSelected.active = false
         }
         else {
             reRenderParticipantsTableBasedOFilter('passive');
             passiveButton.setAttribute('passive', true);
+            filtersSelected.passive = false
         }
     })
 }
@@ -186,6 +197,8 @@ const getDateFilters = () => {
         document.getElementById('endDate').value = ``
         let dropdownMenuButton = ``
         let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
+        filtersSelected.startDate = startDate
+        filtersSelected.endDate = endDate
         if (siteKey !== null && siteKey !== 'allResults') {
             dropdownMenuButton = nameToKeyObj[siteKey];
             dropdownMenuButton = keyToShortNameObj[siteKeyId]
@@ -349,6 +362,7 @@ const pageLimitDropdownTrigger = () => {
                 else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
             }
             const sitePrefId = nameToKeyObj[sitePref];
+            filtersSelected.pageLimit = parseInt(e.target.textContent)
             const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
             hideAnimation();
             if(response.code === 200 && response.data.length > 0) {
@@ -383,6 +397,8 @@ const pagninationNextTrigger = () => {
         }
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
+        filtersSelected.nextPageCounter = nextPageCounter
+        console.log('filters', filtersSelected)
         const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
@@ -422,6 +438,7 @@ const pagninationPreviousTrigger = () => {
         }
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
+            filtersSelected.pageCounter = pageCounter
         const response = await getParticipantFromSites(sitePrefId, pageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
@@ -941,6 +958,8 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
                     reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
+                    filtersSelected.site = t.sitekey
+                    
                 }
             })
     }}
