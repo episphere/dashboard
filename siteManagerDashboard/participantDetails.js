@@ -535,6 +535,17 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
             localStorage.setItem("counters", JSON.stringify(counter));
             let lastModifiedHolder;
             adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
+            let alertList = document.getElementById("alert_placeholder");
+            let template = ``;
+            template += `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                      Response saved!
+                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>`;
+            alertList.innerHTML = template;
+            return true;
             // let a = document.getElementById('modifiedId')
             // a.innerHTML = 'Placeholder for User id' + ' @ ' + lastModifiedHolder.timeStamp;
          }
