@@ -3,10 +3,11 @@ import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
-import { findParticipant } from './participantLookup.js';
+// import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
-let filtersSelected = {}
+let filtersSelected = {active: false, passive: false, startDate: ``, endDate: ``, 
+                        siteFilter: ``, pageLimit: ``, nextPageCounter: ``  }
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -21,7 +22,7 @@ export const renderTable = (data, source) => {
     fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus, /* fieldMapping.enrollmentStatus, */ fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
+    fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
     fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, 
     fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
     fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
@@ -71,7 +72,7 @@ export const renderTable = (data, source) => {
                 </div>
 
                 <form class="form-inline" id="dateFilters">
-                    <h5>Filter by Date Recruitment Type Assigned:  &nbsp;</h5>
+                    <h5>Filter by Date:  &nbsp;</h5>
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
                         <input type="date" class="form-control" id="startDate" style="
@@ -85,6 +86,8 @@ export const renderTable = (data, source) => {
                                                                                                 height:50px;">
                     </div>
                     <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
+                    &nbsp;&nbsp;
+                    <button type="button" id="clearFilters" class="btn btn-danger btn-lg mb-2">Clear Filter(s)</button>
                 </form>
 
                 `: ``} </div>`
@@ -137,7 +140,8 @@ export  const renderData = (data, showButtons, flag) => {
     addEventShowMoreInfo(data);
     getActiveParticipants();
     getPassiveParticipants();
-    getDateFilters();   
+    getDateFilters();
+    clearFilters();   
     pageLimitDropdownTrigger();
 }
 
@@ -146,28 +150,72 @@ const renderDataTable = (data, showButtons) => {
     addEventShowMoreInfo(data);
 }
 
+// back to search
+// if (filtersSelected.active !== false || filtersSelected.passive !==  false || filtersSelected.startDate !== `` || filtersSelected.endDate !== `` || filtersSelected.siteFilter !== `` || filtersSelected.pageLimit !== `` || filtersSelected.nextPageCounter !== ``){
+//         let info = checkPreviousRecords();
+//         renderDataTable(info)
+//     }
+// const checkPreviousRecords = async () => {
+//         let template = `/dashboard?api=getParticipants`;
+//         const siteKey = await getAccessToken();
+//         if (filtersSelected.active === true) {
+//             let activeButton = document.getElementById('activeFilter');
+//             activeButton && activeButton.classList.add('btn-outline-info');
+//             template += `&type=active`
+//         }
+//         if (filtersSelected.passive === true) {
+//             let passiveButton = document.getElementById('passiveFilter');
+//             passiveButton && passiveButton.classList.add('btn-outline-info');
+//             template += `&type=passive`
+//         }
+//         if (filtersSelected.passive === false && filtersSelected.active === false) {
+//             template += `&type=all`
+//         }
+//         if ((filtersSelected.startDate).length > 0) {
+//             const startDate = document.getElementById('startDate');
+//             const endDate = document.getElementById('endDate');
+//             startDate.value = filtersSelected.startDate
+//             endDate.value = filtersSelected.endDate
+//             template += `&from=${filtersSelected.startDate}T00:00:00.000Z&to=${filtersSelected.endDate}T23:59:59.999Z`
+//         }
+//         if ((filtersSelected.siteFilter).length > 0) {
+//             template += `&siteCode=${filtersSelected.siteFilter}`
+//         }
+//         if ((filtersSelected.pageLimit) > 0) {
+//             template += `&limit=${filtersSelected.pageLimit}`
+//             let a = document.getElementById('dropdownPageSize');
+//             a.innerHTML = filtersSelected.pageLimit
+//         }
+//         if ((filtersSelected.nextPageCounter).length > 0) {
+//             template += `&page=${nextPageCounter}`
+//         }
+//     // const response = await fetch(`${baseAPI}${template}`, {
+//     //     method: "GET",
+//     //     headers: {
+//     //         Authorization:"Bearer "+siteKey
+//     //     }
+//     // });
+//     // return await response.json();
+//}
+
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
     activeButton && activeButton.addEventListener('click', () => {   
-        console.log('testaa', activeButton.getAttribute('active'))
-        if (activeButton.getAttribute('active') == 'true') {
-            console.log('test',activeButton )
+        if (activeButton.getAttribute('active') === 'true') {
             activeButton.classList.add('btn-outline-info'); 
             activeButton.classList.remove('btn-info');
             reRenderParticipantsTableBasedOFilter('all');
             activeButton.setAttribute('active', false);
             filtersSelected.active = false
-            console.log('test11',activeButton )
         }
-        else if (activeButton.getAttribute('active') === null){
-            console.log('test2222',activeButton )
+         if (activeButton.getAttribute('active') === null){
             reRenderParticipantsTableBasedOFilter('active');
             activeButton.setAttribute('active', true);
             filtersSelected.active = true
-            console.log('testagggga', activeButton.getAttribute('active'))
         }
     })
 }
+
 
 const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
@@ -179,11 +227,21 @@ const getPassiveParticipants = () => {
             passiveButton.setAttribute('passive', false);
             filtersSelected.active = false
         }
-        else {
+        if (passiveButton.getAttribute('passive') === null){
             reRenderParticipantsTableBasedOFilter('passive');
             passiveButton.setAttribute('passive', true);
-            filtersSelected.passive = false
+            filtersSelected.passive = true
         }
+    })
+}
+
+
+const clearFilters = () => {
+    const clearFilters = document.getElementById('clearFilters');
+    clearFilters && clearFilters.addEventListener('click', async (e) => {
+        e.preventDefault();
+        window.location.reload();
+
     })
 }
 
@@ -193,33 +251,42 @@ const getDateFilters = () => {
         e.preventDefault();
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-        document.getElementById('startDate').value = ``
-        document.getElementById('endDate').value = ``
-        let dropdownMenuButton = ``
-        let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
-        filtersSelected.startDate = startDate
-        filtersSelected.endDate = endDate
-        if (siteKey !== null && siteKey !== 'allResults') {
-            dropdownMenuButton = nameToKeyObj[siteKey];
-            dropdownMenuButton = keyToShortNameObj[siteKeyId]
-        } else {
-            dropdownMenuButton = 'Filter by Site'
-        }
+        if (endDate === ``) { return errorTrigger() }
+        else {
+            let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
+            let siteKeyId = ``
+            let siteKeyName = ``
+            filtersSelected.startDate = startDate
+            filtersSelected.endDate = endDate
+            if ((siteKey !== null && siteKey !== 'allResults')) {
+                siteKeyId = nameToKeyObj[siteKey];
+                siteKeyName = keyToShortNameObj[siteKeyId];
+            }
+            else if (filtersSelected.siteFilter !== `` && siteKey === null) {
+                siteKeyId = filtersSelected.siteFilter;
+                siteKeyName = keyToShortNameObj[siteKeyId];
+            }
+            else {
+                siteKeyId = 'Filter by Site'
+                siteKeyName = 'Filter by Site'
+            }
 
-        let response = ``;
-        let filter = ``;
-        let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
-        let activeButton = document.getElementById('activeFilter').getAttribute('active');
-        if (activeButton === 'true') {
-            response = await getParticipantsWithDateFilters('active', dropdownMenuButton, startDate, endDate);
-            filter = 'active';
-        } 
-        else if (passiveButton === 'true') {
-            response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
-            filter = 'passive';
+            let response = ``;
+            let filter = ``;
+            let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
+            let activeButton = document.getElementById('activeFilter').getAttribute('active');
+
+            if (activeButton === 'true') {
+                response = await getParticipantsWithDateFilters('active', siteKeyId, startDate, endDate);
+                filter = 'active';
+            } 
+            else if (passiveButton === 'true') {
+                response = await getParticipantsWithDateFilters('passive', siteKeyId, startDate, endDate);
+                filter = 'passive';
+            }
+            else { response = await getParticipantsWithDateFilters(null, siteKeyId, startDate, endDate); }
+            reRenderMainTable(response, filter, siteKeyName, startDate, endDate);
         }
-        else { response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
-        reRenderMainTable(response, filter, dropdownMenuButton);
     })
 }
 
@@ -240,14 +307,21 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     reRenderMainTable(response, filter, siteKeyName);
 }
 
-const reRenderMainTable =  (response, filter, selectedSite) => {
+const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) => {
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
-        if (filterRawData.length === 0)  return alertTrigger();
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
-        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
-        addEventFilterData(filterRawData);
-        renderData(filterRawData, true);
+        if (filterRawData.length === 0)  return alertTrigger();
+        if (response.data.length > 10) { 
+            addEventFilterData(filterRawData);
+            renderDataTable(filterRawData);
+        }
+        else { 
+            mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+            addEventFilterData(filterRawData);
+            renderData(filterRawData, true);
+        }
+    
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
         dropdownTriggerAllParticipants(selectedSite);
@@ -256,6 +330,7 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
             activeButton.classList.remove('btn-outline-info'); 
             activeButton.classList.add('btn-info');
             let passiveButton = document.getElementById('passiveFilter');
+            activeButton.setAttribute('active', true);
             if ([...passiveButton.classList].includes('btn-info')) {
                 passiveButton.classList.remove('btn-info');
                 passiveButton.classList.add('btn-outline-info');  
@@ -265,12 +340,18 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
             let passiveButton = document.getElementById('passiveFilter');
             passiveButton.classList.remove('btn-outline-info');
             passiveButton.classList.add('btn-info');
+            passiveButton.setAttribute('passive', true);
             let activeButton = document.getElementById('activeFilter');
             if ([...activeButton.classList].includes('btn-info')) {
                 activeButton.classList.remove('btn-info');
                 activeButton.classList.add('btn-outline-info'); 
             }
         }
+        if (startDate !== undefined) {
+            document.getElementById('startDate').value = startDate
+            document.getElementById('endDate').value = endDate
+        }
+
         return;
     }
     else if(response.code === 200 && response.data.length === 0) {
@@ -398,8 +479,7 @@ const pagninationNextTrigger = () => {
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
         filtersSelected.nextPageCounter = nextPageCounter
-        console.log('filters', filtersSelected)
-        const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
+        const response = await getParticipantFromSites(sitePrefId, filtersSelected, nextPageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
@@ -439,7 +519,7 @@ const pagninationPreviousTrigger = () => {
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
             filtersSelected.pageCounter = pageCounter
-        const response = await getParticipantFromSites(sitePrefId, pageCounter);
+        const response = await getParticipantFromSites(sitePrefId, filtersSelected, pageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
@@ -880,6 +960,7 @@ export const activeColumns = (data, showButtons) => {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                 }
                 else {
+                   // filtersSelected[btn.getAttribute('data-column')] = [btn]
                     renderData(data, showButtons);
                 }
             }
@@ -890,6 +971,7 @@ export const activeColumns = (data, showButtons) => {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                 }
                 else {
+                   // delete filtersSelected[btn.getAttribute('data-column')]
                     renderData(data, showButtons);
                 }
             }
@@ -931,13 +1013,12 @@ const alertTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
-
-const successTrigger = () => {
+const errorTrigger = () => {
     let alertList = document.getElementById('alert_placeholder');
     let template = ``;
     template += `
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            Results found!
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            Missing input fields!
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -945,6 +1026,20 @@ const successTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
+
+// const successTrigger = () => {
+//     let alertList = document.getElementById('alert_placeholder');
+//     let template = ``;
+//     template += `
+//         <div class="alert alert-success alert-dismissible fade show" role="alert">
+//             Results found!
+//         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+//             <span aria-hidden="true">&times;</span>
+//         </button>
+//     </div>`
+//     alertList.innerHTML = template;
+//     return template;
+// }
 
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
@@ -957,18 +1052,17 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
-                    reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
-                    filtersSelected.site = t.sitekey
-                    
+                    reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent, filtersSelected);
+                    filtersSelected.siteFilter = nameToKeyObj[t.sitekey]
                 }
             })
     }}
 }
 
-const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSelection) => {
+const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSelection, filtersSelected) => {
     showAnimation();
     const sitePrefId = nameToKeyObj[sitePref];
-    const response = await getParticipantFromSites(sitePrefId);
+    const response = await getParticipantFromSites(sitePrefId, filtersSelected);
     hideAnimation();
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
@@ -1008,16 +1102,45 @@ const getCustomVariableNames = (x) => {
 
 }
 
-const getParticipantFromSites = async (query, nextPageCounter) => {
+const getParticipantFromSites = async (query, filtersSelected, nextPageCounter) => {
     const siteKey = await getAccessToken();
-    let template = ``;
+    let template = `/dashboard?api=getParticipants`;
     let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
-    if (limit === null) limit = 10 
-    if (nextPageCounter === undefined ) {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
-    } else {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
-    }
+    if (limit === null) limit = 10
+        if (filtersSelected.active === true) {
+            template += `&type=active`
+        }
+        if (filtersSelected.passive === true) {
+            template += `&type=passive`
+        }
+        if (filtersSelected.passive === false && filtersSelected.active === false) {
+            template += `&type=all`
+        }
+        if ((filtersSelected.startDate).length > 0) {
+            template += `&from=${filtersSelected.startDate}T00:00:00.000Z&to=${filtersSelected.endDate}T23:59:59.999Z`
+        }
+        if (query !== nameToKeyObj.allResults) {
+            template += `&siteCode=${query}`
+        }
+        if ((filtersSelected.siteFilter) !== ``) {
+            template += `&siteCode=${filtersSelected.siteFilter}`
+        }
+        if ((filtersSelected.pageLimit) > 0) {
+            template += `&limit=${filtersSelected.pageLimit}`
+        }
+        if (limit && (filtersSelected.pageLimit) === ``) {
+            template += `&limit=${limit}`
+        }
+        if ((filtersSelected.nextPageCounter).length > 0 || nextPageCounter) {
+            template += `&page=${nextPageCounter}`
+        }
+        // if (nextPageCounter === undefined ) {
+        //     (query === nameToKeyObj.allResults) ? template += `&type=all&limit=${limit}` : template += `&type=all&siteCode=${query}&limit=${limit}`
+        // }
+        if (filtersSelected.active === false && filtersSelected.passive ===  false && filtersSelected.startDate === `` && filtersSelected.endDate === `` && filtersSelected.siteFilter === `` && filtersSelected.pageLimit === `` && filtersSelected.nextPageCounter === ``){
+            template = `/dashboard?api=getParticipants`;
+            if (query === nameToKeyObj.allResults) { template += `&type=all&limit=${limit}&page=${nextPageCounter}` } else { template += `&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}` }
+        }
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -1041,10 +1164,32 @@ const getParticipantWithLimit = async (query, limit) => {
 }
 
 const getParticipantsWithFilters = async (type, sitePref) => {
+    let template = `/dashboard?api=getParticipants`;
     const siteKey = await getAccessToken();
-    let template = ``;
-    const limit = 10;
-    (sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
+    if (filtersSelected.active === true) {
+        template += `&type=active`
+    }
+    if (filtersSelected.passive === true) {
+        template += `&type=passive`
+    }
+    if (filtersSelected.active === false && filtersSelected.passive === false) {
+        template += `&type=all`
+    } else {}
+    if ((filtersSelected.siteFilter) !== ``) {
+        template += `&siteCode=${filtersSelected.siteFilter}`
+    }
+    if ( (sitePref !== 'Filter by Site')) {
+        template += `&siteCode=${sitePref}`
+    }
+    if ((filtersSelected.pageLimit) !== ``) {
+        template += `&limit=${filtersSelected.pageLimit}`
+    }
+    if ((filtersSelected.pageLimit) === ``) {
+        template += `&limit=10`
+    }
+    if (filtersSelected.active === false && filtersSelected.passive ===  false && filtersSelected.siteFilter === `` && filtersSelected.pageLimit === ``){
+        (sitePref !== 'Filter by Site') ? template += `&type=${type}&siteCode=${sitePref}&limit=10` : template += `&type=${type}&limit=10`
+    }
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -1059,7 +1204,7 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     let template = ``;
     const limit = 10;
     (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
+    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=all&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
     (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
     template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
