@@ -246,9 +246,9 @@ const renderLookupSiteDropdown = () => {
 
 export const renderLookupResultsTable = () => {
     const loadDetailsPage = '#participants/all'
-    location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantSummary
+    location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantsAll
     let filterRawData = JSON.parse(localStorage.getItem('filterRawData'));
-    mainContent.innerHTML = renderTable(filterRawData, 'participantLookup');
+    mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
     addEventFilterData(filterRawData);
     renderData(filterRawData);
     activeColumns(filterRawData);
