@@ -97,6 +97,10 @@ export const render = () => {
                                         <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
                                             <option value="equals">equals</option>
                                             <option value="notequals">notequals</option>
+                                            <option value="greater">greater</option>
+                                            <option value="greaterequals">greaterequals</option>
+                                            <option value="less">less</option>
+                                            <option value="lessequals">lessequals</option>
                                         </select>
                                         <div class="condition-value col-md-3 mr-2 p-0"></div>
                                     </div>
@@ -290,6 +294,10 @@ export const addEventMoreCondition = (concepts, flag) => {
             <select name="condition-operator" class="col-md-1 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
+                <option value="greater">greater</option>
+                <option value="greaterequals">greaterequals</option>
+                <option value="less">less</option>
+                <option value="lessequals">lessequals</option>
             </select>
             <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
         `
@@ -540,6 +548,18 @@ const getConditionsResponse = (i) => {
         return i['equals'];
     } else if (i['notequals'] !== undefined) {
         return i['notequals'];
+    }
+    else if (i['greater'] !== undefined) {
+        return i['greater'];
+    }
+    else if (i['greaterequals'] !== undefined) {
+        return i['greaterequals'];
+    }
+    else if (i['less'] !== undefined) {
+        return i['less'];
+    }
+    else if (i['lessequals'] !== undefined) {
+        return i['lessequals'];
     }
 }
 
