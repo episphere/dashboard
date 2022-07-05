@@ -1,13 +1,11 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
+import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
-// import { findParticipant } from './participantLookup.js';
-import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
-
-let filtersSelected = {active: false, passive: false, startDate: ``, endDate: ``, 
-                        siteFilter: ``, pageLimit: ``, nextPageCounter: ``  }
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI  } from './utils.js';
+import { findParticipant } from './participantLookup.js';
+import { nameToKeyObj } from './siteKeysToName.js';
 
 export const renderTable = (data, source) => {
     let template = '';
@@ -22,7 +20,7 @@ export const renderTable = (data, source) => {
     fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
+    fieldMapping.participationStatus, /* fieldMapping.enrollmentStatus, */ fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
     fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, 
     fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
     fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
@@ -43,54 +41,23 @@ export const renderTable = (data, source) => {
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
                     <div class="form-group dropdown" id="siteDropdownLookup" hidden>
-                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px;">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Filter by Site
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
                         <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
-                        ${((location.host !== urls.prod) && (location.host !== urls.stage)) ? `<li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>` : ``}
+                        <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
                         <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
-                </div>
-
-                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
-                                                                                                margin-left:25px;
-                                                                                                padding: 10px 20px;
-                                                                                                border-radius: 10px;
-                                                                                                width:25%;
-                                                                                                height:25%;">
-                    <button type="button" class="btn btn-outline-info btn-lg" id="activeFilter">Active</button>
-                    <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
-                </div>
-
-                <form class="form-inline" id="dateFilters">
-                    <h5>Filter by Date:  &nbsp;</h5>
-                    <h5 style="margin-right:25px;">From:</h5>
-                    <div class="form-group mb-2">
-                        <input type="date" class="form-control" id="startDate" style="
-                                                                                                width:200px;
-                                                                                                height:50px;">
-                    </div>
-                    <h5 style="margin-left:15px;">To:</h5>
-                    <div class="form-group mx-sm-3 mb-2">
-                        <input type="date" class="form-control" id="endDate" style="
-                                                                                                width:200px;
-                                                                                                height:50px;">
-                    </div>
-                    <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
-                    &nbsp;&nbsp;
-                    <button type="button" id="clearFilters" class="btn btn-danger btn-lg mb-2">Clear Filter(s)</button>
-                </form>
-
-                `: ``} </div>`
+                </div>`: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
     template += `
@@ -120,7 +87,8 @@ export const renderTable = (data, source) => {
     return template;
 }
 
-export  const renderData = (data, showButtons, flag) => {
+
+export  const renderData = (data, showButtons) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
@@ -129,417 +97,84 @@ export  const renderData = (data, showButtons, flag) => {
     }
     const pageSize = 10;
     const dataLength = data.length;
-    data.splice(pageSize, dataLength);
-    let nextPageCounter = 1;
-    let prevPageCounter = 0;
-    document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
-    pagninationNextTrigger();
-    pagninationPreviousTrigger();
-    // addEventPageBtns(pageSize, data, showButtons);
-    renderDataTable(data, showButtons)
-    addEventShowMoreInfo(data);
-    getActiveParticipants();
-    getPassiveParticipants();
-    getDateFilters();
-    clearFilters();   
-    pageLimitDropdownTrigger();
-}
+    const pages = Math.ceil(dataLength/pageSize);
+    const array = [];
 
-const renderDataTable = (data, showButtons) => {
-    document.getElementById('dataTable').innerHTML = tableTemplate(data, showButtons);
+    for(let i = 0; i< pages; i++){
+        array.push(i+1);
+    }
+    document.getElementById('paginationContainer').innerHTML = paginationTemplate(array);
+    addEventPageBtns(pageSize, data, showButtons);
+
+    document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(0, pageSize, data), showButtons);
     addEventShowMoreInfo(data);
 }
 
-// back to search
-// if (filtersSelected.active !== false || filtersSelected.passive !==  false || filtersSelected.startDate !== `` || filtersSelected.endDate !== `` || filtersSelected.siteFilter !== `` || filtersSelected.pageLimit !== `` || filtersSelected.nextPageCounter !== ``){
-//         let info = checkPreviousRecords();
-//         renderDataTable(info)
-//     }
-// const checkPreviousRecords = async () => {
-//         let template = `/dashboard?api=getParticipants`;
-//         const siteKey = await getAccessToken();
-//         if (filtersSelected.active === true) {
-//             let activeButton = document.getElementById('activeFilter');
-//             activeButton && activeButton.classList.add('btn-outline-info');
-//             template += `&type=active`
-//         }
-//         if (filtersSelected.passive === true) {
-//             let passiveButton = document.getElementById('passiveFilter');
-//             passiveButton && passiveButton.classList.add('btn-outline-info');
-//             template += `&type=passive`
-//         }
-//         if (filtersSelected.passive === false && filtersSelected.active === false) {
-//             template += `&type=all`
-//         }
-//         if ((filtersSelected.startDate).length > 0) {
-//             const startDate = document.getElementById('startDate');
-//             const endDate = document.getElementById('endDate');
-//             startDate.value = filtersSelected.startDate
-//             endDate.value = filtersSelected.endDate
-//             template += `&from=${filtersSelected.startDate}T00:00:00.000Z&to=${filtersSelected.endDate}T23:59:59.999Z`
-//         }
-//         if ((filtersSelected.siteFilter).length > 0) {
-//             template += `&siteCode=${filtersSelected.siteFilter}`
-//         }
-//         if ((filtersSelected.pageLimit) > 0) {
-//             template += `&limit=${filtersSelected.pageLimit}`
-//             let a = document.getElementById('dropdownPageSize');
-//             a.innerHTML = filtersSelected.pageLimit
-//         }
-//         if ((filtersSelected.nextPageCounter).length > 0) {
-//             template += `&page=${nextPageCounter}`
-//         }
-//     // const response = await fetch(`${baseAPI}${template}`, {
-//     //     method: "GET",
-//     //     headers: {
-//     //         Authorization:"Bearer "+siteKey
-//     //     }
-//     // });
-//     // return await response.json();
-//}
-
-const getActiveParticipants = () => {
-    let activeButton = document.getElementById('activeFilter');
-    activeButton && activeButton.addEventListener('click', () => {   
-        if (activeButton.getAttribute('active') === 'true') {
-            activeButton.classList.add('btn-outline-info'); 
-            activeButton.classList.remove('btn-info');
-            reRenderParticipantsTableBasedOFilter('all');
-            activeButton.setAttribute('active', false);
-            filtersSelected.active = false
-        }
-         if (activeButton.getAttribute('active') === null){
-            reRenderParticipantsTableBasedOFilter('active');
-            activeButton.setAttribute('active', true);
-            filtersSelected.active = true
-        }
-    })
-}
-
-
-const getPassiveParticipants = () => {
-    let passiveButton = document.getElementById('passiveFilter');
-    passiveButton && passiveButton.addEventListener('click', () => {
-        if (passiveButton.getAttribute('passive') === 'true') {
-            passiveButton.classList.add('btn-outline-info'); 
-            passiveButton.classList.remove('btn-info');
-            reRenderParticipantsTableBasedOFilter('all');
-            passiveButton.setAttribute('passive', false);
-            filtersSelected.active = false
-        }
-        if (passiveButton.getAttribute('passive') === null){
-            reRenderParticipantsTableBasedOFilter('passive');
-            passiveButton.setAttribute('passive', true);
-            filtersSelected.passive = true
-        }
-    })
-}
-
-
-const clearFilters = () => {
-    const clearFilters = document.getElementById('clearFilters');
-    clearFilters && clearFilters.addEventListener('click', async (e) => {
-        e.preventDefault();
-        window.location.reload();
-
-    })
-}
-
-const getDateFilters = () => {
-    const dateFilters = document.getElementById('dateFilters');
-    dateFilters && dateFilters.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const startDate = document.getElementById('startDate').value;
-        const endDate = document.getElementById('endDate').value;
-        if (endDate === ``) { return errorTrigger() }
-        else {
-            let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
-            let siteKeyId = ``
-            let siteKeyName = ``
-            filtersSelected.startDate = startDate
-            filtersSelected.endDate = endDate
-            if ((siteKey !== null && siteKey !== 'allResults')) {
-                siteKeyId = nameToKeyObj[siteKey];
-                siteKeyName = keyToShortNameObj[siteKeyId];
-            }
-            else if (filtersSelected.siteFilter !== `` && siteKey === null) {
-                siteKeyId = filtersSelected.siteFilter;
-                siteKeyName = keyToShortNameObj[siteKeyId];
-            }
-            else {
-                siteKeyId = 'Filter by Site'
-                siteKeyName = 'Filter by Site'
-            }
-
-            let response = ``;
-            let filter = ``;
-            let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
-            let activeButton = document.getElementById('activeFilter').getAttribute('active');
-
-            if (activeButton === 'true') {
-                response = await getParticipantsWithDateFilters('active', siteKeyId, startDate, endDate);
-                filter = 'active';
-            } 
-            else if (passiveButton === 'true') {
-                response = await getParticipantsWithDateFilters('passive', siteKeyId, startDate, endDate);
-                filter = 'passive';
-            }
-            else { response = await getParticipantsWithDateFilters(null, siteKeyId, startDate, endDate); }
-            reRenderMainTable(response, filter, siteKeyName, startDate, endDate);
-        }
-    })
-}
-
-const reRenderParticipantsTableBasedOFilter = async (filter) => {
-    let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
-    let siteKeyId = ``
-    let siteKeyName = ``
-    if (siteKey !== null && siteKey !== 'allResults') {
-        siteKeyId = nameToKeyObj[siteKey];
-        siteKeyName = keyToShortNameObj[siteKeyId];
-    } else {
-        siteKeyId = 'Filter by Site'
-        siteKeyName = 'Filter by Site'
-    }
-    showAnimation();
-    const response = await getParticipantsWithFilters(filter, siteKeyId);
-    hideAnimation();
-    reRenderMainTable(response, filter, siteKeyName);
-}
-
-const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) => {
-    if(response.code === 200 && response.data.length > 0) {
-        let filterRawData = filterdata(response.data);
-        localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
-        if (filterRawData.length === 0)  return alertTrigger();
-        if (response.data.length > 10) { 
-            addEventFilterData(filterRawData);
-            renderDataTable(filterRawData);
-        }
-        else { 
-            mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
-            addEventFilterData(filterRawData);
-            renderData(filterRawData, true);
-        }
-    
-        activeColumns(filterRawData);
-        renderLookupSiteDropdown();
-        dropdownTriggerAllParticipants(selectedSite);
-        if (filter === 'active') {
-            let activeButton = document.getElementById('activeFilter');
-            activeButton.classList.remove('btn-outline-info'); 
-            activeButton.classList.add('btn-info');
-            let passiveButton = document.getElementById('passiveFilter');
-            activeButton.setAttribute('active', true);
-            if ([...passiveButton.classList].includes('btn-info')) {
-                passiveButton.classList.remove('btn-info');
-                passiveButton.classList.add('btn-outline-info');  
-            }
-        }
-        else if (filter === 'passive') {
-            let passiveButton = document.getElementById('passiveFilter');
-            passiveButton.classList.remove('btn-outline-info');
-            passiveButton.classList.add('btn-info');
-            passiveButton.setAttribute('passive', true);
-            let activeButton = document.getElementById('activeFilter');
-            if ([...activeButton.classList].includes('btn-info')) {
-                activeButton.classList.remove('btn-info');
-                activeButton.classList.add('btn-outline-info'); 
-            }
-        }
-        if (startDate !== undefined) {
-            document.getElementById('startDate').value = startDate
-            document.getElementById('endDate').value = endDate
-        }
-
-        return;
-    }
-    else if(response.code === 200 && response.data.length === 0) {
-        renderDataTable([]);
-        return alertTrigger();
-    }
-}
-
-
-// const addEventPageBtns = (pageSize, data, showButtons) => {
-//     const elements = document.getElementsByClassName('page-link');
-//     Array.from(elements).forEach(element => {
-//         element.addEventListener('click', async () => {
-//             const previous = element.dataset.previous;
-//             const next = element.dataset.next;
-//             const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
+const addEventPageBtns = (pageSize, data, showButtons) => {
+    const elements = document.getElementsByClassName('page-link');
+    Array.from(elements).forEach(element => {
+        element.addEventListener('click', async () => {
+            const previous = element.dataset.previous;
+            const next = element.dataset.next;
+            const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
             
-//             if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
+            if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
             
-//             if(!element.classList.contains('active-page')){
-//                 let start = (pageNumber - 1) * pageSize;
-//                 let end = pageNumber * pageSize;
-//                 document.getElementById('previousPage').dataset.previous = pageNumber;
-//                 document.getElementById('nextPage').dataset.next = pageNumber;
-//                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
-//                 addEventShowMoreInfo(data);
-//                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
-//                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
-//             }
-//         })
-//     });
-// }
-
-
-
-// const dataPagination = (start, end, data) => {
-//     const paginatedData = [];
-//     for(let i=start; i<end; i++){
-//         if(data[i]) paginatedData.push(data[i]);
-//     }
-//     return paginatedData;
-// }
-
-const paginationTemplate = (nextPageCounter, prevPageCounter) => {
-    
-    let template = `
-
-    <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
-        <div style="display:inline-block;">
-            <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
-                    <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
-                </ul>
-            </nav>
-        </div>
-
-        <div style="padding-left: 30px" class="dropdown">
-        <button class="btn btn-primary dropdown-toggle dropdown-toggle-sites" id="dropdownPageSize" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        10
-        </button>
-        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" data-pagelimit='10' aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" data-pagesize="10">10</a></li>
-            <li><a class="dropdown-item" data-pagesize="20">20</a></li>
-            <li><a class="dropdown-item" data-pagesize="50">50</a></li>
-            <li><a class="dropdown-item" data-pagesize="100">100</a></li>
-        </ul>
-    </div>
-    </div>
-
-    `;
-    return template;
-}
-
-const pageLimitDropdownTrigger = () => {
-    let a = document.getElementById('dropdownPageSize');
-    let dropdownMenuButton = document.getElementById('dropdownMenuButtonSizes');
-    (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
-    if (dropdownMenuButton) {
-        dropdownMenuButton.addEventListener('click', async (e) => {
-            a.innerHTML = e.target.textContent;
-            a.setAttribute('data-pagelimit', e.target.textContent);
-            showAnimation();
-            let sitePref = ``
-            let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-            if (sitePrefAttr === null) sitePref = 'allResults'
-            else {
-                if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-                else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
-            }
-            const sitePrefId = nameToKeyObj[sitePref];
-            filtersSelected.pageLimit = parseInt(e.target.textContent)
-            const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
-            hideAnimation();
-            if(response.code === 200 && response.data.length > 0) {
-                let filterRawData = filterdata(response.data);
-                if (filterRawData.length === 0)  return alertTrigger();
-                addEventFilterData(filterRawData);
-                renderDataTable(filterRawData);
-            }
-            else if(response.code === 200 && response.data.length === 0) {
-                renderDataTable([]);
-                return alertTrigger();
-            }
-            else if(response.code != 200 && response.data.length === 0) {
-                clearLocalStorage();
+            if(!element.classList.contains('active-page')){
+                let start = (pageNumber - 1) * pageSize;
+                let end = pageNumber * pageSize;
+                document.getElementById('previousPage').dataset.previous = pageNumber;
+                document.getElementById('nextPage').dataset.next = pageNumber;
+                document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
+                addEventShowMoreInfo(data);
+                Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
+                document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
             }
         })
+    });
+}
 
+
+
+const dataPagination = (start, end, data) => {
+    const paginatedData = [];
+    for(let i=start; i<end; i++){
+        if(data[i]) paginatedData.push(data[i]);
     }
+    return paginatedData;
 }
 
-const pagninationNextTrigger = () => {
-    let a = document.getElementById('nextLink');
-    a && a.addEventListener('click', async () => {
-        let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-        showAnimation();
-        let sitePref = ``;
-        let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr === null) sitePref = 'allResults'
-        else {
-            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+const paginationTemplate = (array) => {
+    let template = `
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">`
+    
+    array.forEach((a,i) => {
+        if(i === 0){
+            template += `<li class="page-item">
+                            <a class="page-link" id="previousPage" data-previous="1" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                            <span class="sr-only">Previous</span>
+                            </a>
+                        </li>`
         }
-        const sitePrefId = nameToKeyObj[sitePref];
-        nextPageCounter = nextPageCounter + 1
-        filtersSelected.nextPageCounter = nextPageCounter
-        const response = await getParticipantFromSites(sitePrefId, filtersSelected, nextPageCounter);
-        hideAnimation();
-        if(response.code === 200 && response.data.length > 0) {
-            let filterRawData = filterdata(response.data);
-            if (filterRawData.length === 0)  return alertTrigger();
-            addEventFilterData(filterRawData);
-            a.setAttribute('data-nextpage', nextPageCounter);
-            renderDataTable(filterRawData);
-            addEventFilterData(filterRawData);
-        }
-        else if(response.code === 200 && response.data.length === 0) {
-            renderDataTable([]);
-            return alertTrigger();
-        }
-        else if(response.code != 200 && response.data.length === 0) {
-            clearLocalStorage();
-        }
-    })
+        template += `<li class="page-item"><a class="page-link ${i === 0 ? 'active-page':''}" data-page=${a}>${a}</a></li>`;
 
-}
-
-const pagninationPreviousTrigger = () => {
-    let a = document.getElementById('previousLink');
-    let b = document.getElementById('nextLink');
-    a && a.addEventListener('click', async () => {
-        let pageCounter = parseInt(a.getAttribute('data-prevpage'));
-        let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
-        pageCounter = nextPageCounter - 1
-        nextPageCounter = nextPageCounter - 1
-        showAnimation();
-        let sitePref = ``;
-        let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr === null) sitePref = 'allResults'
-        else {
-            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if(i === (array.length - 1)){
+            template += `
+            <li class="page-item">
+                <a class="page-link" id="nextPage" data-next="1" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+                <span class="sr-only">Next</span>
+                </a>
+            </li>`
         }
-        const sitePrefId = nameToKeyObj[sitePref];
-        if (pageCounter >= 1) {
-            filtersSelected.pageCounter = pageCounter
-        const response = await getParticipantFromSites(sitePrefId, filtersSelected, pageCounter);
-        hideAnimation();
-        if(response.code === 200 && response.data.length > 0) {
-            let filterRawData = filterdata(response.data);
-            if (filterRawData.length === 0)  return alertTrigger()
-            b.setAttribute('data-nextpage', nextPageCounter);
-            a.setAttribute('data-prevpage', pageCounter);
-            renderDataTable(filterRawData);
-            addEventFilterData(filterRawData);
-
-        }
-        else if(response.code === 200 && response.data.length === 0) {
-            renderDataTable([])
-            return alertTrigger();
-        }
-        else if(response.code != 200 && response.data.length === 0) {
-            clearLocalStorage();
-        }
-    } else {
-        hideAnimation();
-    } })
+    });
+    template += `
+            </ul>
+        </nav>
+    `;
+    return template;
 }
 
 // TODO: needs code refactoring
@@ -594,8 +229,6 @@ const tableTemplate = (data, showButtons) => {
             (
                 (participant[x] === fieldMapping.noRefusal) ?
                     template += `<td>${participant[x] ? 'No Refusal'  : ''}</td>`
-                : (participant[x] === ``) ?
-                    template += `<td>No Refusal</td>`
                 : (participant[x] === fieldMapping.refusedSome) ?
                     template += `<td>${participant[x] ? 'Refused Some'  : ''}</td>`
                 : (participant[x] === fieldMapping.refusedAll) ?
@@ -620,23 +253,9 @@ const tableTemplate = (data, showButtons) => {
                 (template += `<td>${participant[x] ? 'Started'  : ''}</td>` )
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
-            : ( x === fieldMapping.allBaselineSurveysCompleted.toString()) ?
-            (
-                (participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] === fieldMapping.yes) ?
-                    ( template += `<td>${participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] ? 'Yes'  : ''}</td>` )
-                    : (template += `<td>${participant['state'][fieldMapping.allBaselineSurveysCompleted.toString()] ? 'No'  : ''}</td>` )
-            )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
-                x === (fieldMapping.refusedFutureSurveys).toString()) ?
-            (
-                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
-                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
-                    :
-                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
-                )
-            )
-            :  (x === (fieldMapping.refusedAllFutureActivities).toString()) ?
+                x === (fieldMapping.refusedFutureSurveys).toString() || x === (fieldMapping.refusedAllFutureActivities).toString()) ?
             (
                 (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
@@ -645,8 +264,6 @@ const tableTemplate = (data, showButtons) => {
                 )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
-            : (x === fieldMapping.suspendContact.toString()) ? (
-                template += `<td>${participant[fieldMapping.suspendContact.toString()] ? participant[fieldMapping.suspendContact.toString()].split('T')[0] : ``}</td>`)
             : (x === fieldMapping.siteReportedAge.toString()) ? 
             (
                 ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
@@ -945,14 +562,13 @@ export const filterBySiteKey = (data, sitePref) => {
 }
 
 export const activeColumns = (data, showButtons) => {
-    let btns = document.getElementsByName('column-filter');
+    const btns = document.getElementsByName('column-filter');
     Array.from(btns).forEach(btn => {
-        let value = btn.dataset.column;
+        const value = btn.dataset.column;
         if(importantColumns.indexOf(value) !== -1) {
             btn.classList.add('filter-active');
         }
-        btn.addEventListener('click', async (e) => {
-            e.stopPropagation()
+        btn.addEventListener('click', async () => {
             if(!btn.classList.contains('filter-active')){
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
@@ -960,7 +576,6 @@ export const activeColumns = (data, showButtons) => {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                 }
                 else {
-                   // filtersSelected[btn.getAttribute('data-column')] = [btn]
                     renderData(data, showButtons);
                 }
             }
@@ -971,7 +586,6 @@ export const activeColumns = (data, showButtons) => {
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
                 }
                 else {
-                   // delete filtersSelected[btn.getAttribute('data-column')]
                     renderData(data, showButtons);
                 }
             }
@@ -1013,33 +627,6 @@ const alertTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
-const errorTrigger = () => {
-    let alertList = document.getElementById('alert_placeholder');
-    let template = ``;
-    template += `
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            Missing input fields!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>`
-    alertList.innerHTML = template;
-    return template;
-}
-
-// const successTrigger = () => {
-//     let alertList = document.getElementById('alert_placeholder');
-//     let template = ``;
-//     template += `
-//         <div class="alert alert-success alert-dismissible fade show" role="alert">
-//             Results found!
-//         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-//             <span aria-hidden="true">&times;</span>
-//         </button>
-//     </div>`
-//     alertList.innerHTML = template;
-//     return template;
-// }
 
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
@@ -1052,17 +639,16 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
                     a.innerHTML = e.target.textContent;
                     const t = getDataAttributes(e.target);
                     const query = `sitePref=${t.sitekey}`;
-                    reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent, filtersSelected);
-                    filtersSelected.siteFilter = nameToKeyObj[t.sitekey]
+                    reRenderTableParticipantsAllTable(query, t.sitekey, e.target.textContent);
                 }
             })
     }}
 }
 
-const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSelection, filtersSelected) => {
+const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSelection) => {
     showAnimation();
     const sitePrefId = nameToKeyObj[sitePref];
-    const response = await getParticipantFromSites(sitePrefId, filtersSelected);
+    const response = await getParticipantFromSites(sitePrefId);
     hideAnimation();
     if(response.code === 200 && response.data.length > 0) {
         const mainContent = document.getElementById('mainContent')
@@ -1074,12 +660,9 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         renderData(filterRawData);
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
-        let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
-        dropdownMenuButton.setAttribute('selectedsite',sitePref)  
         dropdownTriggerAllParticipants(currentSiteSelection);
     }
     else if(response.code === 200 && response.data.length === 0) {
-        renderDataTable([]);
         return alertTrigger();
     }
     else if(response.code != 200 && response.data.length === 0) {
@@ -1102,111 +685,10 @@ const getCustomVariableNames = (x) => {
 
 }
 
-const getParticipantFromSites = async (query, filtersSelected, nextPageCounter) => {
-    const siteKey = await getAccessToken();
-    let template = `/dashboard?api=getParticipants`;
-    let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
-    if (limit === null) limit = 10
-        if (filtersSelected.active === true) {
-            template += `&type=active`
-        }
-        if (filtersSelected.passive === true) {
-            template += `&type=passive`
-        }
-        if (filtersSelected.passive === false && filtersSelected.active === false) {
-            template += `&type=all`
-        }
-        if ((filtersSelected.startDate).length > 0) {
-            template += `&from=${filtersSelected.startDate}T00:00:00.000Z&to=${filtersSelected.endDate}T23:59:59.999Z`
-        }
-        if (query !== nameToKeyObj.allResults) {
-            template += `&siteCode=${query}`
-        }
-        if ((filtersSelected.siteFilter) !== ``) {
-            template += `&siteCode=${filtersSelected.siteFilter}`
-        }
-        if ((filtersSelected.pageLimit) > 0) {
-            template += `&limit=${filtersSelected.pageLimit}`
-        }
-        if (limit && (filtersSelected.pageLimit) === ``) {
-            template += `&limit=${limit}`
-        }
-        if ((filtersSelected.nextPageCounter).length > 0 || nextPageCounter) {
-            template += `&page=${nextPageCounter}`
-        }
-        // if (nextPageCounter === undefined ) {
-        //     (query === nameToKeyObj.allResults) ? template += `&type=all&limit=${limit}` : template += `&type=all&siteCode=${query}&limit=${limit}`
-        // }
-        if (filtersSelected.active === false && filtersSelected.passive ===  false && filtersSelected.startDate === `` && filtersSelected.endDate === `` && filtersSelected.siteFilter === `` && filtersSelected.pageLimit === `` && filtersSelected.nextPageCounter === ``){
-            template = `/dashboard?api=getParticipants`;
-            if (query === nameToKeyObj.allResults) { template += `&type=all&limit=${limit}&page=${nextPageCounter}` } else { template += `&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}` }
-        }
-    const response = await fetch(`${baseAPI}${template}`, {
-        method: "GET",
-        headers: {
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return await response.json();
-}
-
-const getParticipantWithLimit = async (query, limit) => {
+const getParticipantFromSites = async (query) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
-    const response = await fetch(`${baseAPI}${template}`, {
-        method: "GET",
-        headers: {
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return await response.json();
-}
-
-const getParticipantsWithFilters = async (type, sitePref) => {
-    let template = `/dashboard?api=getParticipants`;
-    const siteKey = await getAccessToken();
-    if (filtersSelected.active === true) {
-        template += `&type=active`
-    }
-    if (filtersSelected.passive === true) {
-        template += `&type=passive`
-    }
-    if (filtersSelected.active === false && filtersSelected.passive === false) {
-        template += `&type=all`
-    } else {}
-    if ((filtersSelected.siteFilter) !== ``) {
-        template += `&siteCode=${filtersSelected.siteFilter}`
-    }
-    if ( (sitePref !== 'Filter by Site')) {
-        template += `&siteCode=${sitePref}`
-    }
-    if ((filtersSelected.pageLimit) !== ``) {
-        template += `&limit=${filtersSelected.pageLimit}`
-    }
-    if ((filtersSelected.pageLimit) === ``) {
-        template += `&limit=10`
-    }
-    if (filtersSelected.active === false && filtersSelected.passive ===  false && filtersSelected.siteFilter === `` && filtersSelected.pageLimit === ``){
-        (sitePref !== 'Filter by Site') ? template += `&type=${type}&siteCode=${sitePref}&limit=10` : template += `&type=${type}&limit=10`
-    }
-    const response = await fetch(`${baseAPI}${template}`, {
-        method: "GET",
-        headers: {
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return await response.json();
-}
-
-const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
-    const siteKey = await getAccessToken();
-    let template = ``;
-    const limit = 10;
-    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=all&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
