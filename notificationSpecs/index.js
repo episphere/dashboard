@@ -38,7 +38,7 @@ const formSubmit = () => {
         if(document.getElementById('emailSubject')) {
             obj['email'] = {};
             obj['email']['subject'] = document.getElementById('emailSubject').value;
-            obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '</br>');
+            obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '<br/>');
         }
 
         if(document.getElementById('smsBody')) {

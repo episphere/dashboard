@@ -206,7 +206,6 @@ export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, tot
 //    subPieChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
 //    pieChartBiopspecimen.appendChild(subPieChartBiopspecimen);
 
-
    let barChartBiopspecimen = document.createElement('div');
    barChartBiopspecimen.classList = ['col-lg-4 charts'];
 
