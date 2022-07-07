@@ -97,10 +97,6 @@ export const render = () => {
                                         <select id="operatorkey0" name="condition-operator" class="col-md-2 form-control mr-2">
                                             <option value="equals">equals</option>
                                             <option value="notequals">notequals</option>
-                                            <option value="greater">greater</option>
-                                            <option value="greaterequals">greaterequals</option>
-                                            <option value="less">less</option>
-                                            <option value="lessequals">lessequals</option>
                                         </select>
                                         <select id="valuetype0" name="value-type" class="col-md-2 form-control mr-2">
                                             <option value="number">number</option>
@@ -318,10 +314,6 @@ export const addEventMoreCondition = (concepts, flag) => {
             <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
-                <option value="greater">greater</option>
-                <option value="greaterequals">greaterequals</option>
-                <option value="less">less</option>
-                <option value="lessequals">lessequals</option>
             </select>
             <select name="value-type" class="col-md-2 form-control mr-2" id="valuetype${conditionNo}">
                 <option value="number">number</option>
@@ -576,18 +568,6 @@ const getConditionsResponse = (i) => {
         return i['equals'];
     } else if (i['notequals'] !== undefined) {
         return i['notequals'];
-    }
-    else if (i['greater'] !== undefined) {
-        return i['greater'];
-    }
-    else if (i['greaterequals'] !== undefined) {
-        return i['greaterequals'];
-    }
-    else if (i['less'] !== undefined) {
-        return i['less'];
-    }
-    else if (i['lessequals'] !== undefined) {
-        return i['lessequals'];
     }
 }
 
