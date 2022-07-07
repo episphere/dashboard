@@ -92,9 +92,9 @@ export const render = () => {
                     
                                 <div id="conditionsDiv">
                                     <div class="row form-group">
-                                        <label class="col-form-label col-md-3">Condition</label>
-                                        <div class="condition-key col-md-2 mr-2 p-0"></div>
-                                        <select id="operatorkey0" name="condition-operator" class="col-md-2 form-control mr-2">
+                                        <label class="col-form-label col-md-4">Condition</label>
+                                        <div class="condition-key col-md-3 mr-2 p-0"></div>
+                                        <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
                                             <option value="equals">equals</option>
                                             <option value="notequals">notequals</option>
                                             <option value="greater">greater</option>
@@ -102,11 +102,7 @@ export const render = () => {
                                             <option value="less">less</option>
                                             <option value="lessequals">lessequals</option>
                                         </select>
-                                        <select id="valuetype0" name="value-type" class="col-md-2 form-control mr-2">
-                                            <option value="number">number</option>
-                                            <option value="string">string</option>
-                                        </select>
-                                        <div class="condition-value col-md-2 mr-2 p-0"></div>
+                                        <div class="condition-value col-md-3 mr-2 p-0"></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -195,24 +191,9 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
         if (counter <= (size-1)) {
             document.getElementById(`conditionkey${counter}`).value = i;
             document.getElementById(`operatorkey${counter}`).value = getOperatorResponse(conditions[i]);
-            
             if((conditions).hasOwnProperty(i)) {
-
-                let storedValue = getConditionsResponse(conditions[i]);
-                document.getElementById(`conditionvalue${counter}`).value = storedValue;
-
-                if(typeof storedValue == 'string') {
-                    document.getElementById(`valuetype${counter}`).selectedIndex = 1;
-                }
+                document.getElementById(`conditionvalue${counter}`).value = getConditionsResponse(conditions[i]);
             }
-
-            if(flag) {
-                document.getElementById(`conditionkey${counter}`).setAttribute('readonly', true);
-                document.getElementById(`operatorkey${counter}`).setAttribute('readonly', true);
-                document.getElementById(`valuetype${counter}`).setAttribute('readonly', true);
-                document.getElementById(`conditionvalue${counter}`).setAttribute('readonly', true);
-            }
-
             counter++;
             if(counter != size) document.getElementById('addConditions').click();
         }
@@ -294,12 +275,7 @@ const formSubmit = () => {
 
         Array.from(document.getElementsByName('condition-key')).forEach((e, i) => {
             obj['conditions'][e.value] = {};
-            if(Array.from(document.getElementsByName('value-type'))[i].value == 'string') {
-                obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = Array.from(document.getElementsByName('condition-value'))[i].value;
-            }
-            else if(Array.from(document.getElementsByName('value-type'))[i].value == 'number') {
-                obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value);
-            }
+            obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value)
         })
         storeNotificationSchema(obj, 'notification_specification')
     })
@@ -313,9 +289,9 @@ export const addEventMoreCondition = (concepts, flag) => {
         const div = document.createElement('div');
         div.classList = ['row form-group'];
         div.innerHTML = `
-            <label class="col-form-label col-md-3">Condition</label>
-            <div class="condition-key col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
-            <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey${conditionNo}">
+            <label class="col-form-label col-md-4">Condition</label>
+            <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
+            <select name="condition-operator" class="col-md-1 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
                 <option value="greater">greater</option>
@@ -323,11 +299,7 @@ export const addEventMoreCondition = (concepts, flag) => {
                 <option value="less">less</option>
                 <option value="lessequals">lessequals</option>
             </select>
-            <select name="value-type" class="col-md-2 form-control mr-2" id="valuetype${conditionNo}">
-                <option value="number">number</option>
-                <option value="string">string</option>
-            </select>
-            <div class="condition-value col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
+            <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
         `
         conditionDiv.appendChild(div);
         btn.dataset.condition = conditionNo + 1;
