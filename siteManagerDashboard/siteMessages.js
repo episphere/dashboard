@@ -30,7 +30,6 @@ export const render = async () => {
                         <span class="list-group-item list-group-item-action">
                             <div class="d-flex w-100 justify-content-between">
                             <small> Notification Type: ${message.notificationType !== undefined ? message.notificationType : `N/A`} | Email: ${message.email !== undefined ? message.email : `N/A`} 
-                            |  Read: ${message.read !== undefined ? message.read : `N/A`} |  Site Acronym: ${message.siteAcronym !== undefined ? message.siteAcronym : `N/A`} 
                             | Date Sent: ${humanReadableFromISO(message.notification.time)}</small>
                             <br />
                             </div>
