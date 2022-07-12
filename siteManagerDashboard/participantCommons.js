@@ -123,7 +123,7 @@ export  const renderData = (data, showButtons, flag) => {
         animation(false);
         return;
     }
-    const pageSize = 10;
+    const pageSize = 50;
     const dataLength = data.length;
     data.splice(pageSize, dataLength);
     let nextPageCounter = 1;
@@ -137,7 +137,6 @@ export  const renderData = (data, showButtons, flag) => {
     getActiveParticipants();
     getPassiveParticipants();
     getDateFilters();   
-    pageLimitDropdownTrigger();
 }
 
 const renderDataTable = (data, showButtons) => {
@@ -315,57 +314,12 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
                 </ul>
             </nav>
         </div>
-
-        <div style="padding-left: 30px" class="dropdown">
-        <button class="btn btn-primary dropdown-toggle dropdown-toggle-sites" id="dropdownPageSize" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        10
-        </button>
-        <ul class="dropdown-menu" id="dropdownMenuButtonSizes" data-pagelimit='10' aria-labelledby="dropdownMenuButton">
-            <li><a class="dropdown-item" data-pagesize="10">10</a></li>
-            <li><a class="dropdown-item" data-pagesize="20">20</a></li>
-            <li><a class="dropdown-item" data-pagesize="50">50</a></li>
-            <li><a class="dropdown-item" data-pagesize="100">100</a></li>
-        </ul>
-    </div>
     </div>
 
     `;
     return template;
 }
 
-const pageLimitDropdownTrigger = () => {
-    let a = document.getElementById('dropdownPageSize');
-    let dropdownMenuButton = document.getElementById('dropdownMenuButtonSizes');
-    (a.getAttribute('data-pagelimit') !== null) ? (a.innerHTML = a.getAttribute('data-pagelimit')) : (a.innerHTML = '10')
-    if (dropdownMenuButton) {
-        dropdownMenuButton.addEventListener('click', async (e) => {
-            a.innerHTML = e.target.textContent;
-            a.setAttribute('data-pagelimit', e.target.textContent);
-            showAnimation();
-            let sitePref = ``
-            let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-            if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-            else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
-            const sitePrefId = nameToKeyObj[sitePref];
-            const response = await getParticipantWithLimit(sitePrefId, parseInt(e.target.textContent));
-            hideAnimation();
-            if(response.code === 200 && response.data.length > 0) {
-                let filterRawData = filterdata(response.data);
-                if (filterRawData.length === 0)  return alertTrigger();
-                addEventFilterData(filterRawData);
-                renderDataTable(filterRawData);
-            }
-            else if(response.code === 200 && response.data.length === 0) {
-                renderDataTable([]);
-                return alertTrigger();
-            }
-            else if(response.code != 200 && response.data.length === 0) {
-                clearLocalStorage();
-            }
-        })
-
-    }
-}
 
 const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
@@ -977,10 +931,9 @@ const getCustomVariableNames = (x) => {
 const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    let limit = document.getElementById('dropdownPageSize').getAttribute('data-pagelimit');
+    const limit = 50
     filterHolder['siteCode'] = query
     filterHolder['nextPageCounter'] = nextPageCounter
-    (limit === null) ? limit = 10 : filterHolder['limit'] = limit
     if (nextPageCounter === undefined ) {
         (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     } else {
@@ -995,39 +948,16 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
     return await response.json();
 }
 
-const getParticipantWithLimit = async (query, limit) => {
-    const siteKey = await getAccessToken();
-    let template = ``;
-    filterHolder['siteCode'] = query
-    filterHolder['limit'] = limit
-    if (query === nameToKeyObj.allResults) 
-        template += `/dashboard?api=getParticipants&type=all&limit=${limit}`
-    else 
-        template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
-    const response = await fetch(`${baseAPI}${template}`, {
-        method: "GET",
-        headers: {
-            Authorization:"Bearer "+siteKey
-        }
-    });
-    return await response.json();
-}
-
 const getParticipantsWithFilters = async (type, sitePref) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    let limit = ``;
+    const limit = 50;
     filterHolder['siteCode'] = sitePref
     filterHolder['type'] = type
-    if (filterHolder['limit'] !== undefined)
-        limit = filterHolder['limit']
-    else
-        limit = 10
     if (sitePref !== 'Filter by Site') {
         template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}`
     }
     else {
-        console.log('kkk', limit)
         template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
     }
     const response = await fetch(`${baseAPI}${template}`, {
@@ -1042,9 +972,8 @@ const getParticipantsWithFilters = async (type, sitePref) => {
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 10;
+    const limit = 50;
     filterHolder['siteCode'] = sitePref
-    filterHolder['limit'] = limit
     filterHolder['type'] = type
     filterHolder['startDate'] = startDate
     filterHolder['endDate'] = endDate

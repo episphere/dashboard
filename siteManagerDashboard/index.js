@@ -366,7 +366,8 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
 
 
 const fetchData = async (siteKey, type) => {
-    const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=${type}`, {
+    const limit = 50
+    const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=${type}&limit=${limit}`, {
         method: 'GET',
         headers: {
             Authorization: "Bearer " + siteKey
@@ -1003,6 +1004,7 @@ const renderParticipantsAll = async () => {
         document.getElementById('allBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
+        console.log('len', (response.data).length)
         mainContent.innerHTML = renderTable(filterdata(response.data), 'participantAll');
         addEventFilterData(filterdata(response.data));
         renderData(filterdata(response.data));
