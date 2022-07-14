@@ -103,8 +103,8 @@ const router = async () => {
 
 const headsupBanner = () => {
     let template = ``;
-    return template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <center> Warning: This is a test environment, <b> do not enter real participant data  </b> </center>
+    return template += `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center> Warning: This is a test environment, <b> do not use real participant data  </b> </center>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
