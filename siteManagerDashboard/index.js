@@ -101,6 +101,16 @@ const router = async () => {
     else window.location.hash = '#';
 }
 
+const headsupBanner = () => {
+    let template = ``;
+    return template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <center> Warning: This is a test environment, <b> do not enter real participant data  </b> </center>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+}
+
 const homePage = async () => {
     if (localStorage.dashboard) {
         window.location.hash = '#home';
@@ -225,6 +235,7 @@ const renderDashboard = async () => {
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
+            mainContent.innerHTML = headsupBanner();
             renderCharts(siteKey, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
