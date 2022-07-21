@@ -235,7 +235,7 @@ const renderDashboard = async () => {
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
-            mainContent.innerHTML = headsupBanner();
+            location.host !== urls.prod ? mainContent.innerHTML = headsupBanner() : ``
             renderCharts(siteKey, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
