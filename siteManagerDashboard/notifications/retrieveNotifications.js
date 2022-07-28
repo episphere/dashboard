@@ -136,6 +136,10 @@ const viewNotificationSchema = (concepts) => {
                         <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey0">
                             <option value="equals">equals</option>
                             <option value="notequals">notequals</option>
+                            <option value="greater">greater</option>
+                            <option value="greaterequals">greaterequals</option>
+                            <option value="less">less</option>
+                            <option value="lessequals">lessequals</option>
                         </select>
                         <select name="value-type" class="col-md-2 form-control mr-2" id="valuetype0">
                             <option value="number">number</option>
