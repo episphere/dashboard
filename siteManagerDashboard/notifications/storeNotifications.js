@@ -276,7 +276,8 @@ const formSubmit = () => {
         if(document.getElementById('emailSubject')) {
             obj['email'] = {};
             obj['email']['subject'] = document.getElementById('emailSubject').value;
-            obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '<br/>');
+            (document.getElementById('category').value.trim() === 'newsletter') ? obj['email']['body'] = document.getElementById('emailBody').value
+                : obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '<br/>') 
         }
 
         if(document.getElementById('smsBody')) {
@@ -301,7 +302,7 @@ const formSubmit = () => {
                 obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value);
             }
         })
-        storeNotificationSchema(obj, 'notification_specification')
+       // storeNotificationSchema(obj, 'notification_specification')
     })
 }
 
