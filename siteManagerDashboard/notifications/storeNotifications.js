@@ -302,7 +302,7 @@ const formSubmit = () => {
                 obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value);
             }
         })
-       // storeNotificationSchema(obj, 'notification_specification')
+        storeNotificationSchema(obj, 'notification_specification')
     })
 }
 
