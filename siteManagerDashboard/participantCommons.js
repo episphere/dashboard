@@ -695,7 +695,7 @@ const getCustomVariableNames = (x) => {
         return 'First Name (UP)'
     else if (x == fieldMapping.mName)
         return 'Middle Name (UP)'
-    else if (x == fieldMapping.ltName)
+    else if (x == fieldMapping.lName)
         return 'Last Name (UP)'
     else {}
 
