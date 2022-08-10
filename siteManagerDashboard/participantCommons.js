@@ -31,7 +31,8 @@ export const renderTable = (data, source) => {
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
-                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested) ? 
+                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested &&
+                        x !== fieldMapping.consentFirstName && x !== fieldMapping.consentMiddleName && x !== fieldMapping.consentLastName) ? 
                         conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</button>`)}
             </div>
         </div>`
@@ -681,6 +682,12 @@ const getCustomVariableNames = (x) => {
         return 'Refused baseline specimen surveys'
     else if (x === fieldMapping.dateHipaaRevokeRequested)
         return 'Date revoked HIPAA'
+    else if (x === fieldMapping.consentFirstName)
+        return 'Consent First Name'
+    else if (x === fieldMapping.consentMiddleName)
+        return 'Consent Middle Name'
+    else if (x === fieldMapping.consentLastName)
+        return 'Consent Last Name'
     else {}
 
 }
