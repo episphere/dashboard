@@ -658,7 +658,6 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         const mainContent = document.getElementById('mainContent')
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
-        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
         renderData(filterRawData);

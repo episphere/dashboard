@@ -1029,6 +1029,7 @@ const renderParticipantsAll = async () => {
         document.getElementById('participants').classList.add('active');
         mainContent.innerHTML = renderTable(filterdata(response.data), 'participantAll');
         addEventFilterData(filterdata(response.data));
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         renderData(filterdata(response.data));
         activeColumns(filterdata(response.data));
         renderLookupSiteDropdown();
