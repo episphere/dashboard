@@ -1027,10 +1027,12 @@ const renderParticipantsAll = async () => {
         document.getElementById('allBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data), 'participantAll');
-        addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
-        activeColumns(filterdata(response.data));
+        const filterRawData = filterdata(response.data)
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+        addEventFilterData(filterRawData);
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        renderData(filterRawData);
+        activeColumns(filterRawData);
         renderLookupSiteDropdown();
         dropdownTriggerAllParticipants('Filter by Site');
         animation(false);
