@@ -101,6 +101,16 @@ const router = async () => {
     else window.location.hash = '#';
 }
 
+const headsupBanner = () => {
+    let template = ``;
+    return template += `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center> Warning: This is a test environment, <b> do not use real participant data  </b> </center>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+}
+
 const homePage = async () => {
     if (localStorage.dashboard) {
         window.location.hash = '#home';
@@ -225,6 +235,7 @@ const renderDashboard = async () => {
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
+            location.host !== urls.prod ? mainContent.innerHTML = headsupBanner() : ``
             renderCharts(siteKey, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
@@ -1016,10 +1027,12 @@ const renderParticipantsAll = async () => {
         document.getElementById('allBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data), 'participantAll');
-        addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
-        activeColumns(filterdata(response.data));
+        const filterRawData = filterdata(response.data)
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+        addEventFilterData(filterRawData);
+        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
+        renderData(filterRawData);
+        activeColumns(filterRawData);
         renderLookupSiteDropdown();
         dropdownTriggerAllParticipants('Filter by Site');
         animation(false);

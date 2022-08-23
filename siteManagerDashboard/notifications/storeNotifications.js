@@ -92,13 +92,21 @@ export const render = () => {
                     
                                 <div id="conditionsDiv">
                                     <div class="row form-group">
-                                        <label class="col-form-label col-md-4">Condition</label>
-                                        <div class="condition-key col-md-3 mr-2 p-0"></div>
-                                        <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
+                                        <label class="col-form-label col-md-3">Condition</label>
+                                        <div class="condition-key col-md-2 mr-2 p-0"></div>
+                                        <select id="operatorkey0" name="condition-operator" class="col-md-2 form-control mr-2">
                                             <option value="equals">equals</option>
                                             <option value="notequals">notequals</option>
+                                            <option value="greater">greater</option>
+                                            <option value="greaterequals">greaterequals</option>
+                                            <option value="less">less</option>
+                                            <option value="lessequals">lessequals</option>
                                         </select>
-                                        <div class="condition-value col-md-3 mr-2 p-0"></div>
+                                        <select id="valuetype0" name="value-type" class="col-md-2 form-control mr-2">
+                                            <option value="number">number</option>
+                                            <option value="string">string</option>
+                                        </select>
+                                        <div class="condition-value col-md-2 mr-2 p-0"></div>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -187,9 +195,24 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
         if (counter <= (size-1)) {
             document.getElementById(`conditionkey${counter}`).value = i;
             document.getElementById(`operatorkey${counter}`).value = getOperatorResponse(conditions[i]);
+            
             if((conditions).hasOwnProperty(i)) {
-                document.getElementById(`conditionvalue${counter}`).value = getConditionsResponse(conditions[i]);
+
+                let storedValue = getConditionsResponse(conditions[i]);
+                document.getElementById(`conditionvalue${counter}`).value = storedValue;
+
+                if(typeof storedValue == 'string') {
+                    document.getElementById(`valuetype${counter}`).selectedIndex = 1;
+                }
             }
+
+            if(flag) {
+                document.getElementById(`conditionkey${counter}`).setAttribute('readonly', true);
+                document.getElementById(`operatorkey${counter}`).setAttribute('readonly', true);
+                document.getElementById(`valuetype${counter}`).setAttribute('readonly', true);
+                document.getElementById(`conditionvalue${counter}`).setAttribute('readonly', true);
+            }
+
             counter++;
             if(counter != size) document.getElementById('addConditions').click();
         }
@@ -253,7 +276,8 @@ const formSubmit = () => {
         if(document.getElementById('emailSubject')) {
             obj['email'] = {};
             obj['email']['subject'] = document.getElementById('emailSubject').value;
-            obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '<br/>');
+            (document.getElementById('category').value.trim() === 'newsletter') ? obj['email']['body'] = document.getElementById('emailBody').value
+                : obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '<br/>') 
         }
 
         if(document.getElementById('smsBody')) {
@@ -271,7 +295,12 @@ const formSubmit = () => {
 
         Array.from(document.getElementsByName('condition-key')).forEach((e, i) => {
             obj['conditions'][e.value] = {};
-            obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value)
+            if(Array.from(document.getElementsByName('value-type'))[i].value == 'string') {
+                obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = Array.from(document.getElementsByName('condition-value'))[i].value;
+            }
+            else if(Array.from(document.getElementsByName('value-type'))[i].value == 'number') {
+                obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value);
+            }
         })
         storeNotificationSchema(obj, 'notification_specification')
     })
@@ -285,13 +314,21 @@ export const addEventMoreCondition = (concepts, flag) => {
         const div = document.createElement('div');
         div.classList = ['row form-group'];
         div.innerHTML = `
-            <label class="col-form-label col-md-4">Condition</label>
-            <div class="condition-key col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
-            <select name="condition-operator" class="col-md-1 form-control mr-2" id="operatorkey${conditionNo}">
+            <label class="col-form-label col-md-3">Condition</label>
+            <div class="condition-key col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
+            <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
+                <option value="greater">greater</option>
+                <option value="greaterequals">greaterequals</option>
+                <option value="less">less</option>
+                <option value="lessequals">lessequals</option>
             </select>
-            <div class="condition-value col-md-3 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
+            <select name="value-type" class="col-md-2 form-control mr-2" id="valuetype${conditionNo}">
+                <option value="number">number</option>
+                <option value="string">string</option>
+            </select>
+            <div class="condition-value col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
         `
         conditionDiv.appendChild(div);
         btn.dataset.condition = conditionNo + 1;
@@ -540,6 +577,18 @@ const getConditionsResponse = (i) => {
         return i['equals'];
     } else if (i['notequals'] !== undefined) {
         return i['notequals'];
+    }
+    else if (i['greater'] !== undefined) {
+        return i['greater'];
+    }
+    else if (i['greaterequals'] !== undefined) {
+        return i['greaterequals'];
+    }
+    else if (i['less'] !== undefined) {
+        return i['less'];
+    }
+    else if (i['lessequals'] !== undefined) {
+        return i['lessequals'];
     }
 }
 
