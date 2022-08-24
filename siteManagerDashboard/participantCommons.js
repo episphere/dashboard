@@ -8,7 +8,6 @@ import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
 export const renderTable = (data, source) => {
-    console.log('data', data.length)
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [ 'Connect_ID', 'pin', 'token', 'studyId', fieldMapping.timeStudyIdSubmitted, fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
