@@ -1017,7 +1017,7 @@ const renderParticipantsVerified = async () => {
 const renderParticipantsAll = async () => {
     animation(true);
     const siteKey = await getAccessToken();
-    const response = test
+    const response = await fetchData(siteKey, 'all');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
