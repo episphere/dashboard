@@ -206,7 +206,6 @@ export const performSearch = async (query, sitePref, failedElem) => {
                 return alertTrigger();
             }
         }
-        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         mainContent.innerHTML = renderTable(filterRawData, 'participantLookup');
         addEventFilterData(filterRawData);
         renderData(filterRawData);
@@ -247,9 +246,4 @@ const renderLookupSiteDropdown = () => {
 export const renderLookupResultsTable = () => {
     const loadDetailsPage = '#participants/all'
     location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantsAll
-    let filterRawData = JSON.parse(localStorage.getItem('filterRawData'));
-    mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
-    addEventFilterData(filterRawData);
-    renderData(filterRawData);
-    activeColumns(filterRawData);
 }

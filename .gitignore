@@ -68,3 +68,4 @@ typings/
 # ignore scratch & scratch.js
 scratch
 scratch.js
+test.js
