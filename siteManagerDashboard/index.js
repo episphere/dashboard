@@ -18,7 +18,6 @@ import { firebaseConfig as prodFirebaseConfig } from "./prod/config.js";
 import { SSOConfig as devSSOConfig} from './dev/identityProvider.js';
 import { SSOConfig as stageSSOConfig} from './stage/identityProvider.js';
 import { SSOConfig as prodSSOConfig} from './prod/identityProvider.js';
-import { test } from './test.js';
 
 let saveFlag = false;
 let counter = 0;
