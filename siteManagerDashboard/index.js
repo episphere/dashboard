@@ -1030,7 +1030,6 @@ const renderParticipantsAll = async () => {
         const filterRawData = filterdata(response.data)
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
-        localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         renderData(filterRawData);
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
