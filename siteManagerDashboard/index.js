@@ -539,16 +539,12 @@ const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, pa
   
     participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
     participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
-    participantModulesTwoThree && participantModulesTwoThree.filter( i => {
-        modulesTwoThreeSubmitted += i.countModuleTwo
-        modulesTwoThreeSubmitted += i.countModuleThree
-        modulesTwoThreeSubmitted -= i.countModuleTwoAndThree
-    })
-   participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
+    participantModulesTwoThree && participantModulesTwoThree.filter( i =>  modulesTwoThreeSubmitted += i.countModules )
+    participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
         allModulesAllSamples += item.countAllModulesAllSamples;
     })
     const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
-    noModulesSubmitted = verifiedParticipants - (modulesSubmitted+moduleOneSubmitted+modulesTwoThreeSubmitted)
+    noModulesSubmitted = verifiedParticipants - modulesSubmitted
     currentWorflowObj.noModulesSubmitted = noModulesSubmitted
     currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
     currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
