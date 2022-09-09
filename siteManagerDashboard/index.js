@@ -101,6 +101,16 @@ const router = async () => {
     else window.location.hash = '#';
 }
 
+const headsupBanner = () => {
+    let template = ``;
+    return template += `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <center> Warning: This is a test environment, <b> do not use real participant data  </b> </center>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>`
+}
+
 const homePage = async () => {
     if (localStorage.dashboard) {
         window.location.hash = '#home';
@@ -184,20 +194,15 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
     <div class="metrics-card">
       <div class="card-top"></div>
       <div class="metrics-value">${activeRecruits}</div>
-      <div>
-        <h4 class="metrics-value-description">
+        <p class="metrics-value-description">
           Active Recruits
-          <div>
-          </div>
-      </div>
+        </p>
     </div>
     <div class="metrics-card">
       <div class="card-top"></div>
       <div class="metrics-value">${verifiedParticipants}</div>
-      <div>
-        <h4 class="metrics-value-description">Verified Participants</h4>
-      </div>
-      <p>
+        <p class="metrics-value-description">Verified Participants</p>
+      <p class="ratio-value">
       <span class="hovertext" data-hover="out of Active and Passive Recruits">      
           Response Ratio:</span>
           ${activeRecruits + passiveRecruits === 0 || verifiedParticipants ===0? 0 : (verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
@@ -205,11 +210,9 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
     </div>
     <div class="metrics-card">
       <div class="card-top"></div>
-
-      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} (${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%)</div>
-      <div>
-        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Completed Baseline Activities Among Verified Participants</span></p>
-      </div>
+      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} </div>
+        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Verified Participants who Completed Baseline Survey and Samples</span></p>
+        <p class="ratio-value">Completion Ratio: ${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%</p>
     </div>`
     let divElement = document.createElement('div');
     divElement.className = 'row d-flex justify-content-center';
@@ -232,6 +235,7 @@ const renderDashboard = async () => {
             document.getElementById('dashboardBtn').classList.add('active');
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
+            location.host !== urls.prod ? mainContent.innerHTML = headsupBanner() : ``
             renderCharts(siteKey, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
@@ -277,11 +281,12 @@ const renderCharts = async (siteKey, isParent) => {
     const modulesMetric = await fetchStats(siteKey, 'participants_allModules');
     const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
     const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
+    const allModulesAllSamplesMetric = await fetchStats(siteKey, 'participants_allModulesAllSamples');
     const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
-    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetric.stats);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
-    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats)
+    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats, (activeVerificationStatus.verified + passiveVerificationStatus.verified))
 
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
@@ -298,11 +303,11 @@ const renderCharts = async (siteKey, isParent) => {
             siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
             mainContent.appendChild(siteSelectionRow);
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
-                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats);
+                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats, allModulesAllSamplesMetric.stats);
         }
 
         // Add metrics cards at top of dashboard
-        const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: Math.min(biospecimenStats.all, modulesStats.modulesSubmitted) });
+        const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples });
         mainContent.appendChild(metricsCards);
 
         renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
@@ -347,7 +352,7 @@ const renderSiteKeyList = () => {
 
 
 const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, 
-    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults) => {
+    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
     let a = document.getElementById('dropdownSites');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
     let tempSiteName = a.innerHTML = sitekeyName;
@@ -357,7 +362,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
                 a.innerHTML = e.target.textContent;
                 const t = getDataAttributes(e.target)
                 reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 
-                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults);
+                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
             }
         })
 
@@ -525,26 +530,28 @@ const filterOptOutsMetrics = (participantOptOutsMetric) => {
     return currentWorflowObj;
 }
 
-const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, activeVerifiedParticipants, passiveVerifiedParticipants, participantsAllModulesAllSamples) => {
     let currentWorflowObj = {}
     let noModulesSubmitted = 0
     let moduleOneSubmitted = 0
     let modulesTwoThreeSubmitted = 0
     let modulesSubmitted = 0
+    let allModulesAllSamples = 0;
   
     participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
     participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
-    participantModulesTwoThree && participantModulesTwoThree.filter( i => {
-        modulesTwoThreeSubmitted += i.countModuleTwo
-        modulesTwoThreeSubmitted += i.countModuleThree
+    participantModulesTwoThree && participantModulesTwoThree.filter( i =>  modulesTwoThreeSubmitted += i.countModules )
+    participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
+        allModulesAllSamples += item.countAllModulesAllSamples;
     })
     const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
-    noModulesSubmitted = verifiedParticipants - (modulesSubmitted+moduleOneSubmitted+modulesTwoThreeSubmitted)
+    noModulesSubmitted = verifiedParticipants - modulesSubmitted
     currentWorflowObj.noModulesSubmitted = noModulesSubmitted
     currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
     currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
     currentWorflowObj.modulesSubmitted = modulesSubmitted
     currentWorflowObj.verifiedParticipants = verifiedParticipants
+    currentWorflowObj.allModulesAllSamples = allModulesAllSamples;
     return currentWorflowObj;  
 
 }
@@ -589,12 +596,21 @@ const filterRecruitsFunnel = (data, recruit) => {
     submittedProfile.forEach((i) => {
         submittedProfileCount += i.submittedCount
     })
-    let verification = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
-    verification.forEach((i) => {
-        verificationCount += i.verificationCount
-    })
-
+    let verification = ``
+    if (recruitType === fieldMapping.active) {
+        verification = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified)))
+        verification.forEach((i) => {
+            verificationCount += i.verificationCount
+        })
+    }
+    else { 
+        verification = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
+        verification.forEach((i) => {
+            verificationCount += i.verificationCount
+        })
+    }
     let verified = data.filter(i =>
         (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified)))
     verified.forEach((i) => {
@@ -778,31 +794,41 @@ const filterRecruits = (data) => {
     return currentObj;
 }
 
-const filterBiospecimenStats = (data) => {
+const filterBiospecimenStats = (data, verifiedParticipants) => {
     let currenntBiospecimenStats = {};
     let all = 0;
     let bloodUrine = 0;
     let bloodMouthwash = 0;
     let urineMouthwash = 0;
+    let mouthwash = 0;
+    let urine = 0;
+    let blood = 0;
     let none = 0;
     data && data.filter( i => {
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.yes) { all += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.no) { bloodUrine += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.yes) { bloodMouthwash += i.verfiedPts }
         if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.yes) { urineMouthwash += i.verfiedPts }
-        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.no) { none += i.verfiedPts }
+        if (i.baselineBlood === fieldMapping.yes && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.no) { blood += i.verfiedPts }
+        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.yes && i.baselineMouthwash === fieldMapping.no) { urine += i.verfiedPts }
+        if (i.baselineBlood === fieldMapping.no && i.baselineUrine === fieldMapping.no && i.baselineMouthwash === fieldMapping.yes) { mouthwash += i.verfiedPts }
+        if ((i.baselineBlood === fieldMapping.no || i.baselineBlood === null) && (i.baselineUrine === fieldMapping.no || i.baselineUrine === null) 
+            && (i.baselineMouthwash === fieldMapping.no || i.baselineMouthwash === null)) { none += i.verfiedPts }
     })
 
     currenntBiospecimenStats.all = all;
     currenntBiospecimenStats.bloodUrine = bloodUrine;
     currenntBiospecimenStats.bloodMouthwash = bloodMouthwash;
     currenntBiospecimenStats.urineMouthwash = urineMouthwash;
+    currenntBiospecimenStats.urine = urine;
+    currenntBiospecimenStats.mouthwash = mouthwash;
+    currenntBiospecimenStats.blood = blood;
     currenntBiospecimenStats.none = none;
     return currenntBiospecimenStats;
 }
 
 const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults) => {
+    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
 
     const siteKeyFilter = nameToKeyObj[siteKey];
     let resultWorkflow = []
@@ -841,6 +867,9 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     let resultBiospecimen = []
     filterDatabySiteCode(resultBiospecimen, biospecimenResults, siteKeyFilter);
 
+    let AllModulesAllSamples = [];
+    filterDatabySiteCode(AllModulesAllSamples, allModulesAllSamplesResults, siteKeyFilter);
+
     mainContent.innerHTML = '';
 
     const activeRecruitsFunnel = filterRecruitsFunnel(resultWorkflow, 'active');
@@ -862,7 +891,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     const recruitsCount = filterRecruits(resultRecruitsCount);
     const optOutsStats = filterOptOutsMetrics(resultOptOuts);
 
-    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, activeVerificationStatus.verified, passiveVerificationStatus.verified, AllModulesAllSamples);
     const ssnStats = filterSsnMetrics(resultSsn, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const biospecimenStats = filterBiospecimenStats(resultBiospecimen);
 
@@ -873,10 +902,10 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
     mainContent.appendChild(siteSelectionRow);
     dropdownTrigger(siteTextContent, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults);
+        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
     
     // Add metrics cards at top of dashboard
-    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: Math.min(biospecimenStats.all, modulesStats.modulesSubmitted) });
+    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples });
     mainContent.appendChild(metricsCards);
     
     renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
@@ -897,7 +926,7 @@ const clearLocalStorage = () => {
 
 const filterDatabySiteCode = (resultHolder, filteredResults, siteKeyFilter) => {
     if (siteKeyFilter !== nameToKeyObj.allResults) {
-        filteredResults.filter(i => {
+        filteredResults && filteredResults.filter(i => {
             if (i.siteCode === siteKeyFilter) {
                 resultHolder.push(i);
             }
@@ -1004,11 +1033,11 @@ const renderParticipantsAll = async () => {
         document.getElementById('allBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        console.log('len', (response.data).length)
-        mainContent.innerHTML = renderTable(filterdata(response.data), 'participantAll');
-        addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
-        activeColumns(filterdata(response.data));
+        const filterRawData = filterdata(response.data)
+        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+        addEventFilterData(filterRawData);
+        renderData(filterRawData);
+        activeColumns(filterRawData);
         renderLookupSiteDropdown();
         dropdownTriggerAllParticipants('Filter by Site');
         animation(false);

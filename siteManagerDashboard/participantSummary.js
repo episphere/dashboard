@@ -42,9 +42,7 @@ export const render = (participant) => {
                 <div id="root root-margin"> `
         template += renderParticipantHeader(participant);
         template += `<div class="table-responsive">
-
                         <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
-
                         <div class="sticky-header">
                             <table class="table table-striped">
                                 <thead class="thead-dark sticky-row"> 
@@ -108,7 +106,7 @@ export const render = (participant) => {
                                     ${baselineMouthwashSample(participant)}
                                 </tr>
                                 <tr class="row-color-payment">
-                                    ${baselinePayment(participant[fieldMapping.paymentRoundup][fieldMapping.baselinePayment])}
+                                    ${baselinePayment(participant)}
                                 </tr>
                                 <tr class="row-color-emr-light">
                                     ${baselineEMR(participant[fieldMapping.baselineEMR])}
@@ -182,8 +180,8 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
                 break;
-            case 'UCM':
-                coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
+            case 'UCM': // updated coordinates
+                coordinates = [ {x: 110, y: 380} , {x0: 110, y0: 340} , {x1: 110, y1: 302} ]
                 break;
             case 'HFHS':
                 coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
@@ -216,8 +214,8 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
-            case 'UCM':
-                coordinates = [{x: 100, y: 425}, {x0: 100, y0: 385}, {x1: 100, y1: 465}]
+            case 'UCM': // updated coordinates
+                coordinates = [ {x: 100, y: 425} ,  {x0: 100, y0: 385} ,  {x1: 100, y1: 465} ]
                 break;
             case 'HFHS':
                 coordinates = [{x: 100, y: 440}, {x0: 100, y0: 400}, {x1: 100, y1: 480}]

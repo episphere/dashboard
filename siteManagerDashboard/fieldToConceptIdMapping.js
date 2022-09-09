@@ -36,6 +36,7 @@ export default
     "suffix":506826178,
     "homePhone":438643922,
     "email":869588347,
+    "prefEmail": 869588347,
     "email1":849786503,
     "email2": 635101039,
     "cellPhone":388711124,
@@ -91,6 +92,14 @@ export default
     "biospecimenResearch": 534621077,
     "biospecimenClinical": 664882224,
     "biospecimenHome": 103209024,
+    "biospecimenCollectionDetail": 173836415,
+    "biospecimenFollowUp": 266600170,
+	"biospecimenFollowUp1": 496823485,
+	"biospecimenFollowUp2": 650465111,
+    "biospecimenFollowUp3": 303552867,
+    "biosepcimenBloodCollection": 592099155,
+    "biosepcimenUrineCollection": 718172863,
+    "biosepcimenMouthwashdCollection": 915179629,
 
     "bohStatusFlag1": 949302066,
     "bohCompletedDate1": 517311251,
@@ -171,6 +180,8 @@ export default
     "paymentRoundup": 130371375,
     "baselinePayment": 266600170,
     "eligiblePayment": 731498909,
+    "paymentIssued": 648936790,
+    "datePaymentIssued": 297462035,
     "norcIssuePayment": 222373868,
     "datePaymentIssued": 297462035,
     "baselinePaymentDate": 787567527,
@@ -295,10 +306,9 @@ export default
     'destroyData': 831041022,
     'participantDeceased': 987563196,
 
-    'tooBusy': 851245875,
+    'tooBusy': 141450621,
     'noLongerInterested': 919699172,
-    'participantGreedy': 141450621,
-    'notGreatBenefit': 576083042,
+    'participantGreedy': 576083042,
     'tooSick': 431428747,
     'noInternet': 121430614,
     'worriedAboutResults': 523768810,
@@ -333,28 +343,28 @@ export default
 
     "0": 208325815,
     "1": 622008261,	
-    "2": 906417725,
+    "2": 458508122,
     "3": 872012139,
     "4": 854021266,
     "5": 241236037,
-    "6": 987563196,
+    "6": 618686157,
 
     208325815 :  "No Refusal",
     622008261 : "Refused some activities",  
-    906417725 : "Refused all future activities",
+    458508122 : "Refused all future activities",
     872012139 : "Revoked HIPAA only",
     854021266 : "Withdrew Consent",
     241236037 :  "Destroy Data",
-    987563196 : "Deceased",
+    618686157 : "Deceased",
 
 
     "noRefusal": 208325815,
     "refusedSome": 622008261,	
-    "refusedAll": 906417725,
+    "refusedAll": 458508122,
     "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
     "destroyDataStatus": 241236037,
-    "deceased": 987563196,
+    "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
     'dateDataDestroyRequested': 269050420,
@@ -394,6 +404,8 @@ export default
     'whoRequestedWithdrewConsentOther': 457532784,
     'whoRequestedDataDestruction': 524352591,
     'whoRequestedDataDestructionOther': 902332801,
+    'whoRequestedSuspendedContact': 719222792,
+    'whoRequestedSuspendedContactOther': 993855378,
 
     'campaignType': 667474224,
     'random':926338735,
@@ -468,9 +480,5 @@ export default
     959657954 : 'Verification Complete',
     850536553 : 'Cannot Be Verified' ,
 	364179400 : 'Verified - mimimally Enrolled',
-    485892221 : 'Fully Enrolled'
-
-
-    
-    
+    485892221 : 'Fully Enrolled'   
 }

@@ -58,7 +58,6 @@ export const renderTable = (data, source) => {
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
                 </div>
-
                 <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
                                                                                                 margin-left:25px;
                                                                                                 padding: 10px 20px;
@@ -68,9 +67,8 @@ export const renderTable = (data, source) => {
                     <button type="button" class="btn btn-outline-info btn-lg" id="activeFilter">Active</button>
                     <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
                 </div>
-
                 <form class="form-inline" id="dateFilters">
-                    <h5>Filter by Date Recruitment Type Assigned:  &nbsp;</h5>
+                    <h5>Filter by Verification Status Time:  &nbsp;</h5>
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
                         <input type="date" class="form-control" id="startDate" style="
@@ -85,7 +83,6 @@ export const renderTable = (data, source) => {
                     </div>
                     <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
                 </form>
-
                 `: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
@@ -182,6 +179,7 @@ const getDateFilters = () => {
         e.preventDefault();
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
+        console.log('sd', endDate)
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
         let dropdownMenuButton = ``
@@ -205,7 +203,9 @@ const getDateFilters = () => {
             response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
             filter = 'passive';
         }
-        else { response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
+        else { 
+            console.log('end', endDate)
+            response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
         reRenderMainTable(response, filter, dropdownMenuButton);
     })
 }
@@ -304,7 +304,6 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
 const paginationTemplate = (nextPageCounter, prevPageCounter) => {
     
     let template = `
-
     <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
         <div style="display:inline-block;">
             <nav aria-label="Page navigation example">
@@ -315,7 +314,6 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
             </nav>
         </div>
     </div>
-
     `;
     return template;
 }
@@ -977,10 +975,12 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     filterHolder['type'] = type
     filterHolder['startDate'] = startDate
     filterHolder['endDate'] = endDate
-    (type !== null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    (type === null && sitePref !== 'Filter by Site') ? template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    (type !== null && sitePref === 'Filter by Site') ? template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`:
-    template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    
+    if (type !== null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    else if (type === null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    else if (type !== null && sitePref === 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    else template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    console.log('dd',baseAPI, template )
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {

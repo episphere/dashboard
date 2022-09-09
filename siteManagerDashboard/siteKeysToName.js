@@ -4,7 +4,7 @@ export const keyToNameObj =
 {
 
     452412599 : "Kaiser Permanente Northwest",
-    531629870 : "HealthPartners",
+    531629870 : "Health Partners",
     657167265 : "Sanford Health",
     548392715 : "Henry Ford Health System",
     303349821 : "Marshfield Clinic",
@@ -20,7 +20,7 @@ export const keyToShortNameObj =
 {
 
     452412599 : "KP NW",
-    531629870 : "HealthPartners",
+    531629870 : "Health Partners",
     657167265 : "Sanford Health",
     548392715 : "Henry Ford Health System",
     303349821 : "Marshfield Clinic",

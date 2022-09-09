@@ -141,36 +141,30 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                                 data-optionKey=${fieldMapping.requestParticipant}>
                                                 <label for="defaultRequest1">The participant (via the CSC directly or via a Connect site staff)</label>
                                             </div>
-
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest2" name="whoRequested" value="The Connect Principal Investigator (or designate)"
                                                 data-optionKey=${fieldMapping.requestPrincipalInvestigator}>
                                                 <label for="defaultRequest2">The Connect Principal Investigator (or designate)</label>
                                             </div>
-
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest3" name="whoRequested" value="The Chair of the Connect IRB-of-record (NIH IRB)"
                                                 data-optionKey=${fieldMapping.requestConnectIRB}>
                                                 <label for="defaultRequest3">The Chair of the Connect IRB-of-record (NIH IRB)</label>
                                             </div>
-
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest4" name="whoRequested" value="Site PI listed on the site-specific consent form"
                                                 data-optionKey=${fieldMapping.requestPIListed}>
                                                 <label for="defaultRequest4">Site PI listed on the site-specific consent form</label>
                                             </div>
-
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest5" name="whoRequested" value="Chair of the Site IRB"
                                                 data-optionKey=${fieldMapping.requestChairSite}>
                                                 <label for="defaultRequest5">Chair of the Site IRB</label>
                                             </div>
-
                                             <div class="form-check">
                                                 <input type="radio" id="defaultRequest6" name="whoRequested" value="Other (specify):"
                                                 data-optionKey=${fieldMapping.requestOther}>
                                                 <label for="defaultRequest6">Other (specify):</label>
-
                                                 <input type="text" id="defaultRequest7" name="defaultRequest7" data-optionKey=${fieldMapping.requestOtherText}><br>
                                             </div>
                                         </div>
@@ -251,22 +245,39 @@ export const addEventMonthSelection = (month, day) => {
 }
 
 export const autoSelectOptions = () => {
-    const a = document.getElementById('defaultCheck11');
-    const b = document.getElementById('defaultCheck10');
-    if (a) {
-        a.addEventListener('change', function() {
+    const selectedDestroyData = document.getElementById('defaultCheck11');
+    const selectedPtWithdrawn = document.getElementById('defaultCheck10');
+    const selectedPtDeceased = document.getElementById('messageCheckbox')
+    if (selectedDestroyData) {
+        selectedDestroyData.addEventListener('change', function() {
             let checkedValue = document.getElementById('defaultCheck10');
             checkedValue.checked = true;
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
           });
     }
-    if (b) {
-        b.addEventListener('change', function() {
+    if (selectedPtWithdrawn) {
+        selectedPtWithdrawn.addEventListener('change', function() {
             let checkedValue1 = document.getElementById('defaultCheck9');
             checkedValue1.checked = true;
           });
     }
+    if (selectedPtDeceased) {
+        selectedPtDeceased.addEventListener('change', function() {
+            disableEnableWhoRequested('defaultRequest1')
+            disableEnableWhoRequested('defaultRequest2')
+            disableEnableWhoRequested('defaultRequest3')
+            disableEnableWhoRequested('defaultRequest4')
+            disableEnableWhoRequested('defaultRequest5')
+            disableEnableWhoRequested('defaultRequest6')
+            disableEnableWhoRequested('defaultRequest7')
+          });
+    }
+}
+
+const disableEnableWhoRequested = (id) => {
+    let checkedValue = document.getElementById(id);
+    checkedValue.disabled === true ? checkedValue.disabled = false : checkedValue.disabled = true
 }
 
 export const viewOptionsSelected = () => {
@@ -321,6 +332,9 @@ const optionsHandler = (suspendDate) => {
              <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
             :  ( retainOptions.length > 0 && requestedHolder.length === 0 ) || ( suspendDate !== '//' && requestedHolder.length === 0 )  ? 
             `<span><b>Select requested by before proceeding!</b></span> <br />
+             <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
+            :(( retainOptions.length === 0 && requestedHolder.length >= 0 ) && ( suspendDate === '//' && requestedHolder.length >= 0 ) ) ? 
+            `<span><b>Make a selection before proceeding!</b></span> <br />
              <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage" disabled>Confirm</button>`
             : ` <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="proceedFormPage">Confirm</button>`
             }
@@ -473,6 +487,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         sendRefusalData[fieldMapping.suspendContact] = suspendDate
         sendRefusalData[fieldMapping.startDateSuspendedContact] = new Date().toISOString();
         sendRefusalData[fieldMapping.contactSuspended] = fieldMapping.yes
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedSuspendedContact, fieldMapping.whoRequestedSuspendedContactOther)
     }
     const previousSuspendedStatus = localStorage.getItem('suspendContact');
     if (previousSuspendedStatus === 'true' && suspendDate === '//') sendRefusalData[fieldMapping.suspendContact] = ``
@@ -492,7 +507,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         prevParticipantStatusSelection = prevParticipantStatusScore[prevParticipantStatusSelection]
         highestStatus.push(parseInt(prevParticipantStatusSelection))
     }
-    if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = ``
+    if (previousRefusalStatus === 'true' && suspendDate !== '//') sendRefusalData[fieldMapping.participationStatus] = fieldMapping.noRefusal
     
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
@@ -518,9 +533,12 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedHIPAArevocation, fieldMapping.whoRequestedHIPAArevocationOther)
     }
-    if (computeScore === fieldMapping.refusedAllFutureActivities) {
+    if (computeScore === fieldMapping.refusedAll) {
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
+    } 
+    if (computeScore === fieldMapping.refusedSome) {
+        updateWhoRequested(sendRefusalData, fieldMapping.whoRequested, fieldMapping.requestOtherText)
     }
 
     let refusalObj = sendRefusalData[fieldMapping.refusalOptions]
@@ -532,7 +550,9 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
-    delete Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})[fieldMapping.whoRequested]
+    (updatedWhoRequested == [fieldMapping.whoRequested]) ? (Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }}))
+    :  delete Object.assign(sendRefusalData, { [updatedWhoRequested] : { [updatedWhoRequested] : sendRefusalData[fieldMapping.whoRequested] }})[fieldMapping.whoRequested]
+    
     if (sendRefusalData[fieldMapping.requestOtherText]) {
         Object.assign(sendRefusalData[updatedWhoRequested], { [updatedWhoRequestedOther] : sendRefusalData[fieldMapping.requestOtherText]})
         delete sendRefusalData[fieldMapping.requestOtherText]
@@ -612,4 +632,3 @@ async function clickHandler(sendRefusalData, idToken, token) {
            (alert('Error'))
     }
 }
-

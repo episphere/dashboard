@@ -45,7 +45,7 @@ const render = async (response) => {
                         ${renderNotificationCards(response.data)}
                 </div></div>`
         template += ` <div class="modal fade" id="modalShowSchema" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
             <div class="modal-content sub-div-shadow">
                 <div class="modal-header" id="modalHeader"></div>
                 <div class="modal-body" id="modalBody"></div>
@@ -131,13 +131,21 @@ const viewNotificationSchema = (concepts) => {
     
                 <div id="conditionsDiv">
                     <div class="row form-group">
-                        <label class="col-form-label col-md-4">Condition</label>
-                        <div class="condition-key col-md-3 mr-2 p-0"></div>
-                        <select id="operatorkey0" name="condition-operator" class="col-md-1 form-control mr-2">
+                        <label class="col-form-label col-md-3">Condition</label>
+                        <div class="condition-key col-md-2 mr-2 p-0"></div>
+                        <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey0">
                             <option value="equals">equals</option>
                             <option value="notequals">notequals</option>
+                            <option value="greater">greater</option>
+                            <option value="greaterequals">greaterequals</option>
+                            <option value="less">less</option>
+                            <option value="lessequals">lessequals</option>
                         </select>
-                        <div class="condition-value col-md-3 mr-2 p-0"></div>
+                        <select name="value-type" class="col-md-2 form-control mr-2" id="valuetype0">
+                            <option value="number">number</option>
+                            <option value="string">string</option>
+                        </select>
+                        <div class="condition-value col-md-2 mr-2 p-0"></div>
                     </div>
                 </div>
                 <div class="form-group">
@@ -251,4 +259,3 @@ const dropdownTrigger = (originalCategoriesHolder, categoryName) => {
         })
     }
 }
-
