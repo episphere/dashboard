@@ -539,16 +539,12 @@ const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, pa
   
     participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
     participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
-    participantModulesTwoThree && participantModulesTwoThree.filter( i => {
-        modulesTwoThreeSubmitted += i.countModuleTwo
-        modulesTwoThreeSubmitted += i.countModuleThree
-        modulesTwoThreeSubmitted -= i.countModuleTwoAndThree
-    })
-   participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
+    participantModulesTwoThree && participantModulesTwoThree.filter( i =>  modulesTwoThreeSubmitted += i.countModules )
+    participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
         allModulesAllSamples += item.countAllModulesAllSamples;
     })
     const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
-    noModulesSubmitted = verifiedParticipants - (modulesSubmitted+moduleOneSubmitted+modulesTwoThreeSubmitted)
+    noModulesSubmitted = verifiedParticipants - modulesSubmitted
     currentWorflowObj.noModulesSubmitted = noModulesSubmitted
     currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
     currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
@@ -599,12 +595,21 @@ const filterRecruitsFunnel = (data, recruit) => {
     submittedProfile.forEach((i) => {
         submittedProfileCount += i.submittedCount
     })
-    let verification = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
-    verification.forEach((i) => {
-        verificationCount += i.verificationCount
-    })
-
+    let verification = ``
+    if (recruitType === fieldMapping.active) {
+        verification = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified)))
+        verification.forEach((i) => {
+            verificationCount += i.verificationCount
+        })
+    }
+    else { 
+        verification = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
+        verification.forEach((i) => {
+            verificationCount += i.verificationCount
+        })
+    }
     let verified = data.filter(i =>
         (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified)))
     verified.forEach((i) => {
