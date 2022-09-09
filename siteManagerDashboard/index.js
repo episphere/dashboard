@@ -281,9 +281,10 @@ const renderCharts = async (siteKey, isParent) => {
     const modulesMetric = await fetchStats(siteKey, 'participants_allModules');
     const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
     const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
+    const moduleNoneMetric = await fetchStats(siteKey, 'participants_modulesNone');
     const allModulesAllSamplesMetric = await fetchStats(siteKey, 'participants_allModulesAllSamples');
     const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
-    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetric.stats);
+    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, moduleNoneMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetric.stats);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
     const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats, (activeVerificationStatus.verified + passiveVerificationStatus.verified))
@@ -303,7 +304,7 @@ const renderCharts = async (siteKey, isParent) => {
             siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
             mainContent.appendChild(siteSelectionRow);
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
-                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats, allModulesAllSamplesMetric.stats);
+                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, moduleNoneMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats, allModulesAllSamplesMetric.stats);
         }
 
         // Add metrics cards at top of dashboard
@@ -352,7 +353,7 @@ const renderSiteKeyList = () => {
 
 
 const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, 
-    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
+    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
     let a = document.getElementById('dropdownSites');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
     let tempSiteName = a.innerHTML = sitekeyName;
@@ -362,7 +363,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
                 a.innerHTML = e.target.textContent;
                 const t = getDataAttributes(e.target)
                 reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 
-                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
+                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
             }
         })
 
@@ -529,7 +530,7 @@ const filterOptOutsMetrics = (participantOptOutsMetric) => {
     return currentWorflowObj;
 }
 
-const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, activeVerifiedParticipants, passiveVerifiedParticipants, participantsAllModulesAllSamples) => {
+const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, participantModuleNone, activeVerifiedParticipants, passiveVerifiedParticipants, participantsAllModulesAllSamples) => {
     let currentWorflowObj = {}
     let noModulesSubmitted = 0
     let moduleOneSubmitted = 0
@@ -540,11 +541,11 @@ const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, pa
     participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
     participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
     participantModulesTwoThree && participantModulesTwoThree.filter( i =>  modulesTwoThreeSubmitted += i.countModules )
+    participantModuleNone && participantModuleNone.filter( i =>  noModulesSubmitted += i.countModules )
     participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
         allModulesAllSamples += item.countAllModulesAllSamples;
     })
     const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
-    noModulesSubmitted = verifiedParticipants - modulesSubmitted
     currentWorflowObj.noModulesSubmitted = noModulesSubmitted
     currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
     currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
@@ -827,7 +828,7 @@ const filterBiospecimenStats = (data, verifiedParticipants) => {
 }
 
 const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
+    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
 
     const siteKeyFilter = nameToKeyObj[siteKey];
     let resultWorkflow = []
@@ -856,6 +857,9 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
 
     let resultModulesTwoThree = []
     filterDatabySiteCode(resultModulesTwoThree, modulesTwoThreeResults, siteKeyFilter);
+
+    let resultModulesNone = []
+    filterDatabySiteCode(resultModulesNone, moduleNoneResults, siteKeyFilter);
 
     let resultSsn = []
     filterDatabySiteCode(resultSsn, ssnResults, siteKeyFilter);
@@ -890,7 +894,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     const recruitsCount = filterRecruits(resultRecruitsCount);
     const optOutsStats = filterOptOutsMetrics(resultOptOuts);
 
-    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, activeVerificationStatus.verified, passiveVerificationStatus.verified, AllModulesAllSamples);
+    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, resultModulesNone, activeVerificationStatus.verified, passiveVerificationStatus.verified, AllModulesAllSamples);
     const ssnStats = filterSsnMetrics(resultSsn, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const biospecimenStats = filterBiospecimenStats(resultBiospecimen);
 
@@ -901,7 +905,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
     mainContent.appendChild(siteSelectionRow);
     dropdownTrigger(siteTextContent, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
+        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
     
     // Add metrics cards at top of dashboard
     const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples });
