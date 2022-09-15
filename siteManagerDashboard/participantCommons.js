@@ -252,6 +252,7 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
             let passiveButton = document.getElementById('passiveFilter');
             passiveButton.classList.remove('btn-outline-info');
             passiveButton.classList.add('btn-info');
+            passiveButton.setAttribute('passive', true);
             let activeButton = document.getElementById('activeFilter');
             if ([...activeButton.classList].includes('btn-info')) {
                 activeButton.classList.remove('btn-info');
@@ -337,6 +338,7 @@ const pagninationNextTrigger = () => {
             if (filterRawData.length === 0)  return alertTrigger();
             addEventFilterData(filterRawData);
             a.setAttribute('data-nextpage', nextPageCounter);
+            console.log('nextPageCounter', nextPageCounter)
             renderDataTable(filterRawData);
             addEventFilterData(filterRawData);
         }
@@ -357,8 +359,10 @@ const pagninationPreviousTrigger = () => {
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
         let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
-        pageCounter = nextPageCounter - 1
-        nextPageCounter = nextPageCounter - 1
+        console.log('jd', pageCounter) // 0 
+        console.log('nextPageCounter', nextPageCounter) // 2
+        pageCounter = nextPageCounter - 1 // 1
+        nextPageCounter = nextPageCounter - 1 // 1
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
@@ -371,8 +375,6 @@ const pagninationPreviousTrigger = () => {
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger()
-            b.setAttribute('data-nextpage', nextPageCounter);
-            a.setAttribute('data-prevpage', pageCounter);
             renderDataTable(filterRawData);
             addEventFilterData(filterRawData);
 
@@ -384,9 +386,25 @@ const pagninationPreviousTrigger = () => {
         else if(response.code != 200 && response.data.length === 0) {
             clearLocalStorage();
         }
-    } else {
-        hideAnimation();
-    } })
+        } 
+        else if (pageCounter === 0) {
+            const response = await getParticipantFromSites(sitePrefId);
+            hideAnimation();
+            if(response.code === 200 && response.data.length > 0) {
+                let filterRawData = filterdata(response.data);
+                if (filterRawData.length === 0)  return alertTrigger()
+                renderDataTable(filterRawData);
+                addEventFilterData(filterRawData);
+            }
+        }
+        else {
+            hideAnimation();
+        } 
+        b.setAttribute('data-nextpage', nextPageCounter); // 1
+        a.setAttribute('data-prevpage', pageCounter); // 1
+        console.log('jdxx', pageCounter) // 0 
+        console.log('nextPaxxxxgeCounter', nextPageCounter) // 1
+})
 }
 
 // TODO: needs code refactoring
@@ -929,7 +947,7 @@ const getCustomVariableNames = (x) => {
 const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 50
+    const limit = 1
     filterHolder['siteCode'] = query
     filterHolder['nextPageCounter'] = nextPageCounter
     if (nextPageCounter === undefined ) {
@@ -949,7 +967,7 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
 const getParticipantsWithFilters = async (type, sitePref) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 50;
+    const limit = 1;
     filterHolder['siteCode'] = sitePref
     filterHolder['type'] = type
     if (sitePref !== 'Filter by Site') {
@@ -970,7 +988,7 @@ const getParticipantsWithFilters = async (type, sitePref) => {
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 50;
+    const limit = 1;
     filterHolder['siteCode'] = sitePref
     filterHolder['type'] = type
     filterHolder['startDate'] = startDate
