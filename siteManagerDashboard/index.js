@@ -281,9 +281,10 @@ const renderCharts = async (siteKey, isParent) => {
     const modulesMetric = await fetchStats(siteKey, 'participants_allModules');
     const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
     const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
+    const moduleNoneMetric = await fetchStats(siteKey, 'participants_modulesNone');
     const allModulesAllSamplesMetric = await fetchStats(siteKey, 'participants_allModulesAllSamples');
     const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
-    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetric.stats);
+    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, moduleNoneMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetric.stats);
     const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
     const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
     const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats, (activeVerificationStatus.verified + passiveVerificationStatus.verified))
@@ -303,7 +304,7 @@ const renderCharts = async (siteKey, isParent) => {
             siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
             mainContent.appendChild(siteSelectionRow);
             dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
-                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats, allModulesAllSamplesMetric.stats);
+                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, moduleNoneMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats, allModulesAllSamplesMetric.stats);
         }
 
         // Add metrics cards at top of dashboard
@@ -352,7 +353,7 @@ const renderSiteKeyList = () => {
 
 
 const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, 
-    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
+    recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
     let a = document.getElementById('dropdownSites');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
     let tempSiteName = a.innerHTML = sitekeyName;
@@ -362,7 +363,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
                 a.innerHTML = e.target.textContent;
                 const t = getDataAttributes(e.target)
                 reRenderDashboard(e.target.textContent, t.sitekey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 
-                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
+                    filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
             }
         })
 
@@ -530,7 +531,7 @@ const filterOptOutsMetrics = (participantOptOutsMetric) => {
     return currentWorflowObj;
 }
 
-const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, activeVerifiedParticipants, passiveVerifiedParticipants, participantsAllModulesAllSamples) => {
+const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, participantModuleNone, activeVerifiedParticipants, passiveVerifiedParticipants, participantsAllModulesAllSamples) => {
     let currentWorflowObj = {}
     let noModulesSubmitted = 0
     let moduleOneSubmitted = 0
@@ -541,11 +542,11 @@ const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, pa
     participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
     participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
     participantModulesTwoThree && participantModulesTwoThree.filter( i =>  modulesTwoThreeSubmitted += i.countModules )
+    participantModuleNone && participantModuleNone.filter( i =>  noModulesSubmitted += i.countModules )
     participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
         allModulesAllSamples += item.countAllModulesAllSamples;
     })
     const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
-    noModulesSubmitted = verifiedParticipants - modulesSubmitted
     currentWorflowObj.noModulesSubmitted = noModulesSubmitted
     currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
     currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
@@ -582,20 +583,49 @@ const filterRecruitsFunnel = (data, recruit) => {
     let submittedProfileCount = 0;
     let verificationCount = 0;
     let verifiedCount = 0;
-    let signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes ));
-    signedIn.forEach((i) => {
-        signedInCount += i.signedCount
-    })
-    let consented = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes))
-    consented.forEach((i) => {
-        consentedCount += i.consentCount
-    })
-    let submittedProfile = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes))
-    submittedProfile.forEach((i) => {
-        submittedProfileCount += i.submittedCount
-    })
+    let signedIn = ``
+    if (recruitType === fieldMapping.active) {
+        signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && (i.verificationStatus != fieldMapping.duplicate) ));
+        signedIn.forEach((i) => {
+            signedInCount += i.signedCount
+        })
+    }
+    else {
+        signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes ));
+        signedIn.forEach((i) => {
+            signedInCount += i.signedCount
+        })
+    }
+    let consented = ``
+    if (recruitType === fieldMapping.active) { 
+        consented = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && (i.verificationStatus != fieldMapping.duplicate)))
+        consented.forEach((i) => {
+            consentedCount += i.consentCount
+        })
+    }
+    else {
+        consented = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes))
+        consented.forEach((i) => {
+            consentedCount += i.consentCount
+        })
+    }
+    let submittedProfile = ``
+    if (recruitType === fieldMapping.active) { 
+        submittedProfile = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus != fieldMapping.duplicate)))
+        submittedProfile.forEach((i) => {
+            submittedProfileCount += i.submittedCount
+        })
+    }
+    else {
+        submittedProfile = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes))
+        submittedProfile.forEach((i) => {
+            submittedProfileCount += i.submittedCount
+        })
+    }
     let verification = ``
     if (recruitType === fieldMapping.active) {
         verification = data.filter(i =>
@@ -632,8 +662,15 @@ const filterTotalRecruitsFunnel = (data) => {
     let submittedProfileCount = 0
     let verificationCount = 0
     let verifiedCount = 0
+    let duplicateCount = 0
+
+    let duplicateData = data.filter(i =>  ((i.recruitType === fieldMapping.active) && i.verificationStatus === fieldMapping.duplicate))
+    duplicateData.forEach((i) => {
+        duplicateCount += i.verificationCount
+    })
     let signedIn = data.filter(i =>
-        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes && (i.recruitType !== fieldMapping.inactive)))
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes && (i.recruitType !== fieldMapping.inactive)
+        ))
     signedIn.forEach((i) => {
         signedInCount += i.signedCount
     })
@@ -660,10 +697,10 @@ const filterTotalRecruitsFunnel = (data) => {
     verified.forEach((i) => {
         verifiedCount += i.verificationCount
     })
-    currentWorflowObj.signedIn = signedInCount
-    currentWorflowObj.consented = consentedCount
-    currentWorflowObj.submittedProfile = submittedProfileCount
-    currentWorflowObj.verification = verificationCount
+    currentWorflowObj.signedIn = signedInCount - duplicateCount
+    currentWorflowObj.consented = consentedCount - duplicateCount
+    currentWorflowObj.submittedProfile = submittedProfileCount - duplicateCount
+    currentWorflowObj.verification = verificationCount - duplicateCount
     currentWorflowObj.verified = verifiedCount
 
     return currentWorflowObj;
@@ -678,8 +715,15 @@ const filterCurrentWorkflow = (data, recruit) => {
     let consented = data.filter(i => (i.recruitType === recruitType && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.no))
     let submittedProfile = data.filter(i =>
         (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout)))
-    let verification = data.filter(i =>
+    let verification = ``
+    if (recruitType === fieldMapping.active) {
+        verification = data.filter(i =>
+            (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified)))
+    }
+    else {
+       verification = data.filter(i =>
         (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
+    }
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
     else currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
@@ -715,11 +759,16 @@ const filterTotalCurrentWorkflow = (data) => {
     let verification = data.filter(i =>
     ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)
         && (i.recruitType !== fieldMapping.inactive)))
+    let duplicateCount = 0
+    let duplicateData = data.filter(i =>  ((i.recruitType === fieldMapping.active) && i.verificationStatus === fieldMapping.duplicate))
+    duplicateData.forEach((i) => {
+        duplicateCount += i.verificationCount
+    })
     currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
     currentWorflowObj.consented = getCummulativeCountHandler(consented);
     currentWorflowObj.submittedProfile = getCummulativeCountHandler(submittedProfile);
-    currentWorflowObj.verification = getCummulativeCountHandler(verification);
+    currentWorflowObj.verification = getCummulativeCountHandler(verification) - duplicateCount;
     return currentWorflowObj;
 }
 
@@ -754,7 +803,8 @@ const filterVerification = (data, recruit) => {
     currentVerificationObj.outreachTimedout = outreachTimedout
     currentVerificationObj.verified = verified
     currentVerificationObj.cannotBeVerified = cannotBeVerified
-    currentVerificationObj.duplicate = duplicate
+    if (recruitType === fieldMapping.active)  currentVerificationObj.duplicate = 0
+    else currentVerificationObj.duplicate = duplicate
     return currentVerificationObj;
 
 }
@@ -828,7 +878,7 @@ const filterBiospecimenStats = (data, verifiedParticipants) => {
 }
 
 const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
+    participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
 
     const siteKeyFilter = nameToKeyObj[siteKey];
     let resultWorkflow = []
@@ -857,6 +907,9 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
 
     let resultModulesTwoThree = []
     filterDatabySiteCode(resultModulesTwoThree, modulesTwoThreeResults, siteKeyFilter);
+
+    let resultModulesNone = []
+    filterDatabySiteCode(resultModulesNone, moduleNoneResults, siteKeyFilter);
 
     let resultSsn = []
     filterDatabySiteCode(resultSsn, ssnResults, siteKeyFilter);
@@ -891,7 +944,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     const recruitsCount = filterRecruits(resultRecruitsCount);
     const optOutsStats = filterOptOutsMetrics(resultOptOuts);
 
-    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, activeVerificationStatus.verified, passiveVerificationStatus.verified, AllModulesAllSamples);
+    const modulesStats = filterModuleMetrics(resultModules, resultModuleOne, resultModulesTwoThree, resultModulesNone, activeVerificationStatus.verified, passiveVerificationStatus.verified, AllModulesAllSamples);
     const ssnStats = filterSsnMetrics(resultSsn, activeVerificationStatus.verified, passiveVerificationStatus.verified);
     const biospecimenStats = filterBiospecimenStats(resultBiospecimen);
 
@@ -902,7 +955,7 @@ const reRenderDashboard = async (siteTextContent, siteKey, filterWorkflowResults
     siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
     mainContent.appendChild(siteSelectionRow);
     dropdownTrigger(siteTextContent, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric,
-        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
+        participantsAgeMetric, filterVerificationResults, recruitsCountResults, modulesResults, moduleOneResults, modulesTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults);
     
     // Add metrics cards at top of dashboard
     const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples });
