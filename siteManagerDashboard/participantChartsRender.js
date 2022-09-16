@@ -570,7 +570,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         labels: [ `Not Yet Verified: N=${activeVerificationStatus.notYetVerified} `, 
                     `Verified: N=${activeVerificationStatus.verified }`, 
                     `Cannot be Verified: N=${activeVerificationStatus.cannotBeVerified }`,
-                    `Duplicate: N=${activeVerificationStatus.duplicate }`, 
+                    `Duplicate: N=${0}`, 
                     `Outreach Maxed Out: N=${activeVerificationStatus.outreachTimedout }`],
         hoverinfo: 'label+value',
         type: 'pie'
@@ -580,7 +580,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Active Recruits Verification Status among those with <br> Profile Completed N=${denominatorVerificationStatus.activeDenominator}`,
+        title: `Active Recruits Verification Status among those with <br> Profile Completed N=${denominatorVerificationStatus.activeDenominator - activeVerificationStatus.duplicate }`,
         text: 'among those with Profile Completed'
     };
 
