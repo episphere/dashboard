@@ -81,7 +81,10 @@ export const renderTable = (data, source) => {
                                                                                                 width:200px;
                                                                                                 height:50px;">
                     </div>
-                    <button type="submit" class="btn btn-warning btn-lg mb-2">Search</button>
+                    <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;">Search</button>
+
+                    <button type="button" class="btn btn-outline-danger btn-lg mb-2" id="resetDate">Reset Date</button>
+
                 </form>
                 `: ``} </div>`
 
@@ -133,7 +136,8 @@ export  const renderData = (data, showButtons, flag) => {
     addEventShowMoreInfo(data);
     getActiveParticipants();
     getPassiveParticipants();
-    getDateFilters();   
+    getDateFilters();
+    resetDateFilter();  
 }
 
 const renderDataTable = (data, showButtons) => {
@@ -148,6 +152,7 @@ const getActiveParticipants = () => {
             activeButton.classList.add('btn-outline-info'); 
             activeButton.classList.remove('btn-info');
             reRenderParticipantsTableBasedOFilter('all');
+            delete filterHolder.type
             activeButton.setAttribute('active', false);
         }
         else {
@@ -164,6 +169,7 @@ const getPassiveParticipants = () => {
             passiveButton.classList.add('btn-outline-info'); 
             passiveButton.classList.remove('btn-info');
             reRenderParticipantsTableBasedOFilter('all');
+            delete filterHolder.type
             passiveButton.setAttribute('passive', false);
         }
         else {
@@ -206,7 +212,17 @@ const getDateFilters = () => {
         else { 
             console.log('end', endDate)
             response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
-        reRenderMainTable(response, filter, dropdownMenuButton);
+        reRenderMainTable(response, filter, dropdownMenuButton, startDate, endDate);
+    })
+}
+
+const resetDateFilter = () => {
+    const resetDateFilters = document.getElementById('resetDate');
+    resetDateFilters && resetDateFilters.addEventListener('click', async (e) => {
+        e.preventDefault();
+        delete filterHolder.to
+        delete filterHolder.from
+
     })
 }
 
@@ -227,7 +243,7 @@ const reRenderParticipantsTableBasedOFilter = async (filter) => {
     reRenderMainTable(response, filter, siteKeyName);
 }
 
-const reRenderMainTable =  (response, filter, selectedSite) => {
+const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) => {
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
@@ -258,6 +274,10 @@ const reRenderMainTable =  (response, filter, selectedSite) => {
                 activeButton.classList.remove('btn-info');
                 activeButton.classList.add('btn-outline-info'); 
             }
+        }
+        if (startDate !== undefined) {
+            document.getElementById('startDate').value = startDate
+            document.getElementById('endDate').value = endDate
         }
         return;
     }
@@ -947,13 +967,20 @@ const getCustomVariableNames = (x) => {
 const getParticipantFromSites = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 1
+    let type = `all`
+    const limit = 50
     filterHolder['siteCode'] = query
     filterHolder['nextPageCounter'] = nextPageCounter
+    console.log('fi', filterHolder, type)
+    if (filterHolder.type !== undefined && filterHolder.type !== null) type = filterHolder.type
     if (nextPageCounter === undefined ) {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
-    } else {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&siteCode=${query}&limit=${limit}`
+    } 
+    else if (filterHolder.startDate !== undefined || filterHolder.startDate !== null) {
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=${type}&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&siteCode=${query}&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z&limit=${limit}`
+    }
+    else {
+        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=${type}&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
     }
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
