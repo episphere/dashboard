@@ -803,7 +803,7 @@ const filterVerification = (data, recruit) => {
     currentVerificationObj.outreachTimedout = outreachTimedout
     currentVerificationObj.verified = verified
     currentVerificationObj.cannotBeVerified = cannotBeVerified
-    if (recruitType === fieldMapping.active)  currentVerificationObj.duplicate = 0
+    if (recruitType === fieldMapping.active)  currentVerificationObj.duplicate = duplicate
     else currentVerificationObj.duplicate = duplicate
     return currentVerificationObj;
 
