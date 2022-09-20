@@ -185,34 +185,35 @@ const getDateFilters = () => {
         e.preventDefault();
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-        console.log('sd', endDate)
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
-        let dropdownMenuButton = ``
         let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
+        if (siteKey === null && filterHolder.hasOwnProperty('siteName') && filterHolder.siteName !== `Filter by Site`) { siteKey = filterHolder.siteName }
+        let siteKeyId = ``
+        let siteKeyName = ``
         if (siteKey !== null && siteKey !== 'allResults') {
-            dropdownMenuButton = nameToKeyObj[siteKey];
-            dropdownMenuButton = keyToShortNameObj[siteKeyId]
+            siteKeyId = nameToKeyObj[siteKey];
+            siteKeyName = keyToShortNameObj[siteKeyId];
         } else {
-            dropdownMenuButton = 'Filter by Site'
+            siteKeyId = 'Filter by Site'
+            siteKeyName = 'Filter by Site'
         }
-
         let response = ``;
         let filter = ``;
         let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
         let activeButton = document.getElementById('activeFilter').getAttribute('active');
         if (activeButton === 'true') {
-            response = await getParticipantsWithDateFilters('active', dropdownMenuButton, startDate, endDate);
+            response = await getParticipantsWithDateFilters('active', siteKeyId, startDate, endDate);
             filter = 'active';
         } 
         else if (passiveButton === 'true') {
-            response = await getParticipantsWithDateFilters('passive', dropdownMenuButton, startDate, endDate);
+            response = await getParticipantsWithDateFilters('passive', siteKeyId, startDate, endDate);
             filter = 'passive';
         }
         else { 
-            console.log('end', endDate)
-            response = await getParticipantsWithDateFilters(null, dropdownMenuButton, startDate, endDate); }
-        reRenderMainTable(response, filter, dropdownMenuButton, startDate, endDate);
+            response = await getParticipantsWithDateFilters(null, siteKeyId, startDate, endDate); }
+
+        reRenderMainTable(response, filter, siteKeyName, startDate, endDate);
     })
 }
 
@@ -220,8 +221,11 @@ const resetDateFilter = () => {
     const resetDateFilters = document.getElementById('resetDate');
     resetDateFilters && resetDateFilters.addEventListener('click', async (e) => {
         e.preventDefault();
+        document.getElementById('startDate').value = ``
+        document.getElementById('endDate').value = ``
         delete filterHolder.to
         delete filterHolder.from
+        delete filterHolder.siteName
 
     })
 }
@@ -351,14 +355,13 @@ const pagninationNextTrigger = () => {
         else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
-        const response = await getParticipantFromSites(sitePrefId, nextPageCounter);
+        const response = await getMoreParticipants(sitePrefId, nextPageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
             addEventFilterData(filterRawData);
             a.setAttribute('data-nextpage', nextPageCounter);
-            console.log('nextPageCounter', nextPageCounter)
             renderDataTable(filterRawData);
             addEventFilterData(filterRawData);
         }
@@ -379,8 +382,6 @@ const pagninationPreviousTrigger = () => {
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
         let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
-        console.log('jd', pageCounter) // 0 
-        console.log('nextPageCounter', nextPageCounter) // 2
         pageCounter = nextPageCounter - 1 // 1
         nextPageCounter = nextPageCounter - 1 // 1
         showAnimation();
@@ -390,7 +391,7 @@ const pagninationPreviousTrigger = () => {
         else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
-        const response = await getParticipantFromSites(sitePrefId, pageCounter);
+        const response = await getMoreParticipants(sitePrefId, pageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
@@ -408,7 +409,7 @@ const pagninationPreviousTrigger = () => {
         }
         } 
         else if (pageCounter === 0) {
-            const response = await getParticipantFromSites(sitePrefId);
+            const response = await getMoreParticipants(sitePrefId);
             hideAnimation();
             if(response.code === 200 && response.data.length > 0) {
                 let filterRawData = filterdata(response.data);
@@ -420,10 +421,8 @@ const pagninationPreviousTrigger = () => {
         else {
             hideAnimation();
         } 
-        b.setAttribute('data-nextpage', nextPageCounter); // 1
-        a.setAttribute('data-prevpage', pageCounter); // 1
-        console.log('jdxx', pageCounter) // 0 
-        console.log('nextPaxxxxgeCounter', nextPageCounter) // 1
+        b.setAttribute('data-nextpage', nextPageCounter);
+        a.setAttribute('data-prevpage', pageCounter);
 })
 }
 
@@ -924,6 +923,8 @@ export const dropdownTriggerAllParticipants = (sitekeyName) => {
 const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSelection) => {
     showAnimation();
     const sitePrefId = nameToKeyObj[sitePref];
+    filterHolder.siteCode = sitePrefId
+    filterHolder.siteName = sitePref
     const response = await getParticipantFromSites(sitePrefId);
     hideAnimation();
     if(response.code === 200 && response.data.length > 0) {
@@ -937,7 +938,7 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
         let dropdownMenuButton = document.getElementById('dropdownMenuButtonSites');
-        dropdownMenuButton.setAttribute('selectedsite',sitePref)  
+        dropdownMenuButton.setAttribute('selectedsite', sitePref)
         dropdownTriggerAllParticipants(currentSiteSelection);
     }
     else if(response.code === 200 && response.data.length === 0) {
@@ -964,24 +965,50 @@ const getCustomVariableNames = (x) => {
 
 }
 
-const getParticipantFromSites = async (query, nextPageCounter) => {
+const getMoreParticipants = async (query, nextPageCounter) => {
+    filterHolder['nextPageCounter'] = nextPageCounter
+    const siteKey = await getAccessToken();
+    let template = `/dashboard?api=getParticipants`;
+    const limit = 1;
+    if (filterHolder.hasOwnProperty('siteCode') && filterHolder.siteCode !== `Filter by Site` && filterHolder.siteCode !== 1000) {
+        template += `&siteCode=${filterHolder.siteCode}`
+    } 
+    else if (query !== nameToKeyObj.allResults) {
+        template += `&siteCode=${query}`
+    }
+   
+    if (filterHolder.hasOwnProperty('type')) {
+        template += `&type=${filterHolder.type}`
+    } 
+    else {
+        template += `&type=all`
+    }
+
+    if (filterHolder.hasOwnProperty('startDate')) {
+        template +=  `&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z&`
+    }
+
+    if (nextPageCounter !== undefined ) {
+       template += `&page=${nextPageCounter}`
+    } 
+
+    template += `&limit=${limit}`
+
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+
+const getParticipantFromSites = async (query) => {
+    filterHolder['siteCode'] = query
     const siteKey = await getAccessToken();
     let template = ``;
-    let type = `all`
-    const limit = 50
-    filterHolder['siteCode'] = query
-    filterHolder['nextPageCounter'] = nextPageCounter
-    console.log('fi', filterHolder, type)
-    if (filterHolder.type !== undefined && filterHolder.type !== null) type = filterHolder.type
-    if (nextPageCounter === undefined ) {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&siteCode=${query}&limit=${limit}`
-    } 
-    else if (filterHolder.startDate !== undefined || filterHolder.startDate !== null) {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=${type}&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z&limit=${limit}` : template += `/dashboard?api=getParticipants&type=${type}&siteCode=${query}&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z&limit=${limit}`
-    }
-    else {
-        (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}&page=${nextPageCounter}` : template += `/dashboard?api=getParticipants&type=${type}&siteCode=${query}&limit=${limit}&page=${nextPageCounter}`
-    }
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -992,11 +1019,10 @@ const getParticipantFromSites = async (query, nextPageCounter) => {
 }
 
 const getParticipantsWithFilters = async (type, sitePref) => {
+    filterHolder['type'] = type
     const siteKey = await getAccessToken();
     let template = ``;
     const limit = 1;
-    filterHolder['siteCode'] = sitePref
-    filterHolder['type'] = type
     if (sitePref !== 'Filter by Site') {
         template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}`
     }
@@ -1013,19 +1039,16 @@ const getParticipantsWithFilters = async (type, sitePref) => {
 }
 
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
+    filterHolder['startDate'] = startDate
+    filterHolder['endDate'] = endDate
     const siteKey = await getAccessToken();
     let template = ``;
     const limit = 1;
-    filterHolder['siteCode'] = sitePref
-    filterHolder['type'] = type
-    filterHolder['startDate'] = startDate
-    filterHolder['endDate'] = endDate
-    
     if (type !== null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
-    else if (type === null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    else if (type === null && sitePref !== 'Filter by Site') {
+         template += `/dashboard?api=getParticipants&type=all&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}` }
     else if (type !== null && sitePref === 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
     else template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
-    console.log('dd',baseAPI, template )
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
