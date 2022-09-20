@@ -582,20 +582,49 @@ const filterRecruitsFunnel = (data, recruit) => {
     let submittedProfileCount = 0;
     let verificationCount = 0;
     let verifiedCount = 0;
-    let signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes ));
-    signedIn.forEach((i) => {
-        signedInCount += i.signedCount
-    })
-    let consented = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes))
-    consented.forEach((i) => {
-        consentedCount += i.consentCount
-    })
-    let submittedProfile = data.filter(i =>
-        (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes))
-    submittedProfile.forEach((i) => {
-        submittedProfileCount += i.submittedCount
-    })
+    let signedIn = ``
+    if (recruitType === fieldMapping.active) {
+        signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && (i.verificationStatus != fieldMapping.duplicate) ));
+        signedIn.forEach((i) => {
+            signedInCount += i.signedCount
+        })
+    }
+    else {
+        signedIn = data.filter(i => (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes ));
+        signedIn.forEach((i) => {
+            signedInCount += i.signedCount
+        })
+    }
+    let consented = ``
+    if (recruitType === fieldMapping.active) { 
+        consented = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && (i.verificationStatus != fieldMapping.duplicate)))
+        consented.forEach((i) => {
+            consentedCount += i.consentCount
+        })
+    }
+    else {
+        consented = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes))
+        consented.forEach((i) => {
+            consentedCount += i.consentCount
+        })
+    }
+    let submittedProfile = ``
+    if (recruitType === fieldMapping.active) { 
+        submittedProfile = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes && (i.verificationStatus != fieldMapping.duplicate)))
+        submittedProfile.forEach((i) => {
+            submittedProfileCount += i.submittedCount
+        })
+    }
+    else {
+        submittedProfile = data.filter(i =>
+            (i.recruitType === recruitType && i.signedStatus === fieldMapping.yes && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.yes))
+        submittedProfile.forEach((i) => {
+            submittedProfileCount += i.submittedCount
+        })
+    }
     let verification = ``
     if (recruitType === fieldMapping.active) {
         verification = data.filter(i =>
@@ -632,8 +661,15 @@ const filterTotalRecruitsFunnel = (data) => {
     let submittedProfileCount = 0
     let verificationCount = 0
     let verifiedCount = 0
+    let duplicateCount = 0
+
+    let duplicateData = data.filter(i =>  ((i.recruitType === fieldMapping.active) && i.verificationStatus === fieldMapping.duplicate))
+    duplicateData.forEach((i) => {
+        duplicateCount += i.verificationCount
+    })
     let signedIn = data.filter(i =>
-        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes && (i.recruitType !== fieldMapping.inactive)))
+        ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.signedStatus === fieldMapping.yes && (i.recruitType !== fieldMapping.inactive)
+        ))
     signedIn.forEach((i) => {
         signedInCount += i.signedCount
     })
@@ -660,10 +696,10 @@ const filterTotalRecruitsFunnel = (data) => {
     verified.forEach((i) => {
         verifiedCount += i.verificationCount
     })
-    currentWorflowObj.signedIn = signedInCount
-    currentWorflowObj.consented = consentedCount
-    currentWorflowObj.submittedProfile = submittedProfileCount
-    currentWorflowObj.verification = verificationCount
+    currentWorflowObj.signedIn = signedInCount - duplicateCount
+    currentWorflowObj.consented = consentedCount - duplicateCount
+    currentWorflowObj.submittedProfile = submittedProfileCount - duplicateCount
+    currentWorflowObj.verification = verificationCount - duplicateCount
     currentWorflowObj.verified = verifiedCount
 
     return currentWorflowObj;
@@ -678,8 +714,15 @@ const filterCurrentWorkflow = (data, recruit) => {
     let consented = data.filter(i => (i.recruitType === recruitType && i.consentStatus === fieldMapping.yes && i.submittedStatus === fieldMapping.no))
     let submittedProfile = data.filter(i =>
         (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.notYetVerified || i.verificationStatus === fieldMapping.outreachTimedout)))
-    let verification = data.filter(i =>
+    let verification = ``
+    if (recruitType === fieldMapping.active) {
+        verification = data.filter(i =>
+            (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified)))
+    }
+    else {
+       verification = data.filter(i =>
         (i.recruitType === recruitType && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)))
+    }
     if (recruitType === fieldMapping.passive) currentWorflowObj.notSignedIn = 0
     else currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
@@ -715,11 +758,16 @@ const filterTotalCurrentWorkflow = (data) => {
     let verification = data.filter(i =>
     ((i.recruitType === fieldMapping.active || fieldMapping.passive) && i.submittedStatus === fieldMapping.yes && (i.verificationStatus === fieldMapping.verified || i.verificationStatus === fieldMapping.cannotBeVerified || i.verificationStatus === fieldMapping.duplicate)
         && (i.recruitType !== fieldMapping.inactive)))
+    let duplicateCount = 0
+    let duplicateData = data.filter(i =>  ((i.recruitType === fieldMapping.active) && i.verificationStatus === fieldMapping.duplicate))
+    duplicateData.forEach((i) => {
+        duplicateCount += i.verificationCount
+    })
     currentWorflowObj.notSignedIn = getCummulativeCountHandler(notSignedIn);
     currentWorflowObj.signedIn = getCummulativeCountHandler(signedIn);
     currentWorflowObj.consented = getCummulativeCountHandler(consented);
     currentWorflowObj.submittedProfile = getCummulativeCountHandler(submittedProfile);
-    currentWorflowObj.verification = getCummulativeCountHandler(verification);
+    currentWorflowObj.verification = getCummulativeCountHandler(verification) - duplicateCount;
     return currentWorflowObj;
 }
 
@@ -754,7 +802,8 @@ const filterVerification = (data, recruit) => {
     currentVerificationObj.outreachTimedout = outreachTimedout
     currentVerificationObj.verified = verified
     currentVerificationObj.cannotBeVerified = cannotBeVerified
-    currentVerificationObj.duplicate = duplicate
+    if (recruitType === fieldMapping.active)  currentVerificationObj.duplicate = duplicate
+    else currentVerificationObj.duplicate = duplicate
     return currentVerificationObj;
 
 }
