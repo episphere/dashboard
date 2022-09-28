@@ -515,7 +515,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
     const idToken = siteKey;
    
     const updateParticpantPayload = {
-        "data": updatedOptions
+        "data": [updatedOptions]
     }
 
     const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{

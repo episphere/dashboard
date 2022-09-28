@@ -604,7 +604,7 @@ async function clickHandler(sendRefusalData, idToken, token) {
     showAnimation();
     
     const refusalPayload = {
-        "data": sendRefusalData
+        "data": [sendRefusalData]
     }
     const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`, {
         method:'POST',
