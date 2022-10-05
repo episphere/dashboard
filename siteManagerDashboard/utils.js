@@ -137,6 +137,8 @@ export const getAccessToken = async () => {
   return siteKey;
 }
 
+
+// State Management
 export const filterState =  {
   results: {},
   setState: (filters) => {
