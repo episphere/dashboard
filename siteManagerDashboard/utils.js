@@ -136,3 +136,18 @@ export const getAccessToken = async () => {
   const siteKey = access_token !== null ? access_token : localStr.siteKey
   return siteKey;
 }
+
+export const filterState =  {
+  results: {},
+  setState: (filters) => {
+    storeFilters(() => filterState.results = filters);
+  }
+}
+
+const storeFilters = (callback) => {
+  callback();
+}
+
+export const getState = () => {
+  return filterState
+};

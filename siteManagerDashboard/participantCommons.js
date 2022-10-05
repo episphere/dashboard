@@ -2,7 +2,7 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls, filterState, getState  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
@@ -120,9 +120,12 @@ export  const renderData = (data, showButtons, flag) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
-        animation(false);
+        animation(false); 
         return;
     }
+    const returnedFilters = getState()
+    if (Object.keys(returnedFilters.results).length !== 0) {reMapFilters(returnedFilters.results)}
+   
     const pageSize = 50;
     const dataLength = data.length;
     data.splice(pageSize, dataLength);
@@ -138,6 +141,41 @@ export  const renderData = (data, showButtons, flag) => {
     getPassiveParticipants();
     getDateFilters();
     resetDateFilter();  
+}
+
+
+const reMapFilters = async (filters) =>  {
+    let query = ``
+    let type = ``
+    let startDate = ``
+    let endDate = ``
+    let selectedSite = 'Filter by Site'
+
+    if (filters.hasOwnProperty('siteCode') && filters.siteCode !== `Filter by Site` && filters.siteCode !== 1000) {
+        query += `&siteCode=${filters.siteCode}`
+        selectedSite = keyToShortNameObj[nameToKeyObj[filters.siteName]]
+    } 
+    if (filters.hasOwnProperty('type')) {
+        query += `&type=${filters.type}`
+        type = filters.type
+    } 
+    else {
+        query += `&type=all`
+    }
+
+    if (filters.hasOwnProperty('startDate')) {
+        query +=  `&from=${filters.startDate}T00:00:00.000Z&to=${filters.endDate}T23:59:59.999Z&`
+        startDate = filters.startDate
+        endDate = filters.endDate
+    }
+
+    if (filters.hasOwnProperty('nextPageCounter') !== false ) {
+        query += `&page=${filters.nextPageCounter}`
+    } else { }
+    const response = await getCurrentSelectedParticipants(query)
+    reRenderMainTable(response, type, selectedSite, startDate, endDate)
+    filterHolder = filters
+    filterState.setState({})
 }
 
 const renderDataTable = (data, showButtons) => {
@@ -279,7 +317,7 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) 
                 activeButton.classList.add('btn-outline-info'); 
             }
         }
-        if (startDate !== undefined) {
+        if (startDate !== undefined || startDate !== ``) {
             document.getElementById('startDate').value = startDate
             document.getElementById('endDate').value = endDate
         }
@@ -783,6 +821,7 @@ const addEventShowMoreInfo = data => {
     const selectElements = document.getElementsByClassName('select-participant');
     Array.from(selectElements).forEach(element => {
         element.addEventListener('click', async () => {
+            filterState.setState(filterHolder)
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
             let adminSubjectAudit = [];
             let changedOption = {};
@@ -1049,6 +1088,21 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
          template += `/dashboard?api=getParticipants&type=all&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}` }
     else if (type !== null && sitePref === 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
     else template += `/dashboard?api=getParticipants&type=all&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
+    const response = await fetch(`${baseAPI}${template}`, {
+        method: "GET",
+        headers: {
+            Authorization:"Bearer "+siteKey
+        }
+    });
+    return await response.json();
+}
+
+const getCurrentSelectedParticipants = async (query) => {
+    const siteKey = await getAccessToken();
+    let template = `/dashboard?api=getParticipants`;
+    template += `${query}`
+    const limit = 1;
+    template += `&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
