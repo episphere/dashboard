@@ -138,18 +138,16 @@ export const getAccessToken = async () => {
 }
 
 
-// State Management
-export const filterState =  {
-  results: {},
-  setState: (filters) => {
-    storeFilters(() => filterState.results = filters);
+// // State Management
+export const createStore = () => {
+  let state = {}
+  const setState = (newState) => { 
+    state = newState 
   }
+  const getState = () => { return state }
+  const store = {
+    setState,
+    getState,
+  };
+  return store;
 }
-
-const storeFilters = (callback) => {
-  callback();
-}
-
-export const getState = () => {
-  return filterState
-};

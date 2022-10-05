@@ -2,7 +2,7 @@ import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls, filterState, getState  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls, createStore  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
@@ -116,16 +116,16 @@ export const renderTable = (data, source) => {
     return template;
 }
 
-export  const renderData = (data, showButtons, flag) => {
+const appState = createStore();
+
+export  const renderData = (data, showButtons) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
         animation(false); 
         return;
     }
-    const returnedFilters = getState()
-    if (Object.keys(returnedFilters.results).length !== 0) {reMapFilters(returnedFilters.results)}
-   
+    if (Object.keys(appState.getState()).length !== 0) { reMapFilters(appState.getState()) }
     const pageSize = 50;
     const dataLength = data.length;
     data.splice(pageSize, dataLength);
@@ -175,7 +175,7 @@ const reMapFilters = async (filters) =>  {
     const response = await getCurrentSelectedParticipants(query)
     reRenderMainTable(response, type, selectedSite, startDate, endDate)
     filterHolder = filters
-    filterState.setState({})
+    appState.setState({})
 }
 
 const renderDataTable = (data, showButtons) => {
@@ -792,7 +792,7 @@ const tableTemplate = (data, showButtons) => {
     return template;
 }
 
-const addEventShowMoreInfo = data => {
+const addEventShowMoreInfo = (data) => {
     const elements = document.getElementsByClassName('showMoreInfo');
     Array.from(elements).forEach(element => {
         element.addEventListener('click', () => {
@@ -821,7 +821,7 @@ const addEventShowMoreInfo = data => {
     const selectElements = document.getElementsByClassName('select-participant');
     Array.from(selectElements).forEach(element => {
         element.addEventListener('click', async () => {
-            filterState.setState(filterHolder)
+            appState.setState(filterHolder)
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
             let adminSubjectAudit = [];
             let changedOption = {};
