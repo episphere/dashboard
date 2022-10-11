@@ -1,7 +1,7 @@
 
 // // State Management
 const createStore = (startState = {}) => {
-    let state = startState;
+    let state = JSON.parse(JSON.stringify(startState));
     const setState = (newState) => { 
       state = {...state, ...newState}
     }

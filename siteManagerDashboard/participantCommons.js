@@ -959,8 +959,7 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
     showAnimation();
     const sitePrefId = nameToKeyObj[sitePref];
     let prevState = appState.getState().filterHolder
-    appState.setState({filterHolder:{...prevState, 'siteCode': sitePrefId}})
-    appState.setState({filterHolder:{...prevState, 'siteName': sitePref}})
+    appState.setState({filterHolder:{...prevState, 'siteCode': sitePrefId, 'siteName': sitePref}})
     const response = await getParticipantFromSites(sitePrefId);
     hideAnimation();
     if(response.code === 200 && response.data.length > 0) {
