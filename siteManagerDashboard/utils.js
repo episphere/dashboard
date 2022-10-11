@@ -137,17 +137,3 @@ export const getAccessToken = async () => {
   return siteKey;
 }
 
-
-// // State Management
-export const createStore = () => {
-  let state = {}
-  const setState = (newState) => { 
-    state = newState 
-  }
-  const getState = () => { return state }
-  const store = {
-    setState,
-    getState,
-  };
-  return store;
-}

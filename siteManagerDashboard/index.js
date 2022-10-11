@@ -1,6 +1,6 @@
 import { renderParticipantLookup } from './participantLookup.js';
 import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
-import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, dropdownTriggerAllParticipants, renderLookupSiteDropdown } from './participantCommons.js';
+import { renderTable, filterdata, renderData, addEventFilterData, activeColumns, dropdownTriggerAllParticipants, renderLookupSiteDropdown, reMapFilters } from './participantCommons.js';
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
@@ -18,6 +18,7 @@ import { firebaseConfig as prodFirebaseConfig } from "./prod/config.js";
 import { SSOConfig as devSSOConfig} from './dev/identityProvider.js';
 import { SSOConfig as stageSSOConfig} from './stage/identityProvider.js';
 import { SSOConfig as prodSSOConfig} from './prod/identityProvider.js';
+import { appState } from './stateManager.js';
 
 let saveFlag = false;
 let counter = 0;
@@ -1029,30 +1030,35 @@ const renderParticipantsVerified = async () => {
 
 const renderParticipantsAll = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'all');
-    response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
-    if (response.code === 200) {
-        const isParent = localStorage.getItem('isParent')
-        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
-        removeActiveClass('dropdown-item', 'dd-item-active');
-        document.getElementById('allBtn').classList.add('dd-item-active');
-        removeActiveClass('nav-link', 'active');
-        document.getElementById('participants').classList.add('active');
-        const filterRawData = filterdata(response.data)
-        mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
-        addEventFilterData(filterRawData);
-        renderData(filterRawData);
-        activeColumns(filterRawData);
-        renderLookupSiteDropdown();
-        dropdownTriggerAllParticipants('Filter by Site');
-        animation(false);
+    if (appState.getState().filterHolder) { 
+        reMapFilters(appState.getState().filterHolder) 
     }
-    internalNavigatorHandler(counter);
-    if (response.code === 401) {
-        clearLocalStorage();
+    else {
+        const siteKey = await getAccessToken();
+        const response = await fetchData(siteKey, 'all');
+        response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
+        if (response.code === 200) {
+            const isParent = localStorage.getItem('isParent')
+            document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
+            document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+            removeActiveClass('dropdown-item', 'dd-item-active');
+            document.getElementById('allBtn').classList.add('dd-item-active');
+            removeActiveClass('nav-link', 'active');
+            document.getElementById('participants').classList.add('active');
+            const filterRawData = filterdata(response.data)
+            mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
+            addEventFilterData(filterRawData);
+            renderData(filterRawData);
+            activeColumns(filterRawData);
+            renderLookupSiteDropdown();
+            dropdownTriggerAllParticipants('Filter by Site');
+        }
+        internalNavigatorHandler(counter);
+        if (response.code === 401) {
+            clearLocalStorage();
+        }
     }
+    animation(false);
 }
 
 const renderParticipantsProfileNotSubmitted = async () => {
