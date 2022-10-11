@@ -15,27 +15,3 @@ const createStore = (startState = {}) => {
 
 
 export const appState = createStore();
-  
-  
-  
-//   let filters={name: 'John', age: 30};
-  
-  
-  
-//   appState.setState({filters, name: 'John', age: 30});
-  
-//   console.log(appState.getState());
-  
-  
-  
-//   filters={name: 'mike', age: 60};
-  
-//   appState.setState({filters, users:{name: 'mike', age: 60}});
-  
-//   console.log(appState.getState());
-  
-  
-  
-//   appState.setState({filters:{}});
-  
-//   console.log(appState.getState());
