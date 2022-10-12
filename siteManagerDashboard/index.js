@@ -562,14 +562,16 @@ const filterSsnMetrics = (participantsSsnMetrics, activeVerifiedParticipants, pa
     let currentWorflowObj = {}
     let ssnFullFlagCounter = 0
     let ssnHalfFlagCounter = 0
+    let ssnNoFlagCounter = 0
     const verifiedParticipants = activeVerifiedParticipants +  passiveVerifiedParticipants
 
     participantsSsnMetrics && participantsSsnMetrics.filter( i => {
         if (i.ssnFlag === fieldMapping.yes) { ssnFullFlagCounter += i.ssnFlagCount }
         if (i.ssnHalfFlag === fieldMapping.yes) { ssnHalfFlagCounter += i.ssnHalfFlagCount }
+        if (i.ssnHalfFlag === fieldMapping.no && i.ssnFlag === fieldMapping.no ) { ssnNoFlagCounter += i.ssnHalfFlagCount }
 
     })
-    currentWorflowObj.ssnNoFlagCounter = verifiedParticipants - (ssnFullFlagCounter + ssnHalfFlagCounter);
+    currentWorflowObj.ssnNoFlagCounter = ssnNoFlagCounter;
     currentWorflowObj.ssnFullFlagCounter = ssnFullFlagCounter;
     currentWorflowObj.ssnHalfFlagCounter = ssnHalfFlagCounter;
     currentWorflowObj.verifiedParticipants = verifiedParticipants;
