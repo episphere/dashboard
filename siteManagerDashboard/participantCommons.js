@@ -222,7 +222,6 @@ const getDateFilters = () => {
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
         const filterHolder = appState.getState().filterHolder
-
         let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
         if (siteKey === null && filterHolder && filterHolder.siteName && filterHolder.siteName !== `Filter by Site`) { siteKey = filterHolder.siteName }
         let siteKeyId = ``
@@ -381,8 +380,8 @@ const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-        const currState = appState.getState().filterHolder
-        if (currState.nextPageCounter && currState.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
+        const currState = appState.getState()
+        if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
