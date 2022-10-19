@@ -167,7 +167,7 @@ export const reMapFilters = async (filters) =>  {
         endDate = filters.endDate
     }
 
-    if (filters.nextPageCounter !== false ) {
+    if (filters.nextPageCounter && filters.nextPageCounter !== false ) {
         query += `&page=${filters.nextPageCounter}`
     }
     const response = await getCurrentSelectedParticipants(query)
