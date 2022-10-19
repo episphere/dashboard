@@ -345,7 +345,6 @@ export const baselineBiospecSurvey = (participant) => {
 }
 
 export const baselineBloodUrineSurvey = (participant) => {
-    let participantModule = participant[fieldMapping.bloodUrineSurvey]
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
     let template = ``;
 
@@ -354,24 +353,24 @@ export const baselineBloodUrineSurvey = (participant) => {
         template += `
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "Y", "N/A")}`
     ) :
-    !participantModule ?  
+    !participant ?  
     (
         template += `
                 ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A")}`
     ) : 
     (
-        (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.submitted1)  ?
+        (participant[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.submitted1)  ?
         (
             template += `
                     ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Clinical Blood/Urine", "Submitted",
-                    humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyCompletedDate]), "N/A", "N", "N/A")}`
+                    humanReadableMDY(participant[fieldMapping.bloodUrineSurveyCompletedDate]), "N/A", "N", "N/A")}`
 
         ) :
-        (participantModule[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.started1)  ?
+        (participant[fieldMapping.bloodUrineSurveyFlag] === fieldMapping.started1)  ?
         (
             template += `
                     ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Clinical Blood/Urine", "Started",
-                    humanReadableMDY(participantModule[fieldMapping.bloodUrineSurveyStartedDate]), "N/A", "N", "N/A")}`
+                    humanReadableMDY(participant[fieldMapping.bloodUrineSurveyStartedDate]), "N/A", "N", "N/A")}`
         ) : 
         ( template += `
                     ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "Not Started", "N/A", "N/A", "N", "N/A")}`
