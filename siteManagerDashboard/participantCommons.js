@@ -117,7 +117,7 @@ export const renderTable = (data, source) => {
     return template;
 }
 
-export  const renderData = (data, showButtons) => {
+export  const renderData = (data, showButtons, source) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
         mainContent.innerHTML = renderTable(data);
@@ -127,18 +127,20 @@ export  const renderData = (data, showButtons) => {
     const pageSize = 50;
     const dataLength = data.length;
     data.splice(pageSize, dataLength);
-    let nextPageCounter = 1;
-    let prevPageCounter = 0;
-    document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
-    pagninationNextTrigger();
-    pagninationPreviousTrigger();
     // addEventPageBtns(pageSize, data, showButtons);
     renderDataTable(data, showButtons)
     addEventShowMoreInfo(data);
-    getActiveParticipants();
-    getPassiveParticipants();
-    getDateFilters();
-    resetDateFilter();  
+    if (source !== 'bubbleFilters') {
+        let nextPageCounter = 1;
+        let prevPageCounter = 0;
+        document.getElementById('paginationContainer').innerHTML = paginationTemplate(nextPageCounter, prevPageCounter);
+        pagninationNextTrigger();
+        pagninationPreviousTrigger();
+        getActiveParticipants();
+        getPassiveParticipants();
+        getDateFilters();
+        resetDateFilter();
+    }
 }
 
 
@@ -167,7 +169,7 @@ export const reMapFilters = async (filters) =>  {
         endDate = filters.endDate
     }
 
-    if (filters.nextPageCounter !== false ) {
+    if (filters.nextPageCounter && filters.nextPageCounter !== false ) {
         query += `&page=${filters.nextPageCounter}`
     }
     const response = await getCurrentSelectedParticipants(query)
@@ -868,20 +870,20 @@ export const activeColumns = (data, showButtons) => {
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
-                    renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons, 'bubbleFilters');
                 }
                 else {
-                    renderData(data, showButtons);
+                    renderData(data, showButtons, 'bubbleFilters');
                 }
             }
             else{
                 btn.classList.remove('filter-active');
                 importantColumns.splice(importantColumns.indexOf(value), 1);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
-                    renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons);
+                    renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons, 'bubbleFilters');
                 }
                 else {
-                    renderData(data, showButtons);
+                    renderData(data, showButtons, 'bubbleFilters');
                 }
             }
         })
@@ -1042,7 +1044,7 @@ const getMoreParticipants = async (query, nextPageCounter) => {
 
 const getParticipantFromSites = async (query) => {
     let prevState = appState.getState().filterHolder
-    appState.setState({filterHolder:{...prevState, 'siteCode': query}})
+    appState.setState({filterHolder:{...prevState, 'siteCode': query, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
@@ -1057,7 +1059,7 @@ const getParticipantFromSites = async (query) => {
 
 const getParticipantsWithFilters = async (type, sitePref) => {
     let prevState = appState.getState().filterHolder
-    appState.setState({filterHolder:{...prevState, 'type': type}})
+    appState.setState({filterHolder:{...prevState, 'type': type, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
     const limit = 5;
@@ -1078,7 +1080,7 @@ const getParticipantsWithFilters = async (type, sitePref) => {
 
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
     let prevState = appState.getState().filterHolder
-    appState.setState({filterHolder:{...prevState, 'startDate': startDate, 'endDate': endDate}})
+    appState.setState({filterHolder:{...prevState, 'startDate': startDate, 'endDate': endDate, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
     const limit = 5;
