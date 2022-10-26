@@ -416,6 +416,30 @@ export const baselineMouthwashSurvey = (participant) => {
 }
 
 
+export const baselineMenstrualSurvey = (participant) => {
+    let template = ``; 
+    (
+        (participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1)  ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Menstrual Cycle", "Submitted",
+                    humanReadableMDY(participant[fieldMapping.menstrualDateTimeCompleted]), "N/A", "N", "N/A")}`
+
+        ) :
+        (participant[fieldMapping.menstrualFlag] === fieldMapping.started1)  ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "Menstrual Cycle", "Started",
+                    humanReadableMDY(participant[fieldMapping.menstrualDateTimeStart]), "N/A", "N", "N/A")}`
+        ) : 
+        ( template += `
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Menstrual Cycleh", "Not Started", "N/A", "N/A", "N", "N/A")}`
+        )
+    )
+    return template;
+}
+
+
 export const baselineEMR = (participantModule) => {
     let template = ``;
     !(participantModule) ?  

@@ -1,8 +1,8 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,
-    baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey,
+import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,baselineSASSurvey, 
+    baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey, baselineMenstrualSurvey,
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping } from './utils.js';
 
@@ -90,6 +90,10 @@ export const render = (participant) => {
                                 <tr class="row-color-survey-light">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
+                                ${(participant[fieldMapping.bloodUrineMouthwashSurvey]&&participant[fieldMapping.bloodUrineMouthwashSurvey][fieldMapping.menstrualSixtyDays] === fieldMapping.yes && 
+                                    participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted1) ?
+                                    `<tr class="row-color-survey-light"> ${baselineMenstrualSurvey(participant)} </tr>`
+                                : `` }                    
                                 <tr class="row-color-survey-dark">
                                     ${baselineBloodUrineSurvey(participant)}
                                 </tr>

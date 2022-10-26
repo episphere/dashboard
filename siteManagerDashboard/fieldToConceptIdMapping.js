@@ -163,6 +163,12 @@ export default
     "bloodUrineSurveyStartedDate": 534669573,
     "bloodUrineSurveyCompletedDate": 764863765,
 
+    "bloodUrineMouthwashSurvey": 299215535,
+    "menstrualSixtyDays": 112151599,
+    "menstrualFlag": 459098666,
+    "menstrualDateTimeStart": 844088537,
+    "menstrualDateTimeCompleted": 217640691,
+
     "mouthwashSurvey": 390351864,
     "mouthwashSurveyFlag": 547363263,
     "mouthwashSurveyStartedDate": 286191859,
