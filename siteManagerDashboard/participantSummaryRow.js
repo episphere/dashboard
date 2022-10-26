@@ -433,7 +433,7 @@ export const baselineMenstrualSurvey = (participant) => {
                     humanReadableMDY(participant[fieldMapping.menstrualDateTimeStart]), "N/A", "N", "N/A")}`
         ) : 
         ( template += `
-                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Menstrual Cycleh", "Not Started", "N/A", "N/A", "N", "N/A")}`
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Menstrual Cycle", "Not Started", "N/A", "N/A", "N", "N/A")}`
         )
     )
     return template;
