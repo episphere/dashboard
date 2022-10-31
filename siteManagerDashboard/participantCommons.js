@@ -184,15 +184,17 @@ const renderDataTable = (data, showButtons) => {
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
     activeButton && activeButton.addEventListener('click', () => {   
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
         if (activeButton.getAttribute('active') === 'true') {
             activeButton.classList.add('btn-outline-info'); 
             activeButton.classList.remove('btn-info');
-            reRenderParticipantsTableBasedOFilter('all');
+            reRenderParticipantsTableBasedOFilter('all', startDate, endDate);
             appState.setState({filterHolder:{type: ``}})
             activeButton.setAttribute('active', false);
         }
         else {
-            reRenderParticipantsTableBasedOFilter('active');
+            reRenderParticipantsTableBasedOFilter('active', startDate, endDate);
             activeButton.setAttribute('active', true);
         }
     })
@@ -201,15 +203,18 @@ const getActiveParticipants = () => {
 const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
     passiveButton && passiveButton.addEventListener('click', () => {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
         if (passiveButton.getAttribute('passive') === 'true') {
             passiveButton.classList.add('btn-outline-info'); 
             passiveButton.classList.remove('btn-info');
-            reRenderParticipantsTableBasedOFilter('all');
+            reRenderParticipantsTableBasedOFilter('all', startDate, endDate);
             appState.setState({filterHolder:{type: ``}})
             passiveButton.setAttribute('passive', false);
         }
         else {
-            reRenderParticipantsTableBasedOFilter('passive');
+            reRenderParticipantsTableBasedOFilter('passive', startDate, endDate);
             passiveButton.setAttribute('passive', true);
         }
     })
@@ -264,21 +269,17 @@ const resetDateFilter = () => {
     })
 }
 
-const reRenderParticipantsTableBasedOFilter = async (filter) => {
-    let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
-    let siteKeyId = ``
-    let siteKeyName = ``
-    if (siteKey !== null && siteKey !== 'allResults') {
-        siteKeyId = nameToKeyObj[siteKey];
-        siteKeyName = keyToShortNameObj[siteKeyId];
-    } else {
-        siteKeyId = 'Filter by Site'
-        siteKeyName = 'Filter by Site'
+const reRenderParticipantsTableBasedOFilter = async (filter, startDate, endDate) => {
+    let siteKeyId = 'Filter by Site'
+    let siteKeyName = 'Filter by Site'
+    if (appState.getState().filterHolder && appState.getState().filterHolder.siteName) {
+        siteKeyId = appState.getState().filterHolder.siteCode 
+        siteKeyName = keyToShortNameObj[nameToKeyObj[appState.getState().filterHolder.siteName]]
     }
     showAnimation();
-    const response = await getParticipantsWithFilters(filter, siteKeyId);
+    const response = await getParticipantsWithFilters(filter, siteKeyId, startDate, endDate);
     hideAnimation();
-    reRenderMainTable(response, filter, siteKeyName);
+    reRenderMainTable(response, filter, siteKeyName, startDate, endDate);
 }
 
 const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) => {
@@ -296,6 +297,7 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) 
             let activeButton = document.getElementById('activeFilter');
             activeButton.classList.remove('btn-outline-info'); 
             activeButton.classList.add('btn-info');
+            activeButton.setAttribute('active', true);
             let passiveButton = document.getElementById('passiveFilter');
             if ([...passiveButton.classList].includes('btn-info')) {
                 passiveButton.classList.remove('btn-info');
@@ -369,8 +371,9 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
                 <ul class="pagination">
                     <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
                     <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
+                    <li class="page-item"><span class="page-link" id="currentPageNumber">Page: 1</span></li>
                 </ul>
-            </nav>
+            </nav>        
         </div>
     </div>
     `;
@@ -382,6 +385,8 @@ const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
+
+        document.getElementById('currentPageNumber').innerHTML = `Page: ${nextPageCounter + 1}`
         const currState = appState.getState()
         if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         showAnimation();
@@ -396,13 +401,13 @@ const pagninationNextTrigger = () => {
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
-            addEventFilterData(filterRawData);
             a.setAttribute('data-nextpage', nextPageCounter);
             renderDataTable(filterRawData);
             addEventFilterData(filterRawData);
         }
         else if(response.code === 200 && response.data.length === 0) {
             renderDataTable([]);
+            a.setAttribute('data-nextpage', nextPageCounter);
             return alertTrigger();
         }
         else if(response.code != 200 && response.data.length === 0) {
@@ -418,6 +423,7 @@ const pagninationPreviousTrigger = () => {
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
         let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
+        document.getElementById('currentPageNumber').innerHTML = `Page: ${nextPageCounter - 1}`
         pageCounter = nextPageCounter - 1 // 1
         nextPageCounter = nextPageCounter - 1 // 1
         showAnimation();
@@ -886,6 +892,22 @@ export const activeColumns = (data, showButtons) => {
                     renderData(data, showButtons, 'bubbleFilters');
                 }
             }
+            document.getElementById('currentPageNumber').innerHTML = `Page: 1`
+            document.getElementById('nextLink').setAttribute('data-nextpage', 1);
+            appState.setState({filterHolder:{'nextPageCounter': 1}})
+            document.getElementById('startDate').value = ``
+            document.getElementById('endDate').value = ``
+            dropdownTriggerAllParticipants('Filter by Site');
+            let passiveButton = document.getElementById('passiveFilter');
+            if ([...passiveButton.classList].includes('btn-info')) {
+                passiveButton.classList.remove('btn-info');
+                passiveButton.classList.add('btn-outline-info');  
+            }
+            let activeButton = document.getElementById('activeFilter');
+            if ([...activeButton.classList].includes('btn-info')) {
+                activeButton.classList.remove('btn-info');
+                activeButton.classList.add('btn-outline-info');  
+            }
         })
     });
 }
@@ -1047,7 +1069,8 @@ const getParticipantFromSites = async (query) => {
     appState.setState({filterHolder:{...prevState, 'siteCode': query, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
-    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    const limit = 5;
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -1057,18 +1080,22 @@ const getParticipantFromSites = async (query) => {
     return await response.json();
 }
 
-const getParticipantsWithFilters = async (type, sitePref) => {
+const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) => {
     let prevState = appState.getState().filterHolder
     appState.setState({filterHolder:{...prevState, 'type': type, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
-    let template = ``;
+    let template = `/dashboard?api=getParticipants&type=${type}`;
     const limit = 5;
+
     if (sitePref !== 'Filter by Site') {
-        template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}`
+        template += `&siteCode=${sitePref}`
     }
-    else {
-        template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
+    if (startDate !== ``) {
+        template += `&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z`
     }
+
+    template += `&limit=${limit}`
+    
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
