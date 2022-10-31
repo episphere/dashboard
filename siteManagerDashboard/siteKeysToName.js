@@ -28,7 +28,8 @@ export const keyToShortNameObj =
     809703864 : "UofC Medicine",
     13 : "NCI",
     300267574 : "KP HI",
-    327912200 : "KP GA"
+    327912200 : "KP GA",
+    1000: "All"
 
 }
 
