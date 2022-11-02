@@ -887,7 +887,7 @@ export const activeColumns = (data, showButtons) => {
                     activeButton.classList.remove('btn-outline-info');
                     activeButton.classList.add('btn-info');  
                 }
-            }åå
+            }
         })
     });
 }
