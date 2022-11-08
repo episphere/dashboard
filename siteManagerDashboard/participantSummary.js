@@ -90,9 +90,8 @@ export const render = (participant) => {
                                 <tr class="row-color-survey-light">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
-                                ${(participant[fieldMapping.bloodUrineMouthwashSurvey]&&participant[fieldMapping.bloodUrineMouthwashSurvey][fieldMapping.menstrualSixtyDays] === fieldMapping.yes && 
-                                    participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted1) ?
-                                    `<tr class="row-color-survey-light"> ${baselineMenstrualSurvey(participant)} </tr>`
+                                ${participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1 ?
+                                    `<tr class="row-color-enrollment-light"> ${baselineMenstrualSurvey(participant)} </tr>`
                                 : `` }                    
                                 <tr class="row-color-survey-dark">
                                     ${baselineBloodUrineSurvey(participant)}
@@ -295,6 +294,7 @@ const createPrintName = (participant) => {
 
 const consentHandler = (participant) => {
     let template = ``;
+    console.log('pa', participant)
     participant && 
     participant[fieldMapping.consentFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
