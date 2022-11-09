@@ -146,12 +146,14 @@ export default
 
     "bloodFlag": 878865966,
     "bloodDateTime": 561681068,
+    "clinicalBloodDateTime": 982213346,
     "refusedBlood": 194410742,
     "biospecimenBlood": 878865966,
 
 
     "urineFlag": 167958071,
     "urineDateTime": 847159717,
+    "clinicalUrineDateTime": 139245758,
     "refusedUrine": 949501163,
 
     "mouthwash": 684635302,
