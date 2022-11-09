@@ -11,20 +11,16 @@ import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
-    let array = [ 'Connect_ID', 'pin', 'token', 'studyId', fieldMapping.timeStudyIdSubmitted, fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
-    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.henryFReportedRace, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
-    fieldMapping.consentDate, fieldMapping.consentVersion, fieldMapping.hippaFlag, fieldMapping.hippaDate, fieldMapping.hippaVersion, fieldMapping.userProfileFlag, 
-    fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.automatedVerification, fieldMapping.outreachRequiredForVerification, fieldMapping.manualVerification,
-    fieldMapping.duplicateType, fieldMapping.firstNameMatch, fieldMapping.lastNameMatch, fieldMapping.dobMatch, fieldMapping.pinMatch, fieldMapping.tokenMatch, 
-    fieldMapping.zipCodeMatch, fieldMapping.siteMatch, fieldMapping.ageMatch, fieldMapping.cancerStatusMatch, fieldMapping.updateRecruitType, 
-    fieldMapping.preConsentOptOut, fieldMapping.datePreConsentOptOut, fieldMapping.maxNumContactsReached, fieldMapping.signInMechansim, fieldMapping.consentFirstName, 
-    fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
-    fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
-    fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus, /* fieldMapping.enrollmentStatus, */ fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
-    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, 
-    fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
-    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+    let array = [ 'Connect_ID', fieldMapping.accountEmail,fieldMapping.accountName,fieldMapping.accountPhone,fieldMapping.address1,fieldMapping.address2,fieldMapping.ageMatch,fieldMapping.allBaselineSurveysCompleted,
+    fieldMapping.automatedVerification,fieldMapping.bohStatusFlag1,fieldMapping.campaignType,fieldMapping.cancerStatusMatch,fieldMapping.cellPhone,fieldMapping.city,fieldMapping.consentDate,fieldMapping.consentFirstName,fieldMapping.consentFlag,
+    fieldMapping.consentLastName,fieldMapping.consentMiddleName,fieldMapping.consentVersion,fieldMapping.dateDataDestroy,fieldMapping.dateDataDestroyRequested,fieldMapping.dateHIPAARevoc,fieldMapping.dateHipaaRevokeRequested,fieldMapping.dateOfDeath,
+    fieldMapping.datePreConsentOptOut,fieldMapping.dateWithdrewConsentRequested,fieldMapping.destroyData,fieldMapping.dobMatch,fieldMapping.duplicateType,fieldMapping.email,fieldMapping.email1,fieldMapping.email2,fieldMapping.firstNameMatch,fieldMapping.henryFReportedRace,
+    fieldMapping.hippaDate,fieldMapping.hippaFlag,fieldMapping.hippaVersion,fieldMapping.homePhone,fieldMapping.lastNameMatch,fieldMapping.lawStausFlag1,fieldMapping.manualVerification,fieldMapping.maxNumContactsReached,fieldMapping.mreStatusFlag1,fieldMapping.noPin,
+    fieldMapping.otherPhone,fieldMapping.outreachRequiredForVerification,fieldMapping.participantDeceased,fieldMapping.participationStatus, 'pin', fieldMapping.pinEntered,fieldMapping.pinMatch,fieldMapping.preConsentOptOut,fieldMapping.prefName,fieldMapping.previousCancer,
+    fieldMapping.recruitmentDate,fieldMapping.recruitmentType,fieldMapping.refusedAllFutureActivities,fieldMapping.refusedBlood,fieldMapping.refusedFutureSamples,fieldMapping.refusedFutureSurveys,fieldMapping.refusedMouthwash,fieldMapping.refusedSpecimenSurevys,
+    fieldMapping.refusedSurvey,fieldMapping.refusedUrine,fieldMapping.revokeHIPAA,fieldMapping.sanfordReportedRace,fieldMapping.sanfordReportedSex,fieldMapping.sasStatusFlag1,fieldMapping.signedInFlag,fieldMapping.signinDate,fieldMapping.signInMechansim,
+    fieldMapping.siteMatch,fieldMapping.siteReportedAge,fieldMapping.siteReportedRace,fieldMapping.siteReportedSex,fieldMapping.ssnFullflag,fieldMapping.ssnPartialFlag,fieldMapping.state, 'studyId', fieldMapping.suspendContact,fieldMapping.timeStudyIdSubmitted,
+    'token',fieldMapping.tokenMatch, fieldMapping.updateRecruitType,fieldMapping.userProfileDateTime,fieldMapping.userProfileFlag,fieldMapping.verficationDate,fieldMapping.verifiedFlag,fieldMapping.withdrawConsent,fieldMapping.zip,fieldMapping.zipCodeMatch
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -69,7 +65,7 @@ export const renderTable = (data, source) => {
                     <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
                 </div>
                 <form class="form-inline" id="dateFilters">
-                    <h5>Filter by Verification Status Time:  &nbsp;</h5>
+                    <h5 style="padding-left: 15px;"> &nbsp; Filter by Verification Status Time:  &nbsp;</h5>
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
                         <input type="date" class="form-control" id="startDate" style="
@@ -149,6 +145,7 @@ export const reMapFilters = async (filters) =>  {
     let type = ``
     let startDate = ``
     let endDate = ``
+    let pageCounter = ``
     let selectedSite = 'Filter by Site'
 
     if (filters.siteCode && filters.siteCode !== `Filter by Site` && filters.siteCode !== 1000) {
@@ -171,9 +168,10 @@ export const reMapFilters = async (filters) =>  {
 
     if (filters.nextPageCounter && filters.nextPageCounter !== false ) {
         query += `&page=${filters.nextPageCounter}`
+        pageCounter = filters.nextPageCounter
     }
     const response = await getCurrentSelectedParticipants(query)
-    reRenderMainTable(response, type, selectedSite, startDate, endDate)
+    reRenderMainTable(response, type, selectedSite, startDate, endDate, pageCounter)
 }
 
 const renderDataTable = (data, showButtons) => {
@@ -184,16 +182,23 @@ const renderDataTable = (data, showButtons) => {
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
     activeButton && activeButton.addEventListener('click', () => {   
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        let prevState = appState.getState().filterHolder
+        appState.setState({filterHolder:{...prevState, nextPageCounter: 1}})
+        if (document.getElementById('activeFilter').getAttribute('data-get-pts')) return;
         if (activeButton.getAttribute('active') === 'true') {
             activeButton.classList.add('btn-outline-info'); 
             activeButton.classList.remove('btn-info');
-            reRenderParticipantsTableBasedOFilter('all');
-            appState.setState({filterHolder:{type: ``}})
+            reRenderParticipantsTableBasedOFilter('all', startDate, endDate);
+            appState.setState({filterHolder:{...prevState, type: ``}})
             activeButton.setAttribute('active', false);
         }
         else {
-            reRenderParticipantsTableBasedOFilter('active');
+            activeButton.setAttribute('data-get-pts', true)
+            reRenderParticipantsTableBasedOFilter('active', startDate, endDate);
             activeButton.setAttribute('active', true);
+            activeButton.removeAttribute('data-get-pts');
         }
     })
 }
@@ -201,15 +206,19 @@ const getActiveParticipants = () => {
 const getPassiveParticipants = () => {
     let passiveButton = document.getElementById('passiveFilter');
     passiveButton && passiveButton.addEventListener('click', () => {
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+        let prevState = appState.getState().filterHolder
+        appState.setState({filterHolder:{...prevState, nextPageCounter: 1}})
         if (passiveButton.getAttribute('passive') === 'true') {
             passiveButton.classList.add('btn-outline-info'); 
             passiveButton.classList.remove('btn-info');
-            reRenderParticipantsTableBasedOFilter('all');
-            appState.setState({filterHolder:{type: ``}})
+            reRenderParticipantsTableBasedOFilter('all', startDate, endDate);
+            appState.setState({filterHolder:{...prevState, type: ``}})
             passiveButton.setAttribute('passive', false);
         }
         else {
-            reRenderParticipantsTableBasedOFilter('passive');
+            reRenderParticipantsTableBasedOFilter('passive', startDate, endDate);
             passiveButton.setAttribute('passive', true);
         }
     })
@@ -237,6 +246,7 @@ const getDateFilters = () => {
         }
         let response = ``;
         let filter = ``;
+        let pageCounter = 1
         let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
         let activeButton = document.getElementById('activeFilter').getAttribute('active');
         if (activeButton === 'true') {
@@ -250,7 +260,7 @@ const getDateFilters = () => {
         else { 
             response = await getParticipantsWithDateFilters(null, siteKeyId, startDate, endDate); }
 
-        reRenderMainTable(response, filter, siteKeyName, startDate, endDate);
+        reRenderMainTable(response, filter, siteKeyName, startDate, endDate, pageCounter);
     })
 }
 
@@ -260,28 +270,27 @@ const resetDateFilter = () => {
         e.preventDefault();
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
-        appState.setState({filterHolder:{to: ``, from: ``}})
+        let prevState = appState.getState().filterHolder
+        appState.setState({filterHolder:{...prevState, to: ``, from: ``}})
     })
 }
 
-const reRenderParticipantsTableBasedOFilter = async (filter) => {
-    let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
-    let siteKeyId = ``
-    let siteKeyName = ``
-    if (siteKey !== null && siteKey !== 'allResults') {
-        siteKeyId = nameToKeyObj[siteKey];
-        siteKeyName = keyToShortNameObj[siteKeyId];
-    } else {
-        siteKeyId = 'Filter by Site'
-        siteKeyName = 'Filter by Site'
+const reRenderParticipantsTableBasedOFilter = async (filter, startDate, endDate) => {
+    let siteKeyId = 'Filter by Site'
+    let siteKeyName = 'Filter by Site'
+    let pageCounter = 1
+    if (appState.getState().filterHolder && appState.getState().filterHolder.siteName) {
+        siteKeyId = appState.getState().filterHolder.siteCode 
+        siteKeyName = keyToShortNameObj[nameToKeyObj[appState.getState().filterHolder.siteName]]
     }
     showAnimation();
-    const response = await getParticipantsWithFilters(filter, siteKeyId);
+
+    const response = await getParticipantsWithFilters(filter, siteKeyId, startDate, endDate);
     hideAnimation();
-    reRenderMainTable(response, filter, siteKeyName);
+    reRenderMainTable(response, filter, siteKeyName, startDate, endDate, pageCounter);
 }
 
-const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) => {
+const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, pageCounter) => {
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
@@ -296,6 +305,7 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) 
             let activeButton = document.getElementById('activeFilter');
             activeButton.classList.remove('btn-outline-info'); 
             activeButton.classList.add('btn-info');
+            activeButton.setAttribute('active', true);
             let passiveButton = document.getElementById('passiveFilter');
             if ([...passiveButton.classList].includes('btn-info')) {
                 passiveButton.classList.remove('btn-info');
@@ -317,6 +327,10 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) 
             document.getElementById('startDate').value = startDate
             document.getElementById('endDate').value = endDate
         }
+        if (pageCounter !== undefined || pageCounter !== ``) {
+            const pageElement = document.getElementById('currentPageNumber');
+            if (pageElement) { pageElement.innerHTML = `Page: ${pageCounter}`; }
+        }
         return;
     }
     else if(response.code === 200 && response.data.length === 0) {
@@ -325,40 +339,6 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate) 
     }
 }
 
-
-// const addEventPageBtns = (pageSize, data, showButtons) => {
-//     const elements = document.getElementsByClassName('page-link');
-//     Array.from(elements).forEach(element => {
-//         element.addEventListener('click', async () => {
-//             const previous = element.dataset.previous;
-//             const next = element.dataset.next;
-//             const pageNumber = previous ? parseInt(previous) - 1 : next ? parseInt(next) + 1 : element.dataset.page;
-            
-//             if(pageNumber < 1 || pageNumber > Math.ceil(data.length/pageSize)) return;
-            
-//             if(!element.classList.contains('active-page')){
-//                 let start = (pageNumber - 1) * pageSize;
-//                 let end = pageNumber * pageSize;
-//                 document.getElementById('previousPage').dataset.previous = pageNumber;
-//                 document.getElementById('nextPage').dataset.next = pageNumber;
-//                 document.getElementById('dataTable').innerHTML = tableTemplate(dataPagination(start, end, data), showButtons);
-//                 addEventShowMoreInfo(data);
-//                 Array.from(elements).forEach(ele => ele.classList.remove('active-page'));
-//                 document.querySelector(`a[data-page="${pageNumber}"]`).classList.add('active-page');
-//             }
-//         })
-//     });
-// }
-
-
-
-// const dataPagination = (start, end, data) => {
-//     const paginatedData = [];
-//     for(let i=start; i<end; i++){
-//         if(data[i]) paginatedData.push(data[i]);
-//     }
-//     return paginatedData;
-// }
 
 const paginationTemplate = (nextPageCounter, prevPageCounter) => {
     
@@ -369,8 +349,9 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
                 <ul class="pagination">
                     <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
                     <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
+                    <li class="page-item"><span class="page-link" id="currentPageNumber">Page: 1</span></li>
                 </ul>
-            </nav>
+            </nav>        
         </div>
     </div>
     `;
@@ -382,6 +363,8 @@ const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
+
+        document.getElementById('currentPageNumber').innerHTML = `Page: ${nextPageCounter + 1}`
         const currState = appState.getState()
         if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         showAnimation();
@@ -396,13 +379,13 @@ const pagninationNextTrigger = () => {
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
             if (filterRawData.length === 0)  return alertTrigger();
-            addEventFilterData(filterRawData);
             a.setAttribute('data-nextpage', nextPageCounter);
             renderDataTable(filterRawData);
             addEventFilterData(filterRawData);
         }
         else if(response.code === 200 && response.data.length === 0) {
             renderDataTable([]);
+            a.setAttribute('data-nextpage', nextPageCounter);
             return alertTrigger();
         }
         else if(response.code != 200 && response.data.length === 0) {
@@ -427,38 +410,35 @@ const pagninationPreviousTrigger = () => {
         else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
-        const response = await getMoreParticipants(sitePrefId, pageCounter);
-        hideAnimation();
-        if(response.code === 200 && response.data.length > 0) {
-            let filterRawData = filterdata(response.data);
-            if (filterRawData.length === 0)  return alertTrigger()
-            renderDataTable(filterRawData);
-            addEventFilterData(filterRawData);
-
-        }
-        else if(response.code === 200 && response.data.length === 0) {
-            renderDataTable([])
-            return alertTrigger();
-        }
-        else if(response.code != 200 && response.data.length === 0) {
-            clearLocalStorage();
-        }
-        } 
-        else if (pageCounter <= 0) {
-            const response = await getMoreParticipants(sitePrefId);
+            document.getElementById('currentPageNumber').innerHTML = `Page: ${pageCounter}`
+            const response = await getMoreParticipants(sitePrefId, pageCounter);
             hideAnimation();
             if(response.code === 200 && response.data.length > 0) {
                 let filterRawData = filterdata(response.data);
                 if (filterRawData.length === 0)  return alertTrigger()
                 renderDataTable(filterRawData);
                 addEventFilterData(filterRawData);
+
             }
+            else if(response.code === 200 && response.data.length === 0) {
+                renderDataTable([])
+                return alertTrigger();
+            }
+            else if(response.code != 200 && response.data.length === 0) {
+                clearLocalStorage();
+            }
+            b.setAttribute('data-nextpage', nextPageCounter);
+            a.setAttribute('data-prevpage', pageCounter);
+        } 
+        else if (pageCounter <= 0) {
+            a.disabled = true
+            b.setAttribute('data-nextpage', 1);
+            a.setAttribute('data-prevpage', 0);
+            hideAnimation();
         }
         else {
             hideAnimation();
         } 
-        b.setAttribute('data-nextpage', nextPageCounter);
-        a.setAttribute('data-prevpage', pageCounter);
 })
 }
 
@@ -886,6 +866,28 @@ export const activeColumns = (data, showButtons) => {
                     renderData(data, showButtons, 'bubbleFilters');
                 }
             }
+            document.getElementById('currentPageNumber').innerHTML = `Page: 1`
+            document.getElementById('nextLink').setAttribute('data-nextpage', 1);
+            let prevState = appState.getState().filterHolder
+            appState.setState({filterHolder:{...prevState, nextPageCounter: 1}})
+            if (appState.getState().filterHolder.startDate) {
+                document.getElementById('startDate').value = appState.getState().filterHolder.startDate
+                document.getElementById('endDate').value = appState.getState().filterHolder.endDate
+            }
+            if (appState.getState().filterHolder.type === "passive") {
+                let passiveButton = document.getElementById('passiveFilter');
+                if ([...passiveButton.classList].includes('btn-outline-info')) {
+                    passiveButton.classList.remove('btn-outline-info');
+                    passiveButton.classList.add('btn-info');  
+                }
+            }
+            if (appState.getState().filterHolder.type === "active") {
+                let activeButton = document.getElementById('activeFilter');
+                if ([...activeButton.classList].includes('btn-outline-info')) {
+                    activeButton.classList.remove('btn-outline-info');
+                    activeButton.classList.add('btn-info');  
+                }
+            }
         })
     });
 }
@@ -925,19 +927,6 @@ const alertTrigger = () => {
     return template;
 }
 
-const successTrigger = () => {
-    let alertList = document.getElementById('alert_placeholder');
-    let template = ``;
-    template += `
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            Results found!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>`
-    alertList.innerHTML = template;
-    return template;
-}
 
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
@@ -1047,7 +1036,8 @@ const getParticipantFromSites = async (query) => {
     appState.setState({filterHolder:{...prevState, 'siteCode': query, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
-    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}`
+    const limit = 5;
+    (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
@@ -1057,18 +1047,22 @@ const getParticipantFromSites = async (query) => {
     return await response.json();
 }
 
-const getParticipantsWithFilters = async (type, sitePref) => {
+const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) => {
     let prevState = appState.getState().filterHolder
     appState.setState({filterHolder:{...prevState, 'type': type, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
-    let template = ``;
+    let template = `/dashboard?api=getParticipants&type=${type}`;
     const limit = 5;
+
     if (sitePref !== 'Filter by Site') {
-        template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&limit=${limit}`
+        template += `&siteCode=${sitePref}`
     }
-    else {
-        template += `/dashboard?api=getParticipants&type=${type}&limit=${limit}`
+    if (startDate !== ``) {
+        template += `&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z`
     }
+
+    template += `&limit=${limit}`
+    
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
