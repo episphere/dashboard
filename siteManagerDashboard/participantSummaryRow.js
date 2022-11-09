@@ -82,7 +82,7 @@ export const baselineBloodSample = (participantModule) => {
         ( participantModule[fieldMapping.bloodFlag] === (fieldMapping.yes)) ?
             template += `
                     ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Blood", "Collected", 
-                    participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.bloodDateTime]), 
+                    participantModule[fieldMapping.biospecimenCollectionDetail] && setSampleDateTime(participantModule, fieldMapping.biosepcimenBloodCollection, fieldMapping.bloodDateTime, fieldMapping.clinicalBloodDateTime),
                     biospecimenStatus(participantModule, fieldMapping.biosepcimenBloodCollection), "N", "N/A")}`
             : (
                 template += `
@@ -110,7 +110,7 @@ export const baselineUrineSample = (participantModule) => {
         ( participantModule[fieldMapping.urineFlag] === (fieldMapping.yes)) ?
             template += `
                 ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Urine", "Collected", 
-                participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.urineDateTime]), 
+                participantModule[fieldMapping.biospecimenCollectionDetail]&& setSampleDateTime(participantModule, fieldMapping.biosepcimenBloodCollection, fieldMapping.urineDateTime, fieldMapping.clinicalUrineDateTime), 
                     biospecimenStatus(participantModule, fieldMapping.biosepcimenUrineCollection), "N", "N/A")}`
             : (
                 template += `
@@ -140,7 +140,7 @@ export const baselineMouthwashSample = (participantModule) => {
             template += `
             ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
                     participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.mouthwashDateTime]), 
-                    biospecimenStatus(participantModule, fieldMapping.biosepcimenMouthwashdCollection), "N", "N/A")}`
+                    "N/A", "N", "N/A")}`
             : (
                 template += `
                         ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A")}`
@@ -379,9 +379,9 @@ export const baselineBloodUrineSurvey = (participant) => {
     
 }
 
-export const baselineMouthwashSurvey = (participant) => {
-    let participantModule = participant[fieldMapping.mouthwashSurvey]
-    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
+export const baselineMouthwashSurvey = (participantModule) => {
+   // let participantModule = participant[fieldMapping.mouthwashSurvey]
+    let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys]
     let template = ``;
     refusedSpecimenOption === (fieldMapping.yes) ?
     (
@@ -493,6 +493,23 @@ const biospecimenStatus = (biospecimenRow, biospecimenFlag) => {
         )
     )   
     return template;
+}
+
+const setSampleDateTime = (biospecimenRow, biospecimenFlag, researchDateTime, clinicalDateTime) => {
+    let biospecimenSampleDateTime = ``;
+    
+    (biospecimenRow[fieldMapping.biospecimenCollectionDetail] &&
+        
+         (biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][biospecimenFlag]) === (fieldMapping.biospecimenResearch) ?  
+            (   
+                biospecimenSampleDateTime += humanReadableMDY(biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][researchDateTime])
+            ) : 
+        (biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][biospecimenFlag]) === (fieldMapping.biospecimenClinical) ?
+            (
+                biospecimenSampleDateTime += humanReadableMDY(biospecimenRow[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][clinicalDateTime])
+            ) : ``
+    )   
+    return biospecimenSampleDateTime;
 }
 
 const biospecimenStatusMouthwash = (biospecimenRow) => {
