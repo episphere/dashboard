@@ -90,7 +90,7 @@ export const render = (participant) => {
                                 <tr class="row-color-survey-light">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
-                                ${participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1 ?
+                                ${participant[fieldMapping.combinedBoodUrineMouthwashSurvey] === fieldMapping.submitted1 && participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1 ?
                                     `<tr class="row-color-enrollment-light"> ${baselineMenstrualSurvey(participant)} </tr>`
                                 : `` }                    
                                 <tr class="row-color-survey-dark">
