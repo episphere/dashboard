@@ -302,11 +302,11 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
         let newUpdatedValue = document.getElementById('newValue').value;
         changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue;
 
-        // if field is a date of birth field then need to update full date of birth  
-        if (fieldModifiedData.fieldconceptid === "564964481" || fieldModifiedData.fieldconceptid === "795827569" || conceptId === "544150384") {
-            let day = fieldModifiedData.fieldconceptid === "795827569" ? newUpdatedValue : getDataAttributes(document.getElementById('795827569')).participantvalue;
-            let month = fieldModifiedData.fieldconceptid === "564964481" ? newUpdatedValue : getDataAttributes(document.getElementById('564964481')).participantvalue;
-            let year = fieldModifiedData.fieldconceptid === "544150384" ? newUpdatedValue : getDataAttributes(document.getElementById('544150384')).participantvalue;
+        // if a changed field is a date of birth field then we need to update full date of birth  
+        if ("795827569" in changedOption || "564964481" in changedOption || "544150384" in changedOption) {
+            let day = "795827569" in changedOption ?  changedOption["795827569"] : getDataAttributes(document.getElementById('795827569')).participantvalue;
+            let month = "564964481" in changedOption ? changedOption["564964481"] : getDataAttributes(document.getElementById('564964481')).participantvalue;
+            let year = "544150384" in changedOption ? changedOption["544150384"] : getDataAttributes(document.getElementById('544150384')).participantvalue;
             conceptId.push("371067537");
             changedOption[conceptId[conceptId.length - 1]] =  year.toString() + month.padStart(2, '0')+ day.padStart(2, '0') ;
         }
