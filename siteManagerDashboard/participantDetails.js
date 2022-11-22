@@ -184,7 +184,8 @@ export const render = (participant) => {
                                             : ""}</td> 
             <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                 data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" >
+                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" 
+                id=${x.field}>
                 ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
                     `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
@@ -300,6 +301,16 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
         // new value
         let newUpdatedValue = document.getElementById('newValue').value;
         changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue;
+
+        // if field is a date of birth field then need to update full date of birth  
+        if (fieldModifiedData.fieldconceptid === "564964481" || fieldModifiedData.fieldconceptid === "795827569" || conceptId === "544150384") {
+            let day = fieldModifiedData.fieldconceptid === "795827569" ? newUpdatedValue : getDataAttributes(document.getElementById('795827569')).participantvalue;
+            let month = fieldModifiedData.fieldconceptid === "564964481" ? newUpdatedValue : getDataAttributes(document.getElementById('564964481')).participantvalue;
+            let year = fieldModifiedData.fieldconceptid === "544150384" ? newUpdatedValue : getDataAttributes(document.getElementById('544150384')).participantvalue;
+            conceptId.push("371067537");
+            changedOption[conceptId[conceptId.length - 1]] =  year.toString() + month.padStart(2, '0')+ day.padStart(2, '0') ;
+        }
+        
         // update changed field on UI
         let updatedEditedValue = editedElement.querySelectorAll("td")[0];
         updatedEditedValue.innerHTML = newUpdatedValue;
