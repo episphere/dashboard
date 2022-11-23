@@ -301,7 +301,7 @@ const consentHandler = (participant) => {
                     <td>${participant[fieldMapping.consentDate] && humanReadableMDY(participant[fieldMapping.consentDate])}</td>
                     <td>${participant[fieldMapping.consentVersion]}</td>
                     <td>N/A</td>
-                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopy">Download Link</a></td>
+                    <td><a style="color: blue; text-decoration: underline; cursor: pointer" target="_blank" id="downloadCopy">Download Link</a></td>
     ` ) : 
     (
         template += `<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
