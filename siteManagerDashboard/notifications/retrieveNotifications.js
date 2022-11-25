@@ -21,6 +21,7 @@ export const renderRetrieveNotificationSchema = async () => {
 const triggerSchemaEdit = (categoriesHolder, categoryName, concepts) => {
     viewNotificationSchema(concepts);
     editNotificationSchema();
+    deleteNotificationSchema(concepts);
     renderCategorydDropdown(categoriesHolder);
     dropdownTrigger(categoriesHolder, categoryName);
 }
@@ -52,7 +53,14 @@ const render = async (response) => {
             </div>
         </div>
     </div>`
-         
+    template += ` <div class="modal fade" id="modalDeleteNotification" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+        <div class="modal-content sub-div-shadow">
+            <div class="modal-header" id="modalHeader"></div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+</div>`   
  
     return template;
 }
@@ -83,6 +91,7 @@ const renderNotificationCards = (data) => {
                                 <p class="card-text">${i.description}</p>
                                 <button type="button" class="btn btn-success viewSchema" data-toggle="modal" data-target="#modalShowSchema"  data-schema=${schemaInfo} >View</button>
                                 <button type="button" class="btn btn-primary editSchema" data-schema=${schemaInfo}>Edit</button>
+                                <button type="button" class="btn btn-danger deleteSchema" data-toggle="modal" data-target="#modalShowSchema" data-schema=${schemaInfo}>Delete</button>
                             </div>
                         </div>`
     });
@@ -196,6 +205,41 @@ const viewNotificationSchema = (concepts) => {
     }
 }
 
+const deleteNotificationSchema = (concepts) => {
+    const a = Array.from(document.getElementsByClassName('detailedRow'));
+    if (a) {
+        a.forEach(element => {
+            let viewCard = element.getElementsByClassName('deleteSchema')[0];
+            viewCard.addEventListener('click', () => {
+                let viewSelectedSchema = getDataAttributes(viewCard);
+                const setSelectedData  = JSON.parse(unescape(viewSelectedSchema.schema));
+                const header = document.getElementById('modalHeader');
+                const body = document.getElementById('modalBody');
+                header.innerHTML = `<h5>Delete Schema</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+                
+                let template = '<div>'
+                template += `
+                    <div class="row form-group">
+                    <div class>
+                    <h2>Are you sure?</h2></div>
+
+                    <div>
+                    <button type="button" class="btn btn-primary editSchema" onclick='console.log("yes")'>Yes</button>
+                    <button type="button" class="btn btn-primary editSchema" onclick='console.log("no")'>No</button>
+                      </div>
+                </div>
+               </div>`
+
+                body.innerHTML = template;
+                // addEventMoreCondition(concepts, true);
+                // conceptDropdown(concepts, 'condition-key');
+            //  conceptDropdown(concepts, 'condition-value');
+                // mapSchemaNotificaiton(setSelectedData, concepts, true);
+                // document.getElementById('addConditions').disabled = true; 
+            })
+        })
+    }
+}
 const editNotificationSchema = () => {
     let updateCounter = 1;
     const a = Array.from(document.getElementsByClassName('detailedRow'));
