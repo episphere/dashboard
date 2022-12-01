@@ -184,7 +184,8 @@ export const render = (participant) => {
                                             : ""}</td> 
             <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                 data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" >
+                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData"
+                id=${x.field}>
                 ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
                     `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
