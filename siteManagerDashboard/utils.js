@@ -111,10 +111,10 @@ export const urls = {
   'prod': 'dashboard-myconnect.cancer.gov'
 }
 
-let api = `http://localhost:5001/nih-nci-dceg-connect-dev/us-central1/dashboard`;
-// if(location.host === urls.prod) api = 'https://api-myconnect.cancer.gov';
-// else if(location.host === urls.stage) api = 'https://api-myconnect-stage.cancer.gov';
-// else api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
+let api = ``;
+if(location.host === urls.prod) api = 'https://api-myconnect.cancer.gov';
+else if(location.host === urls.stage) api = 'https://api-myconnect-stage.cancer.gov';
+else api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
 export const baseAPI = api;
 
 export const conceptToSiteMapping = {
