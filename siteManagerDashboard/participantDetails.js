@@ -184,7 +184,8 @@ export const render = (participant) => {
                                             : ""}</td> 
             <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                 data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" >
+                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData"
+                id=${x.field}>
                 ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
                     `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
@@ -300,6 +301,16 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
         // new value
         let newUpdatedValue = document.getElementById('newValue').value;
         changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue;
+
+        // if a changed field is a date of birth field then we need to update full date of birth  
+        if ("795827569" in changedOption || "564964481" in changedOption || "544150384" in changedOption) {
+            let day = "795827569" in changedOption ?  changedOption["795827569"] : getDataAttributes(document.getElementById('795827569')).participantvalue;
+            let month = "564964481" in changedOption ? changedOption["564964481"] : getDataAttributes(document.getElementById('564964481')).participantvalue;
+            let year = "544150384" in changedOption ? changedOption["544150384"] : getDataAttributes(document.getElementById('544150384')).participantvalue;
+            conceptId.push("371067537");
+            changedOption[conceptId[conceptId.length - 1]] =  year.toString() + month.padStart(2, '0')+ day.padStart(2, '0') ;
+        }
+
         // update changed field on UI
         let updatedEditedValue = editedElement.querySelectorAll("td")[0];
         updatedEditedValue.innerHTML = newUpdatedValue;
@@ -515,7 +526,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
     const idToken = siteKey;
    
     const updateParticpantPayload = {
-        "data": updatedOptions
+        "data": [updatedOptions]
     }
 
     const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
