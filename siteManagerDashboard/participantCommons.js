@@ -10,29 +10,39 @@ import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.
 
 export const renderTable = (data, source) => {
     let template = '';
-    if(data.length === 0) return `No data found!`;
-    let array = [ 'Connect_ID', fieldMapping.accountEmail,fieldMapping.accountName,fieldMapping.accountPhone,fieldMapping.address1,fieldMapping.address2,fieldMapping.ageMatch,fieldMapping.allBaselineSurveysCompleted,
-    fieldMapping.automatedVerification,fieldMapping.bohStatusFlag1,fieldMapping.campaignType,fieldMapping.cancerStatusMatch,fieldMapping.cellPhone,fieldMapping.city,fieldMapping.consentDate,fieldMapping.consentFirstName,fieldMapping.consentFlag,
-    fieldMapping.consentLastName,fieldMapping.consentMiddleName,fieldMapping.consentVersion,fieldMapping.dateDataDestroy,fieldMapping.dateDataDestroyRequested,fieldMapping.dateHIPAARevoc,fieldMapping.dateHipaaRevokeRequested,fieldMapping.dateOfDeath,
-    fieldMapping.datePreConsentOptOut,fieldMapping.dateWithdrewConsentRequested,fieldMapping.destroyData,fieldMapping.dobMatch,fieldMapping.duplicateType,fieldMapping.email,fieldMapping.email1,fieldMapping.email2,fieldMapping.firstNameMatch,fieldMapping.henryFReportedRace,
-    fieldMapping.hippaDate,fieldMapping.hippaFlag,fieldMapping.hippaVersion,fieldMapping.homePhone,fieldMapping.lastNameMatch,fieldMapping.lawStausFlag1,fieldMapping.manualVerification,fieldMapping.maxNumContactsReached,fieldMapping.mreStatusFlag1,fieldMapping.noPin,
-    fieldMapping.otherPhone,fieldMapping.outreachRequiredForVerification,fieldMapping.participantDeceased,fieldMapping.participationStatus, 'pin', fieldMapping.pinEntered,fieldMapping.pinMatch,fieldMapping.preConsentOptOut,fieldMapping.prefName,fieldMapping.previousCancer,
-    fieldMapping.recruitmentDate,fieldMapping.recruitmentType,fieldMapping.refusedAllFutureActivities,fieldMapping.refusedBlood,fieldMapping.refusedFutureSamples,fieldMapping.refusedFutureSurveys,fieldMapping.refusedMouthwash,fieldMapping.refusedSpecimenSurevys,
-    fieldMapping.refusedSurvey,fieldMapping.refusedUrine,fieldMapping.revokeHIPAA,fieldMapping.sanfordReportedRace,fieldMapping.sanfordReportedSex,fieldMapping.sasStatusFlag1,fieldMapping.signedInFlag,fieldMapping.signinDate,fieldMapping.signInMechansim,
-    fieldMapping.siteMatch,fieldMapping.siteReportedAge,fieldMapping.siteReportedRace,fieldMapping.siteReportedSex,fieldMapping.ssnFullflag,fieldMapping.ssnPartialFlag,fieldMapping.state, 'studyId', fieldMapping.suspendContact,fieldMapping.timeStudyIdSubmitted,
-    'token',fieldMapping.tokenMatch, fieldMapping.updateRecruitType,fieldMapping.userProfileDateTime,fieldMapping.userProfileFlag,fieldMapping.verficationDate,fieldMapping.verifiedFlag,fieldMapping.withdrawConsent,fieldMapping.zip,fieldMapping.zipCodeMatch
- ];
+    if(data.length === 0) {
+        return `No data found!`;
+    }
+
+    // set up filter list at the top of the page
+    let largeFilterArray = [ 'Connect_ID', fieldMapping.accountEmail,fieldMapping.accountName,fieldMapping.accountPhone,fieldMapping.address1,fieldMapping.address2,fieldMapping.ageMatch,fieldMapping.allBaselineSurveysCompleted,
+        fieldMapping.automatedVerification,fieldMapping.bohStatusFlag1,fieldMapping.campaignType,fieldMapping.cancerStatusMatch,fieldMapping.cellPhone,fieldMapping.city,fieldMapping.consentDate,fieldMapping.consentFirstName,fieldMapping.consentFlag,
+        fieldMapping.consentLastName,fieldMapping.consentMiddleName,fieldMapping.consentVersion,fieldMapping.dateDataDestroy,fieldMapping.dateDataDestroyRequested,fieldMapping.dateHIPAARevoc,fieldMapping.dateHipaaRevokeRequested,fieldMapping.dateOfDeath,
+        fieldMapping.datePreConsentOptOut,fieldMapping.dateWithdrewConsentRequested,fieldMapping.destroyData,fieldMapping.dobMatch,fieldMapping.duplicateType,fieldMapping.email,fieldMapping.email1,fieldMapping.email2,fieldMapping.firstNameMatch,fieldMapping.henryFReportedRace,
+        fieldMapping.hippaDate,fieldMapping.hippaFlag,fieldMapping.hippaVersion,fieldMapping.homePhone,fieldMapping.lastNameMatch,fieldMapping.lawStausFlag1,fieldMapping.manualVerification,fieldMapping.maxNumContactsReached,fieldMapping.mreStatusFlag1,fieldMapping.noPin,
+        fieldMapping.otherPhone,fieldMapping.outreachRequiredForVerification,fieldMapping.participantDeceased,fieldMapping.participationStatus, 'pin', fieldMapping.pinEntered,fieldMapping.pinMatch,fieldMapping.preConsentOptOut,fieldMapping.prefName,fieldMapping.previousCancer,
+        fieldMapping.recruitmentDate,fieldMapping.recruitmentType,fieldMapping.refusedAllFutureActivities,fieldMapping.refusedBlood,fieldMapping.refusedFutureSamples,fieldMapping.refusedFutureSurveys,fieldMapping.refusedMouthwash,fieldMapping.refusedSpecimenSurevys,
+        fieldMapping.refusedSurvey,fieldMapping.refusedUrine,fieldMapping.revokeHIPAA,fieldMapping.sanfordReportedRace,fieldMapping.sanfordReportedSex,fieldMapping.sasStatusFlag1,fieldMapping.signedInFlag,fieldMapping.signinDate,fieldMapping.signInMechansim,
+        fieldMapping.siteMatch,fieldMapping.siteReportedAge,fieldMapping.siteReportedRace,fieldMapping.siteReportedSex,fieldMapping.ssnFullflag,fieldMapping.ssnPartialFlag,fieldMapping.state, 'studyId', fieldMapping.suspendContact,fieldMapping.timeStudyIdSubmitted,
+        'token',fieldMapping.tokenMatch, fieldMapping.updateRecruitType,fieldMapping.userProfileDateTime,fieldMapping.userProfileFlag,fieldMapping.verficationDate,fieldMapping.verifiedFlag,fieldMapping.withdrawConsent,fieldMapping.zip,fieldMapping.zipCodeMatch
+    ];
+
+    // clear any selected participants 
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    if(array.length > 0) {
+
+    // set up large array filter segment on the page
+    if(largeFilterArray.length > 0) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
-                ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
+                ${largeFilterArray.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
                     ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested) ? 
                         conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</button>`)}
             </div>
         </div>`
     }
+
+    // set up the search segment of the page
     template += ` <div id="alert_placeholder"></div>
                     <div class="row">
                     ${(source === 'participantAll') ? ` 
@@ -86,6 +96,8 @@ export const renderTable = (data, source) => {
                 `: ``} </div>`
 
     let backToSearch = (source === 'participantLookup')? `<button class="btn btn-primary" id="back-to-search">Back to Search</button>`: "";
+    
+    // TODO: when is this visable and why?
     template += `
                 <div class="row">
                     <div class="col">
@@ -297,6 +309,8 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
+        
+        // called on passive/active filter
         renderData(filterRawData, true);
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
@@ -334,6 +348,7 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
         return;
     }
     else if(response.code === 200 && response.data.length === 0) {
+        // no data found
         renderDataTable([]);
         return alertTrigger();
     }
@@ -341,16 +356,17 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
 
 
 const paginationTemplate = (nextPageCounter, prevPageCounter) => {
-    
+    // these should be buttons for accessability and the ability to disable is easier on a button
+    // TODO: make these pretty
     let template = `
     <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
         <div style="display:inline-block;">
             <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
-                    <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
-                    <li class="page-item"><span class="page-link" id="currentPageNumber">Page: 1</span></li>
-                </ul>
+                <div class="pagination">
+                    <button id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</button>
+                    <button id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+                    <div ><span id="currentPageNumber">Page: 1</span></div>
+                </div>
             </nav>        
         </div>
     </div>
@@ -361,9 +377,9 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
 
 const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
+    let b = document.getElementById('previousLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-
         document.getElementById('currentPageNumber').innerHTML = `Page: ${nextPageCounter + 1}`
         const currState = appState.getState()
         if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
@@ -374,6 +390,8 @@ const pagninationNextTrigger = () => {
         else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
+        // clear the disable on the previous button
+        b.disabled = false;
         const response = await getMoreParticipants(sitePrefId, nextPageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
@@ -386,42 +404,60 @@ const pagninationNextTrigger = () => {
         else if(response.code === 200 && response.data.length === 0) {
             renderDataTable([]);
             a.setAttribute('data-nextpage', nextPageCounter);
+            // disable the next button
+            a.disabled = true;
             return alertTrigger();
         }
         else if(response.code != 200 && response.data.length === 0) {
             clearLocalStorage();
         }
     })
-
 }
 
 const pagninationPreviousTrigger = () => {
+    // not updating the first click's  nextPageCounter
     let a = document.getElementById('previousLink');
     let b = document.getElementById('nextLink');
+    if (parseInt(a.getAttribute('data-nextpage')) === 1 || parseInt(a.getAttribute('data-nextpage')) < 1 ) {
+        // disables the previous button if clicked on the first page
+        doctument.getElementById('previousLink').disabled = true;
+    }
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
         let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
-        pageCounter = nextPageCounter - 1 // 1
-        nextPageCounter = nextPageCounter - 1 // 1
+        pageCounter = nextPageCounter - 1;
+        nextPageCounter = nextPageCounter - 1;
         showAnimation();
+        // clear disable on next button
+        b.disabled = false;
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr.getAttribute('selectedsite') !== null) {
+            sitePref = sitePrefAttr.getAttribute('selectedsite');
+        } else if (sitePrefAttr.getAttribute('selectedsite') === null) {
+            sitePref = 'allResults'
+        }
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
-            document.getElementById('currentPageNumber').innerHTML = `Page: ${pageCounter}`
+            document.getElementById('currentPageNumber').innerHTML = `Page: ${pageCounter}`;
             const response = await getMoreParticipants(sitePrefId, pageCounter);
             hideAnimation();
             if(response.code === 200 && response.data.length > 0) {
                 let filterRawData = filterdata(response.data);
-                if (filterRawData.length === 0)  return alertTrigger()
+                if (filterRawData.length === 0)  {
+                    return alertTrigger()
+                }
                 renderDataTable(filterRawData);
                 addEventFilterData(filterRawData);
 
             }
             else if(response.code === 200 && response.data.length === 0) {
                 renderDataTable([])
+                // need to change the counters here because
+                // if there are 3 pages and they click to page 6
+                // this is the error that happens after the 3rd page
+                b.setAttribute('data-nextpage', nextPageCounter);
+                a.setAttribute('data-prevpage', pageCounter);
                 return alertTrigger();
             }
             else if(response.code != 200 && response.data.length === 0) {
@@ -816,9 +852,11 @@ export const addEventFilterData = (data, showButtons) => {
     btn.addEventListener('keyup', async () => {
         const value = document.getElementById('filterData').value.trim();
         if(value.length < 3) {
+            // when is this triggered?
             renderData(data, showButtons);
             return;
         };
+        // when is this triggered?
         renderData(searchBy(data, value), showButtons);
     });
 }
@@ -850,9 +888,11 @@ export const activeColumns = (data, showButtons) => {
                 btn.classList.add('filter-active');
                 importantColumns.push(value);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
+                    // when is this triggered?
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons, 'bubbleFilters');
                 }
                 else {
+                    // renders the page when filters are selected
                     renderData(data, showButtons, 'bubbleFilters');
                 }
             }
@@ -860,9 +900,11 @@ export const activeColumns = (data, showButtons) => {
                 btn.classList.remove('filter-active');
                 importantColumns.splice(importantColumns.indexOf(value), 1);
                 if(document.getElementById('filterData').value.trim().length >= 3) {
+                    // when is this triggered?
                     renderData(searchBy(data, document.getElementById('filterData').value.trim()), showButtons, 'bubbleFilters');
                 }
                 else {
+                    // when is this triggered?
                     renderData(data, showButtons, 'bubbleFilters');
                 }
             }
@@ -959,6 +1001,8 @@ const reRenderTableParticipantsAllTable = async (query, sitePref, currentSiteSel
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData))
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
+        
+        // triggered when slecting a location
         renderData(filterRawData);
         activeColumns(filterRawData);
         renderLookupSiteDropdown();
@@ -986,7 +1030,10 @@ const getCustomVariableNames = (x) => {
         return 'Refused baseline specimen surveys'
     else if (x === fieldMapping.dateHipaaRevokeRequested)
         return 'Date revoked HIPAA'
-    else {}
+    else {
+        // when is this triggered?
+        console.log("x:", x)
+    }
 
 }
 
