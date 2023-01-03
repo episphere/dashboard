@@ -4,7 +4,6 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
-import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
 
@@ -151,45 +150,27 @@ export  const renderData = (data, showButtons, source) => {
     }
 }
 
-
-export const reMapFilters = async (filters) =>  {
-    let query = ``
-    let type = ``
-    let startDate = ``
-    let endDate = ``
-    let pageCounter = ``
-    let selectedSite = 'Filter by Site'
-
-    if (filters.siteCode && filters.siteCode !== `Filter by Site` && filters.siteCode !== 1000) {
-        query += `&siteCode=${filters.siteCode}`
-        selectedSite = keyToShortNameObj[nameToKeyObj[filters.siteName]]
-    } 
-    if (filters.type && filters.type !== ``) {
-        query += `&type=${filters.type}`
-        type = filters.type
-    } 
-    else {
-        query += `&type=all`
-    }
-
-    if (filters.startDate && filters.startDate !== ``) {
-        query +=  `&from=${filters.startDate}T00:00:00.000Z&to=${filters.endDate}T23:59:59.999Z&`
-        startDate = filters.startDate
-        endDate = filters.endDate
-    }
-
-    if (filters.nextPageCounter && filters.nextPageCounter !== false ) {
-        query += `&page=${filters.nextPageCounter}`
-        pageCounter = filters.nextPageCounter
-    }
-    const response = await getCurrentSelectedParticipants(query)
-    reRenderMainTable(response, type, selectedSite, startDate, endDate, pageCounter)
-}
-
 const renderDataTable = (data, showButtons) => {
     document.getElementById('dataTable').innerHTML = tableTemplate(data, showButtons);
     addEventShowMoreInfo(data);
 }
+
+const reRenderParticipantsTableBasedOFilter = async (filter, startDate, endDate) => {
+    // used in both getActiveParticipants and getPassiveParticipants
+    let siteKeyId = 'Filter by Site'
+    let siteKeyName = 'Filter by Site'
+    let pageCounter = 1
+    if (appState.getState().filterHolder && appState.getState().filterHolder.siteName) {
+        siteKeyId = appState.getState().filterHolder.siteCode 
+        siteKeyName = keyToShortNameObj[nameToKeyObj[appState.getState().filterHolder.siteName]]
+    }
+    showAnimation();
+
+    const response = await getParticipantsWithFilters(filter, siteKeyId, startDate, endDate);
+    hideAnimation();
+    reRenderMainTable(response, filter, siteKeyName, startDate, endDate, pageCounter);
+}
+
 
 const getActiveParticipants = () => {
     let activeButton = document.getElementById('activeFilter');
@@ -237,6 +218,7 @@ const getPassiveParticipants = () => {
 }
 
 const getDateFilters = () => {
+    // called in renderData
     const dateFilters = document.getElementById('dateFilters');
     dateFilters && dateFilters.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -277,6 +259,7 @@ const getDateFilters = () => {
 }
 
 const resetDateFilter = () => {
+    // called in renderData
     const resetDateFilters = document.getElementById('resetDate');
     resetDateFilters && resetDateFilters.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -287,25 +270,12 @@ const resetDateFilter = () => {
     })
 }
 
-const reRenderParticipantsTableBasedOFilter = async (filter, startDate, endDate) => {
-    let siteKeyId = 'Filter by Site'
-    let siteKeyName = 'Filter by Site'
-    let pageCounter = 1
-    if (appState.getState().filterHolder && appState.getState().filterHolder.siteName) {
-        siteKeyId = appState.getState().filterHolder.siteCode 
-        siteKeyName = keyToShortNameObj[nameToKeyObj[appState.getState().filterHolder.siteName]]
-    }
-    showAnimation();
-
-    const response = await getParticipantsWithFilters(filter, siteKeyId, startDate, endDate);
-    hideAnimation();
-    reRenderMainTable(response, filter, siteKeyName, startDate, endDate, pageCounter);
-}
-
 const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, pageCounter) => {
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
-        if (filterRawData.length === 0)  return alertTrigger();
+        if (filterRawData.length === 0)  {
+            return alertTrigger();
+        }
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
@@ -343,7 +313,7 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
         }
         if (pageCounter !== undefined || pageCounter !== ``) {
             const pageElement = document.getElementById('currentPageNumber');
-            if (pageElement) { pageElement.innerHTML = `Page: ${pageCounter}`; }
+            if (pageElement) { pageElement.innerHTML = `&nbsp;Page: ${pageCounter}&nbsp;`; }
         }
         return;
     }
@@ -362,10 +332,10 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
     <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
         <div style="display:inline-block;">
             <nav aria-label="Page navigation example">
-                <div class="pagination">
-                    <button id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</button>
-                    <button id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></button>
-                    <div ><span id="currentPageNumber">Page: 1</span></div>
+                <div class="pagination" style="border-style:solid; border-radius:6px; border-width:1px; border-color:gray; background-color:white;">
+                    <button id="previousLink"  class="page-item" data-prevpage=${prevPageCounter} style="border-right-style:solid; border-width:1px; border-color:gray; background-color:white;"><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</button>
+                    <button id="nextLink"  class="page-item" data-nextpage=${nextPageCounter} style="border-left-style:solid; border-width:1px; border-color:gray; background-color:white;">Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+                    <div ><span id="currentPageNumber" class="page-item" style="color:blue; ">&nbsp;Page: 1&nbsp;</span></div>
                 </div>
             </nav>        
         </div>
@@ -374,13 +344,12 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
     return template;
 }
 
-
 const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
     let b = document.getElementById('previousLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-        document.getElementById('currentPageNumber').innerHTML = `Page: ${nextPageCounter + 1}`
+        document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;`
         const currState = appState.getState()
         if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         showAnimation();
@@ -396,7 +365,9 @@ const pagninationNextTrigger = () => {
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
             let filterRawData = filterdata(response.data);
-            if (filterRawData.length === 0)  return alertTrigger();
+            if (filterRawData.length === 0)  {
+                return alertTrigger();
+            }
             a.setAttribute('data-nextpage', nextPageCounter);
             renderDataTable(filterRawData);
             addEventFilterData(filterRawData);
@@ -439,7 +410,7 @@ const pagninationPreviousTrigger = () => {
         }
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
-            document.getElementById('currentPageNumber').innerHTML = `Page: ${pageCounter}`;
+            document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${pageCounter}&nbsp;`;
             const response = await getMoreParticipants(sitePrefId, pageCounter);
             hideAnimation();
             if(response.code === 200 && response.data.length > 0) {
@@ -908,7 +879,7 @@ export const activeColumns = (data, showButtons) => {
                     renderData(data, showButtons, 'bubbleFilters');
                 }
             }
-            document.getElementById('currentPageNumber').innerHTML = `Page: 1`
+            document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: 1&nbsp;`
             document.getElementById('nextLink').setAttribute('data-nextpage', 1);
             let prevState = appState.getState().filterHolder
             appState.setState({filterHolder:{...prevState, nextPageCounter: 1}})
@@ -1120,6 +1091,7 @@ const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) =>
 }
 
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
+    // called from getDateFilters
     let prevState = appState.getState().filterHolder
     appState.setState({filterHolder:{...prevState, 'startDate': startDate, 'endDate': endDate, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
@@ -1139,6 +1111,42 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     return await response.json();
 }
 
+// -------------------------------------------
+// functions called in index.js and not directly from participantCommons.js
+export const reMapFilters = async (filters) =>  {
+    let query = ``
+    let type = ``
+    let startDate = ``
+    let endDate = ``
+    let pageCounter = ``
+    let selectedSite = 'Filter by Site'
+
+    if (filters.siteCode && filters.siteCode !== `Filter by Site` && filters.siteCode !== 1000) {
+        query += `&siteCode=${filters.siteCode}`
+        selectedSite = keyToShortNameObj[nameToKeyObj[filters.siteName]]
+    } 
+    if (filters.type && filters.type !== ``) {
+        query += `&type=${filters.type}`
+        type = filters.type
+    } 
+    else {
+        query += `&type=all`
+    }
+
+    if (filters.startDate && filters.startDate !== ``) {
+        query +=  `&from=${filters.startDate}T00:00:00.000Z&to=${filters.endDate}T23:59:59.999Z&`
+        startDate = filters.startDate
+        endDate = filters.endDate
+    }
+
+    if (filters.nextPageCounter && filters.nextPageCounter !== false ) {
+        query += `&page=${filters.nextPageCounter}`
+        pageCounter = filters.nextPageCounter
+    }
+    const response = await getCurrentSelectedParticipants(query)
+    reRenderMainTable(response, type, selectedSite, startDate, endDate, pageCounter)
+}
+
 const getCurrentSelectedParticipants = async (query) => {
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
@@ -1153,3 +1161,4 @@ const getCurrentSelectedParticipants = async (query) => {
     });
     return await response.json();
 }
+
