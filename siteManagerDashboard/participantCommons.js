@@ -7,7 +7,7 @@ import { appState } from './stateManager.js';
 import { findParticipant } from './participantLookup.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
-
+// replacing it for a bit
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
