@@ -648,10 +648,10 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
   }
 
   const renderSsnChart = (ssnSurvey, id) => {
-    const verifiedParticipants = ssnSurvey.verifiedParticipants ? ssnSurvey.verifiedParticipants : 0
-    const noSsnFlag =  ssnSurvey.ssnNoFlagCounter ? ((ssnSurvey.ssnNoFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
-    const ssnFullFlag = ssnSurvey.ssnFullFlagCounter ? ((ssnSurvey.ssnFullFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
-    const ssnHalfFlag =  ssnSurvey.ssnHalfFlagCounter ? ((ssnSurvey.ssnHalfFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
+        const verifiedParticipants = ssnSurvey.verifiedParticipants ? ssnSurvey.verifiedParticipants : 0
+        const noSsnFlag =  ssnSurvey.ssnNoFlagCounter ? ((ssnSurvey.ssnNoFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
+        const ssnFullFlag = ssnSurvey.ssnFullFlagCounter ? ((ssnSurvey.ssnFullFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
+        const ssnHalfFlag =  ssnSurvey.ssnHalfFlagCounter ? ((ssnSurvey.ssnHalfFlagCounter)/(verifiedParticipants)*100).toFixed(1) : 0
     
        let data = [{
         values: [noSsnFlag, ssnFullFlag, ssnHalfFlag],
