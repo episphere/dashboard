@@ -659,6 +659,7 @@ const filterRecruitsFunnel = (data, recruit) => {
 
 const filterTotalRecruitsFunnel = (activeRecruitsStats, passiveRecruitsStats) => {
     let currentWorflowObj = {}
+
     currentWorflowObj.signedIn = activeRecruitsStats.signedIn + passiveRecruitsStats.signedIn
     currentWorflowObj.consented = activeRecruitsStats.consented + passiveRecruitsStats.consented
     currentWorflowObj.submittedProfile = activeRecruitsStats.submittedProfile + passiveRecruitsStats.submittedProfile
