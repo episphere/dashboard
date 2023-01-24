@@ -19,6 +19,7 @@ import { SSOConfig as devSSOConfig} from './dev/identityProvider.js';
 import { SSOConfig as stageSSOConfig} from './stage/identityProvider.js';
 import { SSOConfig as prodSSOConfig} from './prod/identityProvider.js';
 
+
 let saveFlag = false;
 let counter = 0;
 
@@ -560,14 +561,16 @@ const filterSsnMetrics = (participantsSsnMetrics, activeVerifiedParticipants, pa
     let currentWorflowObj = {}
     let ssnFullFlagCounter = 0
     let ssnHalfFlagCounter = 0
+    let ssnNoFlagCounter = 0
     const verifiedParticipants = activeVerifiedParticipants +  passiveVerifiedParticipants
 
     participantsSsnMetrics && participantsSsnMetrics.filter( i => {
-        if (i.ssnFlag === fieldMapping.yes) { ssnFullFlagCounter += i.ssnFlagCount }
-        if (i.ssnHalfFlag === fieldMapping.yes) { ssnHalfFlagCounter += i.ssnHalfFlagCount }
+        if (i.SSN === 'ssnFlag') { ssnFullFlagCounter += i.SSN_token }
+        if (i.SSN === 'ssnHalfFlag') { ssnHalfFlagCounter += i.SSN_token }
+        if (i.SSN === 'ssnNoFlag' ) { ssnNoFlagCounter += i.SSN_token }
 
     })
-    currentWorflowObj.ssnNoFlagCounter = verifiedParticipants - (ssnFullFlagCounter + ssnHalfFlagCounter);
+    currentWorflowObj.ssnNoFlagCounter = ssnNoFlagCounter;
     currentWorflowObj.ssnFullFlagCounter = ssnFullFlagCounter;
     currentWorflowObj.ssnHalfFlagCounter = ssnHalfFlagCounter;
     currentWorflowObj.verifiedParticipants = verifiedParticipants;
@@ -656,7 +659,7 @@ const filterRecruitsFunnel = (data, recruit) => {
 
 const filterTotalRecruitsFunnel = (activeRecruitsStats, passiveRecruitsStats) => {
     let currentWorflowObj = {}
-    console.log('activeRecruitsStats', activeRecruitsStats, passiveRecruitsStats)
+
     currentWorflowObj.signedIn = activeRecruitsStats.signedIn + passiveRecruitsStats.signedIn
     currentWorflowObj.consented = activeRecruitsStats.consented + passiveRecruitsStats.consented
     currentWorflowObj.submittedProfile = activeRecruitsStats.submittedProfile + passiveRecruitsStats.submittedProfile
@@ -1054,6 +1057,7 @@ const renderParticipantsAll = async () => {
         clearLocalStorage();
     }
 }
+        
 
 const renderParticipantsProfileNotSubmitted = async () => {
     animation(true);
