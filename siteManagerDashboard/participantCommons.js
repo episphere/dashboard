@@ -341,16 +341,15 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
 
 
 const paginationTemplate = (nextPageCounter, prevPageCounter) => {
-    
     let template = `
     <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example">
         <div style="display:inline-block;">
             <nav aria-label="Page navigation example">
-                <ul class="pagination">
-                    <li class="page-item"><a class="page-link" id="previousLink" data-prevpage=${prevPageCounter}><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</a></li>
-                    <li class="page-item"><a class="page-link" id="nextLink" data-nextpage=${nextPageCounter}>Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></a></li>
-                    <li class="page-item"><span class="page-link" id="currentPageNumber">Page: 1</span></li>
-                </ul>
+                <div class="pagination" style="border-style:solid; border-radius:6px; border-width:1px; border-color:gray; background-color:white;">
+                    <button id="previousLink"  class="page-item" data-prevpage=${prevPageCounter} style="border-right-style:solid; border-width:1px; border-color:gray; background-color:white;"><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</button>
+                    <button id="nextLink"  class="page-item" data-nextpage=${nextPageCounter} style="border-left-style:solid; border-width:1px; border-color:gray; background-color:white;">Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></button>
+                    <div ><span id="currentPageNumber" class="page-item" style="color:blue; ">&nbsp;Page: 1&nbsp;</span></div>
+                </div>
             </nav>        
         </div>
     </div>
@@ -361,19 +360,23 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
 
 const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
+    let b = document.getElementById('previousLink');
     a && a.addEventListener('click', async () => {
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
 
-        document.getElementById('currentPageNumber').innerHTML = `Page: ${nextPageCounter + 1}`
+        document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;`
         const currState = appState.getState()
         if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr && sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        else if (sitePrefAttr && sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
+        
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
+        // clear the disable on the previous button
+        b.disabled = false;
         const response = await getMoreParticipants(sitePrefId, nextPageCounter);
         hideAnimation();
         if(response.code === 200 && response.data.length > 0) {
@@ -386,6 +389,8 @@ const pagninationNextTrigger = () => {
         else if(response.code === 200 && response.data.length === 0) {
             renderDataTable([]);
             a.setAttribute('data-nextpage', nextPageCounter);
+            // disable the next button
+            a.disabled = true;
             return alertTrigger();
         }
         else if(response.code != 200 && response.data.length === 0) {
@@ -396,21 +401,28 @@ const pagninationNextTrigger = () => {
 }
 
 const pagninationPreviousTrigger = () => {
+    // not updating the first click's  nextPageCounter
     let a = document.getElementById('previousLink');
     let b = document.getElementById('nextLink');
+    if (parseInt(a.getAttribute('data-nextpage')) === 1 || parseInt(a.getAttribute('data-nextpage')) < 1 ) {
+        // disables the previous button if clicked on the first page
+        doctument.getElementById('previousLink').disabled = true;
+    }
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
         let nextPageCounter = parseInt(b.getAttribute('data-nextpage'));
         pageCounter = nextPageCounter - 1 // 1
         nextPageCounter = nextPageCounter - 1 // 1
         showAnimation();
+        // clear disable on next button
+        b.disabled = false;
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
-        if (sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
-        else if (sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        if (sitePrefAttr && sitePrefAttr.getAttribute('selectedsite') === null) sitePref = 'allResults'
+        else if (sitePrefAttr && sitePrefAttr.getAttribute('selectedsite') !== null) sitePref = sitePrefAttr.getAttribute('selectedsite');
         const sitePrefId = nameToKeyObj[sitePref];
         if (pageCounter >= 1) {
-            document.getElementById('currentPageNumber').innerHTML = `Page: ${pageCounter}`
+            document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${pageCounter}&nbsp;`;
             const response = await getMoreParticipants(sitePrefId, pageCounter);
             hideAnimation();
             if(response.code === 200 && response.data.length > 0) {
@@ -422,6 +434,11 @@ const pagninationPreviousTrigger = () => {
             }
             else if(response.code === 200 && response.data.length === 0) {
                 renderDataTable([])
+                // need to change the counters here because
+                // if there are 3 pages and they click to page 6
+                // this is the error that happens after the 3rd page
+                b.setAttribute('data-nextpage', nextPageCounter);
+                a.setAttribute('data-prevpage', pageCounter);
                 return alertTrigger();
             }
             else if(response.code != 200 && response.data.length === 0) {
@@ -866,7 +883,7 @@ export const activeColumns = (data, showButtons) => {
                     renderData(data, showButtons, 'bubbleFilters');
                 }
             }
-            document.getElementById('currentPageNumber').innerHTML = `Page: 1`
+            document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: 1&nbsp;`
             document.getElementById('nextLink').setAttribute('data-nextpage', 1);
             let prevState = appState.getState().filterHolder
             appState.setState({filterHolder:{...prevState, nextPageCounter: 1}})
