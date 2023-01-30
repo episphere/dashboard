@@ -1,29 +1,24 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { keyToNameObj } from './siteKeysToName.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI  } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { findParticipant } from './participantLookup.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj, keyToNameObj } from './siteKeysToName.js';
 
 export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
-    let array = [ 'Connect_ID', 'pin', 'token', 'studyId', fieldMapping.timeStudyIdSubmitted, fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
-    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.henryFReportedRace, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
-    fieldMapping.consentDate, fieldMapping.consentVersion, fieldMapping.hippaFlag, fieldMapping.hippaDate, fieldMapping.hippaVersion, fieldMapping.userProfileFlag, 
-    fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.automatedVerification, fieldMapping.outreachRequiredForVerification, fieldMapping.manualVerification,
-    fieldMapping.duplicateType, fieldMapping.firstNameMatch, fieldMapping.lastNameMatch, fieldMapping.dobMatch, fieldMapping.pinMatch, fieldMapping.tokenMatch, 
-    fieldMapping.zipCodeMatch, fieldMapping.siteMatch, fieldMapping.ageMatch, fieldMapping.cancerStatusMatch, fieldMapping.updateRecruitType, 
-    fieldMapping.preConsentOptOut, fieldMapping.datePreConsentOptOut, fieldMapping.maxNumContactsReached, fieldMapping.signInMechansim, fieldMapping.consentFirstName, 
-    fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
-    fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
-    fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus, /* fieldMapping.enrollmentStatus, */ fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
-    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, 
-    fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
-    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+    let array = [ 'Connect_ID', fieldMapping.accountEmail,fieldMapping.accountName,fieldMapping.accountPhone,fieldMapping.address1,fieldMapping.address2,fieldMapping.ageMatch,fieldMapping.allBaselineSurveysCompleted,
+    fieldMapping.automatedVerification,fieldMapping.bohStatusFlag1,fieldMapping.campaignType,fieldMapping.cancerStatusMatch,fieldMapping.cellPhone,fieldMapping.city,fieldMapping.consentDate,fieldMapping.consentFirstName,fieldMapping.consentFlag,
+    fieldMapping.consentLastName,fieldMapping.consentMiddleName,fieldMapping.consentVersion,fieldMapping.dateDataDestroy,fieldMapping.dateDataDestroyRequested,fieldMapping.dateHIPAARevoc,fieldMapping.dateHipaaRevokeRequested,fieldMapping.dateOfDeath,
+    fieldMapping.datePreConsentOptOut,fieldMapping.dateWithdrewConsentRequested,fieldMapping.destroyData,fieldMapping.dobMatch,fieldMapping.duplicateType,fieldMapping.email,fieldMapping.email1,fieldMapping.email2,fieldMapping.firstNameMatch,fieldMapping.henryFReportedRace,
+    fieldMapping.hippaDate,fieldMapping.hippaFlag,fieldMapping.hippaVersion,fieldMapping.homePhone,fieldMapping.lastNameMatch,fieldMapping.lawStausFlag1,fieldMapping.manualVerification,fieldMapping.maxNumContactsReached,fieldMapping.mreStatusFlag1,fieldMapping.noPin,
+    fieldMapping.otherPhone,fieldMapping.outreachRequiredForVerification,fieldMapping.participantDeceased,fieldMapping.participationStatus, 'pin', fieldMapping.pinEntered,fieldMapping.pinMatch,fieldMapping.preConsentOptOut,fieldMapping.prefName,fieldMapping.previousCancer,
+    fieldMapping.recruitmentDate,fieldMapping.recruitmentType,fieldMapping.refusedAllFutureActivities,fieldMapping.refusedBlood,fieldMapping.refusedFutureSamples,fieldMapping.refusedFutureSurveys,fieldMapping.refusedMouthwash,fieldMapping.refusedSpecimenSurevys,
+    fieldMapping.refusedSurvey,fieldMapping.refusedUrine,fieldMapping.revokeHIPAA,fieldMapping.sanfordReportedRace,fieldMapping.sanfordReportedSex,fieldMapping.sasStatusFlag1,fieldMapping.signedInFlag,fieldMapping.signinDate,fieldMapping.signInMechansim,
+    fieldMapping.siteMatch,fieldMapping.siteReportedAge,fieldMapping.siteReportedRace,fieldMapping.siteReportedSex,fieldMapping.ssnFullflag,fieldMapping.ssnPartialFlag,fieldMapping.state, 'studyId', fieldMapping.suspendContact,fieldMapping.timeStudyIdSubmitted,
+    'token',fieldMapping.tokenMatch, fieldMapping.updateRecruitType,fieldMapping.userProfileDateTime,fieldMapping.userProfileFlag,fieldMapping.verficationDate,fieldMapping.verifiedFlag,fieldMapping.withdrawConsent,fieldMapping.zip,fieldMapping.zipCodeMatch
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -31,8 +26,7 @@ export const renderTable = (data, source) => {
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
-                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested &&
-                        x !== fieldMapping.consentFirstName && x !== fieldMapping.consentMiddleName && x !== fieldMapping.consentLastName) ? 
+                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested) ? 
                         conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</button>`)}
             </div>
         </div>`
@@ -42,19 +36,20 @@ export const renderTable = (data, source) => {
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
                     <div class="form-group dropdown" id="siteDropdownLookup" hidden>
-                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                    style="margin-top: 10px;">
                         Filter by Site
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford Health Systems</a></li>
-                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">HealthPartners</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
+                        <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpHI" id="kpHI">KP HI</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpNW" id="kpNW">KP NW</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpCO" id="kpCO">KP CO</a></li>
                         <li><a class="dropdown-item" data-siteKey="maClinic" id="maClinic">Marshfield Clinic</a></li>
-                        <li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>
+                        ${((location.host !== urls.prod) && (location.host !== urls.stage)) ? `<li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>` : ``}
                         <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
@@ -173,6 +168,8 @@ const paginationTemplate = (array) => {
     });
     template += `
             </ul>
+        </nav>
+            </nav>        
         </nav>
     `;
     return template;

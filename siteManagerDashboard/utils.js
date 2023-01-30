@@ -111,7 +111,7 @@ export const urls = {
   'prod': 'dashboard-myconnect.cancer.gov'
 }
 
-let api = '';
+let api = ``;
 if(location.host === urls.prod) api = 'https://api-myconnect.cancer.gov';
 else if(location.host === urls.stage) api = 'https://api-myconnect-stage.cancer.gov';
 else api = 'https://us-central1-nih-nci-dceg-connect-dev.cloudfunctions.net';
@@ -136,3 +136,4 @@ export const getAccessToken = async () => {
   const siteKey = access_token !== null ? access_token : localStr.siteKey
   return siteKey;
 }
+
