@@ -1032,6 +1032,7 @@ const renderParticipantsVerified = async () => {
 
 const renderParticipantsAll = async () => {
     animation(true);
+    console.log('start')
     if (appState.getState().filterHolder) { 
         reMapFilters(appState.getState().filterHolder) 
     }
@@ -1045,6 +1046,7 @@ const renderParticipantsAll = async () => {
             document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
             removeActiveClass('dropdown-item', 'dd-item-active');
             document.getElementById('allBtn').classList.add('dd-item-active');
+            console.log('allBtn', allBtn)
             removeActiveClass('nav-link', 'active');
             document.getElementById('participants').classList.add('active');
             const filterRawData = filterdata(response.data)

@@ -329,7 +329,11 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
         }
         if (pageCounter !== undefined || pageCounter !== ``) {
             const pageElement = document.getElementById('currentPageNumber');
-            if (pageElement) { pageElement.innerHTML = `Page: ${pageCounter}`; }
+            if (pageElement) { 
+                console.log('pageCounter', pageCounter)
+                pageElement.innerHTML = `Page: ${pageCounter}`; 
+                document.getElementById('nextLink').setAttribute('data-nextpage', pageCounter);
+            }
         }
         return;
     }
@@ -362,11 +366,10 @@ const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
     let b = document.getElementById('previousLink');
     a && a.addEventListener('click', async () => {
-        let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-
-        document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;`
         const currState = appState.getState()
+        let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
         if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
+        document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;`
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
