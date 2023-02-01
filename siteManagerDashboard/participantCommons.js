@@ -391,7 +391,6 @@ const pagninationNextTrigger = () => {
         
         const sitePrefId = nameToKeyObj[sitePref];
         nextPageCounter = nextPageCounter + 1
-        // clear the disable on the previous button
         b.disabled = false;
         const response = await getMoreParticipants(sitePrefId, nextPageCounter);
         hideAnimation();
@@ -417,7 +416,6 @@ const pagninationNextTrigger = () => {
 }
 
 const pagninationPreviousTrigger = () => {
-    // not updating the first click's  nextPageCounter
     let a = document.getElementById('previousLink');
     let b = document.getElementById('nextLink');
     if (parseInt(a.getAttribute('data-nextpage')) === 1 || parseInt(a.getAttribute('data-nextpage')) < 1 ) {
@@ -430,7 +428,6 @@ const pagninationPreviousTrigger = () => {
         pageCounter = nextPageCounter - 1 // 1
         nextPageCounter = nextPageCounter - 1 // 1
         showAnimation();
-        // clear disable on next button
         b.disabled = false;
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
@@ -450,9 +447,6 @@ const pagninationPreviousTrigger = () => {
             }
             else if(response.code === 200 && response.data.length === 0) {
                 renderDataTable([])
-                // need to change the counters here because
-                // if there are 3 pages and they click to page 6
-                // this is the error that happens after the 3rd page
                 b.setAttribute('data-nextpage', nextPageCounter);
                 a.setAttribute('data-prevpage', pageCounter);
                 return alertTrigger();
@@ -714,7 +708,6 @@ const tableTemplate = (data, showButtons) => {
                     template += `<td>${participant[x] ? 'Fully Enrolled'  : ''}</td>` 
                 : template += `<td> ERROR </td>` 
             )
-                    // part of state & default value???
             : (x === fieldMapping.automatedVerification.toString()) ? (
                 ( participant['state'][fieldMapping.automatedVerification.toString()] === fieldMapping.methodUsed ) ?
                     template += `<td>${participant['state'][fieldMapping.automatedVerification.toString()] ? `Method Used` : ``}</td>`

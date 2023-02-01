@@ -566,9 +566,9 @@ const filterSsnMetrics = (participantsSsnMetrics, activeVerifiedParticipants, pa
     const verifiedParticipants = activeVerifiedParticipants +  passiveVerifiedParticipants
 
     participantsSsnMetrics && participantsSsnMetrics.filter( i => {
-        if (i.ssnFlag === fieldMapping.yes) { ssnFullFlagCounter += i.ssnFlagCount }
-        if (i.ssnHalfFlag === fieldMapping.yes) { ssnHalfFlagCounter += i.ssnHalfFlagCount }
-        if (i.ssnHalfFlag === fieldMapping.no && i.ssnFlag === fieldMapping.no ) { ssnNoFlagCounter += i.ssnHalfFlagCount }
+        if (i.SSN === 'ssnFlag') { ssnFullFlagCounter += i.SSN_token }
+        if (i.SSN === 'ssnHalfFlag') { ssnHalfFlagCounter += i.SSN_token }
+        if (i.SSN === 'ssnNoFlag' ) { ssnNoFlagCounter += i.SSN_token }
 
     })
     currentWorflowObj.ssnNoFlagCounter = ssnNoFlagCounter;
