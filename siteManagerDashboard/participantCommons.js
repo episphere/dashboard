@@ -84,7 +84,7 @@ export const renderTable = (data, source) => {
                                                                                                 width:200px;
                                                                                                 height:50px;">
                     </div>
-                    <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;">Search</button>
+                    <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;" >Search</button>
 
                     <button type="button" class="btn btn-outline-danger btn-lg mb-2" id="resetDate">Reset Date</button>
 
@@ -238,35 +238,40 @@ const getDateFilters = () => {
         const endDate = document.getElementById('endDate').value;
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
-        const filterHolder = appState.getState().filterHolder
-        let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
-        if (siteKey === null && filterHolder && filterHolder.siteName && filterHolder.siteName !== `Filter by Site`) { siteKey = filterHolder.siteName }
-        let siteKeyId = ``
-        let siteKeyName = ``
-        if (siteKey !== null && siteKey !== 'allResults') {
-            siteKeyId = nameToKeyObj[siteKey];
-            siteKeyName = keyToShortNameObj[siteKeyId];
-        } else {
-            siteKeyId = 'Filter by Site'
-            siteKeyName = 'Filter by Site'
-        }
-        let response = ``;
-        let filter = ``;
-        let pageCounter = 1
-        let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
-        let activeButton = document.getElementById('activeFilter').getAttribute('active');
-        if (activeButton === 'true') {
-            response = await getParticipantsWithDateFilters('active', siteKeyId, startDate, endDate);
-            filter = 'active';
-        } 
-        else if (passiveButton === 'true') {
-            response = await getParticipantsWithDateFilters('passive', siteKeyId, startDate, endDate);
-            filter = 'passive';
-        }
-        else { 
-            response = await getParticipantsWithDateFilters(null, siteKeyId, startDate, endDate); }
+        console.log('startDate', startDate)
+        console.log('endDate', endDate)
+        if (startDate === `` || endDate === ``) { missingDateTrigger() }
+        else {
+            const filterHolder = appState.getState().filterHolder
+            let siteKey = document.getElementById('dropdownMenuButtonSites').getAttribute('selectedsite');
+            if (siteKey === null && filterHolder && filterHolder.siteName && filterHolder.siteName !== `Filter by Site`) { siteKey = filterHolder.siteName }
+            let siteKeyId = ``
+            let siteKeyName = ``
+            if (siteKey !== null && siteKey !== 'allResults') {
+                siteKeyId = nameToKeyObj[siteKey];
+                siteKeyName = keyToShortNameObj[siteKeyId];
+            } else {
+                siteKeyId = 'Filter by Site'
+                siteKeyName = 'Filter by Site'
+            }
+            let response = ``;
+            let filter = ``;
+            let pageCounter = 1
+            let passiveButton = document.getElementById('passiveFilter').getAttribute('passive');
+            let activeButton = document.getElementById('activeFilter').getAttribute('active');
+            if (activeButton === 'true') {
+                response = await getParticipantsWithDateFilters('active', siteKeyId, startDate, endDate);
+                filter = 'active';
+            } 
+            else if (passiveButton === 'true') {
+                response = await getParticipantsWithDateFilters('passive', siteKeyId, startDate, endDate);
+                filter = 'passive';
+            }
+            else { 
+                response = await getParticipantsWithDateFilters(null, siteKeyId, startDate, endDate); }
 
-        reRenderMainTable(response, filter, siteKeyName, startDate, endDate, pageCounter);
+            reRenderMainTable(response, filter, siteKeyName, startDate, endDate, pageCounter);
+        }
     })
 }
 
@@ -945,6 +950,19 @@ const alertTrigger = () => {
     template += `
         <div class="alert alert-danger alert-dismissible fade show" role="alert">
             No results found!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`
+    alertList.innerHTML = template;
+    return template;
+}
+const missingDateTrigger = () => {
+    let alertList = document.getElementById('alert_placeholder');
+    let template = ``;
+    template += `
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            Enter both To & From date fields!
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
