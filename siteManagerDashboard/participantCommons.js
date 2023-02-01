@@ -4,11 +4,13 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
-import { findParticipant } from './participantLookup.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
 // replacing it for a bit
 export const renderTable = (data, source) => {
+    let prevState = appState.getState().filterHolder
+    appState.setState({filterHolder:{...prevState, source: source}})
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [ 'Connect_ID', fieldMapping.accountEmail,fieldMapping.accountName,fieldMapping.accountPhone,fieldMapping.address1,fieldMapping.address2,fieldMapping.ageMatch,fieldMapping.allBaselineSurveysCompleted,
@@ -113,10 +115,10 @@ export const renderTable = (data, source) => {
     return template;
 }
 
-export  const renderData = (data, showButtons, source) => {
+export  const renderData = (data, source, showButtons) => {
     if(data.length === 0) {
         const mainContent = document.getElementById('mainContent');
-        mainContent.innerHTML = renderTable(data);
+        mainContent.innerHTML = renderTable(data, source);
         animation(false); 
         return;
     }
@@ -294,6 +296,13 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
     if(response.code === 200 && response.data.length > 0) {
         let filterRawData = filterdata(response.data);
         if (filterRawData.length === 0)  return alertTrigger();
+        const isParent = localStorage.getItem('isParent')
+        document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
+        document.getElementById('participants').innerHTML = '<i class="fas fa-users"></i> All Participants'
+        removeActiveClass('dropdown-item', 'dd-item-active');
+        document.getElementById('allBtn').classList.add('dd-item-active');
+        removeActiveClass('nav-link', 'active');
+        document.getElementById('participants').classList.add('active');
         localStorage.setItem('filterRawData', JSON.stringify(filterRawData));
         mainContent.innerHTML = renderTable(filterRawData, 'participantAll');
         addEventFilterData(filterRawData);
@@ -330,7 +339,6 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
         if (pageCounter !== undefined || pageCounter !== ``) {
             const pageElement = document.getElementById('currentPageNumber');
             if (pageElement) { 
-                console.log('pageCounter', pageCounter)
                 pageElement.innerHTML = `Page: ${pageCounter}`; 
                 document.getElementById('nextLink').setAttribute('data-nextpage', pageCounter);
             }
@@ -365,10 +373,11 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
 const pagninationNextTrigger = () => {
     let a = document.getElementById('nextLink');
     let b = document.getElementById('previousLink');
+
     a && a.addEventListener('click', async () => {
         const currState = appState.getState()
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-        if (currState.filterHolder && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
+        if (currState.filterHolder && currState.filterHolder.source === `participantAll`  && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;`
         showAnimation();
         let sitePref = ``;
@@ -1012,7 +1021,7 @@ const getCustomVariableNames = (x) => {
 
 const getMoreParticipants = async (query, nextPageCounter) => {
     let prevState = appState.getState().filterHolder
-    appState.setState({filterHolder:{...prevState, 'nextPageCounter': nextPageCounter}})
+    if (prevState.source === `participantAll`) appState.setState({filterHolder:{...prevState, 'nextPageCounter': nextPageCounter}})
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
     const filterHolder = appState.getState().filterHolder
