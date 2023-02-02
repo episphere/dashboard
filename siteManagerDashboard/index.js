@@ -962,9 +962,9 @@ const renderParticipantsNotVerified = async () => {
         document.getElementById('notVerifiedBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'notyetverified');
         addEventFilterData(filterdata(response.data), true)
-        renderData(filterdata(response.data), isParent === 'true' ? true : false);
+        renderData(filterdata(response.data), isParent === 'true' ? true : false, 'notyetverified');
         activeColumns(filterdata(response.data), true);
         animation(false);
     }
@@ -993,9 +993,9 @@ const renderParticipantsCanNotBeVerified = async () => {
             animation(false);
             return;
         }
-        mainContent.innerHTML = renderTable(filteredData);
+        mainContent.innerHTML = renderTable(filteredData, 'cannotbeverified');
         addEventFilterData(filteredData);
-        renderData(filteredData);
+        renderData(filteredData, 'cannotbeverified');
         activeColumns(filteredData);
         animation(false);
     }
@@ -1018,9 +1018,9 @@ const renderParticipantsVerified = async () => {
         document.getElementById('verifiedBtn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'verified');
         addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
+        renderData(filterdata(response.data), 'verified');
         activeColumns(filterdata(response.data));
         animation(false);
     }
@@ -1074,9 +1074,9 @@ const renderParticipantsProfileNotSubmitted = async () => {
         document.getElementById('profileNotSubmitted').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'profileNotSubmitted');
         addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
+        renderData(filterdata(response.data), 'profileNotSubmitted');
         activeColumns(filterdata(response.data));
         animation(false);
     }
@@ -1099,9 +1099,9 @@ const renderParticipantsConsentNotSubmitted = async () => {
         document.getElementById('consentNotSubmitted').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'consentNotSubmitted');
         addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
+        renderData(filterdata(response.data), 'consentNotSubmitted');
         activeColumns(filterdata(response.data));
         animation(false);
     }
@@ -1124,9 +1124,9 @@ const renderParticipantsNotSignedIn = async () => {
         document.getElementById('notSignedIn').classList.add('dd-item-active');
         removeActiveClass('nav-link', 'active');
         document.getElementById('participants').classList.add('active');
-        mainContent.innerHTML = renderTable(filterdata(response.data));
+        mainContent.innerHTML = renderTable(filterdata(response.data), 'notSignedIn');
         addEventFilterData(filterdata(response.data));
-        renderData(filterdata(response.data));
+        renderData(filterdata(response.data), 'notSignedIn');
         activeColumns(filterdata(response.data));
         animation(false);
     }

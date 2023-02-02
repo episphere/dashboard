@@ -167,7 +167,7 @@ export const reMapFilters = async (filters) =>  {
     }
 
     if (filters.startDate && filters.startDate !== ``) {
-        query +=  `&from=${filters.startDate}T00:00:00.000Z&to=${filters.endDate}T23:59:59.999Z&`
+        query +=  `&from=${filters.startDate}T00:00:00.000Z&to=${filters.endDate}T23:59:59.999Z`
         startDate = filters.startDate
         endDate = filters.endDate
     }
@@ -1035,32 +1035,38 @@ const getCustomVariableNames = (x) => {
 }
 
 const getMoreParticipants = async (query, nextPageCounter) => {
-    let prevState = appState.getState().filterHolder
-    if (prevState.source === `participantAll`) appState.setState({filterHolder:{...prevState, 'nextPageCounter': nextPageCounter}})
+    let filterHolder = appState.getState().filterHolder
+    if (filterHolder.source === `participantAll`) appState.setState({filterHolder:{...filterHolder, 'nextPageCounter': nextPageCounter}})
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
-    const filterHolder = appState.getState().filterHolder
     const limit = 5;
-    if (filterHolder.siteCode && filterHolder.siteCode !== `Filter by Site` && filterHolder.siteCode !== 1000) {
-        template += `&siteCode=${filterHolder.siteCode}`
-    } 
-    else if (query !== nameToKeyObj.allResults) {
-        template += `&siteCode=${query}`
+    console.log('filterHolder.source', filterHolder.source)
+    if (filterHolder.source === `participantAll`) {
+        if (filterHolder.siteCode && filterHolder.siteCode !== `Filter by Site` && filterHolder.siteCode !== 1000) {
+            template += `&siteCode=${filterHolder.siteCode}`
+        } 
+        else if (query !== nameToKeyObj.allResults) {
+            template += `&siteCode=${query}`
+        }
+    
+        if (filterHolder.type && filterHolder.type !== ``) {
+            template += `&type=${filterHolder.type}`
+        } 
+        else {
+            template += `&type=all`
+        }
+
+        if (filterHolder.startDate && filterHolder.startDate !== ``) {
+            template +=  `&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z`
+        }
     }
-   
-    if (filterHolder.type && filterHolder.type !== ``) {
-        template += `&type=${filterHolder.type}`
-    } 
     else {
-        template += `&type=all`
+        if (filterHolder.source && filterHolder.type !== ``) {
+            template += `&type=${filterHolder.source}`
+        } 
     }
-
-    if (filterHolder.startDate && filterHolder.startDate !== ``) {
-        template +=  `&from=${filterHolder.startDate}T00:00:00.000Z&to=${filterHolder.endDate}T23:59:59.999Z`
-    }
-
     if (nextPageCounter !== undefined ) {
-       template += `&page=${nextPageCounter}`
+        template += `&page=${nextPageCounter}`
     } 
 
     template += `&limit=${limit}`
