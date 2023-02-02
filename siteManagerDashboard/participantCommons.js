@@ -1040,7 +1040,6 @@ const getMoreParticipants = async (query, nextPageCounter) => {
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
     const limit = 5;
-    console.log('filterHolder.source', filterHolder.source)
     if (filterHolder.source === `participantAll`) {
         if (filterHolder.siteCode && filterHolder.siteCode !== `Filter by Site` && filterHolder.siteCode !== 1000) {
             template += `&siteCode=${filterHolder.siteCode}`
