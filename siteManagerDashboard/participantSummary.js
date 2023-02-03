@@ -1,8 +1,8 @@
 import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,
-    baselineSASSurvey, baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey,
+import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,baselineSASSurvey, 
+    baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey, baselineMenstrualSurvey,
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping } from './utils.js';
 
@@ -90,6 +90,9 @@ export const render = (participant) => {
                                 <tr class="row-color-survey-light">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
+                                <tr class="row-color-enrollment-light"> 
+                                    ${baselineMenstrualSurvey(participant)} 
+                                </tr>                   
                                 <tr class="row-color-survey-dark">
                                     ${baselineBloodUrineSurvey(participant)}
                                 </tr>
@@ -291,6 +294,7 @@ const createPrintName = (participant) => {
 
 const consentHandler = (participant) => {
     let template = ``;
+    console.log('pa', participant['token'])
     participant && 
     participant[fieldMapping.consentFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
