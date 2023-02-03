@@ -140,7 +140,7 @@ export const baselineMouthwashSample = (participantModule) => {
             template += `
             ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
                     participantModule[fieldMapping.biospecimenCollectionDetail]&& humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail][fieldMapping.biospecimenFollowUp][fieldMapping.mouthwashDateTime]), 
-                    "N/A", "N", "N/A")}`
+                    "Research", "N", "N/A")}`
             : (
                 template += `
                         ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A")}`

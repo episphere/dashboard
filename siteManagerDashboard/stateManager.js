@@ -1,4 +1,3 @@
-
 // // State Management
 const createStore = (startState = {}) => {
     let state = JSON.parse(JSON.stringify(startState));
