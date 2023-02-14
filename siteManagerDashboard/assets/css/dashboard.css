@@ -253,6 +253,10 @@ table {
     background-color: rgb(201, 236, 247); 
 }
 
+.row-color-MenSurvey-light td {
+    background-color: rgb(250, 191, 183); 
+}
+
 .row-color-sample-dark td {
     background-color: rgb(246, 252, 173); 
 }
