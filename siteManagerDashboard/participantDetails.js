@@ -134,17 +134,25 @@ export const render = (participant) => {
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
         template += `
-                    <div class="float-left">
-                        <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
-                    </div>
-                    <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
-                        <thead style="position: sticky;" class="thead-dark"> 
-                        <tr>
-                            <th style="text-align: left; scope="col">Field</th>
-                            <th style="text-align: left; scope="col">Value</th>
-                            <th style="text-align: left; scope="col"></th>
-                        </thead>
-                    <tbody class="participantDetailTable">`
+                 
+                        <div class="float-left">
+                            <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
+                        </div>
+                        
+                        <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
+                            <thead style="position: sticky;" class="thead-dark"> 
+                            <tr>
+                                <th style="text-align: left; scope="col">Field</th>
+                                <th style="text-align: left; scope="col">Value</th>
+                                <th style="text-align: left; scope="col"></th>
+                            </thead>
+                        <tbody class="participantDetailTable">
+
+                            <div class="float-right" style="position: relative; top: -35px;  ">
+                                <button type="button" class="btn btn-success" id="displaySearchResultsBtn">Switch Signin Mechanism</button>
+                            </div>
+            
+                    `
 
 
      
