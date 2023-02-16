@@ -1039,7 +1039,7 @@ const getMoreParticipants = async (query, nextPageCounter) => {
     if (filterHolder.source === `participantAll`) appState.setState({filterHolder:{...filterHolder, 'nextPageCounter': nextPageCounter}})
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
-    const limit = 5;
+    const limit = 50;
     if (filterHolder.source === `participantAll`) {
         if (filterHolder.siteCode && filterHolder.siteCode !== `Filter by Site` && filterHolder.siteCode !== 1000) {
             template += `&siteCode=${filterHolder.siteCode}`
@@ -1085,7 +1085,7 @@ const getParticipantFromSites = async (query) => {
     appState.setState({filterHolder:{...prevState, 'siteCode': query, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 5;
+    const limit = 50;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
@@ -1101,7 +1101,7 @@ const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) =>
     appState.setState({filterHolder:{...prevState, 'type': type, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants&type=${type}`;
-    const limit = 5;
+    const limit = 50;
 
     if (sitePref !== 'Filter by Site') {
         template += `&siteCode=${sitePref}`
@@ -1126,7 +1126,7 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     appState.setState({filterHolder:{...prevState, 'startDate': startDate, 'endDate': endDate, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 5;
+    const limit = 50;
     if (type !== null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
     else if (type === null && sitePref !== 'Filter by Site') {
          template += `/dashboard?api=getParticipants&type=all&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}` }
@@ -1145,7 +1145,7 @@ const getCurrentSelectedParticipants = async (query) => {
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
     template += `${query}`
-    const limit = 5;
+    const limit = 50;
     template += `&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
