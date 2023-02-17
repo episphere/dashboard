@@ -373,7 +373,7 @@ const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderM
 
 
 const fetchData = async (siteKey, type) => {
-    const limit = 50;
+    const limit = 5;
     const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=${type}&limit=${limit}`, {
         method: 'GET',
         headers: {
