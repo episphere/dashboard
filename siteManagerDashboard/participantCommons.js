@@ -153,7 +153,6 @@ export const reMapFilters = async (filters) =>  {
     let endDate = ``
     let pageCounter = ``
     let selectedSite = 'Filter by Site'
-    console.log('123333', filters)
     if (filters.siteCode && filters.siteCode !== `Filter by Site` && filters.siteCode !== 1000) {
         query += `&siteCode=${filters.siteCode}`
         selectedSite = keyToShortNameObj[nameToKeyObj[filters.siteName]]
@@ -244,8 +243,6 @@ const getDateFilters = () => {
         const endDate = document.getElementById('endDate').value;
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
-        console.log('startDate', startDate)
-        console.log('endDate', endDate)
         if (startDate === `` || endDate === ``) { missingDateTrigger() }
         else {
             const filterHolder = appState.getState().filterHolder
@@ -392,7 +389,6 @@ const pagninationNextTrigger = () => {
     a && a.addEventListener('click', async () => {
         const currState = appState.getState()
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
-        console.log('nex', nextPageCounter)
         if (currState.filterHolder && currState.filterHolder.source === `participantAll`  && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
         document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;&nbsp;`
         showAnimation();
@@ -1046,7 +1042,7 @@ const getMoreParticipants = async (query, nextPageCounter) => {
     if (filterHolder.source === `participantAll`) appState.setState({filterHolder:{...filterHolder, 'nextPageCounter': nextPageCounter}})
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
-    const limit = 5;
+    const limit = 50;
     if (filterHolder.source === `participantAll`) {
         if (filterHolder.siteCode && filterHolder.siteCode !== `Filter by Site` && filterHolder.siteCode !== 1000) {
             template += `&siteCode=${filterHolder.siteCode}`
@@ -1092,7 +1088,7 @@ const getParticipantFromSites = async (query) => {
     appState.setState({filterHolder:{...prevState, 'siteCode': query, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 5;
+    const limit = 50;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
@@ -1108,7 +1104,7 @@ const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) =>
     appState.setState({filterHolder:{...prevState, 'type': type, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants&type=${type}`;
-    const limit = 5;
+    const limit = 50;
 
     if (sitePref !== 'Filter by Site') {
         template += `&siteCode=${sitePref}`
@@ -1133,7 +1129,7 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     appState.setState({filterHolder:{...prevState, 'startDate': startDate, 'endDate': endDate, 'nextPageCounter': 0}})
     const siteKey = await getAccessToken();
     let template = ``;
-    const limit = 5;
+    const limit = 50;
     if (type !== null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
     else if (type === null && sitePref !== 'Filter by Site') {
          template += `/dashboard?api=getParticipants&type=all&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}` }
@@ -1152,7 +1148,7 @@ const getCurrentSelectedParticipants = async (query) => {
     const siteKey = await getAccessToken();
     let template = `/dashboard?api=getParticipants`;
     template += `${query}`
-    const limit = 5;
+    const limit = 50;
     template += `&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
