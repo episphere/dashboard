@@ -23,11 +23,35 @@ import { appState } from './stateManager.js';
 let saveFlag = false;
 let counter = 0;
 
+const datadogConfig = {
+    clientToken: 'pubcb2a7770dcbc09aaf1da459c45ecff65',
+    applicationId: '571977b4-ca80-4a04-b8fe-5d5148508afd',
+    site: 'ddog-gov.com',
+    service: 'studymanager',
+    sessionSampleRate: 100,
+    sessionReplaySampleRate: 20,
+    trackUserInteractions: true,
+    trackResources: true,
+    trackLongTasks: true,
+    defaultPrivacyLevel: 'mask-user-input'
+}
 
 window.onload = async () => {
-    if(location.host === urls.prod) !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
-    else if(location.host === urls.stage) !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
-    else !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
+    if(location.host === urls.prod) {
+        !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
+        window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'prod' });
+    } 
+    else if(location.host === urls.stage) {
+        !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
+        window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'stage' });
+    } 
+    else {
+        !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
+        window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
+    } 
+
+    window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
+
     router();
     await getMappings();
     localStorage.setItem("flags", JSON.stringify(saveFlag));
