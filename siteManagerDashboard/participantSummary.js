@@ -294,7 +294,6 @@ const createPrintName = (participant) => {
 
 const consentHandler = (participant) => {
     let template = ``;
-    console.log('pa', participant['token'])
     participant && 
     participant[fieldMapping.consentFlag] === (fieldMapping.yes)?
     ( template += `<td><i class="fa fa-check fa-2x" style="color: green;"></i></td>
