@@ -36,6 +36,8 @@ const datadogConfig = {
     defaultPrivacyLevel: 'mask-user-input'
 }
 
+const isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+
 window.onload = async () => {
     if(location.host === urls.prod) {
         !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
@@ -47,10 +49,10 @@ window.onload = async () => {
     } 
     else {
         !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
-        window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
+        !isLocalDev && window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
     } 
 
-    window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
+    !isLocalDev && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
 
     router();
     await getMappings();
