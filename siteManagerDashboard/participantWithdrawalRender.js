@@ -160,6 +160,13 @@ export const renderRefusalOptions = () => {
                         </label>
                     </div>
                     <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Participant is incarcerated" name="options" 
+                        data-optionKey=${fieldMapping.concernedInfoOnline} id="defaultCheck22">
+                        <label class="form-check-label" for="defaultCheck22">
+                            I am concerned about providing information online
+                        </label>
+                    </div>
+                    <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="Reason not given" name="options" 
                         data-optionKey=${fieldMapping.reasonNotGiven}  id="defaultCheck23">
                         <label class="form-check-label" for="defaultCheck23">
