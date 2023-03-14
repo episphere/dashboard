@@ -153,7 +153,6 @@ export const reMapFilters = async (filters) =>  {
     let endDate = ``
     let pageCounter = ``
     let selectedSite = 'Filter by Site'
-
     if (filters.siteCode && filters.siteCode !== `Filter by Site` && filters.siteCode !== 1000) {
         query += `&siteCode=${filters.siteCode}`
         selectedSite = keyToShortNameObj[nameToKeyObj[filters.siteName]]
@@ -172,10 +171,16 @@ export const reMapFilters = async (filters) =>  {
         endDate = filters.endDate
     }
 
-    if (filters.nextPageCounter && filters.nextPageCounter !== false ) {
+    if (filters.nextPageCounter && filters.nextPageCounter !== false) {
         query += `&page=${filters.nextPageCounter}`
         pageCounter = filters.nextPageCounter
     }
+
+    if (filters.nextPageCounter === undefined || filters.nextPageCounter === 0) {
+        query += `&page=1`
+        pageCounter = 1
+    }
+
     const response = await getCurrentSelectedParticipants(query)
     reRenderMainTable(response, type, selectedSite, startDate, endDate, pageCounter)
 }
@@ -238,8 +243,6 @@ const getDateFilters = () => {
         const endDate = document.getElementById('endDate').value;
         document.getElementById('startDate').value = ``
         document.getElementById('endDate').value = ``
-        console.log('startDate', startDate)
-        console.log('endDate', endDate)
         if (startDate === `` || endDate === ``) { missingDateTrigger() }
         else {
             const filterHolder = appState.getState().filterHolder
@@ -348,7 +351,7 @@ const reRenderMainTable =  (response, filter, selectedSite, startDate, endDate, 
         if (pageCounter !== undefined || pageCounter !== ``) {
             const pageElement = document.getElementById('currentPageNumber');
             if (pageElement) { 
-                pageElement.innerHTML = `Page: ${pageCounter}`; 
+                pageElement.innerHTML = `&nbsp;Page: ${pageCounter}&nbsp;&nbsp;`; 
                 document.getElementById('nextLink').setAttribute('data-nextpage', pageCounter);
             }
         }
@@ -369,7 +372,7 @@ const paginationTemplate = (nextPageCounter, prevPageCounter) => {
                 <div class="pagination" style="border-style:solid; border-radius:6px; border-width:1px; border-color:gray; background-color:white;">
                     <button id="previousLink"  class="page-item" data-prevpage=${prevPageCounter} style="border-right-style:solid; border-width:1px; border-color:gray; background-color:white;"><i class="fa fa-arrow-left" aria-hidden="true"></i>&nbsp;Previous</button>
                     <button id="nextLink"  class="page-item" data-nextpage=${nextPageCounter} style="border-left-style:solid; border-width:1px; border-color:gray; background-color:white;">Next&nbsp;<i class="fa fa-arrow-right" aria-hidden="true"></i></button>
-                    <div ><span id="currentPageNumber" class="page-item" style="color:blue; ">&nbsp;Page: 1&nbsp;</span></div>
+                    <div ><span id="currentPageNumber" class="page-item" style="color:blue;">&nbsp;Page: 1&nbsp;&nbsp;</span></div>
                 </div>
             </nav>        
         </div>
@@ -387,7 +390,7 @@ const pagninationNextTrigger = () => {
         const currState = appState.getState()
         let nextPageCounter = parseInt(a.getAttribute('data-nextpage'));
         if (currState.filterHolder && currState.filterHolder.source === `participantAll`  && currState.filterHolder.nextPageCounter && currState.filterHolder.nextPageCounter > nextPageCounter) nextPageCounter = appState.getState().filterHolder.nextPageCounter
-        document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;`
+        document.getElementById('currentPageNumber').innerHTML = `&nbsp;Page: ${nextPageCounter + 1}&nbsp;&nbsp;`
         showAnimation();
         let sitePref = ``;
         let sitePrefAttr = document.getElementById('dropdownMenuButtonSites');
