@@ -78,6 +78,12 @@ export const importantColumns = [
     display: true },
     { field: 'Connect_ID',
     editable: false,
+    display: true },
+    { field: `Change Login Mode`,
+    editable: true,
+    display: true },
+    { field: `Change Login Email`,
+    editable: true,
     display: true }
 ]
 
@@ -132,6 +138,8 @@ export const render = (participant) => {
         `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+        participant['Change Login Mode'] = participant[fieldMapping.cellPhone]
+        console.log('pa', participant)
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
@@ -153,58 +161,57 @@ export const render = (participant) => {
                       `      <div class="float-left" style="position: relative; top: -37px; padding-left: 15px;">
                                 <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalShowMoreData" id="updateUserEmail">Update Email</button>
                             </div>` : ``}
-
-                            <div class="float-right" style="position: relative; top: -35px;">
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Switch Signin Mechanism</button>
-                            </div>
             
                     `
 
-
-     
-        importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
-            <label class="form-label">
-            ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? 
-                (   
-                    ((conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name']) === 'Text') ? 
-                            'Do we have permission to text this number ?'
-                    : conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'])
-                    : x.field}</label></div></th>
-
-            <td style="text-align: left;">${participant[x.field] !== undefined ?  
-                                            ( (participant[x.field] === fieldMapping.yes) ? 'Yes' 
-                                            :
-                                            (participant[x.field] === fieldMapping.no) ? 'No' 
-                                            :
-                                            (participant[x.field] === fieldMapping.jr) ? 'Jr.' 
-                                            :
-                                            (participant[x.field] === fieldMapping.sr) ? 'Sr.' 
-                                            :
-                                            (participant[x.field] === fieldMapping.one) ? 'I' 
-                                            :
-                                            (participant[x.field] === fieldMapping.two) ? 'II' 
-                                            :
-                                            (participant[x.field] === fieldMapping.three) ? 'III' 
-                                            :
-                                            (participant[x.field] === fieldMapping.second) ? '2nd' 
-                                            :
-                                            (participant[x.field] === fieldMapping.third) ? '3rd' 
-                                            :
-                                            (participant[x.field] === fieldMapping.prefPhone) ? 'Phone' 
-                                            :
-                                            (participant[x.field] === fieldMapping.prefEmail) ? 'Email' 
-                                            :
-                                            participant[x.field]  )
-                                            : ""}</td> 
-            <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
-                data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? 
-                conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" id=${x.field}>
-                ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
-                    `<button type="button" class="btn btn-primary">Edit</button>`
-                 : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
-                }
-            </a></td></tr>&nbsp;`) 
+                    importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
+                    <label class="form-label">
+                    ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? 
+                        (   
+                            ((conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name']) === 'Text') ? 
+                                    'Do we have permission to text this number ?'
+                            : conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'])
+                            : x.field}</label></div></th>
+                    <td style="text-align: left;">${participant[x.field] !== undefined ?  
+                                                    ( (participant[x.field] === fieldMapping.yes) ? 'Yes' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.no) ? 'No' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.jr) ? 'Jr.' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.sr) ? 'Sr.' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.one) ? 'I' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.two) ? 'II' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.three) ? 'III' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.second) ? '2nd' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.third) ? '3rd' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.prefPhone) ? 'Phone' 
+                                                    :
+                                                    (participant[x.field] === fieldMapping.prefEmail) ? 'Email' 
+                                                    : 
+                                                  
+                                                    participant[x.field]  )
+                                                    : ""}</td> 
+                    <td style="text-align: left;">
+                        ${ x.editable && (x.field == 'Change Login Mode') ? `<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>` 
+                        : 
+                        x.editable && (x.field == 'Change Login Email') ? `<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Update</button>` 
+                        :
+                        (x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
+                        ` <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
+                            data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
+                            data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" 
+                            id=${x.field}>
+                            <button type="button" class="btn btn-primary">Edit</button>`
+                        : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
+                        }
+                    </a></td></tr>&nbsp;`)
         
 
             template += `</tbody></table>
@@ -243,7 +250,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
             let editRow = element.getElementsByClassName('showMore')[0];
             const values = editRow;
             let data = getDataAttributes(values);
-            editRow.addEventListener('click', () => {
+            editRow && editRow.addEventListener('click', () => {
                 const header = document.getElementById('modalHeader');
                 const body = document.getElementById('modalBody');
                 header.innerHTML = `<h5>Edit</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -540,7 +547,6 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
     const updateParticpantPayload = {
         "data": [updatedOptions]
     }
-
     const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
         method:'POST',
         body: JSON.stringify(updateParticpantPayload),
@@ -595,7 +601,7 @@ const setUserSigninMechanism = (participant, siteKey) => {
             console.log('1234', participant)
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Switch Signin Mechanism</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            header.innerHTML = `<h5>Change Login Mode</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             template = `<div>
                     <form>`
             if (participant[fieldMapping.signInMechansim] === 'password') {
@@ -606,8 +612,12 @@ const setUserSigninMechanism = (participant, siteKey) => {
             }
             else if (participant[fieldMapping.signInMechansim] === 'phone') {
                 template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Email</label>
+                            <label class="col-form-label search-label">Current Login</label>
+                            <input class="form-control" value=${participant[fieldMapping.cellPhone]} disabled/>
+                            <label class="col-form-label search-label">Enter New Login Email</label>
                             <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
+                            <label class="col-form-label search-label">Confirm New Login Email</label>
+                            <input class="form-control" type="email" id="email" placeholder="Confim Email"/>
                         </div>`
             }
             template += `<div class="form-group">
