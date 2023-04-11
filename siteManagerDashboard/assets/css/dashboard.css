@@ -334,3 +334,10 @@ table {
     font-size: large;
     text-align: center;
   }
+
+  .btn-custom {
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    border-radius: .25rem;
+    width: 100px;
+  }
