@@ -6,10 +6,6 @@ import { renderParticipantSummary } from './participantSummary.js';
 import { renderLookupResultsTable, findParticipant } from './participantLookup.js';
 import { appState } from './stateManager.js';
 
-// Would be updated soon: Prevents unsaved changes to be lost when hit referesh
-// let saveFlag = false;
-// let counter = 0;
-// const saveFlag = JSON.parse(localStorage.getItem("flags"));
 appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}});
 
 window.addEventListener('beforeunload',  (e) => {
@@ -28,8 +24,7 @@ window.addEventListener('onload', (e) => {
 })
 
 const checkForLoginMechanism = (participant) => {
-
-    const phoneLogin = participant[fieldMapping.signInMechansim] === `phone` ? true : false
+    const phoneLogin = participant[fieldMapping.signInMechansim] === `phone`
     if (phoneLogin) {
         appState.setState({loginMechanism:{phone: true, email: false}})
         participant['Change Login Mode'] = 'Phone ☎️'
@@ -64,6 +59,19 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
 
 
 export const render = (participant) => {
+    const fieldValues = {
+          yes: 'Yes',
+          no: 'No',
+          jr: 'Jr.',
+          sr: 'Sr.',
+          one: 'I',
+          two: 'II',
+          three: 'III',
+          second: '2nd',
+          third: '3rd',
+          prefPhone: 'Phone',
+          prefEmail: 'Email'
+        };
     const importantColumns = [ 
         { field: fieldMapping.lName,
             editable: true,
@@ -156,6 +164,7 @@ export const render = (participant) => {
         </div>
         `
     } else {
+        console.log('participant', participant)
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
@@ -186,31 +195,7 @@ export const render = (participant) => {
                                     'Do we have permission to text this number ?'
                             : conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'])
                             : x.field}</label></div></th>
-                    <td style="text-align: left;">${participant[x.field] !== undefined ?  
-                                                    ( (participant[x.field] === fieldMapping.yes) ? 'Yes' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.no) ? 'No' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.jr) ? 'Jr.' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.sr) ? 'Sr.' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.one) ? 'I' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.two) ? 'II' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.three) ? 'III' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.second) ? '2nd' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.third) ? '3rd' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.prefPhone) ? 'Phone' 
-                                                    :
-                                                    (participant[x.field] === fieldMapping.prefEmail) ? 'Email' 
-                                                    : 
-                                                    participant[x.field]  )
-                                                    : ""}</td> 
+                    <td style="text-align: left;">${participant[x.field] = fieldValues[participant[x.field]] || participant[x.field]}</td> 
                     <td style="text-align: left;">
                         ${ x.editable && (x.field == 'Change Login Mode') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>` 
                         : 
@@ -513,10 +498,6 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
 const showSaveAlert = () => {
     const a = document.getElementById('editModal');
     a.addEventListener('click', e => {
-        // counter++;
-        // saveFlag = false
-        // localStorage.setItem("counters", JSON.stringify(counter));
-        // localStorage.setItem("flags", JSON.stringify(saveFlag));
         let prevCounter =  appState.getState().unsavedChangesTrack.counter
         appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}})
         
@@ -565,9 +546,7 @@ const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteK
 
 // async-await function to make HTTP POST request
 async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
-    showAnimation();
-    const idToken = siteKey;
-   
+    showAnimation();   
     const updateParticpantPayload = {
         "data": [updatedOptions]
     }
@@ -575,7 +554,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         method:'POST',
         body: JSON.stringify(updateParticpantPayload),
         headers:{
-            Authorization:"Bearer "+idToken,
+            Authorization:"Bearer "+siteKey,
             "Content-Type": "application/json"
             }
         }))
@@ -749,7 +728,6 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
 // async-await function to make HTTP POST request
 const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOption) =>  {
     showAnimation();
-    const idToken = siteKey;
    
     const signinMechanismPayload = {
         "data": switchPackage
@@ -759,7 +737,7 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         method:'POST',
         body: JSON.stringify(signinMechanismPayload),
         headers:{
-            Authorization:"Bearer "+idToken,
+            Authorization:"Bearer "+siteKey,
             "Content-Type": "application/json"
             }
         }))
