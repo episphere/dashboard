@@ -16,7 +16,7 @@ export default
     // hipaa
     "hippaDate": 262613359,
     "hippaFlag": 558435199,
-    "hippaVersion": 412000022,
+    "hipaaVersion": 412000022,
 
     // user profile
     "userProfileFlag": 699625233,
