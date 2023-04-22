@@ -135,7 +135,7 @@ const downloadCopyHandler = (participant) => {
     if (a) {
         const version = participant[fieldMapping.consentVersion].split('_')[2]
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}__consent_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
             getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
         })
     }
