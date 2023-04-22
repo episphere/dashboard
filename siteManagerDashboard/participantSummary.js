@@ -135,14 +135,16 @@ const downloadCopyHandler = (participant) => {
     if (a) {
         const version = participant[fieldMapping.consentVersion].split('_')[2]
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent'));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}__consent_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
+            getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
-        const version = participant[fieldMapping.consentVersion].split('_')[2]
+        const version = participant[fieldMapping.hipaaVersion].split('_')[2]
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa'));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
+            getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
@@ -160,9 +162,9 @@ const downloadCopyHandler = (participant) => {
  
 }
 
-const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
+const getHealthcareProviderCoordinates = (healthcareProvider, source, version) => {
     let coordinates = ``;
-    if (source === 'consent') {
+    if (source === 'consent' && version === `V1.0`) {
         switch(healthcareProvider) {
             case 'Sanford':
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 360}, {x1: 110, y1: 330}]
@@ -185,8 +187,8 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
                 break;
-            case 'UCM': // updated coordinates
-                coordinates = [ {x: 110, y: 380} , {x0: 110, y0: 340} , {x1: 110, y1: 302} ]
+            case 'UCM':
+                coordinates = [{x: 110, y: 380} , {x0: 110, y0: 340} , {x1: 110, y1: 302}]
                 break;
             case 'HFHS':
                 coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
@@ -194,9 +196,9 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
         }
-        return coordinates  // x0/y0: date x/y: name x1/y1: signature
-        // to go down - decrease the number & vice-versa
-    } else {
+        return coordinates
+    } 
+    else if(source === 'hipaa' && version === `V1.0`) {
         switch(healthcareProvider) {
             case 'Sanford':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 452}]
@@ -219,7 +221,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
             case 'KPNW':
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
-            case 'UCM': // updated coordinates
+            case 'UCM':
                 coordinates = [ {x: 100, y: 425} ,  {x0: 100, y0: 385} ,  {x1: 100, y1: 465} ]
                 break;
             case 'HFHS':
@@ -230,6 +232,75 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source) => {
         }
         return coordinates 
     }
+    else if (source === 'consent' && version === `V0.02`) {
+        switch(healthcareProvider) {
+            case 'Sanford':
+                coordinates = [{x: 105, y: 405}, {x0: 105, y0: 365}, {x1: 110, y1: 325}]
+                break;
+            case 'HP':
+                coordinates = [{x: 100, y: 420}, {x0: 100, y0: 380}, {x1: 110, y1: 345}]
+                break;
+            case 'MFC':
+                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
+                break;
+            case 'KPCO':
+                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
+                break;
+            case 'KPGA':
+                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
+                break;
+            case 'KPHI':
+                coordinates = [{x: 100, y: 365}, {x0: 100, y0: 325}, {x1: 110, y1: 286}]
+                break;
+            case 'KPNW':
+                coordinates = [{x: 110, y: 390}, {x0: 110, y0: 350}, {x1: 110, y1: 312}]
+                break;
+            case 'UCM':
+                coordinates = [ {x: 110, y: 380} , {x0: 110, y0: 340} , {x1: 110, y1: 302} ]
+                break;
+            case 'HFHS':
+                coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
+                break;
+            default:
+                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
+        }
+        return coordinates
+    } 
+    else if (source === 'hipaa' && version === `V0.02`) {
+        switch(healthcareProvider) {
+            case 'Sanford':
+                coordinates = [{x: 100, y: 412}, {x0: 80, y0: 372}, {x1: 100, y1: 452}]
+                break;
+            case 'HP':
+                coordinates = [{x: 100, y: 415}, {x0: 80, y0: 370}, {x1: 100, y1: 464}]
+                break;
+            case 'MFC':
+                coordinates = [{x: 100, y: 425}, {x0: 80, y0: 385}, {x1: 100, y1: 465}]
+                break;
+            case 'KPCO':
+                coordinates = [{x: 100, y: 408}, {x0: 80, y0: 370}, {x1: 100, y1: 450}]
+                break;
+            case 'KPGA':
+                coordinates = [{x: 100, y: 345}, {x0: 80, y0: 305}, {x1: 100, y1: 385}]
+                break;
+            case 'KPHI':
+                coordinates = [{x: 100, y: 410}, {x0: 80, y0: 370}, {x1: 100, y1: 450}]
+                break;
+            case 'KPNW':
+                coordinates = [{x: 100, y: 410}, {x0: 80, y0: 370}, {x1: 100, y1: 450}]
+                break;
+            case 'UCM':
+                coordinates = [{x: 100, y: 424}, {x0: 80, y0: 384}, {x1: 100, y1: 464}]
+                break;
+            case 'HFHS':
+                coordinates = [{x: 110, y: 440}, {x0: 80, y0: 400}, {x1: 110, y1: 482}]
+                break;
+            default:
+                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
+        }
+        return coordinates  // x0/y0: date x/y: name x1/y1: signature
+        // to go down - decrease the number & vice-versa
+    } 
 }
 
 const getRevocationCoordinates = () => {
@@ -334,7 +405,7 @@ const hippaHandler = (participant) => {
                     <td>HIPAA</td>
                     <td>Signed</td>
                     <td>${participant[fieldMapping.hippaDate] && humanReadableMDY(participant[fieldMapping.hippaDate])}</td>
-                    <td>${participant[fieldMapping.hippaVersion]}</td>
+                    <td>${participant[fieldMapping.hipaaVersion]}</td>
                     <td>N/A</td>
                     <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHIPAA">Download Link</a></td>
     ` ) : 
