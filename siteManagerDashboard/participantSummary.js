@@ -293,7 +293,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source, version) =
                 coordinates = [{x: 100, y: 424}, {x0: 80, y0: 384}, {x1: 100, y1: 464}]
                 break;
             case 'HFHS':
-                coordinates = [{x: 110, y: 440}, {x0: 80, y0: 400}, {x1: 110, y1: 482}]
+                coordinates = [{x: 100, y: 425}, {x0: 80, y0: 385}, {x1: 100, y1: 465}]
                 break;
             default:
                 coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
