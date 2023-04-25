@@ -24,8 +24,8 @@ window.addEventListener('onload', (e) => {
 })
 
 const checkForLoginMechanism = (participant) => {
-    const phoneLogin = participant[fieldMapping.signInMechansim] === `phone`
-    if (phoneLogin) {
+    const isPhoneLogin = participant[fieldMapping.signInMechansim] === `phone`
+    if (isPhoneLogin) {
         appState.setState({loginMechanism:{phone: true, email: false}})
         participant['Change Login Mode'] = 'Phone ☎️'
         participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
@@ -59,19 +59,20 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
 
 
 export const render = (participant) => {
-    const fieldValues = {
-          yes: 'Yes',
-          no: 'No',
-          jr: 'Jr.',
-          sr: 'Sr.',
-          one: 'I',
-          two: 'II',
-          three: 'III',
-          second: '2nd',
-          third: '3rd',
-          prefPhone: 'Phone',
-          prefEmail: 'Email'
-        };
+    const fieldValues = 
+        {       
+            353358909: 'Yes',
+            104430631: 'No',
+            612166858: 'Jr.',
+            255907182: 'Sr.',
+            226924545: 'I',
+            270793412: 'II',
+            959021713: 'III',
+            643664527: '2nd',
+            537892528: '3rd',
+            127547625: 'Phone',
+            869588347: 'Email'
+        }
     const importantColumns = [ 
         { field: fieldMapping.lName,
             editable: true,
@@ -191,7 +192,7 @@ export const render = (participant) => {
                                     'Do we have permission to text this number ?'
                             : conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'])
                             : x.field}</label></div></th>
-                    <td style="text-align: left;">${participant[x.field] = fieldValues[participant[x.field]] || participant[x.field]}</td> 
+                    <td style="text-align: left;">${participant[x.field] = (participant[x.field]) === undefined ? `` :  fieldValues[participant[x.field]] || participant[x.field]}</td> 
                     <td style="text-align: left;">
                         ${ x.editable && (x.field == 'Change Login Mode') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>` 
                         : 
@@ -240,7 +241,7 @@ export const render = (participant) => {
 
 const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, originalHTML, siteKey) => {
 
-    const a = Array.from(document.getElementsByClassName('detailedRow'))
+    const a = Array.from(document.getElementsByClassName('detailedRow'));
     if (a) {
         a.forEach(element => {
             let editRow = element.getElementsByClassName('showMore')[0];
@@ -336,8 +337,8 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
         }
 
         // update changed field on UI
-        let updatedEditedValue = editedElement.querySelectorAll("td")[0];
-        updatedEditedValue.innerHTML = newUpdatedValue;
+        let updatedEditValue = editedElement.querySelectorAll("td")[0];
+        updatedEditValue.innerHTML = newUpdatedValue;
         
         ///////////////////////////////////////////////
         // participant token
@@ -752,6 +753,15 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
             alertList.innerHTML = template;
             const modalClose = document.getElementById('modalShowMoreData');
             const closeButton = modalClose.querySelector('#closeModal').click();
+            const UpdateRowStatus = Array.from(document.getElementsByClassName('detailedRow'));
+            if (switchPackage[flag] === "updatePhone" || switchPackage[flag] === "updateEmail") {
+                let updateStatus = UpdateRowStatus[25].querySelectorAll("td")[0];
+                updateStatus.innerHTML = 'Updating login mode';
+            }
+            if (switchPackage[flag] === "replaceSignin") {
+                let updateStatus = UpdateRowStatus[24].querySelectorAll("td")[0];
+                updateStatus.innerHTML = 'Replacing login mode';
+            }
             setTimeout(() => {
                 alert('If you donot see updated information in next couple of seconds. Try to reload your participant!')
               }, "5000");
