@@ -755,11 +755,11 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
             const modalClose = document.getElementById('modalShowMoreData');
             const closeButton = modalClose.querySelector('#closeModal').click();
             const UpdateRowStatus = Array.from(document.getElementsByClassName('detailedRow'));
-            if (switchPackage[flag] === "updatePhone" || switchPackage[flag] === "updateEmail") {
+            if (switchPackage.flag === "updatePhone" || switchPackage.flag === "updateEmail") {
                 let updateStatus = UpdateRowStatus[25].querySelectorAll("td")[0];
                 updateStatus.innerHTML = 'Updating login mode';
             }
-            if (switchPackage[flag] === "replaceSignin") {
+            if (switchPackage.flag === "replaceSignin") {
                 let updateStatus = UpdateRowStatus[24].querySelectorAll("td")[0];
                 updateStatus.innerHTML = 'Replacing login mode';
             }
