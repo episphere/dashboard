@@ -350,7 +350,7 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates)
 }
 
 const createSignature = (participant) => {
-    const middleName = participant[fieldMapping.consentMiddleName] !== undefined ? participant[fieldMapping.consentMiddleName] : ``
+    const middleName = (participant[fieldMapping.consentMiddleName] !== undefined && participant[fieldMapping.consentMiddleName] !== "") ? participant[fieldMapping.consentMiddleName] : ``
     const createParticipantSignature = participant[fieldMapping.consentFirstName] + " " + middleName + " " + participant[fieldMapping.consentLastName]
     return createParticipantSignature;
 }
