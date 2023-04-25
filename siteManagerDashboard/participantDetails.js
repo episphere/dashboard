@@ -689,22 +689,23 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
         let tweakedPhoneNumber = ``
         const confirmation = confirm('Are you sure want to continue with the operation?')
         if (confirmation) {
+            const phoneField = document.getElementById('newPhone');
+            const emailField = document.getElementById('newEmail');
+            if(phoneField && phoneField.value === document.getElementById('confirmPhone').value) {
 
-            if(document.getElementById('newPhone') && document.getElementById('newPhone').value === document.getElementById('confirmPhone').value) {
-
-                (document.getElementById('newPhone').value.toString().length) === 10 ? 
-                tweakedPhoneNumber = document.getElementById('newPhone').value.toString().trim()
-                : tweakedPhoneNumber = document.getElementById('newPhone').value.toString().slice(2).trim()
+                (phoneField.value.toString().length) === 10 ? 
+                tweakedPhoneNumber = phoneField.value.toString().trim()
+                : tweakedPhoneNumber = phoneField.value.toString().slice(2).trim()
 
                 switchPackage['phone'] = tweakedPhoneNumber
                 changedOption[fieldMapping.signInMechansim] = 'phone'
                 changedOption[fieldMapping.accountPhone] = `+1`+tweakedPhoneNumber
             }
 
-            else if (document.getElementById('newEmail') &&  document.getElementById('newEmail').value === document.getElementById('confirmEmail').value) {
-                switchPackage['email'] = document.getElementById('newEmail').value 
+            else if (emailField &&  emailField.value === document.getElementById('confirmEmail').value) {
+                switchPackage['email'] = emailField.value 
                 changedOption[fieldMapping.signInMechansim] = 'password'
-                changedOption[fieldMapping.accountEmail] = document.getElementById('newEmail').value
+                changedOption[fieldMapping.accountEmail] = emailField.value
             }
 
             else {
@@ -763,7 +764,7 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
                 updateStatus.innerHTML = 'Replacing login mode';
             }
             setTimeout(() => {
-                alert('If you donot see updated information in next couple of seconds. Try to reload your participant!')
+                alert(`If you don't see updated information in next couple of seconds. Try to reload your participant!`)
               }, "5000");
               
             reloadParticipantData(changedOption.token, siteKey);
