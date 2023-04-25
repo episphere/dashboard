@@ -164,7 +164,6 @@ export const render = (participant) => {
         </div>
         `
     } else {
-        console.log('participant', participant)
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
@@ -182,10 +181,7 @@ export const render = (participant) => {
                                 <th style="text-align: left; scope="col"></th>
                             </thead>
                         <tbody class="participantDetailTable">
-
-    
-            
-                    `
+`
                     const filteredImportantColumns = importantColumns.filter(x => x.display === true);
                     filteredImportantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
                     <label class="form-label">
@@ -733,7 +729,7 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         "data": switchPackage
     }
 
-    const response = await (await fetch(`http://localhost:5001/nih-nci-dceg-connect-dev/us-central1/dashboard?api=updateSignMechanism`,{
+    const response = await (await fetch(`${baseAPI}/dashboard?api=updateUserAuthentication`,{
         method:'POST',
         body: JSON.stringify(signinMechanismPayload),
         headers:{
@@ -756,7 +752,11 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
             alertList.innerHTML = template;
             const modalClose = document.getElementById('modalShowMoreData');
             const closeButton = modalClose.querySelector('#closeModal').click();
-        //    reloadParticipantData(changedOption.token, siteKey);
+            setTimeout(() => {
+                alert('If you donot see updated information in next couple of seconds. Try to reload your participant!')
+              }, "5000");
+              
+            reloadParticipantData(changedOption.token, siteKey);
          }
 
         else if (response.status === 409) {
