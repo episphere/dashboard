@@ -143,8 +143,8 @@ const downloadCopyHandler = (participant) => {
     if (b) {
         const version = participant[fieldMapping.hipaaVersion].split('_')[2]
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/KPNW_HIPAA_V1.0.pdf`, 
-            getHealthcareProviderCoordinates('KPNW', 'hipaa', `V1.0`));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
+            getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
