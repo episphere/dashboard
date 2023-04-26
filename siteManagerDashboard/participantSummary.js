@@ -143,8 +143,8 @@ const downloadCopyHandler = (participant) => {
     if (b) {
         const version = participant[fieldMapping.hipaaVersion].split('_')[2]
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
-            getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/KPNW_HIPAA_V1.0.pdf`, 
+            getHealthcareProviderCoordinates('KPNW', 'hipaa', `V1.0`));
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
@@ -213,7 +213,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source, version) =
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'KPGA':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
+                coordinates = [{x: 100, y: 340}, {x0: 100, y0: 300}, {x1: 100, y1: 380}]
                 break;
             case 'KPHI':
                 coordinates = [{x: 110, y: 410}, {x0: 110, y0: 370}, {x1: 110, y1: 450}]
