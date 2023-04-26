@@ -213,7 +213,7 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source, version) =
                 coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
                 break;
             case 'KPGA':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
+                coordinates = [{x: 100, y: 340}, {x0: 100, y0: 300}, {x1: 100, y1: 380}]
                 break;
             case 'KPHI':
                 coordinates = [{x: 110, y: 410}, {x0: 110, y0: 370}, {x1: 110, y1: 450}]
