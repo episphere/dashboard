@@ -3,17 +3,98 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { renderParticipantSummary } from './participantSummary.js';
-import { renderLookupResultsTable, findParticipant } from './participantLookup.js';
-import { appState } from './stateManager.js';
+import { renderLookupResultsTable } from './participantLookup.js';
+
+export const importantColumns = [ 
+
+    { field: fieldMapping.lName,
+        editable: true,
+        display: true } ,
+    { field: fieldMapping.fName,
+        editable: true,
+        display: true } ,
+     { field: fieldMapping.prefName,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.mName,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.suffix,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.birthMonth,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.birthDay,
+    editable: true,
+    display: true } ,
+     { field: fieldMapping.birthYear,
+    editable: true,
+    display: true } ,
+    { field: fieldMapping.cellPhone,
+    editable: true,
+    display: true },
+    { field: fieldMapping.canWeText,
+    editable: true,
+    display: true },
+    { field: fieldMapping.voicemailMobile,
+    editable: true,
+    display: true },
+     { field: fieldMapping.homePhone,
+    editable: true,
+    display: true } ,
+    { field: fieldMapping.voicemailHome,
+    editable: true,
+    display: true },
+    { field: fieldMapping.otherPhone,
+    editable: true,
+    display: true },
+    { field: fieldMapping.voicemailOther,
+    editable: true,
+    display: true },
+    { field: fieldMapping.email,
+    editable: true,
+    display: true },
+    { field: fieldMapping.email1,
+    editable: true,
+    display: true },
+    { field: fieldMapping.email2,
+    editable: true,
+    display: true },
+    { field: fieldMapping.address1,
+    editable: true,
+    display: true },
+    { field: fieldMapping.address2,
+    editable: true,
+    display: true },
+    { field: fieldMapping.city,
+    editable: true,
+    display: true },
+    { field: fieldMapping.state,
+    editable: true,
+    display: true },
+    { field: fieldMapping.zip,
+    editable: true,
+    display: true },
+    { field: 'Connect_ID',
+    editable: false,
+    display: true },
+    { field: `Change Login Mode`,
+    editable: true,
+    display: true },
+    { field: `Change Login Email`,
+    editable: true,
+    display: true }
+]
 
 // Would be updated soon: Prevents unsaved changes to be lost when hit referesh
-// let saveFlag = false;
-// let counter = 0;
+let saveFlag = false;
+let counter = 0;
 // const saveFlag = JSON.parse(localStorage.getItem("flags"));
-appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}});
 
+document.body.scrollTop = document.documentElement.scrollTop = 0;
 window.addEventListener('beforeunload',  (e) => {
-    if (appState.getState().unsavedChangesTrack.saveFlag === false && appState.getState().unsavedChangesTrack.counter > 0) { 
+    if (saveFlag === false && counter > 0) { 
     // Cancel the event and show alert that the unsaved changes would be lost 
         e.preventDefault(); 
         e.returnValue = ''; 
@@ -27,25 +108,9 @@ window.addEventListener('onload', (e) => {
     }, 15);
 })
 
-const checkForLoginMechanism = (participant) => {
-
-    const phoneLogin = participant[fieldMapping.signInMechansim] === `phone` ? true : false
-    if (phoneLogin) {
-        appState.setState({loginMechanism:{phone: true, email: false}})
-        participant['Change Login Mode'] = 'Phone ☎️'
-        participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
-    }
-    else { 
-        appState.setState({loginMechanism:{phone: false, email: true}}) 
-        participant['Change Login Mode'] = 'Email 📧'
-        participant['Change Login Email'] = participant[fieldMapping.accountEmail]
-    }
-
-}
 
 
 export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
-    checkForLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent')
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
@@ -58,95 +123,11 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
     editAltContact(participant, adminSubjectAudit);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
-    updateUserSigninMechanism(participant, siteKey);
-    updateUserLogin(participant, siteKey);
+    setUserSigninMechanism(participant, siteKey);
+    setUserEmailUpdate(participant, siteKey);
 }
 
-
 export const render = (participant) => {
-    const importantColumns = [ 
-        { field: fieldMapping.lName,
-            editable: true,
-            display: true } ,
-        { field: fieldMapping.fName,
-            editable: true,
-            display: true } ,
-         { field: fieldMapping.prefName,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.mName,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.suffix,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.birthMonth,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.birthDay,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.birthYear,
-        editable: true,
-        display: true } ,
-        { field: fieldMapping.cellPhone,
-        editable: true,
-        display: true },
-        { field: fieldMapping.canWeText,
-        editable: true,
-        display: true },
-        { field: fieldMapping.voicemailMobile,
-        editable: true,
-        display: true },
-         { field: fieldMapping.homePhone,
-        editable: true,
-        display: true } ,
-        { field: fieldMapping.voicemailHome,
-        editable: true,
-        display: true },
-        { field: fieldMapping.otherPhone,
-        editable: true,
-        display: true },
-        { field: fieldMapping.voicemailOther,
-        editable: true,
-        display: true },
-        { field: fieldMapping.email,
-        editable: true,
-        display: true },
-        { field: fieldMapping.email1,
-        editable: true,
-        display: true },
-        { field: fieldMapping.email2,
-        editable: true,
-        display: true },
-        { field: fieldMapping.address1,
-        editable: true,
-        display: true },
-        { field: fieldMapping.address2,
-        editable: true,
-        display: true },
-        { field: fieldMapping.city,
-        editable: true,
-        display: true },
-        { field: fieldMapping.state,
-        editable: true,
-        display: true },
-        { field: fieldMapping.zip,
-        editable: true,
-        display: true },
-        { field: 'Connect_ID',
-        editable: false,
-        display: true },
-        { field: `Change Login Mode`,
-        editable: true,
-        display: true },
-        { field: `Change Login Email`,
-        editable: true,
-        display: appState.getState().loginMechanism.email },
-        { field: `Change Login Phone`,
-        editable: true,
-        display:  appState.getState().loginMechanism.phone }
-    ]
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
@@ -157,6 +138,8 @@ export const render = (participant) => {
         `
     } else {
         let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+        participant['Change Login Mode'] = participant[fieldMapping.cellPhone]
+        console.log('pa', participant)
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
@@ -174,11 +157,14 @@ export const render = (participant) => {
                             </thead>
                         <tbody class="participantDetailTable">
 
-    
+                        ${participant[fieldMapping.signInMechansim] === `password` ?
+                      `      <div class="float-left" style="position: relative; top: -37px; padding-left: 15px;">
+                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalShowMoreData" id="updateUserEmail">Update Email</button>
+                            </div>` : ``}
             
                     `
-                    const filteredImportantColumns = importantColumns.filter(x => x.display === true);
-                    filteredImportantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
+
+                    importantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
                     <label class="form-label">
                     ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? 
                         (   
@@ -209,22 +195,21 @@ export const render = (participant) => {
                                                     :
                                                     (participant[x.field] === fieldMapping.prefEmail) ? 'Email' 
                                                     : 
+                                                  
                                                     participant[x.field]  )
                                                     : ""}</td> 
                     <td style="text-align: left;">
-                        ${ x.editable && (x.field == 'Change Login Mode') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>` 
+                        ${ x.editable && (x.field == 'Change Login Mode') ? `<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>` 
                         : 
-                        (participant[fieldMapping.signInMechansim] === `password` && x.field == 'Change Login Email') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='email' id="updateUserLogin">Update</button>` 
-                        : 
-                        (participant[fieldMapping.signInMechansim] === `phone` && x.field == 'Change Login Phone') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='phone' id="updateUserLogin">Update</button>` 
+                        x.editable && (x.field == 'Change Login Email') ? `<button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Update</button>` 
                         :
-                        (x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate)) )? 
+                        (x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
                         ` <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
                             data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
                             data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" 
                             id=${x.field}>
-                            <button type="button" class="btn btn-primary btn-custom">Edit</button>`
-                        : `<button type="button" class="btn btn-secondary btn-custom" disabled>Edit</button>`
+                            <button type="button" class="btn btn-primary">Edit</button>`
+                        : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
                         }
                     </a></td></tr>&nbsp;`)
         
@@ -273,11 +258,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                 template += `
                 <form id="formResponse" method="post">  
                         <span><span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${removeCamelCase(data.participantkey)}</span> 
-                        : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} 
-                            value=${
-                                    data.participantvalue === fieldMapping.yes ? `Yes`:
-                                    data.participantvalue === fieldMapping.no ? `No`:
-                                    data.participantvalue === `name="modalParticipantData"` ? `+` : ``} />
+                        : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue} />
                         <br >
                         <span style="font-size: 12px;" id="showNote"><i></i></span>
                         <br >
@@ -289,7 +270,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                </div>`
                 body.innerHTML = template;
                 saveResponses(participant, adminSubjectAudit, changedOption, element);
-            //    postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
+                postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
                 viewAuditHandler(adminSubjectAudit);
                 showSaveAlert();
                 resetChanges(participant, originalHTML, siteKey);  
@@ -340,9 +321,6 @@ const saveResponses = (participant, adminSubjectAudit, changedOption, editedElem
         conceptId.push(fieldModifiedData.fieldconceptid);
         // new value
         let newUpdatedValue = document.getElementById('newValue').value;
-        if (newUpdatedValue.toString().toUpperCase() === 'NO') {newUpdatedValue = fieldMapping.no}
-        if (newUpdatedValue.toString().toUpperCase() === 'YES') {newUpdatedValue = fieldMapping.yes}
-
         changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue;
 
         // if a changed field is a date of birth field then we need to update full date of birth  
@@ -513,13 +491,10 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
 const showSaveAlert = () => {
     const a = document.getElementById('editModal');
     a.addEventListener('click', e => {
-        // counter++;
-        // saveFlag = false
-        // localStorage.setItem("counters", JSON.stringify(counter));
-        // localStorage.setItem("flags", JSON.stringify(saveFlag));
-        let prevCounter =  appState.getState().unsavedChangesTrack.counter
-        appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}})
-        
+        counter++;
+        saveFlag = false
+        localStorage.setItem("counters", JSON.stringify(counter));
+        localStorage.setItem("flags", JSON.stringify(saveFlag));
         const modalClose = document.getElementById('modalShowMoreData')
         const closeButton = modalClose.querySelector('#closeModal').click()
     })
@@ -530,10 +505,11 @@ const resetChanges = (participant, originalHTML, siteKey) => {
     const a = document.getElementById("cancelChanges");
     let template = '';
     a.addEventListener("click", () => {
-        if ( appState.getState().unsavedChangesTrack.saveFlag === false ) {  
+        if (saveFlag === false) {  
             mainContent.innerHTML = originalHTML;
             renderParticipantDetails(participant, [], {}, siteKey);
-            appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
+            counter = 0;
+            localStorage.setItem("counters", JSON.stringify(counter));
             let alertList = document.getElementById('alert_placeholder');
             // throws an alert when canncel changes button is clicked
             template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -582,7 +558,10 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         hideAnimation();
         if (response.status === 200) {
             document.getElementById('loadingAnimation').style.display = 'none';
-            appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
+            saveFlag = true
+            localStorage.setItem("flags", JSON.stringify(saveFlag));
+            counter = 0
+            localStorage.setItem("counters", JSON.stringify(counter));
             let lastModifiedHolder;
             adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
             let alertList = document.getElementById("alert_placeholder");
@@ -614,140 +593,103 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
     }
 }
 
-const updateUserSigninMechanism = (participant, siteKey) => {
+const setUserSigninMechanism = (participant, siteKey) => {
     const switchSiginButton = document.getElementById('switchSiginMechanism');
     let template = ``
     if (switchSiginButton) {
         switchSiginButton.addEventListener('click', () => {
+            console.log('1234', participant)
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
             header.innerHTML = `<h5>Change Login Mode</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-            template = `<div> <form id="formResponse2" method="post"> `
-            if (participant[fieldMapping.signInMechansim] === 'phone') {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountPhone]} disabled/>
-                            <label class="col-form-label search-label">Enter New Email Login</label>
-                            <input class="form-control" type="email" id="newEmail" placeholder="Enter Email"/>
-                            <label class="col-form-label search-label">Confirm New Email Login</label>
-                            <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
+            template = `<div>
+                    <form>`
+            if (participant[fieldMapping.signInMechansim] === 'password') {
+                template += `<div class="form-group">
+                            <label class="col-form-label search-label">Enter Phone number for signin</label>
+                            <input class="form-control" id="phone" placeholder="Enter phone number without dashes & parenthesis"/>
                         </div>`
             }
-            else if (participant[fieldMapping.signInMechansim] === 'password') {
+            else if (participant[fieldMapping.signInMechansim] === 'phone') {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountEmail]} disabled/>
-                            <label class="col-form-label search-label">Enter New Phone Login</label>
-                            <input class="form-control" id="newPhone" placeholder="Enter phone number without dashes & parenthesis"/>
-                            <label class="col-form-label search-label">Confirm New Phone Login</label>
-                            <input class="form-control" id="confirmPhone" placeholder="Confim phone number"/>
+                            <input class="form-control" value=${participant[fieldMapping.cellPhone]} disabled/>
+                            <label class="col-form-label search-label">Enter New Login Email</label>
+                            <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
+                            <label class="col-form-label search-label">Confirm New Login Email</label>
+                            <input class="form-control" type="email" id="email" placeholder="Confim Email"/>
                         </div>`
             }
             template += `<div class="form-group">
-                            <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
-                            <button type="submit" class="btn btn-primary" data-toggle="modal">Submit</button>
+                            <button id="replaceSignin" class="btn btn-outline-primary">Confirm</button>
                         </div>
                     </form>
                 </div>`
             body.innerHTML = template;
-            let prevCounter =  appState.getState().unsavedChangesTrack.counter
-            appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}});
             processSwitchSigninMechanism(participant, siteKey, 'replaceSignin');
         })
     }
    }
-// updates existing email or phone
-   const updateUserLogin = (participant, siteKey) => {
-    const switchSiginButton = document.getElementById('updateUserLogin');
-    let updateFlag = ``
+
+   const setUserEmailUpdate = (participant, siteKey) => {
+    const switchSiginButton = document.getElementById('updateUserEmail');
     let template = ``
     if (switchSiginButton) {
         switchSiginButton.addEventListener('click', () => {
+            console.log('1234', participant)
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Change Login ${participant[fieldMapping.signInMechansim] === 'phone' ? `Phone` : `Email`}</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-            template = `<div> <form id="formResponse2" method="post"> `
-            if (participant[fieldMapping.signInMechansim] === 'phone') {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountPhone]} disabled/>
-                            <label class="col-form-label search-label">Enter New Phone Login</label>
-                            <input class="form-control" id="newPhone" placeholder="Enter phone number without dashes & parenthesis"/>
-                            <label class="col-form-label search-label">Confirm New Phone Login</label>
-                            <input class="form-control" id="confirmPhone" placeholder="Confim phone number"/>
+            header.innerHTML = `<h5>Update Signin Email</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            template = `<div>
+                    <form>
+                        <div class="form-group">
+                            <label class="col-form-label search-label">Enter new email address for signin</label>
+                            <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
                         </div>`
-                updateFlag = `updatePhone`
-                
-            }
-            else if (participant[fieldMapping.signInMechansim] === 'password') {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountEmail]} disabled/>
-                            <label class="col-form-label search-label">Enter New Email Login</label>
-                            <input class="form-control" type="email" id="newEmail" placeholder="Enter Email"/>
-                            <label class="col-form-label search-label">Confirm New Email Login</label>
-                            <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
-                        </div>`
-                updateFlag = `updateEmail`
-            }
             template += `<div class="form-group">
-                            <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
-                            <button type="submit" class="btn btn-primary" data-toggle="modal">Submit</button>
+                            <button id="replaceSignin" class="btn btn-outline-primary">Confirm</button>
                         </div>
                     </form>
                 </div>`
             body.innerHTML = template;
-            let prevCounter =  appState.getState().unsavedChangesTrack.counter
-            appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}});
-            processSwitchSigninMechanism(participant, siteKey, updateFlag);
+            processSwitchSigninMechanism(participant, siteKey, 'updateEmail');
         })
     }
    }
 
 
 const processSwitchSigninMechanism = (participant, siteKey, flag) => {
-    document.getElementById('formResponse2') && document.getElementById('formResponse2').addEventListener('submit', e => {
+    console.log('1233333')
+    document.getElementById('replaceSignin') && document.getElementById('replaceSignin').addEventListener('click', e => {
+        console.log('ddddd')
         e.preventDefault();
         let switchPackage = {}
         let changedOption = {}
-        let tweakedPhoneNumber = ``
         const confirmation = confirm('Are you sure want to continue with the operation?')
         if (confirmation) {
-
-            if(document.getElementById('newPhone') && document.getElementById('newPhone').value === document.getElementById('confirmPhone').value) {
-
-                (document.getElementById('newPhone').value.toString().length) === 10 ? 
-                tweakedPhoneNumber = document.getElementById('newPhone').value.toString().trim()
-                : tweakedPhoneNumber = document.getElementById('newPhone').value.toString().slice(2).trim()
-
-                switchPackage['phone'] = tweakedPhoneNumber
+            if(document.getElementById('phone')) { 
+                switchPackage['phone'] = document.getElementById('phone').value 
                 changedOption[fieldMapping.signInMechansim] = 'phone'
-                changedOption[fieldMapping.accountPhone] = `+1`+tweakedPhoneNumber
-            }
-
-            else if (document.getElementById('newEmail') &&  document.getElementById('newEmail').value === document.getElementById('confirmEmail').value) {
-                switchPackage['email'] = document.getElementById('newEmail').value 
+            };
+            if(document.getElementById('email')) { 
+                switchPackage['email'] = document.getElementById('email').value 
                 changedOption[fieldMapping.signInMechansim] = 'password'
-                changedOption[fieldMapping.accountEmail] = document.getElementById('newEmail').value
-            }
-
-            else {
-                alert(`Your entered inputs don't match`)
-                return
-            }
-
+            };
             changedOption['token'] = participant.token;
             switchPackage['uid'] = participant.state.uid;
             switchPackage['flag'] = flag
-            switchSigninMechanismHandler(switchPackage, siteKey, changedOption);
-
+            console.log('switchPackage', switchPackage)
+            switchSigninMechanismHandler(switchPackage, siteKey)
+            clickHandler({}, changedOption, siteKey);
+            const modalClose = document.getElementById('modalShowMoreData')
+            const closeButton = modalClose.querySelector('#closeModal').click()
         }
     })
 };
 
 
 // async-await function to make HTTP POST request
-const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOption) =>  {
+async function switchSigninMechanismHandler(switchPackage, siteKey)  {
     showAnimation();
     const idToken = siteKey;
    
@@ -765,7 +707,6 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         }))
         hideAnimation();
         if (response.status === 200) {
-            clickHandler({}, changedOption, siteKey);
             let alertList = document.getElementById("alert_placeholder");
             let template = ``;
             template += `
@@ -776,35 +717,12 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
                             </button>
                     </div>`;
             alertList.innerHTML = template;
-            const modalClose = document.getElementById('modalShowMoreData');
-            const closeButton = modalClose.querySelector('#closeModal').click();
-        //    reloadParticipantData(changedOption.token, siteKey);
+            return true;
          }
-
-        else if (response.status === 409) {
-            alert(`Phone Number/Email already exists!`)
-            return false;
-        }
-
-        else if (response.status === 403) {
-            alert(`Invalid Phone Number/Email!`)
-            return false;
-         }
-
-        else { 
-            alert(`Operation Unsuccessful!`)
+           else { 
+               (alert('Error'))
         }
  }
-
- const reloadParticipantData = async (token, siteKey) => {
-    showAnimation();
-    const query = `token=${token}`
-    const reloadedParticpant = await findParticipant(query);
-    mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], [],  {}, siteKey);
-    hideAnimation();
-    }
-
 
  const buttonAuditHandler = (adminSubjectAudit) => {
         const header = document.getElementById('modalHeader');
