@@ -117,8 +117,6 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
     editAltContact(participant, adminSubjectAudit);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
-    setUserSigninMechanism(participant, siteKey);
-    setUserEmailUpdate(participant, siteKey);
 }
 
 export const render = (participant) => {
@@ -136,6 +134,7 @@ export const render = (participant) => {
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
         template += `
+                 
                         <div class="float-left">
                             <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
                         </div>
@@ -149,13 +148,8 @@ export const render = (participant) => {
                             </thead>
                         <tbody class="participantDetailTable">
 
-                        ${participant[fieldMapping.signInMechansim] === `password` ?
-                      `      <div class="float-left" style="position: relative; top: -37px; padding-left: 15px;">
-                                <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#modalShowMoreData" id="updateUserEmail">Update Email</button>
-                            </div>` : ``}
-
-                            <div class="float-right" style="position: relative; top: -35px;">
-                                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Switch Signin Mechanism</button>
+                            <div class="float-right" style="position: relative; top: -35px;  ">
+                                <button type="button" class="btn btn-success" id="displaySearchResultsBtn">Switch Signin Mechanism</button>
                             </div>
             
                     `
@@ -197,9 +191,11 @@ export const render = (participant) => {
                                             participant[x.field]  )
                                             : ""}</td> 
             <td style="text-align: left;"> <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
-                data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? 
-                conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" id=${x.field}>
+                data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
+
+                data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" 
+
+                id=${x.field}>
                 ${(x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate))  )? 
                     `<button type="button" class="btn btn-primary">Edit</button>`
                  : `<button type="button" class="btn btn-secondary" disabled>Edit</button>`
@@ -523,9 +519,11 @@ const resetChanges = (participant, originalHTML, siteKey) => {
 
 
 const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteKey) => {
+
     const a = document.getElementById('sendResponse');
     a.addEventListener('click', () => {
-        changedOption['token'] = participant.token;
+        const participantToken = participant.token;
+        changedOption['token'] = participantToken;
         clickHandler(adminSubjectAudit, changedOption, siteKey);
     })
 }
@@ -562,7 +560,7 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
             let template = ``;
             template += `
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
-                      Participant detail updated!
+                      Response saved!
                       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -584,135 +582,8 @@ async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
         a.addEventListener('click',  () => {
             buttonAuditHandler(adminSubjectAudit);
     })
-    }
 }
-
-const setUserSigninMechanism = (participant, siteKey) => {
-    const switchSiginButton = document.getElementById('switchSiginMechanism');
-    let template = ``
-    if (switchSiginButton) {
-        switchSiginButton.addEventListener('click', () => {
-            console.log('1234', participant)
-            const header = document.getElementById('modalHeader');
-            const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Switch Signin Mechanism</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-            template = `<div>
-                    <form>`
-            if (participant[fieldMapping.signInMechansim] === 'password') {
-                template += `<div class="form-group">
-                            <label class="col-form-label search-label">Enter Phone number for signin</label>
-                            <input class="form-control" id="phone" placeholder="Enter phone number without dashes & parenthesis"/>
-                        </div>`
-            }
-            else if (participant[fieldMapping.signInMechansim] === 'phone') {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Email</label>
-                            <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
-                        </div>`
-            }
-            template += `<div class="form-group">
-                            <button id="replaceSignin" class="btn btn-outline-primary">Confirm</button>
-                        </div>
-                    </form>
-                </div>`
-            body.innerHTML = template;
-            processSwitchSigninMechanism(participant, siteKey, 'replaceSignin');
-        })
-    }
-   }
-
-   const setUserEmailUpdate = (participant, siteKey) => {
-    const switchSiginButton = document.getElementById('updateUserEmail');
-    let template = ``
-    if (switchSiginButton) {
-        switchSiginButton.addEventListener('click', () => {
-            console.log('1234', participant)
-            const header = document.getElementById('modalHeader');
-            const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Update Signin Email</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-            template = `<div>
-                    <form>
-                        <div class="form-group">
-                            <label class="col-form-label search-label">Enter new email address for signin</label>
-                            <input class="form-control" type="email" id="email" placeholder="Enter Email"/>
-                        </div>`
-            template += `<div class="form-group">
-                            <button id="replaceSignin" class="btn btn-outline-primary">Confirm</button>
-                        </div>
-                    </form>
-                </div>`
-            body.innerHTML = template;
-            processSwitchSigninMechanism(participant, siteKey, 'updateEmail');
-        })
-    }
-   }
-
-
-const processSwitchSigninMechanism = (participant, siteKey, flag) => {
-    console.log('1233333')
-    document.getElementById('replaceSignin') && document.getElementById('replaceSignin').addEventListener('click', e => {
-        console.log('ddddd')
-        e.preventDefault();
-        let switchPackage = {}
-        let changedOption = {}
-        const confirmation = confirm('Are you sure want to continue with the operation?')
-        if (confirmation) {
-            if(document.getElementById('phone')) { 
-                switchPackage['phone'] = document.getElementById('phone').value 
-                changedOption[fieldMapping.signInMechansim] = 'phone'
-            };
-            if(document.getElementById('email')) { 
-                switchPackage['email'] = document.getElementById('email').value 
-                changedOption[fieldMapping.signInMechansim] = 'password'
-            };
-            changedOption['token'] = participant.token;
-            switchPackage['uid'] = participant.state.uid;
-            switchPackage['flag'] = flag
-            console.log('switchPackage', switchPackage)
-            switchSigninMechanismHandler(switchPackage, siteKey)
-            clickHandler({}, changedOption, siteKey);
-            const modalClose = document.getElementById('modalShowMoreData')
-            const closeButton = modalClose.querySelector('#closeModal').click()
-        }
-    })
-};
-
-
-// async-await function to make HTTP POST request
-async function switchSigninMechanismHandler(switchPackage, siteKey)  {
-    showAnimation();
-    const idToken = siteKey;
-   
-    const signinMechanismPayload = {
-        "data": switchPackage
-    }
-
-    const response = await (await fetch(`http://localhost:5001/nih-nci-dceg-connect-dev/us-central1/dashboard?api=updateSignMechanism`,{
-        method:'POST',
-        body: JSON.stringify(signinMechanismPayload),
-        headers:{
-            Authorization:"Bearer "+idToken,
-            "Content-Type": "application/json"
-            }
-        }))
-        hideAnimation();
-        if (response.status === 200) {
-            let alertList = document.getElementById("alert_placeholder");
-            let template = ``;
-            template += `
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                      Operation successful!
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                    </div>`;
-            alertList.innerHTML = template;
-            return true;
-         }
-           else { 
-               (alert('Error'))
-        }
- }
+}
 
  const buttonAuditHandler = (adminSubjectAudit) => {
         const header = document.getElementById('modalHeader');
