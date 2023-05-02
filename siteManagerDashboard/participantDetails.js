@@ -760,10 +760,9 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
                 updateStatus.innerHTML = 'Replacing login mode';
             }
             setTimeout(() => {
+                reloadParticipantData(changedOption.token, siteKey);
                 alert(`If you don't see updated information in next couple of seconds. Try to reload your participant!`)
-              }, "5000");
-
-            reloadParticipantData(changedOption.token, siteKey);
+              }, "4000");
          }
 
         else if (response.status === 409) {
