@@ -766,17 +766,27 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
          }
 
         else if (response.status === 409) {
-            alert(`Phone Number/Email already exists!`)
+            const body = document.getElementById('modalBody');
+            let template = ``
+            if (switchPackage.phone) template += '<div> ☎️ Phone Number already in use!</div>'
+            else template += '<div> 📧 Email already in use!</div>'
+            body.innerHTML = template;
             return false;
         }
 
         else if (response.status === 403) {
-            alert(`Invalid Phone Number/Email!`)
+            const body = document.getElementById('modalBody');
+            let template = ``
+            if (switchPackage.phone) template += '<div>Invalid Phone Number ☎️!</div>' 
+            else template += '<div>Invalid Email 📧!</div>'
+            body.innerHTML = template;
             return false;
          }
 
         else { 
-            alert(`Operation Unsuccessful!`)
+            const body = document.getElementById('modalBody');
+            body.innerHTML = `Operation Unsuccessful!`;
+            return false;
         }
  }
 
