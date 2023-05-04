@@ -768,8 +768,8 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         else if (response.status === 409) {
             const body = document.getElementById('modalBody');
             let template = ``
-            if (switchPackage.phone) template += '<div> ☎️ Phone Number already in use!</div>'
-            else template += '<div> 📧 Email already in use!</div>'
+            if (switchPackage.phone) template += '<div>Phone Number already in use!</div>'
+            else template += '<div>Email already in use!</div>'
             body.innerHTML = template;
             return false;
         }
@@ -777,8 +777,8 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         else if (response.status === 403) {
             const body = document.getElementById('modalBody');
             let template = ``
-            if (switchPackage.phone) template += '<div>Invalid Phone Number ☎️!</div>' 
-            else template += '<div>Invalid Email 📧!</div>'
+            if (switchPackage.phone) template += '<div>Invalid Phone Number!</div>' 
+            else template += '<div>Invalid Email!</div>'
             body.innerHTML = template;
             return false;
          }
