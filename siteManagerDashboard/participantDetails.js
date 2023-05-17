@@ -142,7 +142,10 @@ export const render = (participant) => {
         display: true },
         { field: 'Connect_ID',
         editable: false,
-        display: true },
+        display: true }
+    ];
+
+    const loginChangeInfoArray = [
         { field: `Change Login Mode`,
         editable: true,
         display: true },
@@ -152,7 +155,11 @@ export const render = (participant) => {
         { field: `Change Login Phone`,
         editable: true,
         display:  appState.getState().loginMechanism.phone }
-    ]
+    ];
+
+    const userLoginEmail = appState.getState().userSession?.email ?? '';
+    const permDomains = /(nih.gov|norc.org)$/i;
+    permDomains.test(userLoginEmail.split('@')[1]) && importantColumns.push(...loginChangeInfoArray);
 
     let template = `<div class="container">`
     if (!participant) {
