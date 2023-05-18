@@ -97,6 +97,24 @@ export const getIdToken = () => {
   });
 };
 
+export const getLoggedInUserForHistory = () => {
+  return new Promise((resolve, reject) => {
+    const unsubscribe = firebase.auth().onAuthStateChanged((user) => {
+        unsubscribe();
+        if (user) {
+          resolve(user.email)
+        } else {
+          resolve(null);
+        }
+    });
+    // Handle timeout error after 10 seconds
+    setTimeout(() => {
+      unsubscribe();
+      reject(new Error('Timeout error.'));
+    }, 10000);
+  });
+};
+
 // shows/hides a spinner when HTTP request is made/screen is loading
 export const showAnimation = () => {
   if(document.getElementById('loadingAnimation')) document.getElementById('loadingAnimation').style.display = '';

@@ -7,6 +7,7 @@ export default
     "birthMonth":564964481,
     "birthDay":795827569,
     "birthYear":544150384,
+    "dateOfBirthComplete": 371067537,
 
     // consent
     "consentDate":454445267,
@@ -56,6 +57,9 @@ export default
     "ssnOnFile": 454067894,
     "timeProfileSubmitted": 430551721,
     'timeStudyIdSubmitted': 521025370,
+    "userProfileHistory": 569151507,
+    "profileChangeRequestedBy": 611005658,
+    "userProfileUpdateTimestamp": 371303487,
 
     'jr': 612166858,
     'sr': 255907182,
