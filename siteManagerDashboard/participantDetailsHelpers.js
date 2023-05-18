@@ -313,8 +313,9 @@ export const getImportantRows = (participant, changedOption) => {
     console.log(appState.getState().loginMechanism.phone);
     console.log(appState.getState().userSession?.email);
     console.log('userLoginEmail', userLoginEmail);
-    const permDomains = /(nih.gov|norc.org)$/i;
-    permDomains.test(userLoginEmail.split('@')[1]) && importantRowsArray.push(...loginChangeInfoArray);
+    //const permDomains = /(nih.gov|norc.org)$/i;
+    //permDomains.test(userLoginEmail.split('@')[1]) &&
+    importantRowsArray.push(...loginChangeInfoArray);
 
     return importantRowsArray; 
 };
