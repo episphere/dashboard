@@ -285,15 +285,15 @@ export const getImportantRows = (participant, changedOption) => {
             validationType: 'none',
             isRequired: true
         },
+    ];
+
+    const loginChangeInfoArray = [
         { field: `Change Login Mode`,
             label: 'Change Login Mode',
             editable: true,
             display: true,
             validationType: 'none'
         },
-    ];
-
-    const loginChangeInfoArray = [
         { field: `Change Login Email`,
             label: 'Change Login Email',
             editable: true,
@@ -309,12 +309,8 @@ export const getImportantRows = (participant, changedOption) => {
     ];
 
     const userLoginEmail = appState.getState().userSession?.email ?? '';
-    console.log(appState.getState().loginMechanism.email);
-    console.log(appState.getState().loginMechanism.phone);
-    console.log(appState.getState().userSession?.email);
-    console.log('userLoginEmail', userLoginEmail);
-    //const permDomains = /(nih.gov|norc.org)$/i;
-    //permDomains.test(userLoginEmail.split('@')[1]) &&
+    const permDomains = /(nih.gov|norc.org)$/i;
+    permDomains.test(userLoginEmail.split('@')[1]) &&
     importantRowsArray.push(...loginChangeInfoArray);
 
     return importantRowsArray; 

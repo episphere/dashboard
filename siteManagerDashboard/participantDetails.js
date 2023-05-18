@@ -21,7 +21,6 @@ window.addEventListener('onload', (e) => {
     }, 15);
 })
 
-//TODO integrate Warren's code (fixing for Abhinav)
 const checkForLoginMechanism = (participant) => {
     const isPhoneLogin = participant?.[fieldMapping.signInMechansim] === `phone`;
     if (isPhoneLogin) {
@@ -231,8 +230,6 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
         changedModuleOption['Last Name'] = altNewLName;
 
         let newRelationship = document.getElementById('newRelationship').value;
-        // let altFieldRelationship = getDataAttributes(document.getElementById('fieldRelationship'))
-        // let altCurrentRelationship = getDataAttributes(document.getElementById('currentRelationship'))
         changedModuleOption['Relationship'] = newRelationship;
 
 
@@ -374,7 +371,8 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             processSwitchSigninMechanism(participant, siteKey, 'replaceSignin');
         })
     }
-   }
+}
+
 // updates existing email or phone
 const updateUserLogin = (participant, siteKey) => {
     const switchSiginButton = document.getElementById('updateUserLogin');
