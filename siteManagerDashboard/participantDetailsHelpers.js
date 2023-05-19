@@ -3,7 +3,7 @@ import { render, renderParticipantDetails } from './participantDetails.js';
 import { findParticipant, renderLookupResultsTable } from './participantLookup.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { appState } from './stateManager.js';
-import { baseAPI, getCurrentTimeStamp, getDataAttributes, getIdToken, hideAnimation, showAnimation, getLoggedInUserForHistory } from './utils.js';
+import { baseAPI, getCurrentTimeStamp, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
 
 export const allStates = {
     "Alabama":1,
@@ -846,10 +846,7 @@ export const viewParticipantSummary = (participant) => {
  */
 export const submitClickHandler = async (participant, changedOption, siteKey) => {
     const isParticipantVerified = participant[fieldMapping.verifiedFlag] == fieldMapping.verified;
-    let adminEmail = '';
-    if (isParticipantVerified) {
-        adminEmail = await fetchUpdatingAdminEmailAddress();
-    }
+    const adminEmail = appState.getState().userSession?.email ?? '';
     const submitButtons = document.getElementsByClassName('updateMemberData');
     for (const button of submitButtons) {
         button.addEventListener('click', async (e) => {
@@ -1022,16 +1019,6 @@ const populateUserHistoryMap = (existingData, adminEmail) => {
 
     return userHistoryMap;
 };
-
-export const fetchUpdatingAdminEmailAddress = async () => {
-    try {
-      const email = await getLoggedInUserForHistory();
-      return email;
-    } catch (error) {
-      console.error('Failed to fetch updating admim user\'s email:', error);
-      return '';
-    }
-}
 
 export const postUserDataUpdate = async (changedUserData) => {
     try {
