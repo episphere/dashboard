@@ -112,7 +112,7 @@ const isPhoneNumberInForm = (participant, changedOption, fieldMappingKey) => {
 };
 
 export const getImportantRows = (participant, changedOption) => {
-    const isParticipantVerified = participant[fieldMapping.verifiedFlag] == fieldMapping.verified;
+    const isParticipantVerified = participant[fieldMapping.verifiedFlag] === fieldMapping.verified;
     const isCellPhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.cellPhone);
     const isHomePhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.homePhone);
     const isOtherPhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.otherPhone);
@@ -318,6 +318,10 @@ export const getImportantRows = (participant, changedOption) => {
 
 /**
  * Determine whether a phone number is present in the form or in the changed options.
+ * A phone number is present if:
+ *  - it is present in the participant object or the changedOption object
+ *  - AND it is not an empty string in the changedOption object (empty string in changedOption means the user is trying to delete the phone number)
+ *  - AND the conceptId is not the same as the phoneType (conceptId is the field name being changed, phoneType is the field being checked see: getRequiredField())
  * This is used for validating phone number updates:
  * If no number is present, require a phone number before allowing user to submit the update
  * If a number is present, allow user to submit the update
