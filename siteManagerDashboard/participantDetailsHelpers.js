@@ -3,7 +3,7 @@ import { render, renderParticipantDetails } from './participantDetails.js';
 import { findParticipant, renderLookupResultsTable } from './participantLookup.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { appState } from './stateManager.js';
-import { baseAPI, getCurrentTimeStamp, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
+import { baseAPI, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
 
 export const allStates = {
     "Alabama":1,
@@ -60,43 +60,40 @@ export const allStates = {
     "NA": 52
 }
 
-const buttonAuditHandler = (adminSubjectAudit) => {
-    const header = document.getElementById('modalHeader');
-    const body = document.getElementById('modalBody');
-    header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-    let template = '<div>'
-    adminSubjectAudit.length === 0 ? (
-        template+= `<span> No changes to show </span></div>`
-    ) : (
-    adminSubjectAudit.map(element => {
-        template += `<span>
-            ${element.outerHTML};
-        </span>
-    </div>`
-    }))
-    
-    body.innerHTML = template;
-}
-
 export const closeModal = () => {
     const modalClose = document.getElementById('modalShowMoreData');
     modalClose.querySelector('#closeModal').click();
 };
 
-export const fieldValues = 
-    {       
-        353358909: 'Yes',
-        104430631: 'No',
-        612166858: 'Jr.',
-        255907182: 'Sr.',
-        226924545: 'I',
-        270793412: 'II',
-        959021713: 'III',
-        643664527: '2nd',
-        537892528: '3rd',
-        127547625: 'Phone',
-        869588347: 'Email'
+const fieldValues = {     
+    [fieldMapping.yes]: 'Yes',
+    [fieldMapping.no]: 'No',
+    [fieldMapping.jr]: 'Jr.',
+    [fieldMapping.sr]: 'Sr.',
+    [fieldMapping.one]: 'I',
+    [fieldMapping.two]: 'II',
+    [fieldMapping.three]: 'III',
+    [fieldMapping.second]: '2nd',
+    [fieldMapping.third]: '3rd',
+    [fieldMapping.prefPhone]: 'Phone',
+    [fieldMapping.email]: 'Email',
+}
+
+export const getFieldValues = (variableValue, cId) => {
+    const phoneFieldValues = {
+        [fieldMapping.cellPhone]: formatPhoneNumber(variableValue.toString()),
+        [fieldMapping.homePhone]: formatPhoneNumber(variableValue.toString()),
+        [fieldMapping.otherPhone]: formatPhoneNumber(variableValue.toString())
     }
+
+    if (variableValue in fieldValues){
+        return fieldValues[variableValue];
+    } else if (cId in phoneFieldValues){
+        return phoneFieldValues[cId];
+    } else {
+        return variableValue;
+    }
+}
 
 export const formatInputResponse = (participantValue) => {
     let ptValue = '';
@@ -470,9 +467,8 @@ export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
  * @param {object} participant - the participant being updated 
  * @param {object} changedOption - object containing the participant's updated data points
  * @param {HTMLElement} editedElement - the currently edited HTML element
- * @param {object} adminSubjectAudit - record of the participant's data points before the update. This was existing and is not being referenced as of 05/18/2023. Retained for potential future use.)
  */
-export const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement, cId) => {
+export const saveResponses = (participant, changedOption, editedElement, cId) => {
     let conceptIdArray = [];
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
@@ -497,21 +493,6 @@ export const saveResponses = (participant, adminSubjectAudit, changedOption, edi
                     conceptIdArray.push(dateOfBirthComplete);
                     changedOption[conceptIdArray[conceptIdArray.length - 1]] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
                 }
-
-                const displayAuditHistory = {};
-                const fieldChanged = modifiedData;
-                const currentValueData = getDataAttributes(newValueElement);
-                const timeStampData =  getCurrentTimeStamp();
-                const userIdData = getCurrentTimeStamp();
-                const source = "Site Manager Dashboard";
-                displayAuditHistory.token = participant.token;
-                displayAuditHistory.fieldModified = fieldChanged.fieldmodified;
-                displayAuditHistory.currentvalue = currentValueData.currentvalue;
-                displayAuditHistory.newValue = document.getElementById(`newValue${cId}`).value;
-                displayAuditHistory.timeStamp = timeStampData;
-                displayAuditHistory.userId = userIdData;
-                displayAuditHistory.source = source;
-                adminSubjectAudit.push(displayAuditHistory);
 
                 updateUIValues(editedElement, newValueElement.value, conceptIdArray);
                 closeModal();
@@ -794,17 +775,6 @@ export const validEmailFormat = /^[a-zA-Z0-9.!#$%&'*+"\/=?^_`{|}~-]+@[a-zA-Z0-9]
 export const validNameFormat = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-.]+$/i;
 export const validPhoneNumberFormat =
   /^[\+]?(?:1|1-|1\.|1\s+)?[(]?[0-9]{3}[)]?(?:-|\s+|\.)?[0-9]{3}(?:-|\s+|\.)?[0-9]{4}$/;
-
-
-// Admin audit displaying logs
-export const viewAuditHandler = (adminSubjectAudit) => {
-    const a = document.getElementById('adminAudit');
-    if (a) {
-        a.addEventListener('click',  () => {
-            buttonAuditHandler(adminSubjectAudit);
-        })
-    }
-}
 
 export const viewParticipantSummary = (participant) => {
     const a = document.getElementById('viewSummary');

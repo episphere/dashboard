@@ -1,8 +1,8 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { allStates, closeModal, fieldValues, formatInputResponse, formatPhoneNumber, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, suffixToTextMap, viewAuditHandler, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { allStates, closeModal, formatInputResponse, formatPhoneNumber, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, suffixToTextMap, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
+import { getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { appState } from './stateManager.js';
 
 appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}});
@@ -35,7 +35,7 @@ const checkForLoginMechanism = (participant) => {
     }
 }
 
-export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
+export const renderParticipantDetails = (participant, changedOption, siteKey) => {
     checkForLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -45,9 +45,8 @@ export const renderParticipantDetails = (participant, adminSubjectAudit, changed
     let originalHTML =  mainContent.innerHTML;
     hideUneditableButtons(participant, changedOption);
     localStorage.setItem("participant", JSON.stringify(participant));
-    viewAuditHandler(adminSubjectAudit);
-    changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
-    editAltContact(participant, adminSubjectAudit);
+    changeParticipantDetail(participant,  changedOption, originalHTML, siteKey);
+    editAltContact(participant);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
     updateUserSigninMechanism(participant, siteKey);
@@ -79,8 +78,8 @@ export const render = (participant, changedOption) => {
         filteredImportantRows.forEach(row => {
             const cId = row.field;
             const variableLabel = row.label;
-            const variableValue = participant[cId];// === undefined ? '' :  fieldValues[participant[cId]] || participant[cId];
-            const valueToRender = getValueToRender(variableValue, cId);
+            const variableValue = participant[cId];
+            const valueToRender = getFieldValues(variableValue, cId);
             const participantValue = formatInputResponse(participant[cId]);
             const participantSignInMechanism = participant[fieldMapping.signInMechansim];
             const buttonToRender = getButtonToRender(row, participantSignInMechanism, variableLabel, cId, participantValue);
@@ -117,28 +116,7 @@ export const render = (participant, changedOption) => {
     return template;
 }
 
-const getValueToRender = (variableValue, cId) => {
-    const isPhoneNumber = cId === fieldMapping.cellPhone || cId === fieldMapping.homePhone || cId === fieldMapping.otherPhone;
-    const isYesNoPermission = cId === fieldMapping.canWeText || cId === fieldMapping.voicemailMobile || cId === fieldMapping.voicemailHome || cId === fieldMapping.voicemailOther; 
-    const isSuffix = cId === fieldMapping.suffix;
-
-    if (isPhoneNumber) return formatPhoneNumber(variableValue);
-    else if (isYesNoPermission) {
-        if (variableValue == fieldMapping.yes) {
-            return 'Yes'
-        } else if (variableValue == fieldMapping.no) {
-            return 'No'
-        } else {
-            return '';
-        }
-    } else if (isSuffix) {
-        return suffixToTextMap.get(parseInt(variableValue));
-    } else {
-        return variableValue;
-    };
-};
-
-const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, originalHTML, siteKey) => {
+const changeParticipantDetail = (participant, changedOption, originalHTML, siteKey) => {
     const detailedRow = Array.from(document.getElementsByClassName('detailedRow'));
     if (detailedRow) {
         detailedRow.forEach(element => {
@@ -152,7 +130,6 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                 const participantKey = data.participantkey;
                 const modalLabel = getModalLabel(participantKey);
                 const participantValue = data.participantvalue;
-                const isPhoneNumber = cId === fieldMapping.cellPhone || cId === fieldMapping.homePhone || cId === fieldMapping.otherPhone;
                 header.innerHTML = `
                     <h5>Edit ${modalLabel}</h5>
                     <button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -162,8 +139,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                     </div>`
                 body.innerHTML = template;
                 showSaveNoteInModal(cId);
-                saveResponses(participant, adminSubjectAudit, changedOption, element, cId);
-                viewAuditHandler(adminSubjectAudit);
+                saveResponses(participant, changedOption, element, cId);
                 resetChanges(participant, originalHTML, siteKey);   
             });
         })
@@ -199,16 +175,16 @@ const getButtonToRender = (row, participantSignInMechanism, variableLabel, cId, 
 };
 
 // For alternate contact details. Would be updates once concept ids for alt details are ready
-const editAltContact = (participant, adminSubjectAudit) => {
+const editAltContact = (participant) => {
     const a = document.getElementById('altContact');
     if (a) {
         a.addEventListener('click',  () => {
-        altContactHandler(participant, adminSubjectAudit);
+        altContactHandler(participant);
         })
     }   
 }
 
-const altContactHandler = (participant, adminSubjectAudit) => {
+const altContactHandler = (participant) => {
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
     header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -234,12 +210,11 @@ const altContactHandler = (participant, adminSubjectAudit) => {
             </div>
         </div>`
     body.innerHTML = template;
-    saveAltResponse(adminSubjectAudit, participant);
-    viewAuditHandler(adminSubjectAudit);
+    saveAltResponse( participant);
     viewParticipantSummary(participant)
 }
 
-const saveAltResponse = (adminSubjectAudit, participant) => {
+const saveAltResponse = (participant) => {
     const a = document.getElementById('altDetailsSubmit')
     a.addEventListener('click', (e) => {
         e.preventDefault()
@@ -272,14 +247,6 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
             changedModuleOption[key] === '' ?
                 delete changedModuleOption[key] : ''
         }
-
-        // timeStamp
-        let timeStampData =  getCurrentTimeStamp();
-        // userID
-        let userIdData = getCurrentTimeStamp();
-
-        const module1 = {'token': participant.token, 'Module': changedModuleOption, 'timeStamp': timeStampData, 'userId': userIdData};
-        adminSubjectAudit.push(module1);
         
         closeModal();
       
@@ -316,7 +283,7 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
 }
 
 // async-await function to make HTTP POST request
-async function signInMechanismClickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
+async function signInMechanismClickHandler(updatedOptions, siteKey)  {
     showAnimation();
    
     const updateParticpantPayload = {
@@ -335,8 +302,6 @@ async function signInMechanismClickHandler(adminSubjectAudit, updatedOptions, si
     if (response.status === 200) {
         document.getElementById('loadingAnimation').style.display = 'none';
         appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
-        let lastModifiedHolder;
-        adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
         let alertList = document.getElementById("alert_placeholder");
         let template = ``;
         template += `
