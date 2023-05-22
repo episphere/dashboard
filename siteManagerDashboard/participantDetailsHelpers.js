@@ -360,49 +360,74 @@ const getIsRequiredField = (participant, changedOption, newValueElement, concept
  * @returns - user-friendly label for the modal
  */
 export const getModalLabel = (participantKey) => {
-    switch (participantKey) {
-        case 'LastName':
-            return 'Last Name';
-        case 'FirstName':
-            return 'First Name';
-        case 'MiddleName':
-            return 'Middle Name';
-        case 'PreferredName':
-            return 'Preferred Name';
-        case 'BirthMonth':
-            return 'Birth Month';
-        case 'BirthDay':
-            return 'Birth Day';
-        case 'BirthYear':
-            return 'Birth Year';
-        case 'Mobilephone':
-            return 'Mobile Phone';
-        case 'Text':
-            return 'Do we have permission to text this number';
-        case 'Mobilevoicemail':
-            return 'Do we have permission to leave a voicemail at this number';
-        case 'Homephone':
-            return 'Home Phone';
-        case 'Homevoicemail':
-            return 'Do we have permission to leave a voicemail at this number';
-        case 'Otherphone':
-            return 'Other Phone';
-        case 'Othervoicemail':
-            return 'Do we have permission to leave a voicemail at this number';
-        case 'Preferredemail':
-            return 'Preferred Email';
-        case 'Additionalemail1':
-            return 'Additional Email 1';
-        case 'Additionalemail2':
-            return 'Additional Email 2';
-        case 'Addressline1':
-            return 'Address Line 1';
-        case 'Addressline2':
-            return 'Address Line 2';
-        default:
-            return participantKey;
+    const labels = {
+        LastName: 'Last Name',
+        FirstName: 'First Name',
+        MiddleName: 'Middle Name',
+        PreferredName: 'Preferred Name',
+        BirthMonth: 'Birth Month',
+        BirthDay: 'Birth Day',
+        BirthYear: 'Birth Year',
+        Mobilephone: 'Mobile Phone',
+        Text: 'Do we have permission to text this number',
+        Mobilevoicemail: 'Do we have permission to leave a voicemail at this number',
+        Homephone: 'Home Phone',
+        Homevoicemail: 'Do we have permission to leave a voicemail at this number',
+        Otherphone: 'Other Phone',
+        Othervoicemail: 'Do we have permission to leave a voicemail at this number',
+        Preferredemail: 'Preferred Email',
+        Additionalemail1: 'Additional Email 1',
+        Additionalemail2: 'Additional Email 2',
+        Addressline1: 'Address Line 1',
+        Addressline2: 'Address Line 2',
     };
+
+    return labels[participantKey] || participantKey;
 };
+// export const getModalLabel = (participantKey) => {
+//     switch (participantKey) {
+//         case 'LastName':
+//             return 'Last Name';
+//         case 'FirstName':
+//             return 'First Name';
+//         case 'MiddleName':
+//             return 'Middle Name';
+//         case 'PreferredName':
+//             return 'Preferred Name';
+//         case 'BirthMonth':
+//             return 'Birth Month';
+//         case 'BirthDay':
+//             return 'Birth Day';
+//         case 'BirthYear':
+//             return 'Birth Year';
+//         case 'Mobilephone':
+//             return 'Mobile Phone';
+//         case 'Text':
+//             return 'Do we have permission to text this number';
+//         case 'Mobilevoicemail':
+//             return 'Do we have permission to leave a voicemail at this number';
+//         case 'Homephone':
+//             return 'Home Phone';
+//         case 'Homevoicemail':
+//             return 'Do we have permission to leave a voicemail at this number';
+//         case 'Otherphone':
+//             return 'Other Phone';
+//         case 'Othervoicemail':
+//             return 'Do we have permission to leave a voicemail at this number';
+//         case 'Preferredemail':
+//             return 'Preferred Email';
+//         case 'Additionalemail1':
+//             return 'Additional Email 1';
+//         case 'Additionalemail2':
+//             return 'Additional Email 2';
+//         case 'Addressline1':
+//             return 'Address Line 1';
+//         case 'Addressline2':
+//             return 'Address Line 2';
+//         default:
+//             return participantKey;
+//     };
+// };
 
 export const hideUneditableButtons = (participant, changedOption) => {
     const importantRows = getImportantRows(participant, changedOption);
@@ -432,9 +457,9 @@ export const removeCamelCase = (participantKey) => {
 };
 
 export const renderReturnSearchResults = () => {
-    const a = document.getElementById('displaySearchResultsBtn');
-    if (a) {
-        a.addEventListener('click', () => {
+    const searchResultsButton = document.getElementById('displaySearchResultsBtn');
+    if (searchResultsButton) {
+        searchResultsButton.addEventListener('click', () => {
             renderLookupResultsTable();
         })
 }};
@@ -1033,7 +1058,7 @@ export const postUserDataUpdate = async (changedUserData) => {
         });
 
         if (!response.ok) { 
-            const error = (response.status + ": " + (await response.json()).message) || response.status;
+            const error = (response.status + ": " + (await response.json()).message);
             throw new Error(error);
         }
         

@@ -35,7 +35,7 @@ const checkForLoginMechanism = (participant) => {
     }
 }
 
-export const renderParticipantDetails = async (participant, adminSubjectAudit, changedOption, siteKey) => {
+export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
     checkForLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -339,6 +339,7 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             const body = document.getElementById('modalBody');
             header.innerHTML = `<h5>Change Login Mode</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             template = `<div> <form id="formResponse2" method="post"> `
+            //TODO this ref
             if (participant[fieldMapping.signInMechansim] === 'phone') {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
@@ -349,6 +350,7 @@ const updateUserSigninMechanism = (participant, siteKey) => {
                             <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
                         </div>`
             }
+            //TODO this ref
             else if (participant[fieldMapping.signInMechansim] === 'password') {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
