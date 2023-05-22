@@ -1,5 +1,5 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { allStates, closeModal, fieldValues, formatInputResponse, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, suffixList, submitClickHandler, viewAuditHandler, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { allStates, closeModal, fieldValues, formatInputResponse, formatPhoneNumber, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, suffixToTextMap, viewAuditHandler, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
@@ -79,12 +79,13 @@ export const render = (participant, changedOption) => {
         filteredImportantRows.forEach(row => {
             const cId = row.field;
             const variableLabel = row.label;
-            const variableValue = participant[cId] === undefined ? '' :  fieldValues[participant[cId]] || participant[cId];
+            const variableValue = participant[cId];// === undefined ? '' :  fieldValues[participant[cId]] || participant[cId];
+            const valueToRender = getValueToRender(variableValue, cId);
             const participantValue = formatInputResponse(participant[cId]);
             const participantSignInMechanism = participant[fieldMapping.signInMechansim];
             const buttonToRender = getButtonToRender(row, participantSignInMechanism, variableLabel, cId, participantValue);
             template += `
-                <tr class="detailedRow" style="text-align: left;">
+                <tr class="detailedRow" style="text-align: left;" id="${cId}row"}>
                     <th scope="row">
                         <div class="mb-3">
                             <label class="form-label">
@@ -93,7 +94,7 @@ export const render = (participant, changedOption) => {
                         </div>
                     </th>
                     <td style="text-align: left;" id="${cId}value">
-                        ${variableValue}
+                        ${valueToRender}
                         <br>
                         <br>
                         <div id="${cId}note" style="display:none"></div>
@@ -116,10 +117,31 @@ export const render = (participant, changedOption) => {
     return template;
 }
 
+const getValueToRender = (variableValue, cId) => {
+    const isPhoneNumber = cId === fieldMapping.cellPhone || cId === fieldMapping.homePhone || cId === fieldMapping.otherPhone;
+    const isYesNoPermission = cId === fieldMapping.canWeText || cId === fieldMapping.voicemailMobile || cId === fieldMapping.voicemailHome || cId === fieldMapping.voicemailOther; 
+    const isSuffix = cId === fieldMapping.suffix;
+
+    if (isPhoneNumber) return formatPhoneNumber(variableValue);
+    else if (isYesNoPermission) {
+        if (variableValue == fieldMapping.yes) {
+            return 'Yes'
+        } else if (variableValue == fieldMapping.no) {
+            return 'No'
+        } else {
+            return '';
+        }
+    } else if (isSuffix) {
+        return suffixToTextMap.get(parseInt(variableValue));
+    } else {
+        return variableValue;
+    };
+};
+
 const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, originalHTML, siteKey) => {
-    const a = Array.from(document.getElementsByClassName('detailedRow'));
-    if (a) {
-        a.forEach(element => {
+    const detailedRow = Array.from(document.getElementsByClassName('detailedRow'));
+    if (detailedRow) {
+        detailedRow.forEach(element => {
             let editRow = element.getElementsByClassName('showMore')[0];
             const values = editRow;
             let data = getDataAttributes(values);
@@ -130,6 +152,7 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                 const participantKey = data.participantkey;
                 const modalLabel = getModalLabel(participantKey);
                 const participantValue = data.participantvalue;
+                const isPhoneNumber = cId === fieldMapping.cellPhone || cId === fieldMapping.homePhone || cId === fieldMapping.otherPhone;
                 header.innerHTML = `
                     <h5>Edit ${modalLabel}</h5>
                     <button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -138,8 +161,8 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                         ${renderFormInModal(participant, changedOption, cId, participantKey, modalLabel, participantValue)}
                     </div>`
                 body.innerHTML = template;
-                showSaveNoteInModal();
-                saveResponses(participant, adminSubjectAudit, changedOption, element, siteKey);
+                showSaveNoteInModal(cId);
+                saveResponses(participant, adminSubjectAudit, changedOption, element, cId);
                 viewAuditHandler(adminSubjectAudit);
                 resetChanges(participant, originalHTML, siteKey);   
             });
@@ -339,7 +362,6 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             const body = document.getElementById('modalBody');
             header.innerHTML = `<h5>Change Login Mode</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             template = `<div> <form id="formResponse2" method="post"> `
-            //TODO this ref
             if (participant[fieldMapping.signInMechansim] === 'phone') {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
@@ -350,7 +372,6 @@ const updateUserSigninMechanism = (participant, siteKey) => {
                             <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
                         </div>`
             }
-            //TODO this ref
             else if (participant[fieldMapping.signInMechansim] === 'password') {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
@@ -496,19 +517,16 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
             
             closeModal();
             
-            const UpdateRowStatus = Array.from(document.getElementsByClassName('detailedRow'));
-            if (switchPackage.flag === "updatePhone" || switchPackage.flag === "updateEmail") {
-                let updateStatus = UpdateRowStatus[25].querySelectorAll("td")[0];
-                updateStatus.innerHTML = 'Updating login mode';
+            const changeLoginModeText = document.getElementById('Change Login Moderow').children[1];
+            const changeLoginEmailRow = document.getElementById('Change Login Emailrow');
+            const changeLoginPhoneRow = document.getElementById('Change Login Phonerow');
+
+            if (switchPackage.flag === "updatePhone" || switchPackage.flag === "updateEmail" || switchPackage.flag === "replaceSignin") {
+                changeLoginModeText.innerHTML = 'Updating login';
+                if (changeLoginPhoneRow) changeLoginPhoneRow.children[1].innerHTML = 'Updating phone number';
+                if (changeLoginEmailRow) changeLoginEmailRow.children[1].innerHTML = 'Updating email';
             }
-            if (switchPackage.flag === "replaceSignin") {
-                let updateStatus = UpdateRowStatus[24].querySelectorAll("td")[0];
-                updateStatus.innerHTML = 'Replacing login mode';
-            }
-            setTimeout(() => {
-                reloadParticipantData(changedOption.token, siteKey);
-                alert(`If you don't see updated information in next couple of seconds. Try to reload your participant!`)
-              }, "4000");
+            await reloadParticipantData(changedOption.token, siteKey);
          }
 
         else if (response.status === 409) {
@@ -561,30 +579,38 @@ const renderDetailsTableHeader = () => {
 
 const renderFormInModal = (participant, changedOption, cId, participantKey, modalLabel, participantValue) => {
     const textFieldMappingsArray = getImportantRows(participant, changedOption)
-        .filter(row => row.editable && (row.validationType == 'text' || row.validationType == 'phoneNumber' || row.validationType == 'email' || row.validationType == 'address' || row.validationType == 'year' || row.validationType == 'zip'))
+        .filter(row => row.editable && (row.validationType == 'text' || row.validationType == 'email' || row.validationType == 'address' || row.validationType == 'year' || row.validationType == 'zip'))
         .map(row => row.field);
+
+    const phoneFieldMappingsArray = getImportantRows(participant, changedOption)
+        .filter(row => row.editable && row.validationType == 'phoneNumber')
+        .map(row => row.field);
+
     const permissionSelector = getImportantRows(participant, changedOption)
         .filter(row => row.editable && (row.validationType == 'permissionSelector'))
         .map(row => row.field);
 
     const renderPermissionSelector = permissionSelector.includes(parseInt(cId));
+    const renderPhone = phoneFieldMappingsArray.includes(parseInt(cId));
     const renderText = textFieldMappingsArray.includes(parseInt(cId));
     const renderDay = cId == fieldMapping.birthDay;
     const renderMonth = cId == fieldMapping.birthMonth;
     const renderState = cId == fieldMapping.state;
     const renderSuffix = cId == fieldMapping.suffix;
+    const elementId = `fieldModified${cId}`;
 
     return `
         <form id="formResponse" method="post">
-            <span id="fieldModified" data-fieldconceptid=${cId} data-fieldModified=${participantKey}>
+            <span id="${elementId}" data-fieldconceptid=${cId} data-fieldModified=${participantKey}>
                 ${modalLabel}:
             </span>
-            ${renderDay ? renderDaySelector(participantValue) : ''}
-            ${renderMonth ? renderMonthSelector(participantValue) : ''}
-            ${renderPermissionSelector ? renderTextVoicemailPermissionSelector(participantValue) : ''}
-            ${renderState ? renderStateSelector(participantValue) : ''}
-            ${renderSuffix ? renderSuffixSelector(participant, participantValue) : ''}
-            ${renderText ? renderTextInputBox(participantValue) : ''}
+            ${renderDay ? renderDaySelector(participantValue, cId) : ''}
+            ${renderMonth ? renderMonthSelector(participantValue, cId) : ''}
+            ${renderPermissionSelector ? renderTextVoicemailPermissionSelector(participantValue, cId) : ''}
+            ${renderState ? renderStateSelector(participantValue, cId) : ''}
+            ${renderSuffix ? renderSuffixSelector(participant, participantValue, cId) : ''}
+            ${renderText ? renderTextInputBox(participantValue, cId) : ''}
+            ${renderPhone ? renderPhoneInputBox(participantValue, cId) : ''}
             <br/>
             <span id="showError"></span>
             <span style="font-size: 12px;" id="showNote"><i></i></span>
@@ -623,63 +649,69 @@ const renderCancelChangesAndSaveChangesButtons = () => {
     `;
 };
 
-const renderDaySelector = (participantValue) => {
+const renderDaySelector = (participantValue, cId) => {
     let options = '';
     for(let i = 1; i <= 31; i++){
         options += `<option class="option-dark-mode" value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`
     }
     return `
-        <select name="newValue" id="newValue" data-currentValue=${participantValue}>
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
             ${options}
         </select>
     `;
 };
 
-const renderMonthSelector = (participantValue) => {
+const renderMonthSelector = (participantValue, cId) => {
     let options = '';
     for(let i = 1; i <= 12; i++){
         options += `<option class="option-dark-mode" value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`
     }
     return `
-        <select name="newValue" id="newValue" data-currentValue=${participantValue}>
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
             ${options}
         </select>
     `;
 };
 
-const renderTextVoicemailPermissionSelector = (participantValue) => {
-        const options = `
-                <option class="option-dark-mode" value="">-- Select --</option>
-                <option class="option-dark-mode" value="${fieldMapping.yes}">Yes</option>
-                <option class="option-dark-mode" value="${fieldMapping.no}">No</option>`;
-        return `
-            <select name="newValue" id="newValue" data-currentValue=${participantValue}>
-                ${options}
-            </select>
+const renderTextVoicemailPermissionSelector = (participantValue, cId) => {
+    return `
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+            <option class="option-dark-mode" value="">-- Select --</option>
+            <option class="option-dark-mode" value="${fieldMapping.yes}">Yes</option>
+            <option class="option-dark-mode" value="${fieldMapping.no}">No</option>
+        </select>
     `;
 };
 
-const renderStateSelector = (participantValue) => {
+const renderStateSelector = (participantValue, cId) => {
     let options = '';
     for(const state in allStates){
         options += `<option class="option-dark-mode" value="${state}">${state}</option>`
     }
     return `
-        <select name="newValue" id="newValue" data-currentValue=${participantValue}>
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
             ${options}
         </select>
     `;
 };
 
-const renderTextInputBox = (participantValue) => {
+const renderTextInputBox = (participantValue, cId) => {
     return `
-        <input type="text" name="newValue" id="newValue" data-currentValue=${participantValue}>
+        <input type="text" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
     `;
 };
 
-const renderSuffixSelector = (participant, participantValue) => {
+const renderPhoneInputBox = (participantValue, cId) => {
     return `
-        <select style="max-width:200px; margin-left:0px;" name="newValue" id="newValue" data-currentValue=${participantValue}>
+        <input type="tel" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue} placeholder="999-999-9999" pattern="([0-9]{3}-?[0-9]{3}-?[0-9]{4})?">
+        <br>
+        <small>Requested Format (no perenthesis): 123-456-7890</small><br>
+    `;
+};
+
+const renderSuffixSelector = (participant, participantValue, cId) => {
+    return `
+        <select style="max-width:200px; margin-left:0px;" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
             <option value="">-- Select --</option>
             <option value="612166858" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 0 ? 'selected':'') : ''}>Jr.</option>
             <option value="255907182" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 1 ? 'selected':'') : ''}>Sr.</option>

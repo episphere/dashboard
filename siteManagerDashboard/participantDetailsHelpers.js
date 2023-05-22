@@ -69,9 +69,8 @@ const buttonAuditHandler = (adminSubjectAudit) => {
         template+= `<span> No changes to show </span></div>`
     ) : (
     adminSubjectAudit.map(element => {
-        let JSONresponse = JSON.stringify(element);
         template += `<span>
-            ${JSONresponse};
+            ${element.outerHTML};
         </span>
     </div>`
     }))
@@ -102,13 +101,17 @@ export const fieldValues =
 export const formatInputResponse = (participantValue) => {
     let ptValue = '';
     if (participantValue !== undefined) {
-        ptValue  = participantValue.toString().replace(/\s/g, "")
+        ptValue  = participantValue.toString().replace(/\s+/g, "")
     }
     return ptValue;
 };
 
+export const formatPhoneNumber = (phoneNumber) => {
+    return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
+};
+
 const isPhoneNumberInForm = (participant, changedOption, fieldMappingKey) => {
-    return !!(participant && participant[fieldMappingKey]) || !!(changedOption && changedOption[fieldMappingKey]);
+    return !!participant?.[fieldMappingKey] || !!changedOption?.[fieldMappingKey];
 };
 
 export const getImportantRows = (participant, changedOption) => {
@@ -384,50 +387,6 @@ export const getModalLabel = (participantKey) => {
 
     return labels[participantKey] || participantKey;
 };
-// export const getModalLabel = (participantKey) => {
-//     switch (participantKey) {
-//         case 'LastName':
-//             return 'Last Name';
-//         case 'FirstName':
-//             return 'First Name';
-//         case 'MiddleName':
-//             return 'Middle Name';
-//         case 'PreferredName':
-//             return 'Preferred Name';
-//         case 'BirthMonth':
-//             return 'Birth Month';
-//         case 'BirthDay':
-//             return 'Birth Day';
-//         case 'BirthYear':
-//             return 'Birth Year';
-//         case 'Mobilephone':
-//             return 'Mobile Phone';
-//         case 'Text':
-//             return 'Do we have permission to text this number';
-//         case 'Mobilevoicemail':
-//             return 'Do we have permission to leave a voicemail at this number';
-//         case 'Homephone':
-//             return 'Home Phone';
-//         case 'Homevoicemail':
-//             return 'Do we have permission to leave a voicemail at this number';
-//         case 'Otherphone':
-//             return 'Other Phone';
-//         case 'Othervoicemail':
-//             return 'Do we have permission to leave a voicemail at this number';
-//         case 'Preferredemail':
-//             return 'Preferred Email';
-//         case 'Additionalemail1':
-//             return 'Additional Email 1';
-//         case 'Additionalemail2':
-//             return 'Additional Email 2';
-//         case 'Addressline1':
-//             return 'Address Line 1';
-//         case 'Addressline2':
-//             return 'Address Line 2';
-//         default:
-//             return participantKey;
-//     };
-// };
 
 export const hideUneditableButtons = (participant, changedOption) => {
     const importantRows = getImportantRows(participant, changedOption);
@@ -513,15 +472,15 @@ export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
  * @param {HTMLElement} editedElement - the currently edited HTML element
  * @param {object} adminSubjectAudit - record of the participant's data points before the update. This was existing and is not being referenced as of 05/18/2023. Retained for potential future use.)
  */
-export const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement) => {
+export const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement, cId) => {
     let conceptIdArray = [];
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
-        const modifiedData = getDataAttributes(document.getElementById('fieldModified'));
+        const modifiedData = getDataAttributes(document.getElementById(`fieldModified${cId}`));
         conceptIdArray.push(modifiedData.fieldconceptid);
 
-        const newValueElement = document.getElementById('newValue');        
+        const newValueElement = document.getElementById(`newValue${cId}`);     
         const dataValidationType = getImportantRows(participant, changedOption).find(row => row.field == modifiedData.fieldconceptid).validationType;
         const isRequired = getIsRequiredField(participant, changedOption, newValueElement, conceptIdArray[conceptIdArray.length - 1]);
         if (newValueElement.value != participant[conceptIdArray[conceptIdArray.length - 1]]) {
@@ -531,30 +490,24 @@ export const saveResponses = (participant, adminSubjectAudit, changedOption, edi
                 changedOption[conceptIdArray[conceptIdArray.length - 1]] = newValueElement.value;
                 // if a changed field is a date of birth field then we need to update full date of birth  
                 if (fieldMapping.birthDay in changedOption || fieldMapping.birthMonth in changedOption || fieldMapping.birthYear in changedOption) {
-                    const day = fieldMapping.birthDay in changedOption
-                        ? changedOption[fieldMapping.birthDay]
-                        : participant[fieldMapping.birthDay]
-                    const month = fieldMapping.birthMonth in changedOption
-                        ? changedOption[fieldMapping.birthMonth]
-                        : participant[fieldMapping.birthMonth]
-                    const year = fieldMapping.birthYear in changedOption
-                        ? changedOption[fieldMapping.birthYear]
-                        : participant[fieldMapping.birthYear]
+                    const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay];
+                    const month = changedOption[fieldMapping.birthMonth] || participant[fieldMapping.birthMonth];
+                    const year = changedOption[fieldMapping.birthYear] || participant[fieldMapping.birthYear];
                     const dateOfBirthComplete = fieldMapping.dateOfBirthComplete;
                     conceptIdArray.push(dateOfBirthComplete);
                     changedOption[conceptIdArray[conceptIdArray.length - 1]] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
                 }
 
                 const displayAuditHistory = {};
-                const fieldChanged = getDataAttributes(document.getElementById('fieldModified'));
-                const currentValueData = getDataAttributes(document.getElementById('newValue'));
+                const fieldChanged = modifiedData;
+                const currentValueData = getDataAttributes(newValueElement);
                 const timeStampData =  getCurrentTimeStamp();
                 const userIdData = getCurrentTimeStamp();
                 const source = "Site Manager Dashboard";
                 displayAuditHistory.token = participant.token;
                 displayAuditHistory.fieldModified = fieldChanged.fieldmodified;
                 displayAuditHistory.currentvalue = currentValueData.currentvalue;
-                displayAuditHistory.newValue = document.getElementById('newValue').value;
+                displayAuditHistory.newValue = document.getElementById(`newValue${cId}`).value;
                 displayAuditHistory.timeStamp = timeStampData;
                 displayAuditHistory.userId = userIdData;
                 displayAuditHistory.source = source;
@@ -586,7 +539,7 @@ const updateUIValues = (editedElement, newValue, conceptIdArray) => {
     }
     updatedEditValue.parentNode.style.backgroundColor = "#FFFACA";
 
-    if (conceptIdArray.some(id => [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone].includes(parseInt(id)))) {
+    if (conceptIdArray.some(id => [fieldMapping.cellPhone.toString(), fieldMapping.homePhone.toString(), fieldMapping.otherPhone.toString()].includes(id.toString()))) {
         togglePhonePermissionButtonsAndText(newValue, conceptIdArray);
     }
 };
@@ -595,9 +548,9 @@ const updateUIValues = (editedElement, newValue, conceptIdArray) => {
  * Handle suffix text and phone permission text -> convert concept id to text
  */
 const getUITextForUpdatedValue = (newValue, conceptIdArray) => {
-    if (conceptIdArray.includes(fieldMapping.suffix || fieldMapping.suffix.toString())) {
+    if (conceptIdArray.toString().includes(fieldMapping.suffix.toString())) {
         return suffixToTextMap.get(parseInt(newValue));
-    } else if (conceptIdArray.some(id => [fieldMapping.canWeText.toString(), fieldMapping.voicemailMobile.toString(), fieldMapping.voicemailHome.toString(), fieldMapping.voicemailOther.toString()].includes(id))) {
+    } else if (conceptIdArray.some(id => [fieldMapping.canWeText.toString(), fieldMapping.voicemailMobile.toString(), fieldMapping.voicemailHome.toString(), fieldMapping.voicemailOther.toString()].includes(id.toString()))) {
         if (newValue == fieldMapping.yes) {
             return 'Yes';
         } else if (newValue == fieldMapping.no) {
@@ -653,8 +606,8 @@ const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
     }
 };
 
-export const showSaveNoteInModal = () => {
-    const a = document.getElementById('newValue');
+export const showSaveNoteInModal = (cId) => {
+    const a = document.getElementById(`newValue${cId}`);
     if (a) {
         a.addEventListener('click', () => {
             const b = document.getElementById('showNote');
@@ -736,12 +689,14 @@ const validateNewValue = (newValueElement, newValueType, isRequired) => {
     return isValid;
 };
 
-export const validateAddress = (addressLineElement) => {
+export const validateAddress = (addressLineElement, isRequired) => {
     removeAllErrors();
-    if (!addressLineElement.value) {
+
+    if (isRequired && !addressLineElement.value) {
         errorMessage('Error: Please enter a value.', addressLineElement);
         return false;
     }
+    
     return true;
 };
 
@@ -835,9 +790,9 @@ export const validateZip = (zipElement) => {
 };
 
 // These match validations RegExps in connectApp -> shared.js
-const validEmailFormat = /^[a-zA-Z0-9.!#$%&'*+"\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,63}$/;
-const validNameFormat = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-.]+$/i;
-const validPhoneNumberFormat =
+export const validEmailFormat = /^[a-zA-Z0-9.!#$%&'*+"\/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,63}$/;
+export const validNameFormat = /^[A-Za-zÀ-ÖØ-öø-ÿ\s'\-.]+$/i;
+export const validPhoneNumberFormat =
   /^[\+]?(?:1|1-|1\.|1\s+)?[(]?[0-9]{3}[)]?(?:-|\s+|\.)?[0-9]{3}(?:-|\s+|\.)?[0-9]{4}$/;
 
 
@@ -907,6 +862,7 @@ export const submitClickHandler = async (participant, changedOption, siteKey) =>
 const findChangedUserDataValues = (newUserData, existingUserData) => {
     const changedUserDataForProfile = {};
     const changedUserDataForHistory = {};
+    newUserData = removeNonNumbersFromPhoneNumber(newUserData);
     Object.keys(newUserData).forEach(key => {
       if (newUserData[key] !== existingUserData[key]) {
         changedUserDataForProfile[key] = newUserData[key] ?? '';
@@ -946,7 +902,19 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
 
 return { changedUserDataForProfile, changedUserDataForHistory };
 };
-  
+
+
+const removeNonNumbersFromPhoneNumber = (changedOption) => {
+    const phoneNumbers = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
+    phoneNumbers.forEach(phoneNumber => {
+        if (phoneNumber in changedOption) {
+            changedOption[phoneNumber] = changedOption[phoneNumber].replace(/\D/g, '');
+        }
+    });
+    return changedOption;
+
+};
+
 /**
  * Check whether changes were made to the user profile. If so, update the user profile and history.
  * Only write the history portion if the user is verified. Do not write history if the user is not verified.
