@@ -1,5 +1,5 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { allStates, closeModal, formatInputResponse, formatPhoneNumber, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, suffixToTextMap, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { allStates, closeModal, formatInputResponse, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
