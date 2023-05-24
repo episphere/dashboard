@@ -1,9 +1,8 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
+import { allStates, closeModal, formatInputResponse, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getCurrentTimeStamp, getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
-import { renderParticipantSummary } from './participantSummary.js';
-import { renderLookupResultsTable, findParticipant } from './participantLookup.js';
+import { getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { appState } from './stateManager.js';
 
 appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}});
@@ -23,7 +22,7 @@ window.addEventListener('onload', (e) => {
 })
 
 const checkForLoginMechanism = (participant) => {
-    const isPhoneLogin = participant[fieldMapping.signInMechansim] === `phone`
+    const isPhoneLogin = participant?.[fieldMapping.signInMechansim] === `phone`;
     if (isPhoneLogin) {
         appState.setState({loginMechanism:{phone: true, email: false}})
         participant['Change Login Mode'] = 'Phone ☎️'
@@ -34,358 +33,163 @@ const checkForLoginMechanism = (participant) => {
         participant['Change Login Mode'] = 'Email 📧'
         participant['Change Login Email'] = participant[fieldMapping.accountEmail]
     }
-
 }
 
-export const renderParticipantDetails = (participant, adminSubjectAudit, changedOption, siteKey) => {
+export const renderParticipantDetails = (participant, changedOption, siteKey) => {
     checkForLoginMechanism(participant);
-    const isParent = localStorage.getItem('isParent')
+    const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('participantDetailsBtn').classList.add('active');
-    mainContent.innerHTML = render(participant);
+    mainContent.innerHTML = render(participant, changedOption);
     let originalHTML =  mainContent.innerHTML;
+    hideUneditableButtons(participant, changedOption);
     localStorage.setItem("participant", JSON.stringify(participant));
-    viewAuditHandler(adminSubjectAudit);
-    changeParticipantDetail(participant, adminSubjectAudit, changedOption, originalHTML, siteKey);
-    editAltContact(participant, adminSubjectAudit);
+    changeParticipantDetail(participant,  changedOption, originalHTML, siteKey);
+    editAltContact(participant);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
     updateUserSigninMechanism(participant, siteKey);
     updateUserLogin(participant, siteKey);
+    submitClickHandler(participant, changedOption, siteKey);
 }
 
-export const render = (participant) => {
-    const fieldValues = 
-        {       
-            353358909: 'Yes',
-            104430631: 'No',
-            612166858: 'Jr.',
-            255907182: 'Sr.',
-            226924545: 'I',
-            270793412: 'II',
-            959021713: 'III',
-            643664527: '2nd',
-            537892528: '3rd',
-            127547625: 'Phone',
-            869588347: 'Email'
-        }
-    const importantColumns = [ 
-        { field: fieldMapping.lName,
-            editable: true,
-            display: true } ,
-        { field: fieldMapping.fName,
-            editable: true,
-            display: true } ,
-         { field: fieldMapping.prefName,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.mName,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.suffix,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.birthMonth,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.birthDay,
-        editable: true,
-        display: true } ,
-         { field: fieldMapping.birthYear,
-        editable: true,
-        display: true } ,
-        { field: fieldMapping.cellPhone,
-        editable: true,
-        display: true },
-        { field: fieldMapping.canWeText,
-        editable: true,
-        display: true },
-        { field: fieldMapping.voicemailMobile,
-        editable: true,
-        display: true },
-         { field: fieldMapping.homePhone,
-        editable: true,
-        display: true } ,
-        { field: fieldMapping.voicemailHome,
-        editable: true,
-        display: true },
-        { field: fieldMapping.otherPhone,
-        editable: true,
-        display: true },
-        { field: fieldMapping.voicemailOther,
-        editable: true,
-        display: true },
-        { field: fieldMapping.email,
-        editable: true,
-        display: true },
-        { field: fieldMapping.email1,
-        editable: true,
-        display: true },
-        { field: fieldMapping.email2,
-        editable: true,
-        display: true },
-        { field: fieldMapping.address1,
-        editable: true,
-        display: true },
-        { field: fieldMapping.address2,
-        editable: true,
-        display: true },
-        { field: fieldMapping.city,
-        editable: true,
-        display: true },
-        { field: fieldMapping.state,
-        editable: true,
-        display: true },
-        { field: fieldMapping.zip,
-        editable: true,
-        display: true },
-        { field: 'Connect_ID',
-        editable: false,
-        display: true }
-    ];
-
-    const loginChangeInfoArray = [
-        { field: `Change Login Mode`,
-        editable: true,
-        display: true },
-        { field: `Change Login Email`,
-        editable: true,
-        display: appState.getState().loginMechanism.email },
-        { field: `Change Login Phone`,
-        editable: true,
-        display:  appState.getState().loginMechanism.phone }
-    ];
-
-    const userLoginEmail = appState.getState().userSession?.email ?? '';
-    const permDomains = /(nih.gov|norc.org)$/i;
-    permDomains.test(userLoginEmail.split('@')[1]) && importantColumns.push(...loginChangeInfoArray);
+export const render = (participant, changedOption) => {
+    const importantRows = getImportantRows(participant, changedOption);
 
     let template = `<div class="container">`
     if (!participant) {
         template +=` 
             <div id="root">
-            Please select a participant first!
+                Please select a participant first!
             </div>
         </div>
         `
     } else {
-        let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+        const filteredImportantRows = importantRows.filter(row => row.display === true);
         template += `<div id="root" > 
                     <div id="alert_placeholder"></div>`
         template += renderParticipantHeader(participant);
-        template += `
-                        <div class="float-left">
-                            <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>
-                        </div>
-                        
-                        <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
-                            <thead style="position: sticky;" class="thead-dark"> 
-                            <tr>
-                                <th style="text-align: left; scope="col">Field</th>
-                                <th style="text-align: left; scope="col">Value</th>
-                                <th style="text-align: left; scope="col"></th>
-                            </thead>
-                        <tbody class="participantDetailTable">
-`
-                    const filteredImportantColumns = importantColumns.filter(x => x.display === true);
-                    filteredImportantColumns.forEach(x => template += `<tr class="detailedRow" style="text-align: left;"><th scope="row"><div class="mb-3">
-                    <label class="form-label">
-                    ${conceptIdMapping[x.field] && conceptIdMapping[x.field] ? 
-                        (   
-                            ((conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name']) === 'Text') ? 
-                                    'Do we have permission to text this number ?'
-                            : conceptIdMapping[x.field]['Variable Label'] || conceptIdMapping[x.field]['Variable Name'])
-                            : x.field}</label></div></th>
-                    <td style="text-align: left;">${participant[x.field] = (participant[x.field]) === undefined ? `` :  fieldValues[participant[x.field]] || participant[x.field]}</td> 
-                    <td style="text-align: left;">
-                        ${ x.editable && (x.field == 'Change Login Mode') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>` 
-                        : 
-                        (participant[fieldMapping.signInMechansim] === `password` && x.field == 'Change Login Email') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='email' id="updateUserLogin">Update</button>` 
-                        : 
-                        (participant[fieldMapping.signInMechansim] === `phone` && x.field == 'Change Login Phone') ? `<button type="button" class="btn btn-success btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='phone' id="updateUserLogin">Update</button>` 
-                        :
-                        (x.editable && (participant[fieldMapping.verifiedFlag] !== (fieldMapping.verified || fieldMapping.cannotBeVerified || fieldMapping.duplicate)) )? 
-                        ` <a class="showMore" data-toggle="modal" data-target="#modalShowMoreData" 
-                            data-participantkey=${conceptIdMapping[x.field] && (conceptIdMapping[x.field] && conceptIdMapping[x.field]['Variable Label'] !== undefined) ? conceptIdMapping[x.field]['Variable Label'].replace(/\s/g, "") || conceptIdMapping[x.field]['Variable Name'].replace(/\s/g, "") : ""}
-                            data-participantconceptid=${x.field} data-participantValue=${formatInputResponse(participant[x.field])} name="modalParticipantData" 
-                            id=${x.field}>
-                            <button type="button" class="btn btn-primary btn-custom">Edit</button>`
-                        : `<button type="button" class="btn btn-secondary btn-custom" disabled>Edit</button>`
-                        }
-                    </a></td></tr>&nbsp;`)
-                      
-        template += `</tbody></table>
-        <br />
-                <div style="display:inline-block;">
-                    <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
-                    &nbsp;
-                    <button type="submit" id="sendResponse" class="btn btn-primary" >Save Changes</button>
-                    &nbsp;
-                    <br />
-                </div>
-                </div>
-            </div>
+        template += `      
+            ${renderBackToSearchDivAndButton()}
+            ${renderCancelChangesAndSaveChangesButtons()}
+            ${renderDetailsTableHeader()}
         `;
-        template += ` <div class="modal fade" id="modalShowMoreData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
-                <div class="modal-content sub-div-shadow">
-                    <div class="modal-header" id="modalHeader"></div>
-                    <div class="modal-body" id="modalBody"></div>
-                </div>
+        filteredImportantRows.forEach(row => {
+            const cId = row.field;
+            const variableLabel = row.label;
+            const variableValue = participant[cId];
+            const valueToRender = getFieldValues(variableValue, cId);
+            const participantValue = formatInputResponse(participant[cId]);
+            const participantSignInMechanism = participant[fieldMapping.signInMechansim];
+            const buttonToRender = getButtonToRender(row, participantSignInMechanism, variableLabel, cId, participantValue);
+            template += `
+                <tr class="detailedRow" style="text-align: left;" id="${cId}row"}>
+                    <th scope="row">
+                        <div class="mb-3">
+                            <label class="form-label">
+                                ${variableLabel}
+                            </label>
+                        </div>
+                    </th>
+                    <td style="text-align: left;" id="${cId}value">
+                        ${valueToRender}
+                        <br>
+                        <br>
+                        <div id="${cId}note" style="display:none"></div>
+                    </td> 
+                    <td style="text-align: left;">
+                        ${buttonToRender}
+                    </td>
+                </tr>
+            `
+        });
+        template += `
+                    </tbody>
+                </table>
+                ${renderCancelChangesAndSaveChangesButtons()}
             </div>
-        </div>`
-     
+        </div>
+        `;
+        template += `${renderShowMoreDataModal()}`
     }
     return template;
 }
 
-const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, originalHTML, siteKey) => {
-
-    const a = Array.from(document.getElementsByClassName('detailedRow'));
-    if (a) {
-        a.forEach(element => {
+const changeParticipantDetail = (participant, changedOption, originalHTML, siteKey) => {
+    const detailedRow = Array.from(document.getElementsByClassName('detailedRow'));
+    if (detailedRow) {
+        detailedRow.forEach(element => {
             let editRow = element.getElementsByClassName('showMore')[0];
             const values = editRow;
             let data = getDataAttributes(values);
             editRow && editRow.addEventListener('click', () => {
                 const header = document.getElementById('modalHeader');
                 const body = document.getElementById('modalBody');
-                header.innerHTML = `<h5>Edit</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-                let template = '<div>'
-                template += `
-                <form id="formResponse" method="post">  
-                <span><span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${removeCamelCase(data.participantkey)}</span> 
-                : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} 
-                    value=${
-                            data.participantvalue === fieldMapping.yes ? `Yes`:
-                                        data.participantvalue === fieldMapping.no ? `No`:
-                                        data.participantvalue === `name="modalParticipantData"` ? `+` : ``} />
-                            <br >
-                            <span style="font-size: 12px;" id="showNote"><i></i></span>
-                            <br >
-                        <div style="display:inline-block;">
-                            <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
-                            <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
-                        </div>
-                    </form>
-                </div>`
+                const cId = data.participantconceptid;
+                const participantKey = data.participantkey;
+                const modalLabel = getModalLabel(participantKey);
+                const participantValue = data.participantvalue;
+                header.innerHTML = `
+                    <h5>Edit ${modalLabel}</h5>
+                    <button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+                let template = `
+                    <div>
+                        ${renderFormInModal(participant, changedOption, cId, participantKey, modalLabel, participantValue)}
+                    </div>`
                 body.innerHTML = template;
-                saveResponses(participant, adminSubjectAudit, changedOption, element);
-               // postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
-                viewAuditHandler(adminSubjectAudit);
-                showSaveAlert();
-                resetChanges(participant, originalHTML, siteKey);  
-                showSaveNote();
-               // viewParticipantSummary(participant);          
+                showSaveNoteInModal(cId);
+                saveResponses(participant, changedOption, element, cId);
+                resetChanges(participant, originalHTML, siteKey);   
             });
-
-        })
-    }
-    else {
-
-    }
-}
-
-const showSaveNote = () => {
-    const a = document.getElementById('newValue');
-    if (a) {
-        a.addEventListener('click', () => {
-            const b = document.getElementById('showNote');
-            b.innerHTML = `After 'Submit' you must scroll down and click 'Save Changes' at bottom of screen for your changes to be saved.`
         })
     }
 }
 
-const removeCamelCase = (participantKey) => {
-    let s = participantKey
-    s = s.replace(/([A-Z])/g, ' $1').trim()
-    return s;
-}
+const getButtonToRender = (row, participantSignInMechanism, variableLabel, cId, participantValue) => {
+    const editButton = `
+        <a class="showMore" 
+            data-toggle="modal" 
+            data-target="#modalShowMoreData"
+            data-participantkey="${variableLabel}"
+            data-participantconceptid="${cId}" 
+            data-participantValue="${participantValue}" 
+            name="modalParticipantData"
+            id="${cId}button">
+            <button type="button" class="btn btn-primary btn-custom">Edit</button>
+        </a>
+        `;
+    const changeLoginModeButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>`;
+    const updateLoginEmailButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='email' id="updateUserLogin">Update</button>`;
+    const updateLoginPhoneButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='phone' id="updateUserLogin">Update</button>`;
 
-const formatInputResponse = (participantValue) => {
-    let ptValue = ``
-    if (participantValue !== undefined) {
-        ptValue  = participantValue.toString().replace(/\s/g, "")
+    if (row.editable && cId === 'Change Login Mode') {
+        return changeLoginModeButton;
+    } else if (participantSignInMechanism === 'password' && cId === 'Change Login Email') {
+        return updateLoginEmailButton;
+    } else if (participantSignInMechanism === 'phone' && cId === 'Change Login Phone') {
+        return updateLoginPhoneButton;
+    } else {
+        return editButton;
     }
-    return ptValue;
-}
-
-// creates payload to be sent to backend and update the UI. Remaps the field name back to concept id along with new responses.
-const saveResponses = (participant, adminSubjectAudit, changedOption, editedElement) => {
-    let displayAuditHistory = {};
-    let conceptId = [];
-    const a = document.getElementById('formResponse')
-    a.addEventListener('submit', e => {
-        e.preventDefault()
-        // fieldModifiedData   
-        let fieldModifiedData = getDataAttributes(document.getElementById('fieldModified'));
-        conceptId.push(fieldModifiedData.fieldconceptid);
-        // new value
-        let newUpdatedValue = document.getElementById('newValue').value;
-        if (newUpdatedValue.toString().toUpperCase() === 'NO') {newUpdatedValue = fieldMapping.no}
-        if (newUpdatedValue.toString().toUpperCase() === 'YES') {newUpdatedValue = fieldMapping.yes}
-        changedOption[conceptId[conceptId.length - 1]] = newUpdatedValue;
-
-        // if a changed field is a date of birth field then we need to update full date of birth  
-        if ("795827569" in changedOption || "564964481" in changedOption || "544150384" in changedOption) {
-            let day = "795827569" in changedOption ?  changedOption["795827569"] : getDataAttributes(document.getElementById('795827569')).participantvalue;
-            let month = "564964481" in changedOption ? changedOption["564964481"] : getDataAttributes(document.getElementById('564964481')).participantvalue;
-            let year = "544150384" in changedOption ? changedOption["544150384"] : getDataAttributes(document.getElementById('544150384')).participantvalue;
-            conceptId.push("371067537");
-            changedOption[conceptId[conceptId.length - 1]] =  year.toString() + month.padStart(2, '0')+ day.padStart(2, '0') ;
-        }
-
-        // update changed field on UI
-        let updatedEditValue = editedElement.querySelectorAll("td")[0];
-        updatedEditValue.innerHTML = newUpdatedValue;
-        
-        ///////////////////////////////////////////////
-        // participant token
-        displayAuditHistory.token = participant.token;
-        // fieldModifiedData
-        let fieldChanged = getDataAttributes(document.getElementById('fieldModified'));
-        displayAuditHistory.fieldModified = fieldChanged.fieldmodified;
-        // currentValue
-        let currentValueData = getDataAttributes(document.getElementById('newValue'));
-        displayAuditHistory.currentvalue = currentValueData.currentvalue;
-        // newValue
-        displayAuditHistory.newValue = document.getElementById('newValue').value;
-        // timeStamp
-        let timeStampData =  getCurrentTimeStamp();
-        displayAuditHistory.timeStamp = timeStampData;
-        // comment
-        //displayAuditHistory.comment = document.getElementById('comment').value;
-        // userID
-        let userIdData = getCurrentTimeStamp();
-        displayAuditHistory.userId = userIdData;
-        // Source
-        let source = "Site Manager Dashboard";
-        displayAuditHistory.source = source;
-        adminSubjectAudit.push(displayAuditHistory);
-      
-    })
-
-}
+};
 
 // For alternate contact details. Would be updates once concept ids for alt details are ready
-
-const editAltContact = (participant, adminSubjectAudit) => {
+const editAltContact = (participant) => {
     const a = document.getElementById('altContact');
     if (a) {
         a.addEventListener('click',  () => {
-        altContactHandler(participant, adminSubjectAudit);
-    })
-}
+        altContactHandler(participant);
+        })
+    }   
 }
 
-const altContactHandler = (participant, adminSubjectAudit) => {
+const altContactHandler = (participant) => {
     const header = document.getElementById('modalHeader');
     const body = document.getElementById('modalBody');
     header.innerHTML = `<h5>Alternate Contact Details</h5><button type="button" id="closeModal" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
     let template = '<div>'
     template += `
-
             <br />
             <span id='fieldName' data-fieldName='First Name'><strong>Name</strong></span> : <input type="text" name="newName" id="newName" data-currrentFName=${participant.Module1 && participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME} value=${participant.Module1 && participant.Module1.ALTCONTACT1.ALTCONTACT1_FNAME} />
             <br />
@@ -401,18 +205,16 @@ const altContactHandler = (participant, adminSubjectAudit) => {
             <br />
 
             <div style="display:inline-block;">
-                <button type="button" class="btn btn-primary" id="altDetailsSubmit">Submit</button>
                 <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
+                <button type="button" class="btn btn-primary" id="altDetailsSubmit">Submit</button>
             </div>
-
-   </div>`
+        </div>`
     body.innerHTML = template;
-    saveAltResponse(adminSubjectAudit, participant);
-    viewAuditHandler(adminSubjectAudit);
+    saveAltResponse( participant);
     viewParticipantSummary(participant)
-} 
+}
 
-const saveAltResponse = (adminSubjectAudit, participant) => {
+const saveAltResponse = (participant) => {
     const a = document.getElementById('altDetailsSubmit')
     a.addEventListener('click', (e) => {
         e.preventDefault()
@@ -426,8 +228,6 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
         changedModuleOption['Last Name'] = altNewLName;
 
         let newRelationship = document.getElementById('newRelationship').value;
-        // let altFieldRelationship = getDataAttributes(document.getElementById('fieldRelationship'))
-        // let altCurrentRelationship = getDataAttributes(document.getElementById('currentRelationship'))
         changedModuleOption['Relationship'] = newRelationship;
 
 
@@ -447,16 +247,8 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
             changedModuleOption[key] === '' ?
                 delete changedModuleOption[key] : ''
         }
-
-        // timeStamp
-        let timeStampData =  getCurrentTimeStamp();
-        // userID
-        let userIdData = getCurrentTimeStamp();
-
-        const module1 = {'token': participant.token, 'Module': changedModuleOption, 'timeStamp': timeStampData, 'userId': userIdData};
-        adminSubjectAudit.push(module1);
-        const modalClose = document.getElementById('modalShowMoreData')
-        const closeButton = modalClose.querySelector('#closeModal').click()
+        
+        closeModal();
       
         let editedElement;
         const a = Array.from(document.getElementsByClassName('detaileAltRow'))
@@ -490,108 +282,41 @@ const saveAltResponse = (adminSubjectAudit, participant) => {
     })
 }
 
-/////// Helper Functions /////////
-
-const showSaveAlert = () => {
-    const a = document.getElementById('editModal');
-    a.addEventListener('click', e => {
-        let prevCounter =  appState.getState().unsavedChangesTrack.counter
-        appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}})
-        const modalClose = document.getElementById('modalShowMoreData')
-        const closeButton = modalClose.querySelector('#closeModal').click()
-    })
-   
-}
-
-const resetChanges = (participant, originalHTML, siteKey) => {
-    const a = document.getElementById("cancelChanges");
-    let template = '';
-    a.addEventListener("click", () => {
-        if ( appState.getState().unsavedChangesTrack.saveFlag === false ) {
-            mainContent.innerHTML = originalHTML;
-            renderParticipantDetails(participant, [], {}, siteKey);
-            appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
-            let alertList = document.getElementById('alert_placeholder');
-            // throws an alert when canncel changes button is clicked
-            template += `<div class="alert alert-warning alert-dismissible fade show" role="alert">
-                            Changes cancelled.
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                         </div>`
-            alertList.innerHTML = template;
-        }
-        else {  
-            alert('No changes to save or cancel');
-          
-        }
-    })
-    
-}
-
-
-const postEditedResponse = (participant, adminSubjectAudit, changedOption, siteKey) => {
-
-    const a = document.getElementById('sendResponse');
-    a.addEventListener('click', () => {
-        changedOption['token'] = participant.token;
-        clickHandler(adminSubjectAudit, changedOption, siteKey);
-    })
-}
-
-
-
 // async-await function to make HTTP POST request
-async function clickHandler(adminSubjectAudit, updatedOptions, siteKey)  {
+async function signInMechanismClickHandler(updatedOptions, siteKey)  {
     showAnimation();
    
     const updateParticpantPayload = {
         "data": [updatedOptions]
     }
 
-    const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
+    const response = await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
         method:'POST',
         body: JSON.stringify(updateParticpantPayload),
         headers:{
             Authorization:"Bearer "+siteKey,
             "Content-Type": "application/json"
             }
-        }))
-        hideAnimation();
-        if (response.status === 200) {
-            document.getElementById('loadingAnimation').style.display = 'none';
-            appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
-            let lastModifiedHolder;
-            adminSubjectAudit.length === 0 ? "" : lastModifiedHolder = adminSubjectAudit[adminSubjectAudit.length - 1]
-            let alertList = document.getElementById("alert_placeholder");
-            let template = ``;
-            template += `
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Participant detail updated!
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                    </div>`;
-            alertList.innerHTML = template;
-            return true;
-            // let a = document.getElementById('modifiedId')
-            // a.innerHTML = 'Placeholder for User id' + ' @ ' + lastModifiedHolder.timeStamp;
-         }
-           else { 
-               (alert('Error'))
-        }
- }
-
-// Admin audit displaying logs
- const viewAuditHandler = (adminSubjectAudit) => {
-    const a = document.getElementById('adminAudit');
-    if (a) {
-        a.addEventListener('click',  () => {
-            buttonAuditHandler(adminSubjectAudit);
-    })
+    });
+    hideAnimation();
+    if (response.status === 200) {
+        document.getElementById('loadingAnimation').style.display = 'none';
+        appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
+        let alertList = document.getElementById("alert_placeholder");
+        let template = ``;
+        template += `
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                Participant detail updated!
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                </div>`;
+        alertList.innerHTML = template;
+        return true;
+    } else { 
+        alert('Error');
     }
 }
-
 
 const updateUserSigninMechanism = (participant, siteKey) => {
     const switchSiginButton = document.getElementById('switchSiginMechanism');
@@ -634,9 +359,10 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             processSwitchSigninMechanism(participant, siteKey, 'replaceSignin');
         })
     }
-   }
+}
+
 // updates existing email or phone
-   const updateUserLogin = (participant, siteKey) => {
+const updateUserLogin = (participant, siteKey) => {
     const switchSiginButton = document.getElementById('updateUserLogin');
     let updateFlag = ``
     let template = ``
@@ -681,8 +407,7 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             processSwitchSigninMechanism(participant, siteKey, updateFlag);
         })
     }
-   }
-
+}
 
 const processSwitchSigninMechanism = (participant, siteKey, flag) => {
     document.getElementById('formResponse2') && document.getElementById('formResponse2').addEventListener('submit', e => {
@@ -725,7 +450,6 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
     })
 };
 
-
 // async-await function to make HTTP POST request
 const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOption) =>  {
     showAnimation();
@@ -744,7 +468,7 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         }))
         hideAnimation();
         if (response.status === 200) {
-            clickHandler({}, changedOption, siteKey);
+            signInMechanismClickHandler({}, changedOption, siteKey);
             let alertList = document.getElementById("alert_placeholder");
             let template = ``;
             template += `
@@ -755,21 +479,19 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
                             </button>
                     </div>`;
             alertList.innerHTML = template;
-            const modalClose = document.getElementById('modalShowMoreData');
-            const closeButton = modalClose.querySelector('#closeModal').click();
-            const UpdateRowStatus = Array.from(document.getElementsByClassName('detailedRow'));
-            if (switchPackage.flag === "updatePhone" || switchPackage.flag === "updateEmail") {
-                let updateStatus = UpdateRowStatus[25].querySelectorAll("td")[0];
-                updateStatus.innerHTML = 'Updating login mode';
+            
+            closeModal();
+            
+            const changeLoginModeText = document.getElementById('Change Login Moderow').children[1];
+            const changeLoginEmailRow = document.getElementById('Change Login Emailrow');
+            const changeLoginPhoneRow = document.getElementById('Change Login Phonerow');
+
+            if (switchPackage.flag === "updatePhone" || switchPackage.flag === "updateEmail" || switchPackage.flag === "replaceSignin") {
+                changeLoginModeText.innerHTML = 'Updating login';
+                if (changeLoginPhoneRow) changeLoginPhoneRow.children[1].innerHTML = 'Updating phone number';
+                if (changeLoginEmailRow) changeLoginEmailRow.children[1].innerHTML = 'Updating email';
             }
-            if (switchPackage.flag === "replaceSignin") {
-                let updateStatus = UpdateRowStatus[24].querySelectorAll("td")[0];
-                updateStatus.innerHTML = 'Replacing login mode';
-            }
-            setTimeout(() => {
-                reloadParticipantData(changedOption.token, siteKey);
-                alert(`If you don't see updated information in next couple of seconds. Try to reload your participant!`)
-              }, "4000");
+            await reloadParticipantData(changedOption.token, siteKey);
          }
 
         else if (response.status === 409) {
@@ -795,50 +517,175 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
             body.innerHTML = `Operation Unsuccessful!`;
             return false;
         }
- }
-
- const reloadParticipantData = async (token, siteKey) => {
-    showAnimation();
-    const query = `token=${token}`
-    const reloadedParticpant = await findParticipant(query);
-    mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], [],  {}, siteKey);
-    hideAnimation();
-    }
-
- const buttonAuditHandler = (adminSubjectAudit) => {
-        const header = document.getElementById('modalHeader');
-        const body = document.getElementById('modalBody');
-        header.innerHTML = `<h5>Audit History</h5><button type="button" class="modal-close-btn" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-        let template = '<div>'
-        adminSubjectAudit.length === 0 ? (
-            template+= `<span> No changes to show </span></div>`
-        ) : (
-        adminSubjectAudit.map(element => {
-            let JSONresponse = JSON.stringify(element);
-            template += `<span>
-               ${JSONresponse};
-            </span>
-        </div>`
-        }))
-       
-        body.innerHTML = template;
-} 
-
-
-const viewParticipantSummary = (participant) => {
-    const a = document.getElementById('viewSummary');
-    if (a) {
-        a.addEventListener('click',  () => {  
-            renderParticipantSummary(participant);
-        })
-    }
 }
 
-const renderReturnSearchResults = () => {
-    const a = document.getElementById('displaySearchResultsBtn');
-    if (a) {
-        a.addEventListener('click', () => {
-            renderLookupResultsTable();
-        })
-}}
+const renderBackToSearchDivAndButton = () => {
+    return `
+        <div class="float-left">
+            <button type="button" class="btn btn-primary" id="displaySearchResultsBtn">Back to Search</button>    
+        </div>
+        
+    `;
+};
+
+const renderDetailsTableHeader = () => {
+    return `
+        <table class="table detailsTable"> <h4 style="text-align: center;"> Participant Details </h4>
+            <thead style="position: sticky;" class="thead-dark"> 
+                <tr>
+                    <th style="text-align: left; scope="col">Field</th>
+                    <th style="text-align: left; scope="col">Value</th>
+                    <th style="text-align: left; scope="col"></th>
+                </tr>
+            </thead>
+        <tbody class="participantDetailTable">
+    `;
+};
+
+const renderFormInModal = (participant, changedOption, cId, participantKey, modalLabel, participantValue) => {
+    const textFieldMappingsArray = getImportantRows(participant, changedOption)
+        .filter(row => row.editable && (row.validationType == 'text' || row.validationType == 'email' || row.validationType == 'address' || row.validationType == 'year' || row.validationType == 'zip'))
+        .map(row => row.field);
+
+    const phoneFieldMappingsArray = getImportantRows(participant, changedOption)
+        .filter(row => row.editable && row.validationType == 'phoneNumber')
+        .map(row => row.field);
+
+    const permissionSelector = getImportantRows(participant, changedOption)
+        .filter(row => row.editable && (row.validationType == 'permissionSelector'))
+        .map(row => row.field);
+
+    const renderPermissionSelector = permissionSelector.includes(parseInt(cId));
+    const renderPhone = phoneFieldMappingsArray.includes(parseInt(cId));
+    const renderText = textFieldMappingsArray.includes(parseInt(cId));
+    const renderDay = cId == fieldMapping.birthDay;
+    const renderMonth = cId == fieldMapping.birthMonth;
+    const renderState = cId == fieldMapping.state;
+    const renderSuffix = cId == fieldMapping.suffix;
+    const elementId = `fieldModified${cId}`;
+
+    return `
+        <form id="formResponse" method="post">
+            <span id="${elementId}" data-fieldconceptid=${cId} data-fieldModified=${participantKey}>
+                ${modalLabel}:
+            </span>
+            ${renderDay ? renderDaySelector(participantValue, cId) : ''}
+            ${renderMonth ? renderMonthSelector(participantValue, cId) : ''}
+            ${renderPermissionSelector ? renderTextVoicemailPermissionSelector(participantValue, cId) : ''}
+            ${renderState ? renderStateSelector(participantValue, cId) : ''}
+            ${renderSuffix ? renderSuffixSelector(participant, participantValue, cId) : ''}
+            ${renderText ? renderTextInputBox(participantValue, cId) : ''}
+            ${renderPhone ? renderPhoneInputBox(participantValue, cId) : ''}
+            <br/>
+            <span id="showError"></span>
+            <span style="font-size: 12px;" id="showNote"><i></i></span>
+            <br/>
+            <div style="display:inline-block;">
+                <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
+                &nbsp;
+                <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
+            </div>
+        </form>
+    `;
+};
+
+const renderShowMoreDataModal = () => {
+    return `
+        <div class="modal fade" id="modalShowMoreData" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+                <div class="modal-content sub-div-shadow">
+                    <div class="modal-header" id="modalHeader"></div>
+                    <div class="modal-body" id="modalBody"></div>
+                </div>
+            </div>
+        </div>
+    `;
+};
+
+const renderCancelChangesAndSaveChangesButtons = () => {
+    return `
+        <div class="float-right" style="display:inline-block;">
+            <button type="button" id="cancelChanges" class="btn btn-danger">Cancel Changes</button>
+            &nbsp;
+            <button type="submit" id="updateMemberData" class="updateMemberData btn btn-primary">Save Changes</button>
+        </div>
+        </br>
+        </br>
+    `;
+};
+
+const renderDaySelector = (participantValue, cId) => {
+    let options = '';
+    for(let i = 1; i <= 31; i++){
+        options += `<option class="option-dark-mode" value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`
+    }
+    return `
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+            ${options}
+        </select>
+    `;
+};
+
+const renderMonthSelector = (participantValue, cId) => {
+    let options = '';
+    for(let i = 1; i <= 12; i++){
+        options += `<option class="option-dark-mode" value="${i.toString().padStart(2, '0')}">${i.toString().padStart(2, '0')}</option>`
+    }
+    return `
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+            ${options}
+        </select>
+    `;
+};
+
+const renderTextVoicemailPermissionSelector = (participantValue, cId) => {
+    return `
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+            <option class="option-dark-mode" value="">-- Select --</option>
+            <option class="option-dark-mode" value="${fieldMapping.yes}">Yes</option>
+            <option class="option-dark-mode" value="${fieldMapping.no}">No</option>
+        </select>
+    `;
+};
+
+const renderStateSelector = (participantValue, cId) => {
+    let options = '';
+    for(const state in allStates){
+        options += `<option class="option-dark-mode" value="${state}">${state}</option>`
+    }
+    return `
+        <select name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+            ${options}
+        </select>
+    `;
+};
+
+const renderTextInputBox = (participantValue, cId) => {
+    return `
+        <input type="text" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+    `;
+};
+
+const renderPhoneInputBox = (participantValue, cId) => {
+    return `
+        <input type="tel" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue} placeholder="999-999-9999" pattern="([0-9]{3}-?[0-9]{3}-?[0-9]{4})?">
+        <br>
+        <small>Requested Format (no perenthesis): 123-456-7890</small><br>
+    `;
+};
+
+const renderSuffixSelector = (participant, participantValue, cId) => {
+    return `
+        <select style="max-width:200px; margin-left:0px;" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue}>
+            <option value="">-- Select --</option>
+            <option value="612166858" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 0 ? 'selected':'') : ''}>Jr.</option>
+            <option value="255907182" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 1 ? 'selected':'') : ''}>Sr.</option>
+            <option value="226924545" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 2 ? 'selected':'') : ''}>I</option>
+            <option value="270793412" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 3 ? 'selected':'') : ''}>II</option>
+            <option value="959021713" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 4 ? 'selected':'') : ''}>III</option>
+            <option value="643664527" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 5 ? 'selected':'') : ''}>2nd</option>
+            <option value="537892528" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 6 ? 'selected':'') : ''}>3rd</option>
+        </select>
+        `
+};
+  
