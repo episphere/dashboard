@@ -33,19 +33,15 @@ const checkForLoginMechanism = (participant) => {
         appState.setState({loginMechanism:{phone: true, email: false}})
         participant['Change Login Mode'] = 'Phone ☎️'
         participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
-    } else if (isEmailLogin) { 
+    } else { 
         appState.setState({loginMechanism:{phone: false, email: true}}) 
         participant['Change Login Mode'] = 'Email 📧'
         participant['Change Login Email'] = participant[fieldMapping.accountEmail]
-    } else {
-        console.error('No login mechanism found');
     }
 }
 
 export const renderParticipantDetails = (participant, changedOption, siteKey) => {
     checkForLoginMechanism(participant);
-    console.log('participant', participant);
-    console.log('siteKey', siteKey);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
@@ -75,15 +71,16 @@ export const render = (participant, changedOption) => {
         </div>
         `
     } else {
-        const filteredImportantRows = importantRows.filter(row => row.display === true);
-        template += `<div id="root" > 
-                    <div id="alert_placeholder"></div>`
-        template += renderParticipantHeader(participant);
-        template += `      
+        template += `
+            <div id="root" > 
+            <div id="alert_placeholder"></div>
+            ${renderParticipantHeader(participant)}     
             ${renderBackToSearchDivAndButton()}
             ${renderCancelChangesAndSaveChangesButtons()}
             ${renderDetailsTableHeader()}
         `;
+
+        const filteredImportantRows = importantRows.filter(row => row.display === true);
         filteredImportantRows.forEach(row => {
             const cId = row.field;
             const variableLabel = row.label;
@@ -91,7 +88,7 @@ export const render = (participant, changedOption) => {
             const valueToRender = getFieldValues(variableValue, cId);
             const participantValue = formatInputResponse(participant[cId]);
             const participantSignInMechanism = participant[fieldMapping.signInMechansim];
-            const buttonToRender = getButtonToRender(row, participantSignInMechanism, variableLabel, cId, participantValue);
+            const buttonToRender = getButtonToRender(participantSignInMechanism, variableLabel, cId, participantValue);
             template += `
                 <tr class="detailedRow" style="text-align: left;" id="${cId}row"}>
                     <th scope="row">
@@ -155,7 +152,7 @@ const changeParticipantDetail = (participant, changedOption, originalHTML, siteK
     }
 }
 
-const getButtonToRender = (row, participantSignInMechanism, variableLabel, cId, participantValue) => {
+const getButtonToRender = (participantSignInMechanism, variableLabel, cId, participantValue) => {
     const editButton = `
         <a class="showMore" 
             data-toggle="modal" 
@@ -293,41 +290,46 @@ const saveAltResponse = (participant) => {
 
 // async-await function to make HTTP POST request
 async function signInMechanismClickHandler(updatedOptions, siteKey)  {
-    showAnimation();
-   
-    console.log(siteKey);
-    //console.log(updatedOptions['token']);
-    const newKey = await getAccessToken();
+    try {
+        showAnimation();
 
-    const updateParticpantPayload = {
-        "data": [updatedOptions]
-    }
+        const updateParticpantPayload = {
+            "data": [updatedOptions]
+        }
 
-    const response = await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
-        method:'POST',
-        body: JSON.stringify(updateParticpantPayload),
-        headers:{
-            Authorization:"Bearer " + siteKey, //newKey, //siteKey,
-            "Content-Type": "application/json"
-            }
-    });
-    hideAnimation();
-    if (response.status === 200) {
-        document.getElementById('loadingAnimation').style.display = 'none';
-        appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
-        let alertList = document.getElementById("alert_placeholder");
-        let template = ``;
-        template += `
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                Participant detail updated!
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                </div>`;
-        alertList.innerHTML = template;
-        return true;
-    } else { 
-        alert('Error');
+        const response = await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
+            method:'POST',
+            body: JSON.stringify(updateParticpantPayload),
+            headers:{
+                Authorization:"Bearer " + siteKey, //newKey, //siteKey,
+                "Content-Type": "application/json"
+                }
+        });
+        hideAnimation();
+
+        if (response.status === 200) {
+            document.getElementById('loadingAnimation').style.display = 'none';
+            appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
+            let alertList = document.getElementById("alert_placeholder");
+            let template = ``;
+            template += `
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    Participant detail updated!
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                    </div>`;
+            alertList.innerHTML = template;
+            return true;
+        } else { 
+            throw new Error('Error: (signInMechanismClickHandler())');
+            //alert('Error');
+        }
+    } catch (error) {
+        console.error('Error in updating participant data (signInMechanismClickHandler())', error);
+        hideAnimation();
+        alert('Error in updating participant data. Please try again.');
+        return false;
     }
 }
 
@@ -462,7 +464,6 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
             switchPackage['uid'] = participant.state.uid;
             switchPackage['flag'] = flag
             switchSigninMechanismHandler(switchPackage, siteKey, changedOption);
-
         }
     })
 };
@@ -471,30 +472,37 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
 const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOption) =>  {
     showAnimation();
 
-    console.log(siteKey);
-    console.log(changedOption['token']);
-    const newKey = await getAccessToken();
-    console.log(newKey);
-
-    //if (!siteKey) siteKey = await getAccessToken();
-
-    console.log(siteKey);
     const signinMechanismPayload = {
         "data": switchPackage
     }
 
-    const response = await (await fetch(`${baseAPI}/dashboard?api=updateUserAuthentication`,{
+    const response = await fetch(`${baseAPI}/dashboard?api=updateUserAuthentication`,{
         method:'POST',
         body: JSON.stringify(signinMechanismPayload),
         headers:{
-            Authorization:"Bearer " + siteKey ?? newKey, //newKey, //siteKey,
+            Authorization:"Bearer " + siteKey,
             "Content-Type": "application/json"
             }
-        }))
+        })
         hideAnimation();
-        console.log('response', response);
+        
         if (response.status === 200) {
-            signInMechanismClickHandler({}, changedOption, siteKey);
+            const isSuccess = await signInMechanismClickHandler(changedOption, siteKey);
+
+            if (!isSuccess) {
+                let alertList = document.getElementById("alert_placeholder");
+                let template = ``;
+                template += `
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                          Operation failed!
+                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                        </div>`;
+                alertList.innerHTML = template;
+                return;
+            }
+
             let alertList = document.getElementById("alert_placeholder");
             let template = ``;
             template += `
@@ -517,8 +525,9 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
                 if (changeLoginPhoneRow) changeLoginPhoneRow.children[1].innerHTML = 'Updating phone number';
                 if (changeLoginEmailRow) changeLoginEmailRow.children[1].innerHTML = 'Updating email';
             }
+
             await reloadParticipantData(changedOption.token, siteKey);
-         }
+        }
 
         else if (response.status === 409) {
             const body = document.getElementById('modalBody');

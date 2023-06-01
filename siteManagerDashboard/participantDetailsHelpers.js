@@ -60,6 +60,8 @@ export const allStates = {
     "NA": 52
 }
 
+const testAndVoicemailPermissionIds = [fieldMapping.canWeText, fieldMapping.voicemailMobile, fieldMapping.voicemailHome, fieldMapping.voicemailOther];
+
 export const closeModal = () => {
     const modalClose = document.getElementById('modalShowMoreData');
     modalClose.querySelector('#closeModal').click();
@@ -83,7 +85,8 @@ export const getFieldValues = (variableValue, cId) => {
     const phoneFieldValues = {
         [fieldMapping.cellPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
         [fieldMapping.homePhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
-        [fieldMapping.otherPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : ''
+        [fieldMapping.otherPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
+        'Change Login Phone': variableValue ? formatPhoneNumber(variableValue.toString()) : ''
     }
 
     if (variableValue in fieldValues){
@@ -332,11 +335,11 @@ function isPhoneNumberPresent(participant, changedOption, conceptId, phoneType) 
 }
 
 export const getIsEmail = (participantSignInMechanism) => {
-    return participantSignInMechanism === 'password' || participantSignInMechanism === fieldMapping.signInPassword || participantSignInMechanism === fieldMapping.signInGoogle || participantSignInMechanism === 'emailAndPhone';
+    return participantSignInMechanism === 'password' || participantSignInMechanism === fieldMapping.signInPassword || participantSignInMechanism === fieldMapping.signInGoogle || participantSignInMechanism === 'passwordAndPhone';
 };
 
 export const getIsPhone = (participantSignInMechanism) => {
-    return participantSignInMechanism === 'phone' || participantSignInMechanism === fieldMapping.signInPhone || participantSignInMechanism === 'emailAndPhone';
+    return participantSignInMechanism === 'phone' || participantSignInMechanism === fieldMapping.signInPhone || participantSignInMechanism === 'passwordAndPhone';
 };
 
 /**
@@ -411,7 +414,7 @@ export const reloadParticipantData = async (token, siteKey) => {
     const query = `token=${token}`
     const reloadedParticpant = await findParticipant(query);
     mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], [],  {}, siteKey);
+    renderParticipantDetails(reloadedParticpant.data[0], {}, siteKey);
     hideAnimation();
 }
 
@@ -435,7 +438,7 @@ export const resetChanges = (participant, originalHTML, siteKey) => {
     a.addEventListener("click", () => {
         if ( appState.getState().unsavedChangesTrack.saveFlag === false ) {
             mainContent.innerHTML = originalHTML;
-            renderParticipantDetails(participant, [], {}, siteKey);
+            renderParticipantDetails(participant, {}, siteKey);
             appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
             let alertList = document.getElementById('alert_placeholder');
             // throws an alert when canncel changes button is clicked
@@ -456,7 +459,7 @@ export const resetChanges = (participant, originalHTML, siteKey) => {
 export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
     showAnimation();
     localStorage.setItem('participant', JSON.stringify(participant));
-    renderParticipantDetails(participant, [], {}, siteKey);
+    renderParticipantDetails(participant, {}, siteKey);
     appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
     let alertList = document.getElementById('alert_placeholder');
     let template = '';
@@ -487,12 +490,14 @@ export const saveResponses = (participant, changedOption, editedElement, cId) =>
 
         const newValueElement = document.getElementById(`newValue${cId}`);     
         const dataValidationType = getImportantRows(participant, changedOption).find(row => row.field == modifiedData.fieldconceptid).validationType;
-        const isRequired = getIsRequiredField(participant, changedOption, newValueElement, conceptIdArray[conceptIdArray.length - 1]);
-        if (newValueElement.value != participant[conceptIdArray[conceptIdArray.length - 1]]) {
+        const currentConceptId = conceptIdArray[conceptIdArray.length - 1];
+        const isRequired = getIsRequiredField(participant, changedOption, newValueElement, currentConceptId);
+        
+        if (newValueElement.value != participant[currentConceptId] || testAndVoicemailPermissionIds.includes(parseInt(currentConceptId))) {
             const newValueIsValid = validateNewValue(newValueElement, dataValidationType, isRequired);
 
             if (newValueIsValid) {
-                changedOption[conceptIdArray[conceptIdArray.length - 1]] = newValueElement.value;
+                changedOption[currentConceptId] = newValueElement.value;
                 // if a changed field is a date of birth field then we need to update full date of birth  
                 if (fieldMapping.birthDay in changedOption || fieldMapping.birthMonth in changedOption || fieldMapping.birthYear in changedOption) {
                     const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay];
@@ -500,7 +505,7 @@ export const saveResponses = (participant, changedOption, editedElement, cId) =>
                     const year = changedOption[fieldMapping.birthYear] || participant[fieldMapping.birthYear];
                     const dateOfBirthComplete = fieldMapping.dateOfBirthComplete;
                     conceptIdArray.push(dateOfBirthComplete);
-                    changedOption[conceptIdArray[conceptIdArray.length - 1]] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
+                    changedOption[currentConceptId] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
                 }
 
                 updateUIValues(editedElement, newValueElement.value, conceptIdArray);
@@ -570,7 +575,7 @@ const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
     const displayStatus = newValue.replace(/\D/g,'').length === 10 ? 'block' : 'none';
     for (const phoneType in phoneTypeToPermissionsMapping) {
         if (conceptIdArray.includes(phoneType.toString())) {
-           phoneTypeToPermissionsMapping[phoneType].forEach(valueType => {
+            phoneTypeToPermissionsMapping[phoneType].forEach(valueType => {
                 const button = document.getElementById(`${valueType}button`);
                 if (button) {
                     button.style.display = displayStatus;
@@ -588,8 +593,8 @@ const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
                         }
                     }
                 };
-           }); 
-           break;
+            }); 
+            break;
         }
     }
 };

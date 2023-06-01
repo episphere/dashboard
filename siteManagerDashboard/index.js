@@ -84,13 +84,11 @@ const router = async () => {
         else if (route === '#participantDetails') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
                 renderParticipantDetails();
-            }
-            else {
+            } else {
                 let participant = JSON.parse(localStorage.getItem("participant"));
-                let adminSubjectAudit = [];
                 let changedOption = {};
                 const siteKey = await getAccessToken();
-                renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey);
+                renderParticipantDetails(participant, changedOption, siteKey);
             }
         }
         else if (route === '#participantSummary') {

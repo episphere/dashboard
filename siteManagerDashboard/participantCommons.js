@@ -834,12 +834,11 @@ const addEventShowMoreInfo = (data) => {
     Array.from(selectElements).forEach(element => {
         element.addEventListener('click', async () => {
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
-            let adminSubjectAudit = [];
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
             location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
             const siteKey = await getAccessToken();
-            renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, siteKey);
+            renderParticipantDetails(filteredData[0], changedOption, siteKey);
         });
     });
 
