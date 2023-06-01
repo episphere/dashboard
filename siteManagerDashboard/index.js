@@ -58,7 +58,9 @@ window.onload = async () => {
     await getMappings();
     localStorage.setItem("flags", JSON.stringify(saveFlag));
     localStorage.setItem("counters", JSON.stringify(counter));
-    activityCheckController()
+    activityCheckController();
+    const userSession = localStorage.getItem('userSession');
+    userSession && appState.setState({ userSession: JSON.parse(userSession) });
 }
 
 window.onhashchange = () => {
@@ -194,6 +196,8 @@ const homePage = async () => {
             firebase.auth().tenantId = tenantID;
             firebase.auth().signInWithPopup(saml)
                 .then(async (result) => {
+                    appState.setState({userSession:{email: result.user.email}});
+                    localStorage.setItem('userSession', JSON.stringify({email: result.user.email}));
                     location.hash = '#home'
                 })
                 .catch((error) => {
@@ -957,6 +961,8 @@ const clearLocalStorage = () => {
     animation(false);
     delete localStorage.dashboard;
     delete localStorage.participant;
+    delete localStorage.userSession;
+    appState.setState({userSession: {}});
     window.location.hash = '#';
 }
 
