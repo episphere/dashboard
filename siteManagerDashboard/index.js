@@ -83,7 +83,7 @@ const router = async () => {
         else if (route === '#participantLookup') renderParticipantLookup();
         else if (route === '#participantDetails') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
-                renderParticipantDetails();
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
             } else {
                 let participant = JSON.parse(localStorage.getItem("participant"));
                 let changedOption = {};
