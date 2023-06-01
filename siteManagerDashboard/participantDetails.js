@@ -1,8 +1,8 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { allStates, closeModal, formatInputResponse, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { allStates, closeModal, formatInputResponse, getFieldValues, getImportantRows, getIsEmail, getIsPhone, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
+import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
 import { appState } from './stateManager.js';
 
 appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}});
@@ -22,21 +22,30 @@ window.addEventListener('onload', (e) => {
 })
 
 const checkForLoginMechanism = (participant) => {
-    const isPhoneLogin = participant?.[fieldMapping.signInMechansim] === `phone`;
-    if (isPhoneLogin) {
+    const isPhoneLogin = getIsPhone(participant && participant[fieldMapping.signInMechansim]);
+    const isEmailLogin = getIsEmail(participant && participant[fieldMapping.signInMechansim]);
+    if (isPhoneLogin && isEmailLogin) {
+        appState.setState({loginMechanism:{phone: true, email: true}})
+        participant['Change Login Mode'] = 'Email 📧 and Phone ☎️'
+        participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
+        participant['Change Login Email'] = participant[fieldMapping.accountEmail]
+    } else if (isPhoneLogin) {
         appState.setState({loginMechanism:{phone: true, email: false}})
         participant['Change Login Mode'] = 'Phone ☎️'
         participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
-    }
-    else { 
+    } else if (isEmailLogin) { 
         appState.setState({loginMechanism:{phone: false, email: true}}) 
         participant['Change Login Mode'] = 'Email 📧'
         participant['Change Login Email'] = participant[fieldMapping.accountEmail]
+    } else {
+        console.error('No login mechanism found');
     }
 }
 
 export const renderParticipantDetails = (participant, changedOption, siteKey) => {
     checkForLoginMechanism(participant);
+    console.log('participant', participant);
+    console.log('siteKey', siteKey);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
@@ -163,11 +172,11 @@ const getButtonToRender = (row, participantSignInMechanism, variableLabel, cId, 
     const updateLoginEmailButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='email' id="updateUserLogin">Update</button>`;
     const updateLoginPhoneButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='phone' id="updateUserLogin">Update</button>`;
 
-    if (row.editable && cId === 'Change Login Mode') {
+    if (cId === 'Change Login Mode') {
         return changeLoginModeButton;
-    } else if (participantSignInMechanism === 'password' && cId === 'Change Login Email') {
+    } else if (cId === 'Change Login Email' && getIsEmail(participantSignInMechanism)) {
         return updateLoginEmailButton;
-    } else if (participantSignInMechanism === 'phone' && cId === 'Change Login Phone') {
+    } else if (cId === 'Change Login Phone' && getIsPhone(participantSignInMechanism)) {
         return updateLoginPhoneButton;
     } else {
         return editButton;
@@ -286,6 +295,10 @@ const saveAltResponse = (participant) => {
 async function signInMechanismClickHandler(updatedOptions, siteKey)  {
     showAnimation();
    
+    console.log(siteKey);
+    //console.log(updatedOptions['token']);
+    const newKey = await getAccessToken();
+
     const updateParticpantPayload = {
         "data": [updatedOptions]
     }
@@ -294,7 +307,7 @@ async function signInMechanismClickHandler(updatedOptions, siteKey)  {
         method:'POST',
         body: JSON.stringify(updateParticpantPayload),
         headers:{
-            Authorization:"Bearer "+siteKey,
+            Authorization:"Bearer " + siteKey, //newKey, //siteKey,
             "Content-Type": "application/json"
             }
     });
@@ -320,6 +333,8 @@ async function signInMechanismClickHandler(updatedOptions, siteKey)  {
 
 const updateUserSigninMechanism = (participant, siteKey) => {
     const switchSiginButton = document.getElementById('switchSiginMechanism');
+    const isPhone = getIsPhone(participant[fieldMapping.signInMechansim]);
+    const isEmail = getIsEmail(participant[fieldMapping.signInMechansim]); 
     let template = ``
     if (switchSiginButton) {
         switchSiginButton.addEventListener('click', () => {
@@ -327,7 +342,7 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             const body = document.getElementById('modalBody');
             header.innerHTML = `<h5>Change Login Mode</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             template = `<div> <form id="formResponse2" method="post"> `
-            if (participant[fieldMapping.signInMechansim] === 'phone') {
+            if (isPhone) {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
                             <input class="form-control" value=${participant[fieldMapping.accountPhone]} disabled/>
@@ -337,7 +352,7 @@ const updateUserSigninMechanism = (participant, siteKey) => {
                             <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
                         </div>`
             }
-            else if (participant[fieldMapping.signInMechansim] === 'password') {
+            else if (isEmail) {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
                             <input class="form-control" value=${participant[fieldMapping.accountEmail]} disabled/>
@@ -364,15 +379,17 @@ const updateUserSigninMechanism = (participant, siteKey) => {
 // updates existing email or phone
 const updateUserLogin = (participant, siteKey) => {
     const switchSiginButton = document.getElementById('updateUserLogin');
+    const isPhone = getIsPhone(participant[fieldMapping.signInMechansim]);
+    const isEmail = getIsEmail(participant[fieldMapping.signInMechansim]); 
     let updateFlag = ``
     let template = ``
     if (switchSiginButton) {
         switchSiginButton.addEventListener('click', () => {
             const header = document.getElementById('modalHeader');
             const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Change Login ${participant[fieldMapping.signInMechansim] === 'phone' ? `Phone` : `Email`}</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+            header.innerHTML = `<h5>Change Login ${isPhone ? `Phone` : `Email`}</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
             template = `<div> <form id="formResponse2" method="post"> `
-            if (participant[fieldMapping.signInMechansim] === 'phone') {
+            if (isPhone) {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
                             <input class="form-control" value=${participant[fieldMapping.accountPhone]} disabled/>
@@ -384,7 +401,7 @@ const updateUserLogin = (participant, siteKey) => {
                 updateFlag = `updatePhone`
 
             }
-            else if (participant[fieldMapping.signInMechansim] === 'password') {
+            else if (isEmail) {
                 template +=  `<div class="form-group">
                             <label class="col-form-label search-label">Current Login</label>
                             <input class="form-control" value=${participant[fieldMapping.accountEmail]} disabled/>
@@ -454,6 +471,14 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
 const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOption) =>  {
     showAnimation();
 
+    console.log(siteKey);
+    console.log(changedOption['token']);
+    const newKey = await getAccessToken();
+    console.log(newKey);
+
+    //if (!siteKey) siteKey = await getAccessToken();
+
+    console.log(siteKey);
     const signinMechanismPayload = {
         "data": switchPackage
     }
@@ -462,11 +487,12 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         method:'POST',
         body: JSON.stringify(signinMechanismPayload),
         headers:{
-            Authorization:"Bearer "+siteKey,
+            Authorization:"Bearer " + siteKey ?? newKey, //newKey, //siteKey,
             "Content-Type": "application/json"
             }
         }))
         hideAnimation();
+        console.log('response', response);
         if (response.status === 200) {
             signInMechanismClickHandler({}, changedOption, siteKey);
             let alertList = document.getElementById("alert_placeholder");
