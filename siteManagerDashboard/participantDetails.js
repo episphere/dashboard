@@ -485,7 +485,7 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
             }
         })
         hideAnimation();
-        
+
         if (response.status === 200) {
             const isSuccess = await signInMechanismClickHandler(changedOption, siteKey);
 
@@ -705,7 +705,7 @@ const renderPhoneInputBox = (participantValue, cId) => {
     return `
         <input type="tel" name="newValue${cId}" id="newValue${cId}" data-currentValue=${participantValue} placeholder="999-999-9999" pattern="([0-9]{3}-?[0-9]{3}-?[0-9]{4})?">
         <br>
-        <small>Requested Format (no perenthesis): 123-456-7890</small><br>
+        <small>Requested Format (no parentheses): 123-456-7890</small><br>
     `;
 };
 
