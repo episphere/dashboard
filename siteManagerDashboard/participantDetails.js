@@ -24,12 +24,14 @@ window.addEventListener('onload', (e) => {
 const checkForLoginMechanism = (participant) => {
     const isPhoneLogin = getIsPhone(participant && participant[fieldMapping.signInMechansim]);
     const isEmailLogin = getIsEmail(participant && participant[fieldMapping.signInMechansim]);
-    if (isPhoneLogin && isEmailLogin) {
-        appState.setState({loginMechanism:{phone: true, email: true}})
-        participant['Change Login Mode'] = 'Email 📧 and Phone ☎️'
-        participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
-        participant['Change Login Email'] = participant[fieldMapping.accountEmail]
-    } else if (isPhoneLogin) {
+    //TODO: This handles multiple auth methods: Remove now (recommended by Abhinav), add back in when multiple logins are working: this is the next project in line.
+    // if (isPhoneLogin && isEmailLogin) {
+    //     appState.setState({loginMechanism:{phone: true, email: true}})
+    //     participant['Change Login Mode'] = 'Email 📧 and Phone ☎️'
+    //     participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
+    //     participant['Change Login Email'] = participant[fieldMapping.accountEmail]
+    // } else 
+    if (isPhoneLogin) {
         appState.setState({loginMechanism:{phone: true, email: false}})
         participant['Change Login Mode'] = 'Phone ☎️'
         participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
@@ -323,7 +325,6 @@ async function signInMechanismClickHandler(updatedOptions, siteKey)  {
             return true;
         } else { 
             throw new Error('Error: (signInMechanismClickHandler())');
-            //alert('Error');
         }
     } catch (error) {
         console.error('Error in updating participant data (signInMechanismClickHandler())', error);
