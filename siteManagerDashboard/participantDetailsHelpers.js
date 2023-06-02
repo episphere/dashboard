@@ -81,7 +81,7 @@ const fieldValues = {
     [fieldMapping.email]: 'Email',
 }
 
-export const getFieldValues = (variableValue, cId) => {
+export const getFieldValues = (variableValue, conceptId) => {
     const phoneFieldValues = {
         [fieldMapping.cellPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
         [fieldMapping.homePhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
@@ -91,8 +91,8 @@ export const getFieldValues = (variableValue, cId) => {
 
     if (variableValue in fieldValues){
         return fieldValues[variableValue];
-    } else if (cId in phoneFieldValues){
-        return phoneFieldValues[cId];
+    } else if (conceptId in phoneFieldValues){
+        return phoneFieldValues[conceptId];
     } else {
         return variableValue ?? '';
     }
@@ -480,15 +480,15 @@ export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
  * @param {object} changedOption - object containing the participant's updated data points
  * @param {HTMLElement} editedElement - the currently edited HTML element
  */
-export const saveResponses = (participant, changedOption, editedElement, cId) => {
+export const saveResponses = (participant, changedOption, editedElement, conceptId) => {
     let conceptIdArray = [];
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
-        const modifiedData = getDataAttributes(document.getElementById(`fieldModified${cId}`));
+        const modifiedData = getDataAttributes(document.getElementById(`fieldModified${conceptId}`));
         conceptIdArray.push(modifiedData.fieldconceptid);
 
-        const newValueElement = document.getElementById(`newValue${cId}`);     
+        const newValueElement = document.getElementById(`newValue${conceptId}`);     
         const dataValidationType = getImportantRows(participant, changedOption).find(row => row.field == modifiedData.fieldconceptid).validationType;
         const currentConceptId = conceptIdArray[conceptIdArray.length - 1];
         const isRequired = getIsRequiredField(participant, changedOption, newValueElement, currentConceptId);
@@ -599,8 +599,8 @@ const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
     }
 };
 
-export const showSaveNoteInModal = (cId) => {
-    const a = document.getElementById(`newValue${cId}`);
+export const showSaveNoteInModal = (conceptId) => {
+    const a = document.getElementById(`newValue${conceptId}`);
     if (a) {
         a.addEventListener('click', () => {
             const b = document.getElementById('showNote');
