@@ -312,7 +312,7 @@ async function signInMechanismClickHandler(updatedOptions, siteKey)  {
         if (response.status === 200) {
             document.getElementById('loadingAnimation').style.display = 'none';
             appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
-            let alertList = document.getElementById("alert_placeholder");
+            const alertList = document.getElementById("alert_placeholder");
             let template = ``;
             template += `
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
