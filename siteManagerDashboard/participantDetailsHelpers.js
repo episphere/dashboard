@@ -60,6 +60,8 @@ export const allStates = {
     "NA": 52
 }
 
+const testAndVoicemailPermissionIds = [fieldMapping.canWeText, fieldMapping.voicemailMobile, fieldMapping.voicemailHome, fieldMapping.voicemailOther];
+
 export const closeModal = () => {
     const modalClose = document.getElementById('modalShowMoreData');
     modalClose.querySelector('#closeModal').click();
@@ -79,19 +81,20 @@ const fieldValues = {
     [fieldMapping.email]: 'Email',
 }
 
-export const getFieldValues = (variableValue, cId) => {
+export const getFieldValues = (variableValue, conceptId) => {
     const phoneFieldValues = {
-        [fieldMapping.cellPhone]: formatPhoneNumber(variableValue.toString()),
-        [fieldMapping.homePhone]: formatPhoneNumber(variableValue.toString()),
-        [fieldMapping.otherPhone]: formatPhoneNumber(variableValue.toString())
+        [fieldMapping.cellPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
+        [fieldMapping.homePhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
+        [fieldMapping.otherPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
+        'Change Login Phone': variableValue ? formatPhoneNumber(variableValue.toString()) : ''
     }
 
     if (variableValue in fieldValues){
         return fieldValues[variableValue];
-    } else if (cId in phoneFieldValues){
-        return phoneFieldValues[cId];
+    } else if (conceptId in phoneFieldValues){
+        return phoneFieldValues[conceptId];
     } else {
-        return variableValue;
+        return variableValue ?? '';
     }
 }
 
@@ -104,8 +107,13 @@ export const formatInputResponse = (participantValue) => {
 };
 
 export const formatPhoneNumber = (phoneNumber) => {
+    if (/^\+1/.test(phoneNumber)) phoneNumber = phoneNumber.substring(2);
     return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
 };
+// export const formatPhoneNumber = (phoneNumber) => {
+//     if (phoneNumber.startsWith('+1')) phoneNumber = phoneNumber.substring(2);
+//     return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
+// };
 
 const isPhoneNumberInForm = (participant, changedOption, fieldMappingKey) => {
     return !!participant?.[fieldMappingKey] || !!changedOption?.[fieldMappingKey];
@@ -330,6 +338,14 @@ function isPhoneNumberPresent(participant, changedOption, conceptId, phoneType) 
     return (participant[phoneType] || changedOption[phoneType]) && changedOption[phoneType] !== '' && conceptId != phoneType;
 }
 
+export const getIsEmail = (participantSignInMechanism) => {
+    return participantSignInMechanism === 'password' || participantSignInMechanism === fieldMapping.signInPassword || participantSignInMechanism === 'passwordAndPhone';
+};
+
+export const getIsPhone = (participantSignInMechanism) => {
+    return participantSignInMechanism === 'phone' || participantSignInMechanism === fieldMapping.signInPhone || participantSignInMechanism === 'passwordAndPhone';
+};
+
 /**
  * Get whether a field is required or not
  * Automatically required fields: fName, lName, birthMonth, birthYear, birthDay, prefEmail, addressLine1, city, state, zip.
@@ -397,12 +413,12 @@ export const hideUneditableButtons = (participant, changedOption) => {
     })
 };
 
-export const reloadParticipantData = async (token, siteKey) => {
+export const reloadParticipantData = async (token, bearerToken) => {
     showAnimation();
     const query = `token=${token}`
     const reloadedParticpant = await findParticipant(query);
     mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], [],  {}, siteKey);
+    renderParticipantDetails(reloadedParticpant.data[0], {}, bearerToken);
     hideAnimation();
 }
 
@@ -420,13 +436,13 @@ export const renderReturnSearchResults = () => {
         })
 }};
 
-export const resetChanges = (participant, originalHTML, siteKey) => {
+export const resetChanges = (participant, originalHTML, bearerToken) => {
     const a = document.getElementById("cancelChanges");
     let template = '';
     a.addEventListener("click", () => {
         if ( appState.getState().unsavedChangesTrack.saveFlag === false ) {
             mainContent.innerHTML = originalHTML;
-            renderParticipantDetails(participant, [], {}, siteKey);
+            renderParticipantDetails(participant, {}, bearerToken);
             appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
             let alertList = document.getElementById('alert_placeholder');
             // throws an alert when canncel changes button is clicked
@@ -444,10 +460,10 @@ export const resetChanges = (participant, originalHTML, siteKey) => {
     })   
 }
 
-export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
+export const refreshParticipantAfterUpdate = async (participant, bearerToken) => {
     showAnimation();
     localStorage.setItem('participant', JSON.stringify(participant));
-    renderParticipantDetails(participant, [], {}, siteKey);
+    renderParticipantDetails(participant, {}, bearerToken);
     appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
     let alertList = document.getElementById('alert_placeholder');
     let template = '';
@@ -468,22 +484,24 @@ export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
  * @param {object} changedOption - object containing the participant's updated data points
  * @param {HTMLElement} editedElement - the currently edited HTML element
  */
-export const saveResponses = (participant, changedOption, editedElement, cId) => {
+export const saveResponses = (participant, changedOption, editedElement, conceptId) => {
     let conceptIdArray = [];
     const a = document.getElementById('formResponse')
     a.addEventListener('submit', e => {
         e.preventDefault()
-        const modifiedData = getDataAttributes(document.getElementById(`fieldModified${cId}`));
+        const modifiedData = getDataAttributes(document.getElementById(`fieldModified${conceptId}`));
         conceptIdArray.push(modifiedData.fieldconceptid);
 
-        const newValueElement = document.getElementById(`newValue${cId}`);     
+        const newValueElement = document.getElementById(`newValue${conceptId}`);     
         const dataValidationType = getImportantRows(participant, changedOption).find(row => row.field == modifiedData.fieldconceptid).validationType;
-        const isRequired = getIsRequiredField(participant, changedOption, newValueElement, conceptIdArray[conceptIdArray.length - 1]);
-        if (newValueElement.value != participant[conceptIdArray[conceptIdArray.length - 1]]) {
+        const currentConceptId = conceptIdArray[conceptIdArray.length - 1];
+        const isRequired = getIsRequiredField(participant, changedOption, newValueElement, currentConceptId);
+        
+        if (newValueElement.value != participant[currentConceptId] || testAndVoicemailPermissionIds.includes(parseInt(currentConceptId))) {
             const newValueIsValid = validateNewValue(newValueElement, dataValidationType, isRequired);
 
             if (newValueIsValid) {
-                changedOption[conceptIdArray[conceptIdArray.length - 1]] = newValueElement.value;
+                changedOption[currentConceptId] = newValueElement.value;
                 // if a changed field is a date of birth field then we need to update full date of birth  
                 if (fieldMapping.birthDay in changedOption || fieldMapping.birthMonth in changedOption || fieldMapping.birthYear in changedOption) {
                     const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay];
@@ -491,7 +509,7 @@ export const saveResponses = (participant, changedOption, editedElement, cId) =>
                     const year = changedOption[fieldMapping.birthYear] || participant[fieldMapping.birthYear];
                     const dateOfBirthComplete = fieldMapping.dateOfBirthComplete;
                     conceptIdArray.push(dateOfBirthComplete);
-                    changedOption[conceptIdArray[conceptIdArray.length - 1]] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
+                    changedOption[currentConceptId] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
                 }
 
                 updateUIValues(editedElement, newValueElement.value, conceptIdArray);
@@ -519,7 +537,6 @@ const updateUIValues = (editedElement, newValue, conceptIdArray) => {
         nextSiblingButton.innerHTML = `${nextSiblingButton.innerHTML}<br><br><i>Please save changes<br>before exiting the page</i>`;
     }
     updatedEditValue.parentNode.style.backgroundColor = "#FFFACA";
-
     if (conceptIdArray.some(id => [fieldMapping.cellPhone.toString(), fieldMapping.homePhone.toString(), fieldMapping.otherPhone.toString()].includes(id.toString()))) {
         togglePhonePermissionButtonsAndText(newValue, conceptIdArray);
     }
@@ -559,11 +576,10 @@ const phoneTypeToPermissionsMapping = {
  * @param {Array<string>} conceptIdArray - the concept id of the element 
  */
 const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
-    const displayStatus = newValue.length === 10 ? 'block' : 'none';
-
+    const displayStatus = validPhoneNumberFormat.test(newValue) ? 'block' : 'none';
     for (const phoneType in phoneTypeToPermissionsMapping) {
         if (conceptIdArray.includes(phoneType.toString())) {
-           phoneTypeToPermissionsMapping[phoneType].forEach(valueType => {
+            phoneTypeToPermissionsMapping[phoneType].forEach(valueType => {
                 const button = document.getElementById(`${valueType}button`);
                 if (button) {
                     button.style.display = displayStatus;
@@ -581,14 +597,14 @@ const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
                         }
                     }
                 };
-           }); 
-           break;
+            }); 
+            break;
         }
     }
 };
 
-export const showSaveNoteInModal = (cId) => {
-    const a = document.getElementById(`newValue${cId}`);
+export const showSaveNoteInModal = (conceptId) => {
+    const a = document.getElementById(`newValue${conceptId}`);
     if (a) {
         a.addEventListener('click', () => {
             const b = document.getElementById('showNote');
@@ -785,6 +801,17 @@ export const viewParticipantSummary = (participant) => {
     }
 }
 
+const cleanPhoneNumber = (changedOption) => {
+    const phoneNumbers = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
+    phoneNumbers.forEach(phoneNumber => {
+        if (phoneNumber in changedOption) {
+            changedOption[phoneNumber] = changedOption[phoneNumber].replace(/\D/g, '');
+        }
+    });
+    return changedOption;
+
+};
+
 /**
  * Process the user's update and submit the new user data to the database.
  * if participant is verified, fetch logged in admin's email (the person processing the edit) to attach to the user's history update
@@ -792,9 +819,9 @@ export const viewParticipantSummary = (participant) => {
  * Else, alert the user that the update was unsuccessful.
  * @param {object} participant - the existing participant object 
  * @param {object} changedOption - the changed user data
- * @param {string} siteKey - the site key to pass to the POST request 
+ * @param {string} bearerToken - the site key to pass to the POST request 
  */
-export const submitClickHandler = async (participant, changedOption, siteKey) => {
+export const submitClickHandler = async (participant, changedOption, bearerToken) => {
     const isParticipantVerified = participant[fieldMapping.verifiedFlag] == fieldMapping.verified;
     const adminEmail = appState.getState().userSession?.email ?? '';
     const submitButtons = document.getElementsByClassName('updateMemberData');
@@ -807,7 +834,7 @@ export const submitClickHandler = async (participant, changedOption, siteKey) =>
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
                 if (isSuccess) {
                     const updatedParticipant = { ...participant, ...changedUserDataForProfile};
-                    await refreshParticipantAfterUpdate(updatedParticipant, siteKey);
+                    await refreshParticipantAfterUpdate(updatedParticipant, bearerToken);
                 } else {
                     alert('Error: There was an error processing your changes. Please try again.');
                 }
@@ -819,7 +846,7 @@ export const submitClickHandler = async (participant, changedOption, siteKey) =>
   /**
  * Iterate the new values, compare them to existing values, and return the changed values.
  * write an empty string to firestore if the history value is null/undefined/empty --per spec on 05-09-2023
- * write an empty string ti firestore if the profile value is null/undefined/empty --per spec on 05-09-2023
+ * write an empty string to firestore if the profile value is null/undefined/empty --per spec on 05-09-2023
  * @param {object} newUserData - the newly entered form fields
  * @param {object} existingUserData - the existing user profile data
  * @returns {changedUserDataForProfile, changedUserDataForHistory} - parallel objects containing the changed values
@@ -828,15 +855,20 @@ export const submitClickHandler = async (participant, changedOption, siteKey) =>
  *   the same is true for homePhone and otherPhone (canWeVoicemailHome and canWeVoicemailOther)
  *   if user deletes a number, set canWeVoicemail and canWeText to '' (empty string) --per spec on 05-09-2023
  *   if user updates a number, ensure the canWeVoicemail and canWeText values are set. Use previous values as fallback.
+ *   Update: 05-26-2023 do not include email addresses in user profile archiving. Exclude those keys from the history object
 */
 const findChangedUserDataValues = (newUserData, existingUserData) => {
     const changedUserDataForProfile = {};
     const changedUserDataForHistory = {};
-    newUserData = removeNonNumbersFromPhoneNumber(newUserData);
+    const excludeHistoryKeys = [fieldMapping.email, fieldMapping.email1, fieldMapping.email2];
+
+    newUserData = cleanPhoneNumber(newUserData);
     Object.keys(newUserData).forEach(key => {
       if (newUserData[key] !== existingUserData[key]) {
         changedUserDataForProfile[key] = newUserData[key] ?? '';
-        changedUserDataForHistory[key] = existingUserData[key] ?? '';
+        if (!excludeHistoryKeys.includes(key)) {
+            changedUserDataForHistory[key] = existingUserData[key] ?? '';
+        }
       }
     });
   
@@ -873,22 +905,11 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
 return { changedUserDataForProfile, changedUserDataForHistory };
 };
 
-
-const removeNonNumbersFromPhoneNumber = (changedOption) => {
-    const phoneNumbers = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
-    phoneNumbers.forEach(phoneNumber => {
-        if (phoneNumber in changedOption) {
-            changedOption[phoneNumber] = changedOption[phoneNumber].replace(/\D/g, '');
-        }
-    });
-    return changedOption;
-
-};
-
 /**
  * Check whether changes were made to the user profile. If so, update the user profile and history.
  * Only write the history portion if the user is verified. Do not write history if the user is not verified.
  * Specifically, don't write history if the submittedFlag is true but participant[fieldMapping.verifiedFlag] !== fieldMapping.verified.
+ * Updated requirement 05/25/2023: do not write emails (prefEmail, additionalEmail1, additionalEmail2) to user history
  * @param {object} changedUserDataForProfile - the changed values to be written to the user profile
  * @param {object} changedUserDataForHistory  - the previous values to be written to history.
  * @param {object} userHistory - the user's existing history
@@ -923,7 +944,9 @@ const updateUserHistory = (existingDataToUpdate, userHistory, adminEmail) => {
     if (userHistory && Object.keys(userHistory).length > 0) userProfileHistoryArray.push(...userHistory);
 
     const newUserHistoryMap = populateUserHistoryMap(existingDataToUpdate, adminEmail);
-    userProfileHistoryArray.push(newUserHistoryMap);
+    if (newUserHistoryMap && Object.keys(newUserHistoryMap).length > 0) {
+        userProfileHistoryArray.push(newUserHistoryMap);
+    }
 
     return userProfileHistoryArray;
 };
@@ -947,15 +970,11 @@ const populateUserHistoryMap = (existingData, adminEmail) => {
         fieldMapping.voicemailHome,
         fieldMapping.otherPhone,
         fieldMapping.voicemailOther,
-        fieldMapping.email,
-        fieldMapping.email1,
-        fieldMapping.email2,
         fieldMapping.address1,
         fieldMapping.address2,
         fieldMapping.city,
         fieldMapping.state,
         fieldMapping.zip,
-        fieldMapping.firebaseAuthEmail,
     ];
 
     keys.forEach((key) => {
@@ -978,9 +997,10 @@ const populateUserHistoryMap = (existingData, adminEmail) => {
     if (Object.keys(userHistoryMap).length > 0) {
         userHistoryMap[fieldMapping.userProfileUpdateTimestamp] = new Date().toISOString();
         userHistoryMap[fieldMapping.profileChangeRequestedBy] = adminEmail;
+        return userHistoryMap;
+    } else {
+        return null;
     }
-
-    return userHistoryMap;
 };
 
 export const postUserDataUpdate = async (changedUserData) => {
