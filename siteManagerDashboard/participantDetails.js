@@ -42,7 +42,7 @@ const checkForLoginMechanism = (participant) => {
     }
 }
 
-export const renderParticipantDetails = (participant, changedOption, siteKey) => {
+export const renderParticipantDetails = (participant, changedOption, bearerToken) => {
     checkForLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -52,13 +52,13 @@ export const renderParticipantDetails = (participant, changedOption, siteKey) =>
     let originalHTML =  mainContent.innerHTML;
     hideUneditableButtons(participant, changedOption);
     localStorage.setItem("participant", JSON.stringify(participant));
-    changeParticipantDetail(participant,  changedOption, originalHTML, siteKey);
+    changeParticipantDetail(participant,  changedOption, originalHTML, bearerToken);
     editAltContact(participant);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
-    updateUserSigninMechanism(participant, siteKey);
-    updateUserLogin(participant, siteKey);
-    submitClickHandler(participant, changedOption, siteKey);
+    updateUserSigninMechanism(participant, bearerToken);
+    updateUserLogin(participant, bearerToken);
+    submitClickHandler(participant, changedOption, bearerToken);
 }
 
 export const render = (participant, changedOption) => {
@@ -124,7 +124,7 @@ export const render = (participant, changedOption) => {
     return template;
 }
 
-const changeParticipantDetail = (participant, changedOption, originalHTML, siteKey) => {
+const changeParticipantDetail = (participant, changedOption, originalHTML, bearerToken) => {
     const detailedRow = Array.from(document.getElementsByClassName('detailedRow'));
     if (detailedRow) {
         detailedRow.forEach(element => {
@@ -148,7 +148,7 @@ const changeParticipantDetail = (participant, changedOption, originalHTML, siteK
                 body.innerHTML = template;
                 showSaveNoteInModal(conceptId);
                 saveResponses(participant, changedOption, element, conceptId);
-                resetChanges(participant, originalHTML, siteKey);   
+                resetChanges(participant, originalHTML, bearerToken);   
             });
         })
     }
@@ -291,7 +291,7 @@ const saveAltResponse = (participant) => {
 }
 
 // async-await function to make HTTP POST request
-async function signInMechanismClickHandler(updatedOptions, siteKey)  {
+async function signInMechanismClickHandler(updatedOptions, bearerToken)  {
     try {
         showAnimation();
 
@@ -303,7 +303,7 @@ async function signInMechanismClickHandler(updatedOptions, siteKey)  {
             method:'POST',
             body: JSON.stringify(updateParticpantPayload),
             headers:{
-                Authorization:"Bearer " + siteKey,
+                Authorization:"Bearer " + bearerToken,
                 "Content-Type": "application/json"
                 }
         });
@@ -334,7 +334,7 @@ async function signInMechanismClickHandler(updatedOptions, siteKey)  {
     }
 }
 
-const updateUserSigninMechanism = (participant, siteKey) => {
+const updateUserSigninMechanism = (participant, bearerToken) => {
     const switchSiginButton = document.getElementById('switchSiginMechanism');
     const isPhone = getIsPhone(participant[fieldMapping.signInMechansim]);
     const isEmail = getIsEmail(participant[fieldMapping.signInMechansim]); 
@@ -374,13 +374,13 @@ const updateUserSigninMechanism = (participant, siteKey) => {
             body.innerHTML = template;
             let prevCounter =  appState.getState().unsavedChangesTrack.counter
             appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}});
-            processSwitchSigninMechanism(participant, siteKey, 'replaceSignin');
+            processSwitchSigninMechanism(participant, bearerToken, 'replaceSignin');
         })
     }
 }
 
 // updates existing email or phone
-const updateUserLogin = (participant, siteKey) => {
+const updateUserLogin = (participant, bearerToken) => {
     const switchSiginButton = document.getElementById('updateUserLogin');
     const isPhone = getIsPhone(participant[fieldMapping.signInMechansim]);
     const isEmail = getIsEmail(participant[fieldMapping.signInMechansim]); 
@@ -424,12 +424,12 @@ const updateUserLogin = (participant, siteKey) => {
             body.innerHTML = template;
             let prevCounter =  appState.getState().unsavedChangesTrack.counter
             appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}});
-            processSwitchSigninMechanism(participant, siteKey, updateFlag);
+            processSwitchSigninMechanism(participant, bearerToken, updateFlag);
         })
     }
 }
 
-const processSwitchSigninMechanism = (participant, siteKey, flag) => {
+const processSwitchSigninMechanism = (participant, bearerToken, flag) => {
     document.getElementById('formResponse2') && document.getElementById('formResponse2').addEventListener('submit', e => {
         e.preventDefault();
         let switchPackage = {}
@@ -464,13 +464,13 @@ const processSwitchSigninMechanism = (participant, siteKey, flag) => {
             changedOption['token'] = participant.token;
             switchPackage['uid'] = participant.state.uid;
             switchPackage['flag'] = flag
-            switchSigninMechanismHandler(switchPackage, siteKey, changedOption);
+            switchSigninMechanismHandler(switchPackage, bearerToken, changedOption);
         }
     })
 };
 
 // async-await function to make HTTP POST request
-const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOption) =>  {
+const switchSigninMechanismHandler = async (switchPackage, bearerToken, changedOption) =>  {
     showAnimation();
 
     const signinMechanismPayload = {
@@ -481,14 +481,14 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
         method:'POST',
         body: JSON.stringify(signinMechanismPayload),
         headers:{
-            Authorization:"Bearer " + siteKey,
+            Authorization:"Bearer " + bearerToken,
             "Content-Type": "application/json"
             }
         })
         hideAnimation();
 
         if (response.status === 200) {
-            const isSuccess = await signInMechanismClickHandler(changedOption, siteKey);
+            const isSuccess = await signInMechanismClickHandler(changedOption, bearerToken);
 
             if (!isSuccess) {
                 let alertList = document.getElementById("alert_placeholder");
@@ -527,7 +527,7 @@ const switchSigninMechanismHandler = async (switchPackage, siteKey, changedOptio
                 if (changeLoginEmailRow) changeLoginEmailRow.children[1].innerHTML = 'Updating email';
             }
 
-            await reloadParticipantData(changedOption.token, siteKey);
+            await reloadParticipantData(changedOption.token, bearerToken);
         }
 
         else if (response.status === 409) {

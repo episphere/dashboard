@@ -107,9 +107,13 @@ export const formatInputResponse = (participantValue) => {
 };
 
 export const formatPhoneNumber = (phoneNumber) => {
-    if (phoneNumber.startsWith('+1')) phoneNumber = phoneNumber.substring(2);
+    if (/^\+1/.test(phoneNumber)) phoneNumber = phoneNumber.substring(2);
     return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
 };
+// export const formatPhoneNumber = (phoneNumber) => {
+//     if (phoneNumber.startsWith('+1')) phoneNumber = phoneNumber.substring(2);
+//     return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
+// };
 
 const isPhoneNumberInForm = (participant, changedOption, fieldMappingKey) => {
     return !!participant?.[fieldMappingKey] || !!changedOption?.[fieldMappingKey];
@@ -335,7 +339,7 @@ function isPhoneNumberPresent(participant, changedOption, conceptId, phoneType) 
 }
 
 export const getIsEmail = (participantSignInMechanism) => {
-    return participantSignInMechanism === 'password' || participantSignInMechanism === fieldMapping.signInPassword || participantSignInMechanism === fieldMapping.signInGoogle || participantSignInMechanism === 'passwordAndPhone';
+    return participantSignInMechanism === 'password' || participantSignInMechanism === fieldMapping.signInPassword || participantSignInMechanism === 'passwordAndPhone';
 };
 
 export const getIsPhone = (participantSignInMechanism) => {
@@ -409,12 +413,12 @@ export const hideUneditableButtons = (participant, changedOption) => {
     })
 };
 
-export const reloadParticipantData = async (token, siteKey) => {
+export const reloadParticipantData = async (token, bearerToken) => {
     showAnimation();
     const query = `token=${token}`
     const reloadedParticpant = await findParticipant(query);
     mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], {}, siteKey);
+    renderParticipantDetails(reloadedParticpant.data[0], {}, bearerToken);
     hideAnimation();
 }
 
@@ -432,13 +436,13 @@ export const renderReturnSearchResults = () => {
         })
 }};
 
-export const resetChanges = (participant, originalHTML, siteKey) => {
+export const resetChanges = (participant, originalHTML, bearerToken) => {
     const a = document.getElementById("cancelChanges");
     let template = '';
     a.addEventListener("click", () => {
         if ( appState.getState().unsavedChangesTrack.saveFlag === false ) {
             mainContent.innerHTML = originalHTML;
-            renderParticipantDetails(participant, {}, siteKey);
+            renderParticipantDetails(participant, {}, bearerToken);
             appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
             let alertList = document.getElementById('alert_placeholder');
             // throws an alert when canncel changes button is clicked
@@ -456,10 +460,10 @@ export const resetChanges = (participant, originalHTML, siteKey) => {
     })   
 }
 
-export const refreshParticipantAfterUpdate = async (participant, siteKey) => {
+export const refreshParticipantAfterUpdate = async (participant, bearerToken) => {
     showAnimation();
     localStorage.setItem('participant', JSON.stringify(participant));
-    renderParticipantDetails(participant, {}, siteKey);
+    renderParticipantDetails(participant, {}, bearerToken);
     appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
     let alertList = document.getElementById('alert_placeholder');
     let template = '';
@@ -572,7 +576,7 @@ const phoneTypeToPermissionsMapping = {
  * @param {Array<string>} conceptIdArray - the concept id of the element 
  */
 const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
-    const displayStatus = newValue.replace(/\D/g,'').length === 10 ? 'block' : 'none';
+    const displayStatus = validPhoneNumberFormat.test(newValue) ? 'block' : 'none';
     for (const phoneType in phoneTypeToPermissionsMapping) {
         if (conceptIdArray.includes(phoneType.toString())) {
             phoneTypeToPermissionsMapping[phoneType].forEach(valueType => {
@@ -815,9 +819,9 @@ const cleanPhoneNumber = (changedOption) => {
  * Else, alert the user that the update was unsuccessful.
  * @param {object} participant - the existing participant object 
  * @param {object} changedOption - the changed user data
- * @param {string} siteKey - the site key to pass to the POST request 
+ * @param {string} bearerToken - the site key to pass to the POST request 
  */
-export const submitClickHandler = async (participant, changedOption, siteKey) => {
+export const submitClickHandler = async (participant, changedOption, bearerToken) => {
     const isParticipantVerified = participant[fieldMapping.verifiedFlag] == fieldMapping.verified;
     const adminEmail = appState.getState().userSession?.email ?? '';
     const submitButtons = document.getElementsByClassName('updateMemberData');
@@ -830,7 +834,7 @@ export const submitClickHandler = async (participant, changedOption, siteKey) =>
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
                 if (isSuccess) {
                     const updatedParticipant = { ...participant, ...changedUserDataForProfile};
-                    await refreshParticipantAfterUpdate(updatedParticipant, siteKey);
+                    await refreshParticipantAfterUpdate(updatedParticipant, bearerToken);
                 } else {
                     alert('Error: There was an error processing your changes. Please try again.');
                 }
