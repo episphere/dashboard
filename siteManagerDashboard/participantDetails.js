@@ -256,7 +256,8 @@ const changeParticipantDetail = (participant, adminSubjectAudit, changedOption, 
                 template += `
                 <form id="formResponse" method="post">  
                 <span><span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${removeCamelCase(data.participantkey)}</span> 
-                : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${data.participantvalue} />
+                : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${
+                            data.participantvalue === `name="modalParticipantData"` ? `*` : data.participantvalue} />
                             <br >
                             <span style="font-size: 12px;" id="showNote"><i></i></span>
                             <br >
