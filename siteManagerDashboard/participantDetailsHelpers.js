@@ -296,12 +296,12 @@ export const getImportantRows = (participant, changedOption) => {
     ];
 
     const loginChangeInfoArray = [
-        { field: `Change Login Mode`,
-            label: 'Change Login Mode',
-            editable: true,
-            display: true,
-            validationType: 'none'
-        },
+        // { field: `Change Login Mode`,
+        //     label: 'Change Login Mode',
+        //     editable: true,
+        //     display: true,
+        //     validationType: 'none'
+        // },
         { field: `Change Login Email`,
             label: 'Change Login Email',
             editable: true,
@@ -432,6 +432,7 @@ export const renderReturnSearchResults = () => {
     const searchResultsButton = document.getElementById('displaySearchResultsBtn');
     if (searchResultsButton) {
         searchResultsButton.addEventListener('click', () => {
+            //renderParticipantLookup()
             renderLookupResultsTable();
         })
 }};
