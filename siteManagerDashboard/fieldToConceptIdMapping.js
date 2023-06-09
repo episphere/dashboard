@@ -379,6 +379,8 @@ export default
     "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
     "destroyDataStatus": 241236037,
+    "dataDestroyCategorical": 883668444,
+    "requestedDataDestroyNotSigned": 111959410,
     "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
