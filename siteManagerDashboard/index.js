@@ -41,7 +41,7 @@ const isLocalDev = location.hostname === 'localhost' || location.hostname === '1
 window.onload = async () => {
     if(location.host === urls.prod) {
         !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
-        //window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'prod' });
+        window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'prod' });
     } 
     else if(location.host === urls.stage) {
         !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
@@ -52,7 +52,7 @@ window.onload = async () => {
         !isLocalDev && window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
     } 
 
-    !isLocalDev && location.host !== urls.prod && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
+    !isLocalDev && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
 
     router();
     await getMappings();
