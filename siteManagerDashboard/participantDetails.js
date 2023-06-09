@@ -1,5 +1,5 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { attachUpdateLoginMethodListeners, allStates, closeModal, formatInputResponse, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { attachUpdateLoginMethodListeners, allStates, closeModal, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getDataAttributes } from './utils.js';
@@ -22,14 +22,12 @@ window.addEventListener('onload', (e) => {
 })
 
 const initLoginMechanism = (participant) => {
-    participant['Change Login Phone'] = participant[fieldMapping.accountPhone];
-    participant['Change Login Email'] = participant[fieldMapping.accountEmail]; 
+    participant['Change Login Phone'] = participant[fieldMapping.accountPhone] ?? '';
+    participant['Change Login Email'] = participant[fieldMapping.accountEmail] ?? ''; 
     appState.setState({loginMechanism:{phone: true, email: true}});
 }
 
 export const renderParticipantDetails = (participant, changedOption, bearerToken) => {
-    console.log('participantToken', participant.token);
-    console.log('bearer token:', bearerToken);
     initLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -273,7 +271,6 @@ const saveAltResponse = (participant) => {
     })
 }
 
-//TODO consider routing
 const renderBackToSearchDivAndButton = () => {
     return `
         <div class="float-left">
