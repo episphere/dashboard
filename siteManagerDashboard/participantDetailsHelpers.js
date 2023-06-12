@@ -98,14 +98,6 @@ export const getFieldValues = (variableValue, conceptId) => {
     else return variableValue;
 }
 
-export const formatInputResponse = (participantValue) => {
-    let ptValue = '';
-    if (participantValue !== undefined) {
-        ptValue  = participantValue.toString().replace(/\s+/g, "")
-    }
-    return ptValue;
-};
-
 export const formatPhoneNumber = (phoneNumber) => {
     if (!phoneNumber) return '';
     if (/^\+1/.test(phoneNumber)) {
@@ -467,21 +459,18 @@ export const attachUpdateLoginMethodListeners = (participantAuthenticationEmail,
             };
             const inputFields = generateLoginFormInputFields(currentLogins, loginType);
             const formButtons = generateAuthenticationFormButtons(!!(currentLogins.email && !currentLogins.email.startsWith('noReply')), !!currentLogins.phone, loginType);
-            const template = `
+            body.innerHTML = `
                 <div>
                     <form id="authDataForm" method="post">
                         ${inputFields}${formButtons}
                     </form>
                 </div>`;
-            body.innerHTML = template;
 
             const formResponse = document.getElementById('authDataForm');
             if (formResponse) {
                 formResponse.addEventListener('submit', async (e) => {
                     e.preventDefault();
-                    let switchPackage = {};
-                    let changedOption = {};
-                    ({ switchPackage, changedOption } = getUpdatedAuthenticationFormValues(participantAuthenticationEmail, participantAuthenticationPhone));
+                    const { switchPackage, changedOption } = getUpdatedAuthenticationFormValues(participantAuthenticationEmail, participantAuthenticationPhone);
                     if (switchPackage && changedOption) {
                         await processParticipantLoginMethod(participantAuthenticationEmail, participantToken, participantUid, bearerToken, switchPackage, changedOption, 'update');
                     }
@@ -580,7 +569,7 @@ const getUpdatedAuthenticationFormValues = (participantAuthenticationEmail, part
     } else if (emailField &&  emailField.value === document.getElementById('confirmEmail').value) {
         if (!validEmailFormat.test(emailField.value)) {
             alert('Invalid email format. Please enter a valid email address in the format: abc@example.com');
-            return;
+            return {}, {};
         }
         switchPackage['email'] = emailField.value;
         switchPackage['flag'] = 'updateEmail'; 
@@ -693,7 +682,7 @@ const updateParticipantFirestoreProfile = async (updatedOptions, bearerToken) =>
 
 const postLoginData = async (url = '', data = {}, bearerToken) => {
     try {
-        const response = await fetch(url, {
+        return await fetch(url, {
             method: 'POST',
             body: JSON.stringify(data),
             headers: {
@@ -701,7 +690,6 @@ const postLoginData = async (url = '', data = {}, bearerToken) => {
                 'Authorization': `Bearer ${bearerToken}`
             }
         });
-        return response;
     } catch (error) {
         console.error('Fetch Error:', error);
         throw error;
