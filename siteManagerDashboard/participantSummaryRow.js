@@ -307,6 +307,32 @@ export const baselineSSN = (participant) => {
     return template;
 }
 
+export const baselineCOVIDSurvey = (participant) => {
+    let template = ``;
+    (
+        (participant[fieldMapping.covidFlag] === fieldMapping.submitted1) ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "COVID", "Submitted",
+                    humanReadableMDY(participant[fieldMapping.covidCompletedDate]), "N/A", "N", "N/A")}`
+        ) :
+        (participant[fieldMapping.covidFlag] === fieldMapping.started1) ?
+        (
+            template += `
+                    ${getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "COVID", "Started",
+                    humanReadableMDY(participant[fieldMapping.covidStartDate]), "N/A", "N", "N/A")}`
+        ) : 
+        (participant[fieldMapping.covidFlag] === fieldMapping.notStarted1) ?
+        ( template += `
+                    ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "COVID", "Not Started", "N/A", "N/A", "N", "N/A")}`
+        ):
+           ( template += `
+            ${getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "COVID", "N/A", "N/A", "N/A", "N", "N/A")}`
+           )
+        )
+    return template;
+}
+
 
 export const baselineBiospecSurvey = (participant) => {
     let combinedBoodUrineMouthwashSurvey = participant[fieldMapping.combinedBoodUrineMouthwashSurvey] && participant[fieldMapping.combinedBoodUrineMouthwashSurvey]
