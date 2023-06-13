@@ -92,7 +92,7 @@ export const getFieldValues = (variableValue, conceptId) => {
     }
 
     if (!variableValue) return '';
-    else if (conceptId === 'Change Login Email' && variableValue.startsWith('noReply')) return '';
+    else if (conceptId === 'Change Login Email' && variableValue.startsWith('noreply')) return '';
     else if (variableValue in fieldValues) return fieldValues[variableValue];
     else if (conceptId in phoneFieldValues) return phoneFieldValues[conceptId];
     else return variableValue;
@@ -458,7 +458,7 @@ export const attachUpdateLoginMethodListeners = (participantAuthenticationEmail,
                 email: participantAuthenticationEmail 
             };
             const inputFields = generateLoginFormInputFields(currentLogins, loginType);
-            const formButtons = generateAuthenticationFormButtons(!!(currentLogins.email && !currentLogins.email.startsWith('noReply')), !!currentLogins.phone, loginType);
+            const formButtons = generateAuthenticationFormButtons(!!(currentLogins.email && !currentLogins.email.startsWith('noreply')), !!currentLogins.phone, loginType);
             body.innerHTML = `
                 <div>
                     <form id="authDataForm" method="post">
@@ -502,7 +502,7 @@ export const attachUpdateLoginMethodListeners = (participantAuthenticationEmail,
 };
 
 const generateLoginFormInputFields = (currentLogins, loginType) => {
-    const currentEmailLogin = currentLogins.email && !currentLogins.email.startsWith('noReply') ? currentLogins.email : 'Not in use';
+    const currentEmailLogin = currentLogins.email && !currentLogins.email.startsWith('noreply') ? currentLogins.email : 'Not in use';
     const currentPhoneLogin = currentLogins.phone ? formatPhoneNumber(currentLogins.phone) : 'Not in use';
     
     const loginTypeConfig = {
@@ -591,7 +591,7 @@ const getLoginRemovalSwitchPackage = (processType, participantAuthenticationEmai
     const switchPackage = {};
     const changedOption = {};
     if (processType === 'removeEmail') {
-        const placeholderForEmailRemoval = `noReply${participantUid}@episphere.github.io`;
+        const placeholderForEmailRemoval = `noreply${participantUid}@episphere.github.io`;
         switchPackage['email'] = placeholderForEmailRemoval;
         switchPackage['flag'] = 'updateEmail';
         changedOption[fieldMapping.accountEmail] = placeholderForEmailRemoval;
