@@ -27,7 +27,7 @@ const initLoginMechanism = (participant) => {
     appState.setState({loginMechanism:{phone: true, email: true}});
 }
 
-export const renderParticipantDetails = (participant, changedOption, bearerToken) => {
+export const renderParticipantDetails = (participant, changedOption) => {
     initLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -37,12 +37,12 @@ export const renderParticipantDetails = (participant, changedOption, bearerToken
     let originalHTML =  mainContent.innerHTML;
     hideUneditableButtons(participant, changedOption);
     localStorage.setItem("participant", JSON.stringify(participant));
-    changeParticipantDetail(participant,  changedOption, originalHTML, bearerToken);
+    changeParticipantDetail(participant,  changedOption, originalHTML);
     editAltContact(participant);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
-    attachUpdateLoginMethodListeners(participant[fieldMapping.accountEmail], participant[fieldMapping.accountPhone], participant.token, participant.state.uid, bearerToken);
-    submitClickHandler(participant, changedOption, bearerToken);
+    attachUpdateLoginMethodListeners(participant[fieldMapping.accountEmail], participant[fieldMapping.accountPhone], participant.token, participant.state.uid);
+    submitClickHandler(participant, changedOption);
 }
 
 export const render = (participant, changedOption) => {
@@ -72,7 +72,7 @@ export const render = (participant, changedOption) => {
             const variableLabel = row.label;
             const variableValue = participant[conceptId];
             const valueToRender = getFieldValues(variableValue, conceptId);
-            const buttonToRender = getButtonToRender(variableLabel, conceptId);
+            const buttonToRender = getButtonToRender(variableLabel, conceptId, participant[fieldMapping.dataDestroyCategorical]);
             template += `
                 <tr class="detailedRow" style="text-align: left;" id="${conceptId}row"}>
                     <th scope="row">
@@ -106,7 +106,7 @@ export const render = (participant, changedOption) => {
     return template;
 }
 
-const changeParticipantDetail = (participant, changedOption, originalHTML, bearerToken) => {
+const changeParticipantDetail = (participant, changedOption, originalHTML) => {
     const detailedRow = Array.from(document.getElementsByClassName('detailedRow'));
     if (detailedRow) {
         detailedRow.forEach(element => {
@@ -130,7 +130,7 @@ const changeParticipantDetail = (participant, changedOption, originalHTML, beare
                 body.innerHTML = template;
                 showSaveNoteInModal(conceptId);
                 saveResponses(participant, changedOption, element, conceptId);
-                resetChanges(participant, originalHTML, bearerToken);   
+                resetChanges(participant, originalHTML);   
             });
         })
     }
@@ -142,8 +142,9 @@ const changeParticipantDetail = (participant, changedOption, originalHTML, beare
  * @param {string} conceptId - the conceptId of the variable 
  * @returns {HTMLButtonElement} - template string with the button to render
  */
-const getButtonToRender = (variableLabel, conceptId) => {
-    const loginButtonType = conceptId === 'Change Login Phone' ? 'Phone' : conceptId === 'Change Login Email' ? 'Email' : null;
+const getButtonToRender = (variableLabel, conceptId, participantIsDataDestroyed) => {
+    const isParticipantDataDestroyed = participantIsDataDestroyed === fieldMapping.requestedDataDestroySigned;
+    const loginButtonType = !isParticipantDataDestroyed && conceptId === 'Change Login Phone' ? 'Phone' : !isParticipantDataDestroyed && conceptId === 'Change Login Email' ? 'Email' : null;
     const participantKey = loginButtonType ? '' : `data-participantkey="${variableLabel}"`;
     const participantConceptId = loginButtonType ? '' : `data-participantconceptid="${conceptId}"`;
     const participantLoginUpdate = loginButtonType ? `data-participantLoginUpdate="${loginButtonType.toLowerCase()}"` : '';

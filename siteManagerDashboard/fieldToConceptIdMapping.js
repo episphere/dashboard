@@ -381,6 +381,7 @@ export default
     "destroyDataStatus": 241236037,
     "dataDestroyCategorical": 883668444,
     "requestedDataDestroyNotSigned": 111959410,
+    "requestedDataDestroySigned": 704529432,
     "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
