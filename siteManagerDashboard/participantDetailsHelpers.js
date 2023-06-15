@@ -1138,7 +1138,7 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
     newUserData = cleanPhoneNumber(newUserData);
     Object.keys(newUserData).forEach(key => {
       if (newUserData[key] !== existingUserData[key]) {
-        changedUserDataForProfile[key] = newUserData[key] ?? '';
+        changedUserDataForProfile[key] = newUserData[key];
         if (!excludeHistoryKeys.includes(key)) {
             changedUserDataForHistory[key] = existingUserData[key] ?? '';
         }
@@ -1175,7 +1175,7 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
         changedUserDataForHistory[fieldMapping.voicemailOther] = existingUserData[fieldMapping.voicemailOther] ?? fieldMapping.no;
     }
 
-return { changedUserDataForProfile, changedUserDataForHistory };
+    return { changedUserDataForProfile, changedUserDataForHistory };
 };
 
 /**
@@ -1193,6 +1193,10 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
         if (isParticipantVerified) {
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail);
         }
+        
+        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName];
+        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName];
+
         changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)
         .catch(function (error) {
