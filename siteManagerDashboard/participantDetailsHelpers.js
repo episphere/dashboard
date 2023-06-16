@@ -1132,6 +1132,11 @@ export const submitClickHandler = async (participant, changedOption) => {
  * If a number is in the changedUserDataForProfile, the participant has added this phone number. Add it to the allPhoneNo field.
  * Then check the userData profile for an existing value at the field being updated. The participant is updating this phone number. Remove it from the allPhoneNo field.
  * If an empty string is in the changedUserDataForProfile, the participant has removed this phone number. Remove it from the allPhoneNo field.
+ * TODO: Topic for ongoing discussion:
+ *      Inside the forEach loop:
+ *              The first if statement checks if the phone number is in the changedUserDataForProfile. If it is, add it to the allPhoneNo field.
+ *              The second if statement checks if an existing phone number is in the current userData profile. If it is, that means the participant is updating the existing value in favor of the new value.
+ *                      Remove the existing value from the allPhoneNo field.
  */
 const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
     const allPhoneNo = participant.query.allPhoneNo ?? [];
@@ -1159,14 +1164,18 @@ const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
    * Handle the allEmails field in the user profile
    * If an email is in the changedUserDataForProfile, the participant has added this email. Add it to the allEmails field.
    * If an email is in the changedUserDataForHistory, the participant has removed this email. Remove it from the allEmails field.
+   * TODO: Topic for ongoing discussion:
+   *        Inside the forEach loop:
+   *            The first if statement checks if the email address is in the changedUserDataForProfile. If it is, add it to the allEmails field.
+   *            The second if statement checks if an existing email address is in the current userData profile. If it is, that means the participant is updating the existing value in favor of the new value.
+   *                    Remove the existing value from the allEmails field.
    */
   const handleAllEmailField = (changedUserDataForProfile, participant) => {
     const allEmails = participant.query.allEmails ?? [];
-    const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
   
     emailTypes.forEach(emailType => {
       if (changedUserDataForProfile[emailType] && !allEmails.includes(changedUserDataForProfile[emailType])) {
-        allEmails.push(changedUserDataForProfile[emailType].toLowerCase());
+        allEmails.push(changedUserDataForProfile[emailType].trim()?.toLowerCase());
       }
   
       if (changedUserDataForProfile[emailType] || changedUserDataForProfile[emailType] === '') {
@@ -1260,8 +1269,8 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail);
         }
         
-        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].toLowerCase();
-        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].toLowerCase();
+        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
+        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].trim()?.toLowerCase();
 
         changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)
