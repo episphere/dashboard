@@ -288,6 +288,13 @@ export const getImportantRows = (participant, changedOption) => {
     ];
 
     const loginChangeInfoArray = [
+        { field: 'Login Update Memo',
+            label: 'Save any User Profile edits before making Login Changes',
+            editable: false,
+            display: true,
+            validationType: 'none',
+            isRequired: false
+        },
         { field: `Change Login Email`,
             label: 'Email Login',
             editable: !isParticipantDataDestroyed,
@@ -1076,8 +1083,7 @@ export const viewParticipantSummary = (participant) => {
 }
 
 const cleanPhoneNumber = (changedOption) => {
-    const phoneNumbers = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
-    phoneNumbers.forEach(phoneNumber => {
+    phoneTypes.forEach(phoneNumber => {
         if (phoneNumber in changedOption) {
             changedOption[phoneNumber] = changedOption[phoneNumber].replace(/\D/g, '');
         }
@@ -1085,6 +1091,9 @@ const cleanPhoneNumber = (changedOption) => {
     return changedOption;
 
 };
+
+const phoneTypes = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
+const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
 
 /**
  * Process the user's update and submit the new user data to the database.
@@ -1103,7 +1112,13 @@ export const submitClickHandler = async (participant, changedOption) => {
             if (Object.keys(changedOption).length === 0) {
                 alert('No changes to submit. No changes have been made. Please update the form and try again if changes are needed.');
             } else {
-                const { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
+                let { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
+                if (phoneTypes.some(phoneKey => phoneKey in changedUserDataForProfile)) {
+                    changedUserDataForProfile = handleAllPhoneNoField(changedUserDataForProfile, participant);
+                }
+                if (emailTypes.some(emailKey => emailKey in changedUserDataForProfile)) {
+                    changedUserDataForProfile = handleAllEmailField(changedUserDataForProfile, participant);
+                }
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
                 if (isSuccess) {
                     const updatedParticipant = { ...participant, ...changedUserDataForProfile};
@@ -1115,6 +1130,61 @@ export const submitClickHandler = async (participant, changedOption) => {
         });
     }
 };
+
+/**
+ * Handle the allPhoneNo field in the user profile
+ * If a number is in the changedUserDataForProfile, the participant has added this phone number. Add it to the allPhoneNo field.
+ * Then check the userData profile for an existing value at the field being updated. The participant is updating this phone number. Remove it from the allPhoneNo field.
+ * If an empty string is in the changedUserDataForProfile, the participant has removed this phone number. Remove it from the allPhoneNo field.
+ */
+const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
+    const allPhoneNo = participant.query.allPhoneNo ?? [];
+    
+  
+    phoneTypes.forEach(phoneType => {
+      if (changedUserDataForProfile[phoneType] && !allPhoneNo.includes(changedUserDataForProfile[phoneType])) {
+        allPhoneNo.push(changedUserDataForProfile[phoneType]);
+      }
+  
+      if (changedUserDataForProfile[phoneType] || changedUserDataForProfile[phoneType] === '') {
+        const indexToRemove = allPhoneNo.indexOf(participant[phoneType]);  
+        if (indexToRemove !== -1) {
+          allPhoneNo.splice(indexToRemove, 1);
+        }  
+      }
+    });
+  
+    changedUserDataForProfile['query.allPhoneNo'] = allPhoneNo;
+    
+    return changedUserDataForProfile;
+  };
+  
+  /**
+   * Handle the allEmails field in the user profile
+   * If an email is in the changedUserDataForProfile, the participant has added this email. Add it to the allEmails field.
+   * If an email is in the changedUserDataForHistory, the participant has removed this email. Remove it from the allEmails field.
+   */
+  const handleAllEmailField = (changedUserDataForProfile, participant) => {
+    const allEmails = participant.query.allEmails ?? [];
+    const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
+  
+    emailTypes.forEach(emailType => {
+      if (changedUserDataForProfile[emailType] && !allEmails.includes(changedUserDataForProfile[emailType])) {
+        allEmails.push(changedUserDataForProfile[emailType].toLowerCase());
+      }
+  
+      if (changedUserDataForProfile[emailType] || changedUserDataForProfile[emailType] === '') {
+        const indexToRemove = allEmails.indexOf(participant[emailType]);  
+        if (indexToRemove !== -1) {
+          allEmails.splice(indexToRemove, 1);
+        }  
+      }
+    });
+  
+    changedUserDataForProfile['query.allEmails'] = allEmails;
+    
+    return changedUserDataForProfile;
+  };
 
   /**
  * Iterate the new values, compare them to existing values, and return the changed values.
@@ -1194,8 +1264,8 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail);
         }
         
-        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName];
-        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName];
+        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].toLowerCase();
+        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].toLowerCase();
 
         changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)

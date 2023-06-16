@@ -72,9 +72,10 @@ export const render = (participant, changedOption) => {
             const variableLabel = row.label;
             const variableValue = participant[conceptId];
             const valueToRender = getFieldValues(variableValue, conceptId);
+            const loginEditMemoRowBackgroundColor = conceptId === 'Login Update Memo' ? '#f5f5f5' : null;
             const buttonToRender = getButtonToRender(variableLabel, conceptId, participant[fieldMapping.dataDestroyCategorical]);
             template += `
-                <tr class="detailedRow" style="text-align: left;" id="${conceptId}row"}>
+                <tr class="detailedRow" style="text-align: left; background-color: ${loginEditMemoRowBackgroundColor}" id="${conceptId}row">
                     <th scope="row">
                         <div class="mb-3">
                             <label class="form-label">
