@@ -1,8 +1,8 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { allStates, closeModal, formatInputResponse, getFieldValues, getImportantRows, getIsEmail, getIsPhone, getModalLabel, hideUneditableButtons, reloadParticipantData, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { attachUpdateLoginMethodListeners, allStates, closeModal, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
-import { getDataAttributes, showAnimation, hideAnimation, baseAPI } from './utils.js';
+import { getDataAttributes } from './utils.js';
 import { appState } from './stateManager.js';
 
 appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}});
@@ -21,29 +21,14 @@ window.addEventListener('onload', (e) => {
     }, 15);
 })
 
-const checkForLoginMechanism = (participant) => {
-    const isPhoneLogin = getIsPhone(participant && participant[fieldMapping.signInMechansim]);
-    const isEmailLogin = getIsEmail(participant && participant[fieldMapping.signInMechansim]);
-    //TODO: This handles multiple auth methods: Remove now (recommended by Abhinav), add back in when multiple logins are working: this is the next project in line.
-    // if (isPhoneLogin && isEmailLogin) {
-    //     appState.setState({loginMechanism:{phone: true, email: true}})
-    //     participant['Change Login Mode'] = 'Email 📧 and Phone ☎️'
-    //     participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
-    //     participant['Change Login Email'] = participant[fieldMapping.accountEmail]
-    // } else 
-    if (isPhoneLogin) {
-        appState.setState({loginMechanism:{phone: true, email: false}})
-        participant['Change Login Mode'] = 'Phone ☎️'
-        participant['Change Login Phone'] = participant[fieldMapping.accountPhone]
-    } else { 
-        appState.setState({loginMechanism:{phone: false, email: true}}) 
-        participant['Change Login Mode'] = 'Email 📧'
-        participant['Change Login Email'] = participant[fieldMapping.accountEmail]
-    }
+const initLoginMechanism = (participant) => {
+    participant['Change Login Phone'] = participant[fieldMapping.accountPhone] ?? '';
+    participant['Change Login Email'] = participant[fieldMapping.accountEmail] ?? ''; 
+    appState.setState({loginMechanism:{phone: true, email: true}});
 }
 
-export const renderParticipantDetails = (participant, changedOption, bearerToken) => {
-    checkForLoginMechanism(participant);
+export const renderParticipantDetails = (participant, changedOption) => {
+    initLoginMechanism(participant);
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
@@ -52,13 +37,12 @@ export const renderParticipantDetails = (participant, changedOption, bearerToken
     let originalHTML =  mainContent.innerHTML;
     hideUneditableButtons(participant, changedOption);
     localStorage.setItem("participant", JSON.stringify(participant));
-    changeParticipantDetail(participant,  changedOption, originalHTML, bearerToken);
+    changeParticipantDetail(participant,  changedOption, originalHTML);
     editAltContact(participant);
     viewParticipantSummary(participant);
     renderReturnSearchResults();
-    updateUserSigninMechanism(participant, bearerToken);
-    updateUserLogin(participant, bearerToken);
-    submitClickHandler(participant, changedOption, bearerToken);
+    attachUpdateLoginMethodListeners(participant[fieldMapping.accountEmail], participant[fieldMapping.accountPhone], participant.token, participant.state.uid);
+    submitClickHandler(participant, changedOption);
 }
 
 export const render = (participant, changedOption) => {
@@ -88,11 +72,10 @@ export const render = (participant, changedOption) => {
             const variableLabel = row.label;
             const variableValue = participant[conceptId];
             const valueToRender = getFieldValues(variableValue, conceptId);
-            const participantValue = formatInputResponse(participant[conceptId]);
-            const participantSignInMechanism = participant[fieldMapping.signInMechansim];
-            const buttonToRender = getButtonToRender(participantSignInMechanism, variableLabel, conceptId, participantValue);
+            const loginEditMemoRowBackgroundColor = conceptId === 'Login Update Memo' ? '#f5f5f5' : null;
+            const buttonToRender = getButtonToRender(variableLabel, conceptId, participant[fieldMapping.dataDestroyCategorical]);
             template += `
-                <tr class="detailedRow" style="text-align: left;" id="${conceptId}row"}>
+                <tr class="detailedRow" style="text-align: left; background-color: ${loginEditMemoRowBackgroundColor}" id="${conceptId}row">
                     <th scope="row">
                         <div class="mb-3">
                             <label class="form-label">
@@ -124,7 +107,7 @@ export const render = (participant, changedOption) => {
     return template;
 }
 
-const changeParticipantDetail = (participant, changedOption, originalHTML, bearerToken) => {
+const changeParticipantDetail = (participant, changedOption, originalHTML) => {
     const detailedRow = Array.from(document.getElementsByClassName('detailedRow'));
     if (detailedRow) {
         detailedRow.forEach(element => {
@@ -148,38 +131,38 @@ const changeParticipantDetail = (participant, changedOption, originalHTML, beare
                 body.innerHTML = template;
                 showSaveNoteInModal(conceptId);
                 saveResponses(participant, changedOption, element, conceptId);
-                resetChanges(participant, originalHTML, bearerToken);   
+                resetChanges(participant, originalHTML);   
             });
         })
     }
 }
 
-const getButtonToRender = (participantSignInMechanism, variableLabel, conceptId, participantValue) => {
-    const editButton = `
+/**
+ * Render the edit button for the participant details based on the variable
+ * @param {string} variableLabel - the label of the variable
+ * @param {string} conceptId - the conceptId of the variable 
+ * @returns {HTMLButtonElement} - template string with the button to render
+ */
+const getButtonToRender = (variableLabel, conceptId, participantIsDataDestroyed) => {
+    const isParticipantDataDestroyed = participantIsDataDestroyed === fieldMapping.requestedDataDestroySigned;
+    const loginButtonType = !isParticipantDataDestroyed && conceptId === 'Change Login Phone' ? 'Phone' : !isParticipantDataDestroyed && conceptId === 'Change Login Email' ? 'Email' : null;
+    const participantKey = loginButtonType ? '' : `data-participantkey="${variableLabel}"`;
+    const participantConceptId = loginButtonType ? '' : `data-participantconceptid="${conceptId}"`;
+    const participantLoginUpdate = loginButtonType ? `data-participantLoginUpdate="${loginButtonType.toLowerCase()}"` : '';
+    const buttonId = loginButtonType ? `updateUserLogin${loginButtonType}` : `${conceptId}button`;
+
+    return `
         <a class="showMore" 
             data-toggle="modal" 
             data-target="#modalShowMoreData"
-            data-participantkey="${variableLabel}"
-            data-participantconceptid="${conceptId}" 
-            data-participantValue="${participantValue}" 
             name="modalParticipantData"
-            id="${conceptId}button">
+            id="${buttonId}"
+            ${participantKey}
+            ${participantConceptId} 
+            ${participantLoginUpdate}>
             <button type="button" class="btn btn-primary btn-custom">Edit</button>
         </a>
-        `;
-    const changeLoginModeButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" id="switchSiginMechanism">Change</button>`;
-    const updateLoginEmailButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='email' id="updateUserLogin">Update</button>`;
-    const updateLoginPhoneButton = `<button type="button" class="btn btn-primary btn-custom" data-toggle="modal" data-target="#modalShowMoreData" data-participantLoginUpdate='phone' id="updateUserLogin">Update</button>`;
-
-    if (conceptId === 'Change Login Mode') {
-        return changeLoginModeButton;
-    } else if (conceptId === 'Change Login Email' && getIsEmail(participantSignInMechanism)) {
-        return updateLoginEmailButton;
-    } else if (conceptId === 'Change Login Phone' && getIsPhone(participantSignInMechanism)) {
-        return updateLoginPhoneButton;
-    } else {
-        return editButton;
-    }
+    `;
 };
 
 // For alternate contact details. Would be updates once concept ids for alt details are ready
@@ -288,271 +271,6 @@ const saveAltResponse = (participant) => {
         updatedEditedValue.innerHTML = newEmail !== '' ? newEmail : altCurrentEmail.currentemail
       
     })
-}
-
-// async-await function to make HTTP POST request
-async function signInMechanismClickHandler(updatedOptions, bearerToken)  {
-    try {
-        showAnimation();
-
-        const updateParticpantPayload = {
-            "data": [updatedOptions]
-        }
-
-        const response = await fetch(`${baseAPI}/dashboard?api=updateParticipantData`,{
-            method:'POST',
-            body: JSON.stringify(updateParticpantPayload),
-            headers:{
-                Authorization:"Bearer " + bearerToken,
-                "Content-Type": "application/json"
-                }
-        });
-        hideAnimation();
-
-        if (response.status === 200) {
-            document.getElementById('loadingAnimation').style.display = 'none';
-            appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}})
-            const alertList = document.getElementById("alert_placeholder");
-            let template = ``;
-            template += `
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Participant detail updated!
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                    </div>`;
-            alertList.innerHTML = template;
-            return true;
-        } else { 
-            throw new Error('Error: (signInMechanismClickHandler())');
-        }
-    } catch (error) {
-        console.error('Error in updating participant data (signInMechanismClickHandler())', error);
-        hideAnimation();
-        alert('Error in updating participant data. Please try again.');
-        return false;
-    }
-}
-
-const updateUserSigninMechanism = (participant, bearerToken) => {
-    const switchSiginButton = document.getElementById('switchSiginMechanism');
-    const isPhone = getIsPhone(participant[fieldMapping.signInMechansim]);
-    const isEmail = getIsEmail(participant[fieldMapping.signInMechansim]); 
-    let template = ``
-    if (switchSiginButton) {
-        switchSiginButton.addEventListener('click', () => {
-            const header = document.getElementById('modalHeader');
-            const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Change Login Mode</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-            template = `<div> <form id="formResponse2" method="post"> `
-            if (isPhone) {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountPhone]} disabled/>
-                            <label class="col-form-label search-label">Enter New Email Login</label>
-                            <input class="form-control" type="email" id="newEmail" placeholder="Enter Email"/>
-                            <label class="col-form-label search-label">Confirm New Email Login</label>
-                            <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
-                        </div>`
-            }
-            else if (isEmail) {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountEmail]} disabled/>
-                            <label class="col-form-label search-label">Enter New Phone Login</label>
-                            <input class="form-control" id="newPhone" placeholder="Enter phone number without dashes & parenthesis"/>
-                            <label class="col-form-label search-label">Confirm New Phone Login</label>
-                            <input class="form-control" id="confirmPhone" placeholder="Confim phone number"/>
-                        </div>`
-            }
-            template += `<div class="form-group">
-                            <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
-                            <button type="submit" class="btn btn-primary" data-toggle="modal">Submit</button>
-                        </div>
-                    </form>
-                </div>`
-            body.innerHTML = template;
-            let prevCounter =  appState.getState().unsavedChangesTrack.counter
-            appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}});
-            processSwitchSigninMechanism(participant, bearerToken, 'replaceSignin');
-        })
-    }
-}
-
-// updates existing email or phone
-const updateUserLogin = (participant, bearerToken) => {
-    const switchSiginButton = document.getElementById('updateUserLogin');
-    const isPhone = getIsPhone(participant[fieldMapping.signInMechansim]);
-    const isEmail = getIsEmail(participant[fieldMapping.signInMechansim]); 
-    let updateFlag = ``
-    let template = ``
-    if (switchSiginButton) {
-        switchSiginButton.addEventListener('click', () => {
-            const header = document.getElementById('modalHeader');
-            const body = document.getElementById('modalBody');
-            header.innerHTML = `<h5>Change Login ${isPhone ? `Phone` : `Email`}</h5><button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-            template = `<div> <form id="formResponse2" method="post"> `
-            if (isPhone) {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountPhone]} disabled/>
-                            <label class="col-form-label search-label">Enter New Phone Login</label>
-                            <input class="form-control" id="newPhone" placeholder="Enter phone number without dashes & parenthesis"/>
-                            <label class="col-form-label search-label">Confirm New Phone Login</label>
-                            <input class="form-control" id="confirmPhone" placeholder="Confim phone number"/>
-                        </div>`
-                updateFlag = `updatePhone`
-
-            }
-            else if (isEmail) {
-                template +=  `<div class="form-group">
-                            <label class="col-form-label search-label">Current Login</label>
-                            <input class="form-control" value=${participant[fieldMapping.accountEmail]} disabled/>
-                            <label class="col-form-label search-label">Enter New Email Login</label>
-                            <input class="form-control" type="email" id="newEmail" placeholder="Enter Email"/>
-                            <label class="col-form-label search-label">Confirm New Email Login</label>
-                            <input class="form-control" type="email" id="confirmEmail" placeholder="Confim Email"/>
-                        </div>`
-                updateFlag = `updateEmail`
-            }
-            template += `<div class="form-group">
-                            <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
-                            <button type="submit" class="btn btn-primary" data-toggle="modal">Submit</button>
-                        </div>
-                    </form>
-                </div>`
-            body.innerHTML = template;
-            let prevCounter =  appState.getState().unsavedChangesTrack.counter
-            appState.setState({unsavedChangesTrack:{saveFlag: false, counter: prevCounter+1}});
-            processSwitchSigninMechanism(participant, bearerToken, updateFlag);
-        })
-    }
-}
-
-const processSwitchSigninMechanism = (participant, bearerToken, flag) => {
-    document.getElementById('formResponse2') && document.getElementById('formResponse2').addEventListener('submit', e => {
-        e.preventDefault();
-        let switchPackage = {}
-        let changedOption = {}
-        let tweakedPhoneNumber = ``
-        const confirmation = confirm('Are you sure want to continue with the operation?')
-        if (confirmation) {
-            const phoneField = document.getElementById('newPhone');
-            const emailField = document.getElementById('newEmail');
-            if(phoneField && phoneField.value === document.getElementById('confirmPhone').value) {
-
-                (phoneField.value.toString().length) === 10 ? 
-                tweakedPhoneNumber = phoneField.value.toString().trim()
-                : tweakedPhoneNumber = phoneField.value.toString().slice(2).trim()
-
-                switchPackage['phone'] = tweakedPhoneNumber
-                changedOption[fieldMapping.signInMechansim] = 'phone'
-                changedOption[fieldMapping.accountPhone] = `+1`+tweakedPhoneNumber
-            }
-
-            else if (emailField &&  emailField.value === document.getElementById('confirmEmail').value) {
-                switchPackage['email'] = emailField.value 
-                changedOption[fieldMapping.signInMechansim] = 'password'
-                changedOption[fieldMapping.accountEmail] = emailField.value
-            }
-
-            else {
-                alert(`Your entered inputs don't match`)
-                return
-            }
-
-            changedOption['token'] = participant.token;
-            switchPackage['uid'] = participant.state.uid;
-            switchPackage['flag'] = flag
-            switchSigninMechanismHandler(switchPackage, bearerToken, changedOption);
-        }
-    })
-};
-
-// async-await function to make HTTP POST request
-const switchSigninMechanismHandler = async (switchPackage, bearerToken, changedOption) =>  {
-    showAnimation();
-
-    const signinMechanismPayload = {
-        "data": switchPackage
-    }
-
-    const response = await fetch(`${baseAPI}/dashboard?api=updateUserAuthentication`,{
-        method:'POST',
-        body: JSON.stringify(signinMechanismPayload),
-        headers:{
-            Authorization:"Bearer " + bearerToken,
-            "Content-Type": "application/json"
-            }
-        })
-        hideAnimation();
-
-        if (response.status === 200) {
-            const isSuccess = await signInMechanismClickHandler(changedOption, bearerToken);
-
-            if (!isSuccess) {
-                let alertList = document.getElementById("alert_placeholder");
-                let template = ``;
-                template += `
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                          Operation failed!
-                          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                        </div>`;
-                alertList.innerHTML = template;
-                return;
-            }
-
-            let alertList = document.getElementById("alert_placeholder");
-            let template = ``;
-            template += `
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                      Operation successful!
-                      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                    </div>`;
-            alertList.innerHTML = template;
-            
-            closeModal();
-            
-            const changeLoginModeText = document.getElementById('Change Login Moderow').children[1];
-            const changeLoginEmailRow = document.getElementById('Change Login Emailrow');
-            const changeLoginPhoneRow = document.getElementById('Change Login Phonerow');
-
-            if (switchPackage.flag === "updatePhone" || switchPackage.flag === "updateEmail" || switchPackage.flag === "replaceSignin") {
-                changeLoginModeText.innerHTML = 'Updating login';
-                if (changeLoginPhoneRow) changeLoginPhoneRow.children[1].innerHTML = 'Updating phone number';
-                if (changeLoginEmailRow) changeLoginEmailRow.children[1].innerHTML = 'Updating email';
-            }
-
-            await reloadParticipantData(changedOption.token, bearerToken);
-        }
-
-        else if (response.status === 409) {
-            const body = document.getElementById('modalBody');
-            let template = ``
-            if (switchPackage.phone) template += '<div>Phone Number already in use!</div>'
-            else template += '<div>Email already in use!</div>'
-            body.innerHTML = template;
-            return false;
-        }
-
-        else if (response.status === 403) {
-            const body = document.getElementById('modalBody');
-            let template = ``
-            if (switchPackage.phone) template += '<div>Invalid Phone Number!</div>' 
-            else template += '<div>Invalid Email!</div>'
-            body.innerHTML = template;
-            return false;
-         }
-
-        else { 
-            const body = document.getElementById('modalBody');
-            body.innerHTML = `Operation Unsuccessful!`;
-            return false;
-        }
 }
 
 const renderBackToSearchDivAndButton = () => {
@@ -724,4 +442,3 @@ const renderSuffixSelector = (participant, participantValue, conceptId) => {
         </select>
         `
 };
-  

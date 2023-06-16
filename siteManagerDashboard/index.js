@@ -87,8 +87,7 @@ const router = async () => {
             } else {
                 let participant = JSON.parse(localStorage.getItem("participant"));
                 let changedOption = {};
-                const bearerToken = await getAccessToken();
-                renderParticipantDetails(participant, changedOption, bearerToken);
+                renderParticipantDetails(participant, changedOption);
             }
         }
         else if (route === '#participantSummary') {
