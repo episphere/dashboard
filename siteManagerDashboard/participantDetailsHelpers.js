@@ -1113,12 +1113,8 @@ export const submitClickHandler = async (participant, changedOption) => {
                 alert('No changes to submit. No changes have been made. Please update the form and try again if changes are needed.');
             } else {
                 let { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
-                if (phoneTypes.some(phoneKey => phoneKey in changedUserDataForProfile)) {
-                    changedUserDataForProfile = handleAllPhoneNoField(changedUserDataForProfile, participant);
-                }
-                if (emailTypes.some(emailKey => emailKey in changedUserDataForProfile)) {
-                    changedUserDataForProfile = handleAllEmailField(changedUserDataForProfile, participant);
-                }
+                if (phoneTypes.some(phoneKey => phoneKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllPhoneNoField(changedUserDataForProfile, participant);
+                if (emailTypes.some(emailKey => emailKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllEmailField(changedUserDataForProfile, participant);
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
                 if (isSuccess) {
                     const updatedParticipant = { ...participant, ...changedUserDataForProfile};
