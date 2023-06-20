@@ -483,10 +483,13 @@ const tableTemplate = (data, showButtons) => {
     let template = '';
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     template += `<thead class="thead-dark sticky-row"><tr><th class="sticky-row">Select</th>`
-    importantColumns.forEach(x => template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? ((parseInt(x) !== fieldMapping.fName && parseInt(x) !== fieldMapping.mName && 
-        parseInt(x) !== fieldMapping.lName && parseInt(x) !== fieldMapping.refusedSpecimenSurevys && parseInt(x) !== fieldMapping.dateHipaaRevokeRequested &&
-        parseInt(x) !== fieldMapping.consentFirstName && parseInt(x) !== fieldMapping.consentMiddleName && parseInt(x) !== fieldMapping.consentLastName) ? 
-            conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</th>`)
+    importantColumns.forEach(x => {
+            const parsedConceptIdField = parseInt(x)
+            template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? ((parsedConceptIdField !== fieldMapping.fName && parsedConceptIdField !== fieldMapping.mName && 
+                parsedConceptIdField !== fieldMapping.lName && parsedConceptIdField !== fieldMapping.refusedSpecimenSurevys && parsedConceptIdField !== fieldMapping.dateHipaaRevokeRequested &&
+                parsedConceptIdField !== fieldMapping.consentFirstName && parsedConceptIdField !== fieldMapping.consentMiddleName && parsedConceptIdField !== fieldMapping.consentLastName) ? 
+                conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</th>`
+        })
     template += `
         </tr>
     </thead>`;
@@ -1032,23 +1035,17 @@ export const renderLookupSiteDropdown = () => {
 }
 
 const getCustomVariableNames = (x) => {
-    if (x == fieldMapping.refusedSpecimenSurevys)
-        return 'Refused baseline specimen surveys'
-    else if (x == fieldMapping.dateHipaaRevokeRequested)
-        return 'Date revoked HIPAA'
-    else if (x == fieldMapping.consentFirstName)
-        return 'First Name (Consent)'
-    else if (x == fieldMapping.consentMiddleName)
-        return 'Middle Name (Consent)'
-    else if (x == fieldMapping.consentLastName)
-        return 'Last Name (Consent)'
-    else if (x == fieldMapping.fName)
-        return 'First Name (UP)'
-    else if (x == fieldMapping.mName)
-        return 'Middle Name (UP)'
-    else if (x == fieldMapping.lName)
-        return 'Last Name (UP)'
-    else {}
+    const customVariableFields = {
+                                    [fieldMapping.refusedSpecimenSurevys]: 'Refused baseline specimen surveys',
+                                    [fieldMapping.dateHipaaRevokeRequested]: 'Date revoked HIPAA',
+                                    [fieldMapping.consentFirstName]: 'First Name (Consent)',
+                                    [fieldMapping.consentMiddleName]: 'Middle Name (Consent)',
+                                    [fieldMapping.consentLastName]: 'Last Name (Consent)',
+                                    [fieldMapping.fName]: 'First Name (UP)',
+                                    [fieldMapping.mName]: 'Middle Name (UP)',
+                                    [fieldMapping.lName]: 'Last Name (UP)'
+                                }
+    return customVariableFields[x] ?? '';
 
 }
 
