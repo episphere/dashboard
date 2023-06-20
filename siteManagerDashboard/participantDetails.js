@@ -117,6 +117,7 @@ const changeParticipantDetail = (participant, changedOption, originalHTML) => {
             editRow && editRow.addEventListener('click', () => {
                 const header = document.getElementById('modalHeader');
                 const body = document.getElementById('modalBody');
+<<<<<<< HEAD
                 const conceptId = data.participantconceptid;
                 const participantKey = data.participantkey;
                 const modalLabel = getModalLabel(participantKey);
@@ -132,6 +133,32 @@ const changeParticipantDetail = (participant, changedOption, originalHTML) => {
                 showSaveNoteInModal(conceptId);
                 saveResponses(participant, changedOption, element, conceptId);
                 resetChanges(participant, originalHTML);   
+=======
+                header.innerHTML = `<h5>Edit</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
+                let template = '<div>'
+                template += `
+                <form id="formResponse" method="post">  
+                <span><span id="fieldModified" data-fieldconceptid=${data.participantconceptid} data-fieldModified=${data.participantkey}>${removeCamelCase(data.participantkey)}</span> 
+                : <input required type="text" name="newValue" id="newValue" data-currentValue=${data.participantvalue} value=${
+                            data.participantvalue === `name="modalParticipantData"` ? `*` : data.participantvalue} />
+                            <br >
+                            <span style="font-size: 12px;" id="showNote"><i></i></span>
+                            <br >
+                        <div style="display:inline-block;">
+                            <button type="submit" class="btn btn-danger" data-dismiss="modal" target="_blank">Cancel</button>
+                            <button type="submit" class="btn btn-primary" id="editModal" data-toggle="modal">Submit</button>
+                        </div>
+                    </form>
+                </div>`
+                body.innerHTML = template;
+                saveResponses(participant, adminSubjectAudit, changedOption, element);
+                postEditedResponse(participant, adminSubjectAudit, changedOption, siteKey);
+                viewAuditHandler(adminSubjectAudit);
+                showSaveAlert();
+                resetChanges(participant, originalHTML, siteKey);  
+                showSaveNote();
+               // viewParticipantSummary(participant);          
+>>>>>>> stage
             });
         })
     }
