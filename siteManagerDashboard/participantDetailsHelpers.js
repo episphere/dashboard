@@ -3,7 +3,7 @@ import { render, renderParticipantDetails } from './participantDetails.js';
 import { findParticipant, renderLookupResultsTable } from './participantLookup.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { appState } from './stateManager.js';
-import { baseAPI, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
+import { baseAPI, getAccessToken, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
 
 export const allStates = {
     "Alabama":1,
@@ -82,38 +82,29 @@ const fieldValues = {
 }
 
 export const getFieldValues = (variableValue, conceptId) => {
+    const formattedPhoneValue = variableValue ? formatPhoneNumber(variableValue.toString()) : '';
+
     const phoneFieldValues = {
-        [fieldMapping.cellPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
-        [fieldMapping.homePhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
-        [fieldMapping.otherPhone]: variableValue ? formatPhoneNumber(variableValue.toString()) : '',
-        'Change Login Phone': variableValue ? formatPhoneNumber(variableValue.toString()) : ''
+        [fieldMapping.cellPhone]: formattedPhoneValue,
+        [fieldMapping.homePhone]: formattedPhoneValue,
+        [fieldMapping.otherPhone]: formattedPhoneValue,
+        'Change Login Phone': formattedPhoneValue
     }
 
-    if (variableValue in fieldValues){
-        return fieldValues[variableValue];
-    } else if (conceptId in phoneFieldValues){
-        return phoneFieldValues[conceptId];
-    } else {
-        return variableValue ?? '';
-    }
+    if (!variableValue) return '';
+    else if (conceptId === 'Change Login Email' && variableValue.startsWith('noreply')) return '';
+    else if (variableValue in fieldValues) return fieldValues[variableValue];
+    else if (conceptId in phoneFieldValues) return phoneFieldValues[conceptId];
+    else return variableValue;
 }
 
-export const formatInputResponse = (participantValue) => {
-    let ptValue = '';
-    if (participantValue !== undefined) {
-        ptValue  = participantValue.toString().replace(/\s+/g, "")
-    }
-    return ptValue;
-};
-
 export const formatPhoneNumber = (phoneNumber) => {
-    if (/^\+1/.test(phoneNumber)) phoneNumber = phoneNumber.substring(2);
-    return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
+    if (!phoneNumber) return '';
+    if (/^\+1/.test(phoneNumber)) {
+        phoneNumber = phoneNumber.substring(2);
+    }
+    return `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}`;
 };
-// export const formatPhoneNumber = (phoneNumber) => {
-//     if (phoneNumber.startsWith('+1')) phoneNumber = phoneNumber.substring(2);
-//     return phoneNumber ? `${phoneNumber.substring(0,3)}-${phoneNumber.substring(3,6)}-${phoneNumber.substring(6,10)}` : '';
-// };
 
 const isPhoneNumberInForm = (participant, changedOption, fieldMappingKey) => {
     return !!participant?.[fieldMappingKey] || !!changedOption?.[fieldMappingKey];
@@ -121,167 +112,168 @@ const isPhoneNumberInForm = (participant, changedOption, fieldMappingKey) => {
 
 export const getImportantRows = (participant, changedOption) => {
     const isParticipantVerified = participant[fieldMapping.verifiedFlag] === fieldMapping.verified;
+    const isParticipantDataDestroyed = participant[fieldMapping.dataDestroyCategorical] === fieldMapping.requestedDataDestroySigned;
     const isCellPhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.cellPhone);
     const isHomePhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.homePhone);
     const isOtherPhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.otherPhone);
     const importantRowsArray = [ 
         { field: fieldMapping.lName,
             label: 'Last Name',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'text',
             isRequired: true
         },
         { field: fieldMapping.fName,
             label: 'First Name',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'text',
             isRequired: true
         },
         { field: fieldMapping.prefName,
             label: 'Preferred Name',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'text',
             isRequired: false
         },
         { field: fieldMapping.mName,
             label: 'Middle Name',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'text',
             isRequired: false
         },
         { field: fieldMapping.suffix,
             label: 'Suffix',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'suffix',
             isRequired: false
         },
         { field: fieldMapping.cellPhone,
             label: 'Cell Phone',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'phoneNumber',
             isRequired: false
         },
         { field: fieldMapping.canWeText,
             label: 'Can we text your mobile phone?',
-            editable: isCellPhonePresent,
+            editable: !isParticipantDataDestroyed && isCellPhonePresent,
             display: true,
             validationType: 'permissionSelector',
             isRequired: false
         },
         { field: fieldMapping.voicemailMobile,
             label: 'Can we leave a voicemail at your mobile phone number?',
-            editable: isCellPhonePresent,
+            editable: !isParticipantDataDestroyed && isCellPhonePresent,
             display: true,
             validationType: 'permissionSelector',
             isRequired: false
         },
         { field: fieldMapping.homePhone,
             label: 'Home Phone',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'phoneNumber',
             isRequired: false
         },
         { field: fieldMapping.voicemailHome,
             label: 'Can we leave a voicemail at your home phone number?',
-            editable: isHomePhonePresent,
+            editable: !isParticipantDataDestroyed && isHomePhonePresent,
             display: true,
             validationType: 'permissionSelector',
             isRequired: false
         },
         { field: fieldMapping.otherPhone,
             label: 'Other Phone',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'phoneNumber',
             isRequired: false
         },
         { field: fieldMapping.voicemailOther,
             label: '   Can we leave a voicemail at your other phone number?',
-            editable: isOtherPhonePresent,
+            editable: !isParticipantDataDestroyed && isOtherPhonePresent,
             display: true,
             validationType: 'permissionSelector',
             isRequired: false
         },
         { field: fieldMapping.email,
             label: 'Preferred Email',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'email',
             isRequired: true
         },
         { field: fieldMapping.email1,
             label: 'Additional Email 1',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'email',
             isRequired: false
         },
         { field: fieldMapping.email2,
             label: 'Additional Email 2',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'email',
             isRequired: false
         },
         { field: fieldMapping.address1,
             label: 'Address Line 1',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'address',
             isRequired: true
         },
         { field: fieldMapping.address2,
             label: 'Address Line 2',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'address',
             isRequired: false
         },
         { field: fieldMapping.city,
             label: 'City',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'text',
             isRequired: true
         },
         { field: fieldMapping.state,
             label: 'State',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'state',
             isRequired: true
         },
         { field: fieldMapping.zip,
             label: 'Zip',
-            editable: true,
+            editable: !isParticipantDataDestroyed,
             display: true,
             validationType: 'zip',
             isRequired: true
         },
         { field: fieldMapping.birthMonth,
             label: 'Birth Month',
-            editable: !isParticipantVerified,
+            editable: !isParticipantDataDestroyed && !isParticipantVerified,
             display: !isParticipantVerified,
             validationType: 'month',
             isRequired: true
         },
         { field: fieldMapping.birthDay,
             label: 'Birth Day',
-            editable: !isParticipantVerified,
+            editable: !isParticipantDataDestroyed && !isParticipantVerified,
             display: !isParticipantVerified,
             validationType: 'day',
             isRequired: true
         },
         { field: fieldMapping.birthYear,
             label: 'Birth Year',
-            editable: !isParticipantVerified,
+            editable: !isParticipantDataDestroyed && !isParticipantVerified,
             display: !isParticipantVerified,
             validationType: 'year',
             isRequired: true
@@ -296,21 +288,22 @@ export const getImportantRows = (participant, changedOption) => {
     ];
 
     const loginChangeInfoArray = [
-        { field: `Change Login Mode`,
-            label: 'Change Login Mode',
-            editable: true,
+        { field: 'Login Update Memo',
+            label: 'Save any User Profile edits before making Login Changes',
+            editable: false,
             display: true,
-            validationType: 'none'
+            validationType: 'none',
+            isRequired: false
         },
         { field: `Change Login Email`,
-            label: 'Change Login Email',
-            editable: true,
+            label: 'Email Login',
+            editable: !isParticipantDataDestroyed,
             display: appState.getState().loginMechanism.email,
             validationType: 'none'
         },
         { field: `Change Login Phone`,
-            label: 'Change Login Phone',
-            editable: true,
+            label: 'Phone Login',
+            editable: !isParticipantDataDestroyed,
             display:  appState.getState().loginMechanism.phone,
             validationType: 'none'
         }
@@ -337,14 +330,6 @@ export const getImportantRows = (participant, changedOption) => {
 function isPhoneNumberPresent(participant, changedOption, conceptId, phoneType) {
     return (participant[phoneType] || changedOption[phoneType]) && changedOption[phoneType] !== '' && conceptId != phoneType;
 }
-
-export const getIsEmail = (participantSignInMechanism) => {
-    return participantSignInMechanism === 'password' || participantSignInMechanism === fieldMapping.signInPassword || participantSignInMechanism === 'passwordAndPhone';
-};
-
-export const getIsPhone = (participantSignInMechanism) => {
-    return participantSignInMechanism === 'phone' || participantSignInMechanism === fieldMapping.signInPhone || participantSignInMechanism === 'passwordAndPhone';
-};
 
 /**
  * Get whether a field is required or not
@@ -413,12 +398,12 @@ export const hideUneditableButtons = (participant, changedOption) => {
     })
 };
 
-export const reloadParticipantData = async (token, bearerToken) => {
+export const reloadParticipantData = async (token) => {
     showAnimation();
     const query = `token=${token}`
     const reloadedParticpant = await findParticipant(query);
     mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], {}, bearerToken);
+    renderParticipantDetails(reloadedParticpant.data[0], {});
     hideAnimation();
 }
 
@@ -436,13 +421,13 @@ export const renderReturnSearchResults = () => {
         })
 }};
 
-export const resetChanges = (participant, originalHTML, bearerToken) => {
+export const resetChanges = (participant, originalHTML) => {
     const a = document.getElementById("cancelChanges");
     let template = '';
     a.addEventListener("click", () => {
         if ( appState.getState().unsavedChangesTrack.saveFlag === false ) {
             mainContent.innerHTML = originalHTML;
-            renderParticipantDetails(participant, {}, bearerToken);
+            renderParticipantDetails(participant, {});
             appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
             let alertList = document.getElementById('alert_placeholder');
             // throws an alert when canncel changes button is clicked
@@ -460,10 +445,306 @@ export const resetChanges = (participant, originalHTML, bearerToken) => {
     })   
 }
 
-export const refreshParticipantAfterUpdate = async (participant, bearerToken) => {
+/**
+ * Handle the listeners for the login update forms
+ * for login updates (email or phone), switch package and changedOption are generated from the form
+ * for login removal, switch package and changedOption are generated from the participant object
+ */
+export const attachUpdateLoginMethodListeners = (participantAuthenticationEmail, participantAuthenticationPhone, participantToken, participantUid) => {
+    const createListener = (loginType) => {
+        const typeName = capitalizeFirstLetter(loginType);
+        return () => {
+            const header = document.getElementById('modalHeader');
+            const body = document.getElementById('modalBody');
+            header.innerHTML = `
+                <h5>${typeName} Login</h5>
+                <button type="button" class="modal-close-btn" data-dismiss="modal" id="closeModal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>`;
+            const currentLogins = { 
+                phone: participantAuthenticationPhone, 
+                email: participantAuthenticationEmail 
+            };
+            const inputFields = generateLoginFormInputFields(currentLogins, loginType);
+            const formButtons = generateAuthenticationFormButtons(!!(currentLogins.email && !currentLogins.email.startsWith('noreply')), !!currentLogins.phone, loginType);
+            body.innerHTML = `
+                <div>
+                    <form id="authDataForm" method="post">
+                        ${inputFields}${formButtons}
+                    </form>
+                </div>`;
+
+            const formResponse = document.getElementById('authDataForm');
+            if (formResponse) {
+                formResponse.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const { switchPackage, changedOption } = getUpdatedAuthenticationFormValues(participantAuthenticationEmail, participantAuthenticationPhone);
+                    if (switchPackage && changedOption) {
+                        await processParticipantLoginMethod(participantAuthenticationEmail, participantToken, participantUid, switchPackage, changedOption, 'update');
+                    }
+                });
+            }
+
+            if (loginType === 'email') {
+                const removeEmailLoginBtn = document.getElementById('removeUserLoginEmail');
+                if (removeEmailLoginBtn) {
+                    removeEmailLoginBtn.addEventListener('click', async () => {
+                        await processParticipantLoginMethod(participantAuthenticationEmail, participantToken, participantUid, {}, {}, 'removeEmail');
+                    });
+                }
+            }
+
+            if (loginType === 'phone') {
+                const removePhoneLoginBtn = document.getElementById('removeUserLoginPhone');
+                if (removePhoneLoginBtn) {
+                    removePhoneLoginBtn.addEventListener('click', async () => {
+                        await processParticipantLoginMethod(participantAuthenticationEmail, participantToken, participantUid, {}, {}, 'removePhone');
+                    });
+                }
+            }
+        };
+    };
+
+    const updateEmailButton = document.getElementById('updateUserLoginEmail');
+    const updatePhoneButton = document.getElementById('updateUserLoginPhone');
+    updateEmailButton && updateEmailButton.addEventListener('click', createListener('email'));
+    updatePhoneButton && updatePhoneButton.addEventListener('click', createListener('phone'));
+};
+
+const generateLoginFormInputFields = (currentLogins, loginType) => {
+    const currentEmailLogin = currentLogins.email && !currentLogins.email.startsWith('noreply') ? currentLogins.email : 'Not in use';
+    const currentPhoneLogin = currentLogins.phone ? formatPhoneNumber(currentLogins.phone) : 'Not in use';
+    
+    const loginTypeConfig = {
+        phone: {
+            currentLogin: currentPhoneLogin,
+            labelForNewLogin: 'Enter New Phone Number',
+            newLoginId: 'newPhone',
+            confirmLabel: 'Confirm New Phone Number',
+            confirmId: 'confirmPhone',
+        },
+        email: {
+            currentLogin: currentEmailLogin,
+            labelForNewLogin: 'Enter New Email Address',
+            newLoginId: 'newEmail',
+            confirmLabel: 'Confirm New Email Address',
+            confirmId: 'confirmEmail',
+        }
+    }
+
+    const { currentLogin, labelForNewLogin, newLoginId, confirmLabel, confirmId } = loginTypeConfig[loginType];
+
+    return `<div class="form-group">
+                <label class="col-form-label search-label">Current ${capitalizeFirstLetter(loginType)} Login</label>
+                <input class="form-control" value="${currentLogin}" disabled/>
+                <label class="col-form-label search-label">${labelForNewLogin}</label>
+                <input class="form-control" id="${newLoginId}" placeholder="${labelForNewLogin}"/>
+                <label class="col-form-label search-label">${confirmLabel}</label>
+                <input class="form-control" id="${confirmId}" placeholder="${confirmLabel}"/>
+            </div>`;
+};
+
+const generateAuthenticationFormButtons = (doesEmailLoginExist, doesPhoneLoginExist, loginType) => {
+    return `
+        <div class="form-group">
+            <button type="button" class="btn btn-danger mr-2" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" data-toggle="modal">Submit</button>
+            ${loginType === 'email' && doesEmailLoginExist && doesPhoneLoginExist ? `<button type="button" class="btn btn-warning float-right" id="removeUserLoginEmail">Remove this Login</button>` : ''}
+            ${loginType === 'phone' && doesEmailLoginExist && doesPhoneLoginExist ? `<button type="button" class="btn btn-warning float-right" id="removeUserLoginPhone">Remove this Login</button>` : ''}
+        </div>
+        `;
+};
+
+const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
+const getUpdatedAuthenticationFormValues = (participantAuthenticationEmail, participantAuthenticationPhone) => {
+    const switchPackage = {};
+    const changedOption = {};
+    const phoneField = document.getElementById('newPhone');
+    const emailField = document.getElementById('newEmail');
+    if (phoneField && phoneField.value === document.getElementById('confirmPhone').value) {
+        if (!validPhoneNumberFormat.test(phoneField.value)) {
+            alert('Invalid phone number format. Please enter a 10 digit phone number.');
+            return {}, {} ;
+        }
+        let cleanedPhoneNumber = phoneField.value.toString();
+        if (cleanedPhoneNumber.startsWith('+1')) cleanedPhoneNumber = cleanedPhoneNumber.substring(2);
+        cleanedPhoneNumber = cleanedPhoneNumber.replace(/\D/g, '').trim();
+        switchPackage['phone'] = cleanedPhoneNumber;
+        switchPackage['flag'] = 'updatePhone';
+        changedOption[fieldMapping.signInMechansim] = 'phone';
+        changedOption[fieldMapping.accountPhone] = `+1`+ cleanedPhoneNumber;
+    } else if (emailField &&  emailField.value === document.getElementById('confirmEmail').value) {
+        if (!validEmailFormat.test(emailField.value)) {
+            alert('Invalid email format. Please enter a valid email address in the format: abc@example.com');
+            return {}, {};
+        }
+        switchPackage['email'] = emailField.value;
+        switchPackage['flag'] = 'updateEmail'; 
+        changedOption[fieldMapping.signInMechansim] = 'password';
+        changedOption[fieldMapping.accountEmail] = emailField.value;
+    } else {
+        alert(`Your entered inputs don't match`);
+        return {}, {};
+    }
+
+    if ((phoneField && phoneField.value && participantAuthenticationEmail) || emailField && emailField.value && participantAuthenticationPhone) {
+        changedOption[fieldMapping.signInMechansim] = 'passwordAndPhone';
+    }
+
+    return { switchPackage, changedOption };
+}
+
+const getLoginRemovalSwitchPackage = (processType, participantAuthenticationEmail, participantUid) => {
+    const switchPackage = {};
+    const changedOption = {};
+    if (processType === 'removeEmail') {
+        const placeholderForEmailRemoval = `noreply${participantUid}@episphere.github.io`;
+        switchPackage['email'] = placeholderForEmailRemoval;
+        switchPackage['flag'] = 'updateEmail';
+        changedOption[fieldMapping.accountEmail] = placeholderForEmailRemoval;
+        changedOption[fieldMapping.signInMechansim] = 'phone';
+    } else if (processType === 'removePhone') {
+        switchPackage['email'] = participantAuthenticationEmail;
+        switchPackage['flag'] = 'replaceSignin';
+        changedOption[fieldMapping.accountPhone] = '';
+        changedOption[fieldMapping.signInMechansim] = 'password';
+    }
+    return { switchPackage, changedOption };
+};
+
+/**
+ * Process the participant's login method
+ * Possibilities include: update email, update phone, remove email, remove phone
+ * Removal of one auth method is only possible if the participant has both an email and phone login
+ * For update operations: Switch package is populated from the form and passed in
+ * For removal operations: Switch package is populated inside this function based on current login information
+ * Post updated login data to Firebase Auth. On success, also post updated login data to Firestore
+ * @param {string} participantAuthenticationEmail - the participant's current email login 
+ * @param {string} participantToken - the participant's current token
+ * @param {string} participantUid - the participant's current uid
+ * @param {object} switchPackage - the data object sent to firebaseAuth to update the participant's login method
+ * @param {object} changedOption - the data object sent to firestore to update the participant's login data
+ * @param {string} processType - the type of process to be performed -> update, removeEmail, removePhone
+ */
+const processParticipantLoginMethod = async (participantAuthenticationEmail, participantToken, participantUid, switchPackage, changedOption, processType) => {        
+    if (processType === 'removeEmail' || processType === 'removePhone') {
+        ({switchPackage, changedOption} = getLoginRemovalSwitchPackage(processType, participantAuthenticationEmail, participantUid));
+    }
+
+    const confirmation = confirm('Are you sure want to continue with this update?');
+    if (confirmation) {
+        showAnimation();
+        try {
+            switchPackage['uid'] = participantUid;
+            changedOption['token'] = participantToken;
+            const url = `${baseAPI}/dashboard?api=updateUserAuthentication`;
+            const signinMechanismPayload = { "data": switchPackage };
+            
+            const bearerToken = await getAccessToken();
+            const response = await postLoginData(url, signinMechanismPayload, bearerToken);
+            const responseJSON = await response.json();
+
+            if (response.status === 200) {
+                const updateResult = await updateParticipantFirestoreProfile(changedOption, bearerToken);
+                hideAnimation();
+                if (!updateResult) {
+                    showAuthUpdateAPIError('modalBody', "IMPORTANT: There was an error updating the participant's profile.\n\nPLEASE PROCESS THE OPERATION AGAIN.");
+                    console.error('Failed to update participant Firestore profile');
+                } else {
+                    updateUIOnAuthResponse(switchPackage, changedOption, responseJSON, response.status);
+                }   
+            }
+        } catch (error) {
+            hideAnimation();
+            console.error(error);
+            showAuthUpdateAPIError('modalBody', 'Operation Unsuccessful!');
+        }
+    }
+}
+
+/**
+ * Package the updated participant login data to firestore
+ * @param {object} updatedOptions - the data object sent to firestore to update the participant's login data 
+ * @param {*} bearerToken - the bearer token
+ * @returns {boolean} - true if the update was successful, false otherwise
+ */
+const updateParticipantFirestoreProfile = async (updatedOptions, bearerToken) =>  {
+    const updateParticpantPayload = {
+        "data": [updatedOptions]
+    }
+
+    const url = `${baseAPI}/dashboard?api=updateParticipantData`;
+    const response = await postLoginData(url, updateParticpantPayload, bearerToken);
+    const responseJSON = await response.json();
+
+    if (response.status === 200) {
+        appState.setState({unsavedChangesTrack:{saveFlag: true, counter: 0}});
+        showAuthUpdateAPIAlert('success', 'Participant detail updated!');
+        return true;
+    } else { 
+        console.error(`Error in updating participant data (updateParticipantFirestoreProfile()): ${responseJSON.error}`);
+        return false;
+    }
+}
+
+const postLoginData = async (url = '', data = {}, bearerToken) => {
+    try {
+        return await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${bearerToken}`
+            }
+        });
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        throw error;
+    }
+}
+
+const updateUIOnAuthResponse = (switchPackage, changedOption, responseData, status) => {
+    hideAnimation();
+
+    if (status === 200) {
+        showAuthUpdateAPIAlert('success', 'Operation successful!');
+        closeModal();
+
+        if (["updatePhone", "updateEmail", "replaceSignin"].includes(switchPackage.flag)) {
+            document.getElementById('Change Login Emailrow').children[1].innerHTML = 'Updating login data';
+            document.getElementById('Change Login Phonerow').children[1].innerHTML = 'Updating login data';
+        }
+        reloadParticipantData(changedOption.token);
+    } else {
+        const errorMessage = responseData.error || 'Operation Unsuccessful!';
+        showAuthUpdateAPIError('modalBody', errorMessage);
+    }
+}
+
+const showAuthUpdateAPIAlert = (type, message) => {
+    const alertList = document.getElementById("alert_placeholder");
+    alertList.innerHTML = `
+        <div class="alert alert-${type}" alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>`;
+}
+
+const showAuthUpdateAPIError = (bodyId, message) => {
+    const body = document.getElementById(bodyId);
+    body.innerHTML = `<div>${message}</div>`;
+    return false;
+}
+
+export const refreshParticipantAfterUpdate = async (participant) => {
     showAnimation();
     localStorage.setItem('participant', JSON.stringify(participant));
-    renderParticipantDetails(participant, {}, bearerToken);
+    renderParticipantDetails(participant, {});
     appState.setState({unsavedChangesTrack:{saveFlag: false, counter: 0}})
     let alertList = document.getElementById('alert_placeholder');
     let template = '';
@@ -802,8 +1083,7 @@ export const viewParticipantSummary = (participant) => {
 }
 
 const cleanPhoneNumber = (changedOption) => {
-    const phoneNumbers = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
-    phoneNumbers.forEach(phoneNumber => {
+    phoneTypes.forEach(phoneNumber => {
         if (phoneNumber in changedOption) {
             changedOption[phoneNumber] = changedOption[phoneNumber].replace(/\D/g, '');
         }
@@ -812,6 +1092,9 @@ const cleanPhoneNumber = (changedOption) => {
 
 };
 
+const phoneTypes = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
+const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
+
 /**
  * Process the user's update and submit the new user data to the database.
  * if participant is verified, fetch logged in admin's email (the person processing the edit) to attach to the user's history update
@@ -819,9 +1102,8 @@ const cleanPhoneNumber = (changedOption) => {
  * Else, alert the user that the update was unsuccessful.
  * @param {object} participant - the existing participant object 
  * @param {object} changedOption - the changed user data
- * @param {string} bearerToken - the site key to pass to the POST request 
  */
-export const submitClickHandler = async (participant, changedOption, bearerToken) => {
+export const submitClickHandler = async (participant, changedOption) => {
     const isParticipantVerified = participant[fieldMapping.verifiedFlag] == fieldMapping.verified;
     const adminEmail = appState.getState().userSession?.email ?? '';
     const submitButtons = document.getElementsByClassName('updateMemberData');
@@ -830,11 +1112,13 @@ export const submitClickHandler = async (participant, changedOption, bearerToken
             if (Object.keys(changedOption).length === 0) {
                 alert('No changes to submit. No changes have been made. Please update the form and try again if changes are needed.');
             } else {
-                const { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
+                let { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
+                if (phoneTypes.some(phoneKey => phoneKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllPhoneNoField(changedUserDataForProfile, participant);
+                if (emailTypes.some(emailKey => emailKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllEmailField(changedUserDataForProfile, participant);
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
                 if (isSuccess) {
                     const updatedParticipant = { ...participant, ...changedUserDataForProfile};
-                    await refreshParticipantAfterUpdate(updatedParticipant, bearerToken);
+                    await refreshParticipantAfterUpdate(updatedParticipant);
                 } else {
                     alert('Error: There was an error processing your changes. Please try again.');
                 }
@@ -842,6 +1126,70 @@ export const submitClickHandler = async (participant, changedOption, bearerToken
         });
     }
 };
+
+/**
+ * Handle the allPhoneNo field in the user profile
+ * If a number is in the changedUserDataForProfile, the participant has added this phone number. Add it to the allPhoneNo field.
+ * Then check the userData profile for an existing value at the field being updated. The participant is updating this phone number. Remove it from the allPhoneNo field.
+ * If an empty string is in the changedUserDataForProfile, the participant has removed this phone number. Remove it from the allPhoneNo field.
+ * TODO: Topic for ongoing discussion:
+ *      Inside the forEach loop:
+ *              The first if statement checks if the phone number is in the changedUserDataForProfile. If it is, add it to the allPhoneNo field.
+ *              The second if statement checks if an existing phone number is in the current userData profile. If it is, that means the participant is updating the existing value in favor of the new value.
+ *                      Remove the existing value from the allPhoneNo field.
+ */
+const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
+    const allPhoneNo = participant.query.allPhoneNo ?? [];
+    
+  
+    phoneTypes.forEach(phoneType => {
+      if (changedUserDataForProfile[phoneType] && !allPhoneNo.includes(changedUserDataForProfile[phoneType])) {
+        allPhoneNo.push(changedUserDataForProfile[phoneType]);
+      }
+  
+      if (changedUserDataForProfile[phoneType] || changedUserDataForProfile[phoneType] === '') {
+        const indexToRemove = allPhoneNo.indexOf(participant[phoneType]);  
+        if (indexToRemove !== -1) {
+          allPhoneNo.splice(indexToRemove, 1);
+        }  
+      }
+    });
+  
+    changedUserDataForProfile['query.allPhoneNo'] = allPhoneNo;
+    
+    return changedUserDataForProfile;
+  };
+  
+  /**
+   * Handle the allEmails field in the user profile
+   * If an email is in the changedUserDataForProfile, the participant has added this email. Add it to the allEmails field.
+   * If an email is in the changedUserDataForHistory, the participant has removed this email. Remove it from the allEmails field.
+   * TODO: Topic for ongoing discussion:
+   *        Inside the forEach loop:
+   *            The first if statement checks if the email address is in the changedUserDataForProfile. If it is, add it to the allEmails field.
+   *            The second if statement checks if an existing email address is in the current userData profile. If it is, that means the participant is updating the existing value in favor of the new value.
+   *                    Remove the existing value from the allEmails field.
+   */
+  const handleAllEmailField = (changedUserDataForProfile, participant) => {
+    const allEmails = participant.query.allEmails ?? [];
+  
+    emailTypes.forEach(emailType => {
+      if (changedUserDataForProfile[emailType] && !allEmails.includes(changedUserDataForProfile[emailType])) {
+        allEmails.push(changedUserDataForProfile[emailType].trim()?.toLowerCase());
+      }
+  
+      if (changedUserDataForProfile[emailType] || changedUserDataForProfile[emailType] === '') {
+        const indexToRemove = allEmails.indexOf(participant[emailType]);  
+        if (indexToRemove !== -1) {
+          allEmails.splice(indexToRemove, 1);
+        }  
+      }
+    });
+  
+    changedUserDataForProfile['query.allEmails'] = allEmails;
+    
+    return changedUserDataForProfile;
+  };
 
   /**
  * Iterate the new values, compare them to existing values, and return the changed values.
@@ -865,7 +1213,7 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
     newUserData = cleanPhoneNumber(newUserData);
     Object.keys(newUserData).forEach(key => {
       if (newUserData[key] !== existingUserData[key]) {
-        changedUserDataForProfile[key] = newUserData[key] ?? '';
+        changedUserDataForProfile[key] = newUserData[key];
         if (!excludeHistoryKeys.includes(key)) {
             changedUserDataForHistory[key] = existingUserData[key] ?? '';
         }
@@ -902,7 +1250,7 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
         changedUserDataForHistory[fieldMapping.voicemailOther] = existingUserData[fieldMapping.voicemailOther] ?? fieldMapping.no;
     }
 
-return { changedUserDataForProfile, changedUserDataForHistory };
+    return { changedUserDataForProfile, changedUserDataForHistory };
 };
 
 /**
@@ -916,11 +1264,15 @@ return { changedUserDataForProfile, changedUserDataForHistory };
  * @param {string} type - the type of data being changed (e.g. name, contact info, mailing address, log-in email)
  * @returns {boolean} - whether the write operation was successful to control the UI messaging
  */
-const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataForHistory, userHistory, participantUID, adminEmail, isParticipantVerified) => {
+const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataForHistory, userHistory, participantUid, adminEmail, isParticipantVerified) => {
         if (isParticipantVerified) {
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail);
         }
-        changedUserDataForProfile['uid'] = participantUID;
+        
+        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
+        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].trim()?.toLowerCase();
+
+        changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)
         .catch(function (error) {
             console.error('Error writing document (postUserDataUpdate) ', error);
