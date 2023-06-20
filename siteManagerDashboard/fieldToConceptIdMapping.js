@@ -121,6 +121,10 @@ export default
     "lawCompletedDate1": 264644252,
     "lawStartDate1": 452942800,
 
+    "covidFlag": 793330426,
+    "covidStartDate": 268176409,
+    "covidCompletedDate": 784810139,
+
     // "boh": "D_726699695",
     // "bohStatusFlag": "D_949302066",
     // "bohCompletedDate": "D_517311251",
