@@ -12,8 +12,7 @@ export const headerImportantColumns = [
     { field: 'Site' },
     { field: 'Year(s) in Connect' },
     { field: 'Participation Status'},
-   // { field: 'Enrollment Status'},
-     { field: 'Suspended Contact'}
+    { field: 'Suspended Contact'}
 ];
 
 
@@ -31,10 +30,6 @@ export const renderParticipantHeader = (participant) => {
         (headerImportantColumns[x].field === 'Participation Status' ) ?
             template += `<span><b>Participation Status </b></span> : ${getParticipantStatus(participant)}  &nbsp;`
         :
-
-        // (headerImportantColumns[x].field === 'Enrollment Status' ) ?
-        //     template += `<span><b>Enrollment Status </b></span> : ${getEnrollmentStatus(participant)}  &nbsp;`
-        // :
 
         (headerImportantColumns[x].field === 'Suspended Contact'  ) ?
             template += getParticipantSuspendedDate(participant)
@@ -85,7 +80,6 @@ export const renderParticipantHeader = (participant) => {
 } 
 
 // Year(s) in Connect : 1  
-
 const getYearsInConnect = (participant) => {
     let timeProfileSubmitted = participant[fieldMapping.timeProfileSubmitted];
     let submittedYear = String(timeProfileSubmitted);
@@ -97,18 +91,16 @@ const getYearsInConnect = (participant) => {
     let totalYears =  currentYear - submittedYear;
     totalYears <= 0 ? totalYears = '< 1' : totalYears;
     let yearsInConnect = totalYears;
-    return yearsInConnect;
+    return typeof(yearsInConnect) !== 'string' && isNaN(yearsInConnect) ? 'data deleted' : yearsInConnect;
 }
 
 
 
 const concatDOB = (participant) => {
-    const monthList = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     const participantBirthMonth = participant[fieldMapping.birthMonth];
     const participantBirthDate = participant[fieldMapping.birthDay];
     const participantBirthYear = participant[fieldMapping.birthYear];
-    const dateofBirth = participantBirthMonth + '/' + participantBirthDate + '/' + participantBirthYear;
-    return dateofBirth; //  07/02/1966  
+    return participantBirthMonth && participantBirthDate && participantBirthYear ? participantBirthMonth + '/' + participantBirthDate + '/' + participantBirthYear : 'data deleted'; //  07/02/1966 or 'data deleted' 
 
 }
 
@@ -121,6 +113,7 @@ export const getParticipantStatus = (participant) => {
    if (typeof participant !== "string") {
         const statusValue = participant[fieldMapping.participationStatus];
         if (statusValue !== undefined && statusValue !== ``)  return fieldMapping[statusValue];
+        else if (participant[fieldMapping.dataDestroyCategorical] === fieldMapping.requestedDataDestroySigned) return 'data deleted';
         else return `No Refusal`;
     }
 }

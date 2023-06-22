@@ -350,7 +350,7 @@ const optionsHandler = (suspendDate) => {
 export const proceedToNextPage = (retainOptions, requestedHolder, suspendDate) => {
     const a = document.getElementById('proceedFormPage');
     if (a) {
-        a.addEventListener('click',  () => { 
+        a.addEventListener('click',  () => {
             let checkedValue = document.getElementById('messageCheckbox').checked;
             checkedValue ? causeOfDeathPage(retainOptions) : reasonForRefusalPage(retainOptions, requestedHolder, suspendDate);
         })
@@ -527,6 +527,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     }
     if (computeScore === fieldMapping.destroyDataStatus) { 
         sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
+        sendRefusalData[fieldMapping.dataDestroyCategorical] = fieldMapping.requestedDataDestroyNotSigned;
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedDataDestruction, fieldMapping.whoRequestedDataDestructionOther)
     }
     if (computeScore === fieldMapping.revokeHIPAAOnly) { 
