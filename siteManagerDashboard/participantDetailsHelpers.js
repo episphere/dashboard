@@ -60,7 +60,7 @@ export const allStates = {
     "NA": 52
 }
 
-const testAndVoicemailPermissionIds = [fieldMapping.canWeText, fieldMapping.voicemailMobile, fieldMapping.voicemailHome, fieldMapping.voicemailOther];
+const textAndVoicemailPermissionIds = [fieldMapping.canWeText, fieldMapping.voicemailMobile, fieldMapping.voicemailHome, fieldMapping.voicemailOther];
 
 export const closeModal = () => {
     const modalClose = document.getElementById('modalShowMoreData');
@@ -70,6 +70,7 @@ export const closeModal = () => {
 const fieldValues = {     
     [fieldMapping.yes]: 'Yes',
     [fieldMapping.no]: 'No',
+    [fieldMapping.noneOfTheseApply]: '',
     [fieldMapping.jr]: 'Jr.',
     [fieldMapping.sr]: 'Sr.',
     [fieldMapping.one]: 'I',
@@ -778,7 +779,7 @@ export const saveResponses = (participant, changedOption, editedElement, concept
         const currentConceptId = conceptIdArray[conceptIdArray.length - 1];
         const isRequired = getIsRequiredField(participant, changedOption, newValueElement, currentConceptId);
         
-        if (newValueElement.value != participant[currentConceptId] || testAndVoicemailPermissionIds.includes(parseInt(currentConceptId))) {
+        if (newValueElement.value != participant[currentConceptId] || textAndVoicemailPermissionIds.includes(parseInt(currentConceptId))) {
             const newValueIsValid = validateNewValue(newValueElement, dataValidationType, isRequired);
 
             if (newValueIsValid) {
@@ -794,12 +795,45 @@ export const saveResponses = (participant, changedOption, editedElement, concept
                 }
 
                 updateUIValues(editedElement, newValueElement.value, conceptIdArray);
+                changedOption = forceDataTypesForFirestore(changedOption);
                 closeModal();
             };
         } else {
             showAlreadyExistsNoteInModal();
         }    
     });
+};
+
+const forceDataTypesForFirestore = (changedOption) => {
+    const fieldsToInteger = [
+        fieldMapping.suffix, 
+        fieldMapping.canWeText, 
+        fieldMapping.voicemailMobile, 
+        fieldMapping.voicemailHome, 
+        fieldMapping.voicemailOther
+    ];
+    
+    const fieldsToString = [
+        fieldMapping.zip,
+        fieldMapping.birthDay,
+        fieldMapping.birthMonth,
+        fieldMapping.birthYear,
+        fieldMapping.dateOfBirthComplete
+    ];
+    
+    fieldsToInteger.forEach(field => {
+        if (changedOption[field]) {
+            changedOption[field] = parseInt(changedOption[field]);
+        }
+    });
+    
+    fieldsToString.forEach(field => {
+        if (changedOption[field]) {
+            changedOption[field] = changedOption[field].toString();
+        }
+    });
+
+    return changedOption;
 };
 
 /**
@@ -901,6 +935,7 @@ export const showAlreadyExistsNoteInModal = () => {
 export const suffixList = { 612166858: 0, 255907182: 1, 226924545: 2, 270793412: 3, 959021713: 4, 643664527: 5, 537892528: 6 };
 
 export const suffixToTextMap = new Map([
+    [398561594, ''],
     [612166858, 'Jr.'],
     [255907182, 'Sr.'],
     [226924545, 'I'],
@@ -1204,51 +1239,70 @@ const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
  *   if user deletes a number, set canWeVoicemail and canWeText to '' (empty string) --per spec on 05-09-2023
  *   if user updates a number, ensure the canWeVoicemail and canWeText values are set. Use previous values as fallback.
  *   Update: 05-26-2023 do not include email addresses in user profile archiving. Exclude those keys from the history object
+ *   Update: 06-27-2023
+ *     (1) Do not tie empty text and voicemail permissions to profile history.
+ *     (2) Use cId.noneOfTheseApply for suffix that had a value and now has no value
+ *     (3) Default phone permissions to cId.no instead of using an empty string.
 */
 const findChangedUserDataValues = (newUserData, existingUserData) => {
     const changedUserDataForProfile = {};
     const changedUserDataForHistory = {};
     const excludeHistoryKeys = [fieldMapping.email, fieldMapping.email1, fieldMapping.email2];
+    const keysToSkipIfNull = [fieldMapping.canWeText.toString(), fieldMapping.voicemailMobile.toString(), fieldMapping.voicemailHome.toString(), fieldMapping.voicemailOther.toString()];
 
     newUserData = cleanPhoneNumber(newUserData);
+
     Object.keys(newUserData).forEach(key => {
-      if (newUserData[key] !== existingUserData[key]) {
-        changedUserDataForProfile[key] = newUserData[key];
-        if (!excludeHistoryKeys.includes(key)) {
-            changedUserDataForHistory[key] = existingUserData[key] ?? '';
+        if (newUserData[key] !== existingUserData[key]) {
+            changedUserDataForProfile[key] = newUserData[key];
+            if (!excludeHistoryKeys.includes(key)) {
+                changedUserDataForHistory[key] = existingUserData[key] ?? '';
+            }
         }
-      }
     });
-  
+
     if (fieldMapping.cellPhone in changedUserDataForProfile) {
         if (!newUserData[fieldMapping.cellPhone]) {
-            changedUserDataForProfile[fieldMapping.voicemailMobile] = '';
-            changedUserDataForProfile[fieldMapping.canWeText] = '';
+            changedUserDataForProfile[fieldMapping.voicemailMobile] = fieldMapping.no;
+            changedUserDataForProfile[fieldMapping.canWeText] = fieldMapping.no;
         } else {
             changedUserDataForProfile[fieldMapping.voicemailMobile] = newUserData[fieldMapping.voicemailMobile] ?? existingUserData[fieldMapping.voicemailMobile] ?? fieldMapping.no;
             changedUserDataForProfile[fieldMapping.canWeText] = newUserData[fieldMapping.canWeText] ?? existingUserData[fieldMapping.canWeText] ?? fieldMapping.no;
         }
-        changedUserDataForHistory[fieldMapping.voicemailMobile] = existingUserData[fieldMapping.voicemailMobile] ?? fieldMapping.no;
-        changedUserDataForHistory[fieldMapping.canWeText] = existingUserData[fieldMapping.canWeText] ?? fieldMapping.no;
+
+        if (existingUserData[fieldMapping.voicemailMobile]) changedUserDataForHistory[fieldMapping.voicemailMobile] = existingUserData[fieldMapping.voicemailMobile];
+        if (existingUserData[fieldMapping.canWeText]) changedUserDataForHistory[fieldMapping.canWeText] = existingUserData[fieldMapping.canWeText];
     }
 
     if (fieldMapping.homePhone in changedUserDataForProfile) {
         if (!newUserData[fieldMapping.homePhone]) {
-            changedUserDataForProfile[fieldMapping.voicemailHome] = '';
+            changedUserDataForProfile[fieldMapping.voicemailHome] = fieldMapping.no;
         } else {
             changedUserDataForProfile[fieldMapping.voicemailHome] = newUserData[fieldMapping.voicemailHome] ?? existingUserData[fieldMapping.voicemailHome] ?? fieldMapping.no;
         }
-        changedUserDataForHistory[fieldMapping.voicemailHome] = existingUserData[fieldMapping.voicemailHome] ?? fieldMapping.no;
+
+        if (existingUserData[fieldMapping.voicemailHome]) changedUserDataForHistory[fieldMapping.voicemailHome] = existingUserData[fieldMapping.voicemailHome];
     }
 
     if (fieldMapping.otherPhone in changedUserDataForProfile) {
         if (!newUserData[fieldMapping.otherPhone]) {
-            changedUserDataForProfile[fieldMapping.voicemailOther] = '';
+            changedUserDataForProfile[fieldMapping.voicemailOther] = fieldMapping.no;
         } else {
             changedUserDataForProfile[fieldMapping.voicemailOther] = newUserData[fieldMapping.voicemailOther] ?? existingUserData[fieldMapping.voicemailOther] ?? fieldMapping.no;
         }
-        changedUserDataForHistory[fieldMapping.voicemailOther] = existingUserData[fieldMapping.voicemailOther] ?? fieldMapping.no;
+
+        if (existingUserData[fieldMapping.voicemailOther]) changedUserDataForHistory[fieldMapping.voicemailOther] = existingUserData[fieldMapping.voicemailOther];
     }
+
+    if (fieldMapping.suffix in changedUserDataForProfile) {
+        if (!newUserData[fieldMapping.suffix]) {
+          changedUserDataForProfile[fieldMapping.suffix] = fieldMapping.noneOfTheseApply;
+        }
+    }
+
+    keysToSkipIfNull.forEach(key => {
+        if (changedUserDataForHistory[key] === '') changedUserDataForHistory[key] = null;
+    });
 
     return { changedUserDataForProfile, changedUserDataForHistory };
 };
@@ -1266,7 +1320,7 @@ const findChangedUserDataValues = (newUserData, existingUserData) => {
  */
 const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataForHistory, userHistory, participantUid, adminEmail, isParticipantVerified) => {
         if (isParticipantVerified) {
-            changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail);
+            changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail, changedUserDataForProfile[fieldMapping.suffix]);
         }
         
         if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
@@ -1291,11 +1345,11 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
  * @param {array of objects} userHistory - the user's existing history
  * @returns {userProfileHistoryArray} -the array of objects to write to user profile history, with the new data added to the end of the array
  */
-const updateUserHistory = (existingDataToUpdate, userHistory, adminEmail) => {
+const updateUserHistory = (existingDataToUpdate, userHistory, adminEmail, newSuffix) => {
     const userProfileHistoryArray = [];
     if (userHistory && Object.keys(userHistory).length > 0) userProfileHistoryArray.push(...userHistory);
 
-    const newUserHistoryMap = populateUserHistoryMap(existingDataToUpdate, adminEmail);
+    const newUserHistoryMap = populateUserHistoryMap(existingDataToUpdate, adminEmail, newSuffix);
     if (newUserHistoryMap && Object.keys(newUserHistoryMap).length > 0) {
         userProfileHistoryArray.push(newUserHistoryMap);
     }
@@ -1303,7 +1357,7 @@ const updateUserHistory = (existingDataToUpdate, userHistory, adminEmail) => {
     return userProfileHistoryArray;
 };
 
-const populateUserHistoryMap = (existingData, adminEmail) => {
+const populateUserHistoryMap = (existingData, adminEmail, newSuffix) => {
     const userHistoryMap = {};
     const keys = [
         fieldMapping.fName,
@@ -1333,22 +1387,27 @@ const populateUserHistoryMap = (existingData, adminEmail) => {
         existingData[key] != null && (userHistoryMap[key] = existingData[key]);
     });
 
-    if (existingData[fieldMapping.cellPhone] != null) {
-        userHistoryMap[fieldMapping.voicemailMobile] = existingData[fieldMapping.voicemailMobile];
-        userHistoryMap[fieldMapping.canWeText] = existingData[fieldMapping.canWeText];
+    if (existingData[fieldMapping.cellPhone]) {
+        userHistoryMap[fieldMapping.voicemailMobile] = existingData[fieldMapping.voicemailMobile] ?? fieldMapping.no;
+        userHistoryMap[fieldMapping.canWeText] = existingData[fieldMapping.canWeText] ?? fieldMapping.no;
     }
 
-    if (existingData[fieldMapping.homePhone] != null) {
-        userHistoryMap[fieldMapping.voicemailHome] = existingData[fieldMapping.voicemailHome];
+    if (existingData[fieldMapping.homePhone]) {
+        userHistoryMap[fieldMapping.voicemailHome] = existingData[fieldMapping.voicemailHome] ?? fieldMapping.no;
     }
 
-    if (existingData[fieldMapping.otherPhone] != null) {
-        userHistoryMap[fieldMapping.voicemailOther] = existingData[fieldMapping.voicemailOther];
+    if (existingData[fieldMapping.otherPhone]) {
+        userHistoryMap[fieldMapping.voicemailOther] = existingData[fieldMapping.voicemailOther] ?? fieldMapping.no;
+    }
+
+    if (newSuffix && !existingData[fieldMapping.suffix]) {
+        userHistoryMap[fieldMapping.suffix] = fieldMapping.noneOfTheseApply;
     }
 
     if (Object.keys(userHistoryMap).length > 0) {
         userHistoryMap[fieldMapping.userProfileUpdateTimestamp] = new Date().toISOString();
         userHistoryMap[fieldMapping.profileChangeRequestedBy] = adminEmail;
+
         return userHistoryMap;
     } else {
         return null;
