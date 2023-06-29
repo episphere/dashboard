@@ -657,6 +657,9 @@ const processParticipantLoginMethod = async (participantAuthenticationEmail, par
                 } else {
                     updateUIOnAuthResponse(switchPackage, changedOption, responseJSON, response.status);
                 }   
+            } else {
+                hideAnimation();
+                showAuthUpdateAPIError('modalBody', responseJSON.message);
             }
         } catch (error) {
             hideAnimation();
@@ -686,6 +689,7 @@ const updateParticipantFirestoreProfile = async (updatedOptions, bearerToken) =>
         showAuthUpdateAPIAlert('success', 'Participant detail updated!');
         return true;
     } else { 
+        hideAnimation();
         console.error(`Error in updating participant data (updateParticipantFirestoreProfile()): ${responseJSON.error}`);
         return false;
     }
