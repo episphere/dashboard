@@ -346,7 +346,7 @@ const getIsRequiredField = (participant, changedOption, newValueElement, concept
 
     if (isRequiredFieldArray.includes(parseInt(conceptId))) {
         return true;
-    };
+    }
 
     if (!newValueElement.value && (conceptId == fieldMapping.cellPhone || conceptId == fieldMapping.homePhone || conceptId == fieldMapping.otherPhone)) {
         const isCellPhonePresent = isPhoneNumberPresent(participant, changedOption, conceptId, fieldMapping.cellPhone);
@@ -395,7 +395,7 @@ export const hideUneditableButtons = (participant, changedOption) => {
             if (element) {
                 element.style.display = 'none';
             }
-        };
+        }
     })
 };
 
@@ -801,7 +801,7 @@ export const saveResponses = (participant, changedOption, editedElement, concept
                 updateUIValues(editedElement, newValueElement.value, conceptIdArray);
                 changedOption = forceDataTypesForFirestore(changedOption);
                 closeModal();
-            };
+            }
         } else {
             showAlreadyExistsNoteInModal();
         }    
@@ -915,7 +915,7 @@ const togglePhonePermissionButtonsAndText = (newValue, conceptIdArray) => {
                             valueField.textContent = '';
                         }
                     }
-                };
+                }
             }); 
             break;
         }
