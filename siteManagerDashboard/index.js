@@ -41,7 +41,7 @@ const isLocalDev = location.hostname === 'localhost' || location.hostname === '1
 window.onload = async () => {
     if(location.host === urls.prod) {
         !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
-        //window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'prod' });
+        window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'prod' });
     } 
     else if(location.host === urls.stage) {
         !firebase.apps.length ? firebase.initializeApp(stageFirebaseConfig) : firebase.app();
@@ -52,7 +52,7 @@ window.onload = async () => {
         !isLocalDev && window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
     } 
 
-    !isLocalDev && location.host !== urls.prod && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
+    !isLocalDev && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
 
     router();
     await getMappings();
@@ -83,14 +83,11 @@ const router = async () => {
         else if (route === '#participantLookup') renderParticipantLookup();
         else if (route === '#participantDetails') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
-                renderParticipantDetails();
-            }
-            else {
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
+            } else {
                 let participant = JSON.parse(localStorage.getItem("participant"));
-                let adminSubjectAudit = [];
                 let changedOption = {};
-                const siteKey = await getAccessToken();
-                renderParticipantDetails(participant, adminSubjectAudit, changedOption, siteKey);
+                renderParticipantDetails(participant, changedOption);
             }
         }
         else if (route === '#participantSummary') {

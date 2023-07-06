@@ -2,7 +2,7 @@ import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navi
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,baselineSASSurvey, 
-    baselineLAWSurvey, baselineSSN, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey, baselineMenstrualSurvey,
+    baselineLAWSurvey, baselineSSN, baselineCOVIDSurvey, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey, baselineMenstrualSurvey,
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping } from './utils.js';
 
@@ -88,6 +88,9 @@ export const render = (participant) => {
                                     ${baselineSSN(participant)}
                                 </tr>
                                 <tr class="row-color-survey-light">
+                                    ${baselineCOVIDSurvey(participant)}
+                                 </tr>
+                                <tr class="row-color-survey-dark">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
                                 <tr class="row-color-enrollment-light"> 

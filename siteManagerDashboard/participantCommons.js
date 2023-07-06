@@ -34,7 +34,8 @@ export const renderTable = (data, source) => {
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
-                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested) ? 
+                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested &&
+                        x !== fieldMapping.consentFirstName && x !== fieldMapping.consentMiddleName && x !== fieldMapping.consentLastName) ? 
                         conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</button>`)}
             </div>
         </div>`
@@ -482,7 +483,13 @@ const tableTemplate = (data, showButtons) => {
     let template = '';
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     template += `<thead class="thead-dark sticky-row"><tr><th class="sticky-row">Select</th>`
-    importantColumns.forEach(x => template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name']: x}</th>`)
+    importantColumns.forEach(x => {
+            const parsedConceptIdField = parseInt(x)
+            template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? ((parsedConceptIdField !== fieldMapping.fName && parsedConceptIdField !== fieldMapping.mName && 
+                parsedConceptIdField !== fieldMapping.lName && parsedConceptIdField !== fieldMapping.refusedSpecimenSurevys && parsedConceptIdField !== fieldMapping.dateHipaaRevokeRequested &&
+                parsedConceptIdField !== fieldMapping.consentFirstName && parsedConceptIdField !== fieldMapping.consentMiddleName && parsedConceptIdField !== fieldMapping.consentLastName) ? 
+                conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</th>`
+        })
     template += `
         </tr>
     </thead>`;
@@ -834,12 +841,11 @@ const addEventShowMoreInfo = (data) => {
     Array.from(selectElements).forEach(element => {
         element.addEventListener('click', async () => {
             const filteredData = data.filter(dt => dt.token === element.dataset.token);
-            let adminSubjectAudit = [];
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
             location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
             const siteKey = await getAccessToken();
-            renderParticipantDetails(filteredData[0], adminSubjectAudit, changedOption, siteKey);
+            renderParticipantDetails(filteredData[0], changedOption, siteKey);
         });
     });
 
@@ -1029,11 +1035,17 @@ export const renderLookupSiteDropdown = () => {
 }
 
 const getCustomVariableNames = (x) => {
-    if (x === fieldMapping.refusedSpecimenSurevys)
-        return 'Refused baseline specimen surveys'
-    else if (x === fieldMapping.dateHipaaRevokeRequested)
-        return 'Date revoked HIPAA'
-    else {}
+    const customVariableFields = {
+                                    [fieldMapping.refusedSpecimenSurevys]: 'Refused baseline specimen surveys',
+                                    [fieldMapping.dateHipaaRevokeRequested]: 'Date revoked HIPAA',
+                                    [fieldMapping.consentFirstName]: 'First Name (Consent)',
+                                    [fieldMapping.consentMiddleName]: 'Middle Name (Consent)',
+                                    [fieldMapping.consentLastName]: 'Last Name (Consent)',
+                                    [fieldMapping.fName]: 'First Name (UP)',
+                                    [fieldMapping.mName]: 'Middle Name (UP)',
+                                    [fieldMapping.lName]: 'Last Name (UP)'
+                                }
+    return customVariableFields[x] ?? '';
 
 }
 

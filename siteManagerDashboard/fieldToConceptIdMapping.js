@@ -7,6 +7,7 @@ export default
     "birthMonth":564964481,
     "birthDay":795827569,
     "birthYear":544150384,
+    "dateOfBirthComplete": 371067537,
 
     // consent
     "consentDate":454445267,
@@ -52,10 +53,13 @@ export default
     "state":634434746,
     "zip":892050548,
     "healthcareProvider":827220437,
-    "suffix":480305327,
     "ssnOnFile": 454067894,
     "timeProfileSubmitted": 430551721,
     'timeStudyIdSubmitted': 521025370,
+    "userProfileHistory": 569151507,
+    "profileChangeRequestedBy": 611005658,
+    "userProfileUpdateTimestamp": 371303487,
+    "noneOfTheseApply": 398561594,
 
     'jr': 612166858,
     'sr': 255907182,
@@ -116,6 +120,10 @@ export default
     "lawStausFlag1": 663265240,
     "lawCompletedDate1": 264644252,
     "lawStartDate1": 452942800,
+
+    "covidFlag": 220186468,
+    "covidStartDate": 268176409,
+    "covidCompletedDate": 784810139,
 
     // "boh": "D_726699695",
     // "bohStatusFlag": "D_949302066",
@@ -277,6 +285,8 @@ export default
     'duplicateType': 148197146,
     'updateRecruitType': 793822265,
     'signInMechansim': 995036844,
+    'signInPassword': 101178950,
+    'signInPhone': 804918759,
     'accountEmail': 421823980,
     'accountPhone': 348474836,
     'accountName': 756862764,
@@ -373,6 +383,9 @@ export default
     "revokeHIPAAOnly": 872012139,
     "withdrewConsent": 854021266,
     "destroyDataStatus": 241236037,
+    "dataDestroyCategorical": 883668444,
+    "requestedDataDestroyNotSigned": 111959410,
+    "requestedDataDestroySigned": 704529432,
     "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
