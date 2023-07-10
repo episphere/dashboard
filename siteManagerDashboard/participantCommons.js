@@ -516,6 +516,8 @@ const tableTemplate = (data, showButtons) => {
                ( template += `<td>${participant[x] ? 'Text Message' : ''}</td>` )
             : (participant[x] && participant[x] === fieldMapping.prefEmail) ?
                ( template += `<td>${participant[x] ? 'Email' : ''}</td>` )
+            : (participant[x] && x === fieldMapping.accountEmail.toString()) ?
+                ( template += `<td>${participant[x].startsWith('noreply') ? '' : participant[x]}</td>` )
             : ((x === (fieldMapping.signinDate).toString()) || (x === (fieldMapping.userProfileDateTime).toString()) || (x === (fieldMapping.consentDate).toString())
              || (x === (fieldMapping.recruitmentDate).toString()) || (x === (fieldMapping.verficationDate).toString())) ? 
                ( template += `<td>${participant[x] ? new Date(participant[x]).toLocaleString() : ''}</td>`) // human readable time date
@@ -812,6 +814,7 @@ const tableTemplate = (data, showButtons) => {
 }
 
 const addEventShowMoreInfo = (data) => {
+    console.log('addEventShowMoreInfo');
     const elements = document.getElementsByClassName('showMoreInfo');
     Array.from(elements).forEach(element => {
         element.addEventListener('click', () => {

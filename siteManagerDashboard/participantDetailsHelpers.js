@@ -583,7 +583,7 @@ const getUpdatedAuthenticationFormValues = (participantAuthenticationEmail, part
             return {}, {};
         }
         switchPackage['email'] = emailField.value;
-        switchPackage['flag'] = 'updateEmail'; 
+        switchPackage['flag'] = 'updateEmail';
         changedOption[fieldMapping.signInMechansim] = 'password';
         changedOption[fieldMapping.accountEmail] = emailField.value;
     } else {
@@ -591,7 +591,7 @@ const getUpdatedAuthenticationFormValues = (participantAuthenticationEmail, part
         return {}, {};
     }
 
-    if ((phoneField && phoneField.value && participantAuthenticationEmail) || emailField && emailField.value && participantAuthenticationPhone) {
+    if ((phoneField && phoneField.value && participantAuthenticationEmail && !participantAuthenticationEmail.startsWith('noreply')) || (emailField && emailField.value && !emailField.value.startsWith('noreply') && participantAuthenticationPhone)) {
         changedOption[fieldMapping.signInMechansim] = 'passwordAndPhone';
     }
 
@@ -1131,6 +1131,8 @@ const cleanPhoneNumber = (changedOption) => {
 
 };
 
+const firstNameTypes = [fieldMapping.fName, fieldMapping.prefName, fieldMapping.consentFirstName];
+const lastNameTypes = [fieldMapping.lName, fieldMapping.consentLastName];
 const phoneTypes = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
 const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
 
@@ -1152,6 +1154,8 @@ export const submitClickHandler = async (participant, changedOption) => {
                 alert('No changes to submit. No changes have been made. Please update the form and try again if changes are needed.');
             } else {
                 let { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
+                if (firstNameTypes.some(firstNameKey => firstNameKey in changedUserDataForProfile)) changedUserDataForProfile = handleNameField(firstNameTypes, 'firstName', changedUserDataForProfile, participant);
+                if (lastNameTypes.some(lastNameKey => lastNameKey in changedUserDataForProfile)) changedUserDataForProfile = handleNameField(lastNameTypes, 'lastName', changedUserDataForProfile, participant);
                 if (phoneTypes.some(phoneKey => phoneKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllPhoneNoField(changedUserDataForProfile, participant);
                 if (emailTypes.some(emailKey => emailKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllEmailField(changedUserDataForProfile, participant);
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
@@ -1164,6 +1168,34 @@ export const submitClickHandler = async (participant, changedOption) => {
             }
         });
     }
+};
+
+/**
+ * Handle the query.frstName and query.lastName fields in the participant profile.
+ * Check the changedUserDataForProfile object and then the participant profile for all name types. If a name is in changedUserDataForProfile, that's the up-to-date version. Add it to the queryNameArray.
+ * If a nameType isn't in changedUserData, check the existing participant profile and add that to the queryNameArray.
+ * If a nameType is an empty string in changedUserData, don't add it to the queryNameArray even if it exists in the participant profile. The empty string means the participant wants the name removed.
+ * Lastly, remove duplicates. This can happen when the participant has a consent name that matches the first or last name.
+ * @param {array} nameTypes - array of name types to check.
+ * @param {string} fieldName - the name of the field to update.
+ * @param {object} changedUserDataForProfile - the changed user data.
+ * @param {object} participant - the existing participant object.
+ */
+const handleNameField = (nameTypes, fieldName, changedUserDataForProfile, participant) => {
+    const queryNameArray = [];
+    nameTypes.forEach(nameType => {
+        if (changedUserDataForProfile[nameType]) {
+            queryNameArray.push(changedUserDataForProfile[nameType].toLowerCase());
+        } else if (participant[nameType] && changedUserDataForProfile[nameType] !== '') {
+            queryNameArray.push(participant[nameType].toLowerCase());
+        }
+    });
+
+    const uniqueNameArray = Array.from(new Set(queryNameArray));
+
+    changedUserDataForProfile[`query.${fieldName}`] = uniqueNameArray;
+
+    return changedUserDataForProfile;
 };
 
 /**
@@ -1327,8 +1359,8 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail, changedUserDataForProfile[fieldMapping.suffix]);
         }
         
-        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
-        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].trim()?.toLowerCase();
+        // if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
+        // if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].trim()?.toLowerCase();
 
         changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)
