@@ -795,7 +795,7 @@ export const saveResponses = (participant, changedOption, editedElement, concept
                     const year = changedOption[fieldMapping.birthYear] || participant[fieldMapping.birthYear];
                     const dateOfBirthComplete = fieldMapping.dateOfBirthComplete;
                     conceptIdArray.push(dateOfBirthComplete);
-                    changedOption[currentConceptId] =  year + month.padStart(2, '0')+ day.padStart(2, '0') ;
+                    changedOption[fieldMapping.dateOfBirthComplete] =  year + month.padStart(2, '0')+ day.padStart(2, '0');
                 }
 
                 updateUIValues(editedElement, newValueElement.value, conceptIdArray);
