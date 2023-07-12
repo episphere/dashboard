@@ -814,7 +814,6 @@ const tableTemplate = (data, showButtons) => {
 }
 
 const addEventShowMoreInfo = (data) => {
-    console.log('addEventShowMoreInfo');
     const elements = document.getElementsByClassName('showMoreInfo');
     Array.from(elements).forEach(element => {
         element.addEventListener('click', () => {
