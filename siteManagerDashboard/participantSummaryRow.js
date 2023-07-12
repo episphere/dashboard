@@ -71,7 +71,7 @@ export const baselineUrineSample = (participantModule) => {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "N", "N/A");
     } else if (urineFlag === fieldMapping.yes) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Urine", "Collected", 
-        participantModule[fieldMapping.biospecimenCollectionDetail] && setSampleDateTime(participantModule, fieldMapping.biosepcimenBloodCollection, fieldMapping.urineDateTime, fieldMapping.clinicalUrineDateTime), 
+        participantModule[fieldMapping.biospecimenCollectionDetail] && setSampleDateTime(participantModule, fieldMapping.biosepcimenUrineCollection, fieldMapping.urineDateTime, fieldMapping.clinicalUrineDateTime), 
         biospecimenStatus(participantModule, fieldMapping.biosepcimenUrineCollection), "N", "N/A");
     } else {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "N", "N/A");
@@ -91,7 +91,7 @@ export const baselineMouthwashSample = (participantModule) => {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A");
     } else if (mouthwashFlag === fieldMapping.yes) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
-        participantModule[fieldMapping.biospecimenCollectionDetail]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.mouthwashDateTime], 
+        humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.mouthwashDateTime]), 
         "Research", "N", "N/A");
     } else {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A");
