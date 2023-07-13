@@ -1131,8 +1131,8 @@ const cleanPhoneNumber = (changedOption) => {
 
 };
 
-const firstNameTypes = [fieldMapping.fName, fieldMapping.prefName, fieldMapping.consentFirstName];
-const lastNameTypes = [fieldMapping.lName, fieldMapping.consentLastName];
+const firstNameTypes = [fieldMapping.consentFirstName, fieldMapping.fName, fieldMapping.prefName];
+const lastNameTypes = [fieldMapping.consentLastName, fieldMapping.lName];
 const phoneTypes = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
 const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
 
@@ -1207,7 +1207,6 @@ const handleNameField = (nameTypes, fieldName, changedUserDataForProfile, partic
 const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
     const allPhoneNo = participant.query.allPhoneNo ?? [];
     
-  
     phoneTypes.forEach(phoneType => {
       if (changedUserDataForProfile[phoneType] && !allPhoneNo.includes(changedUserDataForProfile[phoneType])) {
         allPhoneNo.push(changedUserDataForProfile[phoneType]);
@@ -1343,9 +1342,6 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
         if (isParticipantVerified) {
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail, changedUserDataForProfile[fieldMapping.suffix]);
         }
-        
-        // if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
-        // if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].trim()?.toLowerCase();
 
         changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)
