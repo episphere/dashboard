@@ -137,8 +137,8 @@ const addEventSearch = () => {
     form.addEventListener('submit', e => {
         document.getElementById("search-failed").hidden = true;
         e.preventDefault();
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
+        const firstName = document.getElementById('firstName').value?.toLowerCase();
+        const lastName = document.getElementById('lastName').value?.toLowerCase();
         const dob = document.getElementById('dob').value;
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
@@ -227,6 +227,7 @@ export const showNotifications = (data, error) => {
 
 
 export const findParticipant = async (query) => {
+    console.log('query', `${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`)
     const siteKey = await getAccessToken();
     const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`, {
         method: "GET",
