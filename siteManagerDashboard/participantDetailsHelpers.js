@@ -583,7 +583,7 @@ const getUpdatedAuthenticationFormValues = (participantAuthenticationEmail, part
             return {}, {};
         }
         switchPackage['email'] = emailField.value;
-        switchPackage['flag'] = 'updateEmail'; 
+        switchPackage['flag'] = 'updateEmail';
         changedOption[fieldMapping.signInMechansim] = 'password';
         changedOption[fieldMapping.accountEmail] = emailField.value;
     } else {
@@ -591,7 +591,7 @@ const getUpdatedAuthenticationFormValues = (participantAuthenticationEmail, part
         return {}, {};
     }
 
-    if ((phoneField && phoneField.value && participantAuthenticationEmail) || emailField && emailField.value && participantAuthenticationPhone) {
+    if ((phoneField && phoneField.value && participantAuthenticationEmail && !participantAuthenticationEmail.startsWith('noreply')) || (emailField && emailField.value && !emailField.value.startsWith('noreply') && participantAuthenticationPhone)) {
         changedOption[fieldMapping.signInMechansim] = 'passwordAndPhone';
     }
 
@@ -1131,6 +1131,8 @@ const cleanPhoneNumber = (changedOption) => {
 
 };
 
+const firstNameTypes = [fieldMapping.consentFirstName, fieldMapping.fName, fieldMapping.prefName];
+const lastNameTypes = [fieldMapping.consentLastName, fieldMapping.lName];
 const phoneTypes = [fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone];
 const emailTypes = [fieldMapping.prefEmail, fieldMapping.email1, fieldMapping.email2];
 
@@ -1152,6 +1154,8 @@ export const submitClickHandler = async (participant, changedOption) => {
                 alert('No changes to submit. No changes have been made. Please update the form and try again if changes are needed.');
             } else {
                 let { changedUserDataForProfile, changedUserDataForHistory } = findChangedUserDataValues(changedOption, participant);
+                if (firstNameTypes.some(firstNameKey => firstNameKey in changedUserDataForProfile)) changedUserDataForProfile = handleNameField(firstNameTypes, 'firstName', changedUserDataForProfile, participant);
+                if (lastNameTypes.some(lastNameKey => lastNameKey in changedUserDataForProfile)) changedUserDataForProfile = handleNameField(lastNameTypes, 'lastName', changedUserDataForProfile, participant);
                 if (phoneTypes.some(phoneKey => phoneKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllPhoneNoField(changedUserDataForProfile, participant);
                 if (emailTypes.some(emailKey => emailKey in changedUserDataForProfile)) changedUserDataForProfile = handleAllEmailField(changedUserDataForProfile, participant);
                 const isSuccess = processUserDataUpdate(changedUserDataForProfile, changedUserDataForHistory, participant[fieldMapping.userProfileHistory], participant.state.uid, adminEmail, isParticipantVerified);
@@ -1167,20 +1171,42 @@ export const submitClickHandler = async (participant, changedOption) => {
 };
 
 /**
+ * Handle the query.frstName and query.lastName fields.
+ * Check changedUserDataForProfile the participant profile for all name types. If a name is in changedUserDataForProfile, Add it to the queryNameArray.
+ * Else, check the existing participant profile and add that to the queryNameArray.
+ * If a nameType is an empty string in changedUserData, don't add it to the queryNameArray even if it exists in the participant profile. The empty string means the participant wants the name removed.
+ * Lastly, remove duplicates. This happens when consent name matches the first or last name.
+ * @param {array} nameTypes - array of name types to check.
+ * @param {string} fieldName - the name of the field to update.
+ * @param {object} changedUserDataForProfile - the changed user data.
+ * @param {object} participant - the existing participant object.
+ */
+const handleNameField = (nameTypes, fieldName, changedUserDataForProfile, participant) => {
+    const queryNameArray = [];
+    nameTypes.forEach(nameType => {
+        if (changedUserDataForProfile[nameType]) {
+            queryNameArray.push(changedUserDataForProfile[nameType].toLowerCase());
+        } else if (participant[nameType] && changedUserDataForProfile[nameType] !== '') {
+            queryNameArray.push(participant[nameType].toLowerCase());
+        }
+    });
+
+    const uniqueNameArray = Array.from(new Set(queryNameArray));
+
+    changedUserDataForProfile[`query.${fieldName}`] = uniqueNameArray;
+
+    return changedUserDataForProfile;
+};
+
+/**
  * Handle the allPhoneNo field in the user profile
  * If a number is in the changedUserDataForProfile, the participant has added this phone number. Add it to the allPhoneNo field.
  * Then check the userData profile for an existing value at the field being updated. The participant is updating this phone number. Remove it from the allPhoneNo field.
  * If an empty string is in the changedUserDataForProfile, the participant has removed this phone number. Remove it from the allPhoneNo field.
- * TODO: Topic for ongoing discussion:
- *      Inside the forEach loop:
- *              The first if statement checks if the phone number is in the changedUserDataForProfile. If it is, add it to the allPhoneNo field.
- *              The second if statement checks if an existing phone number is in the current userData profile. If it is, that means the participant is updating the existing value in favor of the new value.
- *                      Remove the existing value from the allPhoneNo field.
  */
 const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
     const allPhoneNo = participant.query.allPhoneNo ?? [];
     
-  
     phoneTypes.forEach(phoneType => {
       if (changedUserDataForProfile[phoneType] && !allPhoneNo.includes(changedUserDataForProfile[phoneType])) {
         allPhoneNo.push(changedUserDataForProfile[phoneType]);
@@ -1203,11 +1229,6 @@ const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
    * Handle the allEmails field in the user profile
    * If an email is in the changedUserDataForProfile, the participant has added this email. Add it to the allEmails field.
    * If an email is in the changedUserDataForHistory, the participant has removed this email. Remove it from the allEmails field.
-   * TODO: Topic for ongoing discussion:
-   *        Inside the forEach loop:
-   *            The first if statement checks if the email address is in the changedUserDataForProfile. If it is, add it to the allEmails field.
-   *            The second if statement checks if an existing email address is in the current userData profile. If it is, that means the participant is updating the existing value in favor of the new value.
-   *                    Remove the existing value from the allEmails field.
    */
   const handleAllEmailField = (changedUserDataForProfile, participant) => {
     const allEmails = participant.query.allEmails ?? [];
@@ -1232,21 +1253,16 @@ const handleAllPhoneNoField = (changedUserDataForProfile, participant) => {
 
   /**
  * Iterate the new values, compare them to existing values, and return the changed values.
- * write an empty string to firestore if the history value is null/undefined/empty --per spec on 05-09-2023
- * write an empty string to firestore if the profile value is null/undefined/empty --per spec on 05-09-2023
+ * write an empty string to firestore if the history value is null/undefined/empty
+ * write an empty string to firestore if the profile value is null/undefined/empty 
  * @param {object} newUserData - the newly entered form fields
  * @param {object} existingUserData - the existing user profile data
  * @returns {changedUserDataForProfile, changedUserDataForHistory} - parallel objects containing the changed values
  * Contact information requires special handling because of the preference selectors
  *   if the user is changing their cell phone number, we need to update the canWeVoicemailMobile and canWeText values
  *   the same is true for homePhone and otherPhone (canWeVoicemailHome and canWeVoicemailOther)
- *   if user deletes a number, set canWeVoicemail and canWeText to '' (empty string) --per spec on 05-09-2023
+ *   if user deletes a number, set canWeVoicemail and canWeText to '' (empty string)
  *   if user updates a number, ensure the canWeVoicemail and canWeText values are set. Use previous values as fallback.
- *   Update: 05-26-2023 do not include email addresses in user profile archiving. Exclude those keys from the history object
- *   Update: 06-27-2023
- *     (1) Do not tie empty text and voicemail permissions to profile history.
- *     (2) Use cId.noneOfTheseApply for suffix that had a value and now has no value
- *     (3) Default phone permissions to cId.no instead of using an empty string.
 */
 const findChangedUserDataValues = (newUserData, existingUserData) => {
     const changedUserDataForProfile = {};
@@ -1326,9 +1342,6 @@ const processUserDataUpdate = async (changedUserDataForProfile, changedUserDataF
         if (isParticipantVerified) {
             changedUserDataForProfile[fieldMapping.userProfileHistory] = updateUserHistory(changedUserDataForHistory, userHistory, adminEmail, changedUserDataForProfile[fieldMapping.suffix]);
         }
-        
-        if (changedUserDataForProfile[fieldMapping.fName]) changedUserDataForProfile['query.firstName'] = changedUserDataForProfile[fieldMapping.fName].trim()?.toLowerCase();
-        if (changedUserDataForProfile[fieldMapping.lName]) changedUserDataForProfile['query.lastName'] = changedUserDataForProfile[fieldMapping.lName].trim()?.toLowerCase();
 
         changedUserDataForProfile['uid'] = participantUid;
         await postUserDataUpdate(changedUserDataForProfile)
