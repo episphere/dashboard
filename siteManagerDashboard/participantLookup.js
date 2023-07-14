@@ -227,7 +227,6 @@ export const showNotifications = (data, error) => {
 
 
 export const findParticipant = async (query) => {
-    console.log('query', `${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`)
     const siteKey = await getAccessToken();
     const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`, {
         method: "GET",
