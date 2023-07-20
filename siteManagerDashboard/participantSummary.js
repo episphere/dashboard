@@ -115,7 +115,7 @@ export const render = (participant) => {
                                     ${baselinePayment(participant)}
                                 </tr>
                                 <tr class="row-color-emr-light">
-                                    ${baselineEMR(participant[fieldMapping.baselineEMR])}
+                                    ${baselineEMR(participant)}
                                 </tr>
                                 ${participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ? 
                                     (`<tr class="row-color-enrollment-dark"> ${hipaaRevocation(participant)} </tr>`) : (``)}

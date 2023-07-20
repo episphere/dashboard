@@ -12,6 +12,7 @@ export const humanReadableFromISO = (participantDate) => {
 }
 
 export const humanReadableMDY = (participantDate) => {
+  if (!participantDate) return 'N/A'
   const humanReadableDate = new Date(String(participantDate)).toLocaleDateString()
   return humanReadableDate; // 10/30/2020
 }
