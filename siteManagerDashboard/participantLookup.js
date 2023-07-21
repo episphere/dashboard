@@ -1,5 +1,5 @@
-import { renderNavBarLinks, dashboardNavBarLinks, renderLogin, removeActiveClass } from './navigationBar.js';
-import { renderTable, filterdata, filterBySiteKey, renderData, importantColumns, addEventFilterData, activeColumns } from './participantCommons.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
+import { renderTable, filterdata, filterBySiteKey, renderData, addEventFilterData, activeColumns } from './participantCommons.js';
 import { internalNavigatorHandler, getDataAttributes, getAccessToken, showAnimation, hideAnimation, baseAPI, urls } from './utils.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 
@@ -137,8 +137,8 @@ const addEventSearch = () => {
     form.addEventListener('submit', e => {
         document.getElementById("search-failed").hidden = true;
         e.preventDefault();
-        const firstName = document.getElementById('firstName').value;
-        const lastName = document.getElementById('lastName').value;
+        const firstName = document.getElementById('firstName').value?.toLowerCase();
+        const lastName = document.getElementById('lastName').value?.toLowerCase();
         const dob = document.getElementById('dob').value;
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
