@@ -373,8 +373,9 @@ export default
     458508122 : "Refused all future activities",
     872012139 : "Revoked HIPAA only",
     854021266 : "Withdrew Consent",
-    861639549 :  "Destroy Data",
+    241236037 :  "Destroy Data",
     618686157 : "Deceased",
+    861639549 :  "Data Destroyed",
 
 
     "noRefusal": 208325815,
