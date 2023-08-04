@@ -375,6 +375,7 @@ export default
     854021266 : "Withdrew Consent",
     241236037 :  "Destroy Data",
     618686157 : "Deceased",
+    861639549 :  "Data Destroyed",
 
 
     "noRefusal": 208325815,
@@ -386,6 +387,7 @@ export default
     "dataDestroyCategorical": 883668444,
     "requestedDataDestroyNotSigned": 111959410,
     "requestedDataDestroySigned": 704529432,
+    "dataHasBeenDestroyed": 861639549,
     "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
