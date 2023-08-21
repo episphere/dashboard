@@ -153,13 +153,13 @@ const downloadCopyHandler = (participant) => {
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', getRevocationCoordinates());
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', getRevocationCoordinates(), 'hipaarevoc');
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', getRevocationCoordinates());
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', getRevocationCoordinates(), 'datadestruction');
         })
     }
  
@@ -311,10 +311,10 @@ const getRevocationCoordinates = () => {
     return coordinates;
 }
 
-const renderDownload = async (participant, timeStamp, fileLocation, coordinates) => {
+const renderDownload = async (participant, timeStamp, fileLocation, coordinates, type) => {
     let fileLocationDownload = fileLocation.slice(2)
-    const participantPrintName = createPrintName(participant)
-    const participantSignature = createSignature(participant)
+    const participantPrintName = createPrintName(participant, type)
+    const participantSignature = createSignature(participant, type)
     let seekLastPage;
     const pdfLocation = fileLocation;
     const existingPdfBytes = await fetch(pdfLocation).then(res => res.arrayBuffer());
@@ -352,17 +352,20 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates)
     download(pdfBytes, fileLocationDownload, "application/pdf");
 }
 
-const createSignature = (participant) => {
-    const middleName = (participant[fieldMapping.consentMiddleName] !== undefined && participant[fieldMapping.consentMiddleName] !== "") ? participant[fieldMapping.consentMiddleName] : ``
+const createSignature = (participant, type) => {
+    const mddileNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
+    const middleName = (participant[mddileNameCID] !== undefined && participant[mddileNameCID] !== "") ? participant[mddileNameCID] : ``
     const createParticipantSignature = participant[fieldMapping.consentFirstName] + " " + middleName + " " + participant[fieldMapping.consentLastName]
     return createParticipantSignature;
 }
 
-const createPrintName = (participant) => {
+const createPrintName = (participant, type) => {
     const firstName = participant[fieldMapping.consentFirstName]
-    const middleName = (participant[fieldMapping.consentMiddleName] !== undefined && participant[fieldMapping.consentMiddleName] !== "") ? participant[fieldMapping.consentMiddleName] : ``
+    const mddileNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
+    const middleName = (participant[mddileNameCID] !== undefined && participant[mddileNameCID] !== "") ? participant[mddileNameCID] : ``
     const lastName = participant[fieldMapping.consentLastName]
-    const suffix = (participant[fieldMapping.consentSuffix] !== undefined && participant[fieldMapping.consentSuffix] !== "") ? fieldMapping[participant[fieldMapping.consentSuffix]] : ``
+    const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
+    const suffix = (participant[suffixCID] !== undefined && participant[suffixCID] !== "") ? fieldMapping[participant[suffixCID]] : ``
     const createParticipantPrintName = firstName +  " " + middleName + " " + lastName + " " + suffix
     return createParticipantPrintName;
 }
