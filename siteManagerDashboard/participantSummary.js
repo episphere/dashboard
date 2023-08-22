@@ -354,19 +354,19 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates,
 
 const createSignature = (participant, type) => {
     const mddileNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
-    const middleName = (participant[mddileNameCID] !== undefined && participant[mddileNameCID] !== "") ? participant[mddileNameCID] : ``
-    const createParticipantSignature = participant[fieldMapping.consentFirstName] + " " + middleName + " " + participant[fieldMapping.consentLastName]
+    const middleName =  participant[mddileNameCID] ? ` ${participant[mddileNameCID]} ` : ' ';
+    const createParticipantSignature = participant[fieldMapping.consentFirstName] + middleName + participant[fieldMapping.consentLastName]
     return createParticipantSignature;
 }
 
 const createPrintName = (participant, type) => {
     const firstName = participant[fieldMapping.consentFirstName]
     const mddileNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
-    const middleName = (participant[mddileNameCID] !== undefined && participant[mddileNameCID] !== "") ? participant[mddileNameCID] : ``
+    const middleName =  participant[mddileNameCID] ? ` ${participant[mddileNameCID]} ` : ' ';
     const lastName = participant[fieldMapping.consentLastName]
     const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
-    const suffix = (participant[suffixCID] !== undefined && participant[suffixCID] !== "") ? fieldMapping[participant[suffixCID]] : ``
-    const createParticipantPrintName = firstName +  " " + middleName + " " + lastName + " " + suffix
+    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : ''
+    const createParticipantPrintName = firstName + middleName + lastName + suffix
     return createParticipantPrintName;
 }
 
