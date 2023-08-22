@@ -301,11 +301,15 @@ export default
     'maxNumContactsReached': 875549268,
 
     'signedHIPAARevoc': 153713899,
+    'HIPAARevocMiddleName': 826240317,
+    'HIPAARevocSuffix': 693626233,
     'dateHIPAARevoc': 613641698,
     'versionHIPAARevoc': 407743866,
 
     'signedDataDestroy': 359404406,
     'dateDataDestroy': 119449326,
+    'dataDestructionMiddleName': 268665918,
+    'dataDestructionSuffix': 104278817,
     'versionDataDestroy': 304438543,
 
     'refusalOptions': 685002411,
