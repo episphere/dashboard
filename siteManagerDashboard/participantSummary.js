@@ -243,7 +243,9 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates,
 const createSignature = (participant, type) => {
     const middleNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
     const middleName =  participant[middleNameCID] ? ` ${participant[middleNameCID]} ` : ' ';
-    const createParticipantSignature = participant[fieldMapping.consentFirstName] + middleName + participant[fieldMapping.consentLastName]
+    const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
+    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : ''
+    const createParticipantSignature = participant[fieldMapping.consentFirstName] + middleName + participant[fieldMapping.consentLastName] + suffix
     return createParticipantSignature;
 }
 
