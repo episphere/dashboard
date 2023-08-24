@@ -309,7 +309,7 @@ export default
     'signedDataDestroy': 359404406,
     'dateDataDestroy': 119449326,
     'dataDestructionMiddleName': 268665918,
-    'dataDestructionSuffix': 104278817,
+    'dataDestructionSuffix': 592227431,
     'versionDataDestroy': 304438543,
 
     'refusalOptions': 685002411,
