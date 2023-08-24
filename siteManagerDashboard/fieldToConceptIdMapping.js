@@ -448,6 +448,8 @@ export default
     'lowIncomeAreas': 663706936,
     'studyIdTimeStamp': 521025370,
     'automatedVerification': 444699761,
+    'researchRegistry': 208952854,
+    'popUp': 296312382,
     'outreachRequiredForVerification': 188797763,
     'manualVerification': 953614051,
     'duplicateType': 148197146,

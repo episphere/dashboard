@@ -702,9 +702,13 @@ const tableTemplate = (data, showButtons) => {
                         template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Technology Adapters` : ``}</td>`
                     :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.lowIncomeAreas ) ?
                         template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Low Income Areas/Health Professional Shortage Areas` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.researchRegistry ) ?
+                    template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Research Registry` : ``}</td>`
+                    :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.popUp ) ?
+                    template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Pop up` : ``}</td>`
                     :  ( participant['state'][fieldMapping.campaignType.toString()] === fieldMapping.noneOftheAbove ) ?
                         template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `None of the Above` : ``}</td>`
-                    :
+                :
                         template += `<td>${participant['state'][fieldMapping.campaignType.toString()] ? `Other` : ``}</td>`)
                     )
             : (x === (fieldMapping.enrollmentStatus).toString()) ? 
