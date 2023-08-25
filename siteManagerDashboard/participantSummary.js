@@ -241,23 +241,35 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates,
 }
 
 const createSignature = (participant, type) => {
+    const firstNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocFirstName : type === 'datadestruction' ? fieldMapping.dataDestructionFirstName : fieldMapping.consentFirstName;
+    const firstName =  participant[firstNameCID] ? `${participant[firstNameCID]}` : '';
+
     const middleNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
     const middleName =  participant[middleNameCID] ? ` ${participant[middleNameCID]} ` : ' ';
+    
+    const lastNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocLastName : type === 'datadestruction' ? fieldMapping.dataDestructionLastName : fieldMapping.consentLastName;
+    const lastName =  participant[lastNameCID] ? `${participant[lastNameCID]}` : '';
+
     const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
-    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : ''
-    const createParticipantSignature = participant[fieldMapping.consentFirstName] + middleName + participant[fieldMapping.consentLastName] + suffix
-    return createParticipantSignature;
+    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : '';
+
+    return firstName + middleName + lastName + suffix
 }
 
 const createPrintName = (participant, type) => {
-    const firstName = participant[fieldMapping.consentFirstName]
+    const firstNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocFirstName : type === 'datadestruction' ? fieldMapping.dataDestructionFirstName : fieldMapping.consentFirstName;
+    const firstName =  participant[firstNameCID] ? `${participant[firstNameCID]}` : '';
+
     const middleNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
     const middleName =  participant[middleNameCID] ? ` ${participant[middleNameCID]} ` : ' ';
-    const lastName = participant[fieldMapping.consentLastName]
+    
+    const lastNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocLastName : type === 'datadestruction' ? fieldMapping.dataDestructionLastName : fieldMapping.consentLastName;
+    const lastName =  participant[lastNameCID] ? `${participant[lastNameCID]}` : '';
+
     const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
-    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : ''
-    const createParticipantPrintName = firstName + middleName + lastName + suffix
-    return createParticipantPrintName;
+    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : '';
+
+    return firstName + middleName + lastName + suffix
 }
 
 
