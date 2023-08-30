@@ -178,6 +178,7 @@ const downloadCopyHandler = (participant) => {
 
 const getHealthcareProviderCoordinates = (healthcareProvider, source, version) => {
     let coordinates = ``;
+    version = version.toUpperCase();
     if (pdfCoordinatesMap[source]) {
         if (pdfCoordinatesMap[source][healthcareProvider] &&
             pdfCoordinatesMap[source][healthcareProvider][version]) {
