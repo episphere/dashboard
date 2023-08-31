@@ -4,7 +4,7 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,baselineSASSurvey, 
     baselineLAWSurvey, baselineSSN, baselineCOVIDSurvey, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey, baselineMenstrualSurvey,
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
-import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping } from './utils.js';
+import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping, pdfCoordinatesMap } from './utils.js';
 
 const headerImportantColumns = [
     { field: fieldMapping.fName },
@@ -115,7 +115,7 @@ export const render = (participant) => {
                                     ${baselinePayment(participant)}
                                 </tr>
                                 <tr class="row-color-emr-light">
-                                    ${baselineEMR(participant[fieldMapping.baselineEMR])}
+                                    ${baselineEMR(participant)}
                                 </tr>
                                 ${participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ? 
                                     (`<tr class="row-color-enrollment-dark"> ${hipaaRevocation(participant)} </tr>`) : (``)}
@@ -135,31 +135,42 @@ export const render = (participant) => {
 
 const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');
+    const defaultVersion = 'V0.02';
     if (a) {
-        const version = participant[fieldMapping.consentVersion].split('_')[2]
+        const version = participant[fieldMapping.consentVersion].split('_')[2];
         a.addEventListener('click',  () => { 
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
-            getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
+            try {
+                renderDownload(participant, humanReadableMDY(participant[fieldMapping.consentDate]), `./forms/Consent/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_consent_${(version || defaultVersion)}.pdf`, 
+                    getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'consent', version || defaultVersion));
+            } catch (error) {
+                console.error(error);
+                alert('An error has occured generating the pdf please contact support')
+            }
         })
     }
     const b = document.getElementById('downloadCopyHIPAA');
     if (b) {
         const version = participant[fieldMapping.hipaaVersion].split('_')[2]
         b.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_${version === `V1.0` ? `V1.0`: `V0.02`}.pdf`, 
-            getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa', `${version === `V1.0` ? `V1.0`: `V0.02`}`));
+            try {
+                renderDownload(participant, humanReadableMDY(participant[fieldMapping.hippaDate]), `./forms/HIPAA/${conceptToSiteMapping[participant[fieldMapping.healthcareProvider]]}_HIPAA_${(version || defaultVersion)}.pdf`, 
+                    getHealthcareProviderCoordinates(conceptToSiteMapping[participant[fieldMapping.healthcareProvider]], 'hipaa', version || defaultVersion));
+             } catch (error) {
+                console.error(error);
+                alert('An error has occured generating the pdf please contact support')
+            }
         })
     }
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', getRevocationCoordinates());
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), './forms/HIPAA Revocation/HIPAA_Revocation_V1.0.pdf', getRevocationCoordinates(), 'hipaarevoc');
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', getRevocationCoordinates());
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), './forms/Data Destruction/Data_Destruction_V1.0.pdf', getRevocationCoordinates(), 'datadestruction');
         })
     }
  
@@ -167,143 +178,21 @@ const downloadCopyHandler = (participant) => {
 
 const getHealthcareProviderCoordinates = (healthcareProvider, source, version) => {
     let coordinates = ``;
-    if (source === 'consent' && version === `V1.0`) {
-        switch(healthcareProvider) {
-            case 'Sanford':
-                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 360}, {x1: 110, y1: 330}]
-                break;
-            case 'HP':
-                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
-                break;
-            case 'MFC':
-                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
-                break;
-            case 'KPCO':
-                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
-                break;
-            case 'KPGA':
-                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
-                break;
-            case 'KPHI':
-                coordinates = [{x: 110, y: 365}, {x0: 110, y0: 325}, {x1: 110, y1: 285}]
-                break;
-            case 'KPNW':
-                coordinates = [{x: 110, y: 385}, {x0: 110, y0: 345}, {x1: 110, y1: 305}]
-                break;
-            case 'UCM':
-                coordinates = [{x: 110, y: 380} , {x0: 110, y0: 340} , {x1: 110, y1: 302}]
-                break;
-            case 'HFHS':
-                coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
-                break;
-            default:
-                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
+    version = version.toUpperCase();
+    if (pdfCoordinatesMap[source]) {
+        if (pdfCoordinatesMap[source][healthcareProvider] &&
+            pdfCoordinatesMap[source][healthcareProvider][version]) {
+            coordinates =  pdfCoordinatesMap[source][healthcareProvider][version];
+        } else if (pdfCoordinatesMap[source]['default'][version]) {
+            coordinates = pdfCoordinatesMap[source]['default'][version];
+        } else {
+            throw new Error('Unsupported PDF version: '+version+' for '+healthcareProvider+' '+source);
         }
-        return coordinates
+    } else {
+        throw new Error('Unsupported PDF source: '+source);
     } 
-    else if(source === 'hipaa' && version === `V1.0`) {
-        switch(healthcareProvider) {
-            case 'Sanford':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 452}]
-                break;
-            case 'HP':
-                coordinates = [{x: 100, y: 415}, {x0: 100, y0: 370}, {x1: 100, y1: 465}]
-                break;
-            case 'MFC':
-                coordinates = [{x: 100, y: 425}, {x0: 100, y0: 380}, {x1: 100, y1: 465}]
-                break;
-            case 'KPCO':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
-                break;
-            case 'KPGA':
-                coordinates = [{x: 100, y: 340}, {x0: 100, y0: 300}, {x1: 100, y1: 380}]
-                break;
-            case 'KPHI':
-                coordinates = [{x: 110, y: 410}, {x0: 110, y0: 370}, {x1: 110, y1: 450}]
-                break;
-            case 'KPNW':
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 370}, {x1: 100, y1: 450}]
-                break;
-            case 'UCM':
-                coordinates = [ {x: 100, y: 425} ,  {x0: 100, y0: 385} ,  {x1: 100, y1: 465} ]
-                break;
-            case 'HFHS':
-                coordinates = [{x: 100, y: 440}, {x0: 100, y0: 400}, {x1: 100, y1: 480}]
-                break;
-            default:
-                coordinates = [{x: 100, y: 410}, {x0: 100, y0: 420}, {x1: 100, y1: 450}]
-        }
-        return coordinates 
-    }
-    else if (source === 'consent' && version === `V0.02`) {
-        switch(healthcareProvider) {
-            case 'Sanford':
-                coordinates = [{x: 105, y: 405}, {x0: 105, y0: 365}, {x1: 110, y1: 325}]
-                break;
-            case 'HP':
-                coordinates = [{x: 100, y: 420}, {x0: 100, y0: 380}, {x1: 110, y1: 345}]
-                break;
-            case 'MFC':
-                coordinates = [{x: 110, y: 420}, {x0: 110, y0: 380}, {x1: 110, y1: 340}]
-                break;
-            case 'KPCO':
-                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
-                break;
-            case 'KPGA':
-                coordinates = [{x: 110, y: 395}, {x0: 110, y0: 355}, {x1: 110, y1: 315}]
-                break;
-            case 'KPHI':
-                coordinates = [{x: 100, y: 365}, {x0: 100, y0: 325}, {x1: 110, y1: 286}]
-                break;
-            case 'KPNW':
-                coordinates = [{x: 110, y: 390}, {x0: 110, y0: 350}, {x1: 110, y1: 312}]
-                break;
-            case 'UCM':
-                coordinates = [ {x: 110, y: 380} , {x0: 110, y0: 340} , {x1: 110, y1: 302} ]
-                break;
-            case 'HFHS':
-                coordinates = [{x: 110, y: 380}, {x0: 110, y0: 340}, {x1: 110, y1: 302}]
-                break;
-            default:
-                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
-        }
-        return coordinates
-    } 
-    else if (source === 'hipaa' && version === `V0.02`) {
-        switch(healthcareProvider) {
-            case 'Sanford':
-                coordinates = [{x: 100, y: 412}, {x0: 80, y0: 372}, {x1: 100, y1: 452}]
-                break;
-            case 'HP':
-                coordinates = [{x: 100, y: 415}, {x0: 80, y0: 370}, {x1: 100, y1: 464}]
-                break;
-            case 'MFC':
-                coordinates = [{x: 100, y: 425}, {x0: 80, y0: 385}, {x1: 100, y1: 465}]
-                break;
-            case 'KPCO':
-                coordinates = [{x: 100, y: 408}, {x0: 80, y0: 370}, {x1: 100, y1: 450}]
-                break;
-            case 'KPGA':
-                coordinates = [{x: 100, y: 345}, {x0: 80, y0: 305}, {x1: 100, y1: 385}]
-                break;
-            case 'KPHI':
-                coordinates = [{x: 100, y: 410}, {x0: 80, y0: 370}, {x1: 100, y1: 450}]
-                break;
-            case 'KPNW':
-                coordinates = [{x: 100, y: 410}, {x0: 80, y0: 370}, {x1: 100, y1: 450}]
-                break;
-            case 'UCM':
-                coordinates = [{x: 100, y: 424}, {x0: 80, y0: 384}, {x1: 100, y1: 464}]
-                break;
-            case 'HFHS':
-                coordinates = [{x: 100, y: 425}, {x0: 80, y0: 385}, {x1: 100, y1: 465}]
-                break;
-            default:
-                coordinates = [{x: 110, y: 400}, {x0: 110, y0: 410}, {x1: 110, y1: 330}]
-        }
-        return coordinates  // x0/y0: date x/y: name x1/y1: signature
-        // to go down - decrease the number & vice-versa
-    } 
+        
+    return coordinates;  // x0/y0: date x/y: name x1/y1: signature
 }
 
 const getRevocationCoordinates = () => {
@@ -311,10 +200,10 @@ const getRevocationCoordinates = () => {
     return coordinates;
 }
 
-const renderDownload = async (participant, timeStamp, fileLocation, coordinates) => {
+const renderDownload = async (participant, timeStamp, fileLocation, coordinates, type) => {
     let fileLocationDownload = fileLocation.slice(2)
-    const participantPrintName = createPrintName(participant)
-    const participantSignature = createSignature(participant)
+    const participantPrintName = createPrintName(participant, type)
+    const participantSignature = createSignature(participant, type)
     let seekLastPage;
     const pdfLocation = fileLocation;
     const existingPdfBytes = await fetch(pdfLocation).then(res => res.arrayBuffer());
@@ -352,19 +241,36 @@ const renderDownload = async (participant, timeStamp, fileLocation, coordinates)
     download(pdfBytes, fileLocationDownload, "application/pdf");
 }
 
-const createSignature = (participant) => {
-    const middleName = (participant[fieldMapping.consentMiddleName] !== undefined && participant[fieldMapping.consentMiddleName] !== "") ? participant[fieldMapping.consentMiddleName] : ``
-    const createParticipantSignature = participant[fieldMapping.consentFirstName] + " " + middleName + " " + participant[fieldMapping.consentLastName]
-    return createParticipantSignature;
+const createSignature = (participant, type) => {
+    const firstNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocFirstName : type === 'datadestruction' ? fieldMapping.dataDestructionFirstName : fieldMapping.consentFirstName;
+    const firstName =  participant[firstNameCID] ? `${participant[firstNameCID]}` : '';
+
+    const middleNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
+    const middleName =  participant[middleNameCID] ? ` ${participant[middleNameCID]} ` : ' ';
+    
+    const lastNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocLastName : type === 'datadestruction' ? fieldMapping.dataDestructionLastName : fieldMapping.consentLastName;
+    const lastName =  participant[lastNameCID] ? `${participant[lastNameCID]}` : '';
+
+    const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
+    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : '';
+
+    return firstName + middleName + lastName + suffix
 }
 
-const createPrintName = (participant) => {
-    const firstName = participant[fieldMapping.consentFirstName]
-    const middleName = (participant[fieldMapping.consentMiddleName] !== undefined && participant[fieldMapping.consentMiddleName] !== "") ? participant[fieldMapping.consentMiddleName] : ``
-    const lastName = participant[fieldMapping.consentLastName]
-    const suffix = (participant[fieldMapping.consentSuffix] !== undefined && participant[fieldMapping.consentSuffix] !== "") ? fieldMapping[participant[fieldMapping.consentSuffix]] : ``
-    const createParticipantPrintName = firstName +  " " + middleName + " " + lastName + " " + suffix
-    return createParticipantPrintName;
+const createPrintName = (participant, type) => {
+    const firstNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocFirstName : type === 'datadestruction' ? fieldMapping.dataDestructionFirstName : fieldMapping.consentFirstName;
+    const firstName =  participant[firstNameCID] ? `${participant[firstNameCID]}` : '';
+
+    const middleNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocMiddleName : type === 'datadestruction' ? fieldMapping.dataDestructionMiddleName : fieldMapping.consentMiddleName;
+    const middleName =  participant[middleNameCID] ? ` ${participant[middleNameCID]} ` : ' ';
+    
+    const lastNameCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocLastName : type === 'datadestruction' ? fieldMapping.dataDestructionLastName : fieldMapping.consentLastName;
+    const lastName =  participant[lastNameCID] ? `${participant[lastNameCID]}` : '';
+
+    const suffixCID = type === 'hipaarevoc' ? fieldMapping.HIPAARevocSuffix : type === 'datadestruction' ? fieldMapping.dataDestructionSuffix : fieldMapping.consentSuffix;
+    const suffix = participant[suffixCID] ? ` ${fieldMapping[participant[suffixCID]]}` : '';
+
+    return firstName + middleName + lastName + suffix
 }
 
 
