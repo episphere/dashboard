@@ -91,7 +91,7 @@ const getYearsInConnect = (participant) => {
     let totalYears =  currentYear - submittedYear;
     totalYears <= 0 ? totalYears = '< 1' : totalYears;
     let yearsInConnect = totalYears;
-    return typeof(yearsInConnect) !== 'string' && isNaN(yearsInConnect) ? 'data deleted' : yearsInConnect;
+    return typeof(yearsInConnect) !== 'string' && isNaN(yearsInConnect) ? 'N/A' : yearsInConnect;
 }
 
 
@@ -110,13 +110,15 @@ const renderSiteLocation = (participant) => {
 }
 
 export const getParticipantStatus = (participant) => {
-   if (typeof participant !== "string") {
-        const statusValue = participant[fieldMapping.participationStatus];
-        if (statusValue !== undefined && statusValue !== ``)  return fieldMapping[statusValue];
-        else if (participant[fieldMapping.dataDestroyCategorical] === fieldMapping.requestedDataDestroySigned) return 'data deleted';
-        else return `No Refusal`;
+    if (typeof participant !== "string") {
+        if (participant[fieldMapping.dataHasBeenDestroyed] === fieldMapping.yes)
+            return "Data Destroyed";
+        else if (participant[fieldMapping.participationStatus] !== undefined && participant[fieldMapping.participationStatus] !== ``) {
+            const statusValue = participant[fieldMapping.participationStatus];
+            return fieldMapping[statusValue];
+        } else return `No Refusal`;
     }
-}
+};
 
 const getEnrollmentStatus = (participant) => {
     if (typeof participant !== "string") {

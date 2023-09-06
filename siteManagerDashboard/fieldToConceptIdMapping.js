@@ -301,11 +301,19 @@ export default
     'maxNumContactsReached': 875549268,
 
     'signedHIPAARevoc': 153713899,
+    'HIPAARevocFirstName': 765336427,
+    'HIPAARevocMiddleName': 826240317,
+    'HIPAARevocLastName': 479278368,
+    'HIPAARevocSuffix': 693626233,
     'dateHIPAARevoc': 613641698,
     'versionHIPAARevoc': 407743866,
 
     'signedDataDestroy': 359404406,
     'dateDataDestroy': 119449326,
+    'dataDestructionFirstName': 104278817,
+    'dataDestructionMiddleName': 268665918,
+    'dataDestructionLastName': 744604255,
+    'dataDestructionSuffix': 592227431,
     'versionDataDestroy': 304438543,
 
     'refusalOptions': 685002411,
@@ -375,6 +383,7 @@ export default
     854021266 : "Withdrew Consent",
     241236037 :  "Destroy Data",
     618686157 : "Deceased",
+    861639549 :  "Data Destroyed",
 
 
     "noRefusal": 208325815,
@@ -386,6 +395,7 @@ export default
     "dataDestroyCategorical": 883668444,
     "requestedDataDestroyNotSigned": 111959410,
     "requestedDataDestroySigned": 704529432,
+    "dataHasBeenDestroyed": 861639549,
     "deceased": 618686157,
 
     'dateWithdrewConsentRequested': 659990606,
@@ -442,6 +452,8 @@ export default
     'lowIncomeAreas': 663706936,
     'studyIdTimeStamp': 521025370,
     'automatedVerification': 444699761,
+    'researchRegistry': 208952854,
+    'popUp': 296312382,
     'outreachRequiredForVerification': 188797763,
     'manualVerification': 953614051,
     'duplicateType': 148197146,
