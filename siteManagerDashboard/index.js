@@ -37,6 +37,7 @@ const datadogConfig = {
 }
 
 const isLocalDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const statsDataTimeLimit = 1200000; // 20 minutes
 
 window.onload = async () => {
     if(location.host === urls.prod) {
@@ -61,11 +62,20 @@ window.onload = async () => {
     activityCheckController();
     const userSession = localStorage.getItem('userSession');
     userSession && appState.setState({ userSession: JSON.parse(userSession) });
-}
+
+    const statsData = localStorage.getItem("statsData");
+    const statsDataUpdateTime = localStorage.getItem("statsDataUpdateTime");
+    if (statsData && Date.now() - parseInt(statsDataUpdateTime) < statsDataTimeLimit) {
+      appState.setState({statsData: JSON.parse(statsData), statsDataUpdateTime});
+    } else {
+      appState.setState({statsData: {}, statsDataUpdateTime: 0});
+    }
+    
+};
 
 window.onhashchange = () => {
     router();
-}
+};
 
 const router = async () => {
     const hash = decodeURIComponent(window.location.hash);
@@ -128,14 +138,13 @@ const router = async () => {
 }
 
 const headsupBanner = () => {
-    let template = ``;
-    return template += `<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    return `<div class="alert alert-danger alert-dismissible fade show" role="alert">
             <center> Warning: This is a test environment, <b> do not use real participant data  </b> </center>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
-                    </div>`
-}
+                    </div>`;
+};
 
 const homePage = async () => {
     if (localStorage.dashboard) {
@@ -231,8 +240,8 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
 const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
-        const siteKey = await getAccessToken();
-        const isAuthorized = await authorize(siteKey);
+        const accessToken = await getAccessToken();
+        const isAuthorized = await authorize(accessToken);
         if (isAuthorized && isAuthorized.code === 200) {
             localStorage.setItem('isParent', isAuthorized.isParent)
             localStorage.setItem('coordinatingCenter', isAuthorized.coordinatingCenter)
@@ -244,7 +253,7 @@ const renderDashboard = async () => {
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
             location.host !== urls.prod ? mainContent.innerHTML = headsupBanner() : ``
-            renderCharts(siteKey, isParent);
+            renderCharts(accessToken, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
         if (isAuthorized.code === 401) {
@@ -256,79 +265,99 @@ const renderDashboard = async () => {
     }
 }
 
-const renderCharts = async (siteKey, isParent) => {
+const renderCharts = async (accessToken, isParent) => {
+    let statsData = {};
+    let currentTime = Date.now();
+    const statsDataUpdateTime = appState.getState().statsDataUpdateTime ?? 0;
 
-    const recruitsCountResults = await fetchStats(siteKey, 'participants_recruits_count');
-    const recruitsCount = filterRecruits(recruitsCountResults.stats);
+    if (currentTime - statsDataUpdateTime < statsDataTimeLimit) {
+      statsData = appState.getState().statsData;
+    } else {
+      const response = await getStatsForDashboard(accessToken);
+      if (response.code !== 200) return;
+      
+      [statsData] = response.data;
+      if (Object.keys(statsData).length === 0) return;
 
-    const filterWorkflowResults = await fetchStats(siteKey, 'participants_workflow');
-    const activeRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'active', recruitsCount.activeCount)
-    const passiveRecruitsFunnel = filterRecruitsFunnel(filterWorkflowResults.stats, 'passive', recruitsCount.passiveCount)
-    const totalRecruitsFunnel = filterTotalRecruitsFunnel(activeRecruitsFunnel, passiveRecruitsFunnel)
+      appState.setState({statsData, statsDataUpdateTime: currentTime});
+      localStorage.setItem("statsData", JSON.stringify(statsData));
+      localStorage.setItem("statsDataUpdateTime", currentTime);
+    }
 
-    const activeCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'active')
-    const passiveCurrentWorkflow = filterCurrentWorkflow(filterWorkflowResults.stats, 'passive')
-    const totalCurrentWorkflow = filterTotalCurrentWorkflow(activeCurrentWorkflow, passiveCurrentWorkflow)
-    const filterVerificationResults = await fetchStats(siteKey, 'participants_verification');
+    const {
+      race: raceMetrics,
+      age: ageMetrics,
+      gender: genderMetrics,
+      verification: verificationMetrics,
+      workflow: workflowMetrics,
+      recruitsCount: recruitsCountMetrics,
+      optOuts: optOutsMetrics,
+      allModules: allModulesMetrics,
+      moduleOne: moduleOneMetrics,
+      modulesTwoThree: modulesTwoThreeMetrics,
+      allModulesAllSamples: allModulesAllSamplesMetrics,
+      modulesNone: modulesNoneMetrics,
+      ssn: ssnMetrics,
+      biospecimen: biospecimenMetrics,
+    } = statsData;
 
-    const activeVerificationStatus = filterVerification(filterVerificationResults.stats, 'active');
-    const passiveVerificationStatus = filterVerification(filterVerificationResults.stats, 'passive');
-    const denominatorVerificationStatus = filterDenominatorVerificationStatus(filterWorkflowResults.stats);
+    const recruitsCount = filterRecruits(recruitsCountMetrics);
+    const activeRecruitsFunnel = filterRecruitsFunnel(workflowMetrics, 'active', recruitsCount.activeCount);
+    const passiveRecruitsFunnel = filterRecruitsFunnel(workflowMetrics, 'passive', recruitsCount.passiveCount);
+    const totalRecruitsFunnel = filterTotalRecruitsFunnel(activeRecruitsFunnel, passiveRecruitsFunnel);
 
-    const participantsGenderMetric = await fetchStats(siteKey, 'sex');
-    const participantsRaceMetric = await fetchStats(siteKey, 'race');
-    const participantsAgeMetric = await fetchStats(siteKey, 'age');
-
-    const genderStats = filterGenderMetrics(participantsGenderMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
-    const raceStats = filterRaceMetrics(participantsRaceMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
-    const ageStats = filterAgeMetrics(participantsAgeMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified);
-
-    const optOutsMetric = await fetchStats(siteKey, 'participants_optOuts');
-    const optOutsStats = filterOptOutsMetrics(optOutsMetric.stats);
-
-    const modulesMetric = await fetchStats(siteKey, 'participants_allModules');
-    const moduleOneMetric = await fetchStats(siteKey, 'participants_moduleOne');
-    const moduleTwoThreeMetric = await fetchStats(siteKey, 'participants_modulesTwoThree');
-    const moduleNoneMetric = await fetchStats(siteKey, 'participants_modulesNone');
-    const allModulesAllSamplesMetric = await fetchStats(siteKey, 'participants_allModulesAllSamples');
-    const ssnMetric = await fetchStats(siteKey, 'participants_ssn');
-    const modulesStats = filterModuleMetrics(modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, moduleNoneMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetric.stats);
-    const ssnStats = filterSsnMetrics(ssnMetric.stats, activeVerificationStatus.verified, passiveVerificationStatus.verified)
-    const biospecimenStatsMetric = await fetchStats(siteKey, 'participants_biospecimen');
-    const biospecimenStats = filterBiospecimenStats(biospecimenStatsMetric.stats, (activeVerificationStatus.verified + passiveVerificationStatus.verified))
+    const activeCurrentWorkflow = filterCurrentWorkflow(workflowMetrics, 'active');
+    const passiveCurrentWorkflow = filterCurrentWorkflow(workflowMetrics, 'passive');
+    const totalCurrentWorkflow = filterTotalCurrentWorkflow(activeCurrentWorkflow, passiveCurrentWorkflow);
+    const activeVerificationStatus = filterVerification(verificationMetrics, 'active');
+    const passiveVerificationStatus = filterVerification(verificationMetrics, 'passive');
+    const denominatorVerificationStatus = filterDenominatorVerificationStatus(workflowMetrics);
+    const genderStats = filterGenderMetrics(genderMetrics, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const raceStats = filterRaceMetrics(raceMetrics, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const ageStats = filterAgeMetrics(ageMetrics, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const optOutsStats = filterOptOutsMetrics(optOutsMetrics);
+    const modulesStats = filterModuleMetrics(allModulesMetrics, moduleOneMetrics, modulesTwoThreeMetrics, modulesNoneMetrics, activeVerificationStatus.verified, passiveVerificationStatus.verified, allModulesAllSamplesMetrics);
+    const ssnStats = filterSsnMetrics(ssnMetrics, activeVerificationStatus.verified, passiveVerificationStatus.verified);
+    const biospecimenStats = filterBiospecimenStats(biospecimenMetrics, (activeVerificationStatus.verified + passiveVerificationStatus.verified));
 
     const siteSelectionRow = document.createElement('div');
     siteSelectionRow.classList = ['row'];
     siteSelectionRow.id = 'siteSelection';
-    let dropDownstatusFlag = false;
-    localStorage.setItem('dropDownstatusFlag', dropDownstatusFlag);
-    if (recruitsCountResults.code === 200) {
-        if (isParent === 'true') {
-            dropDownstatusFlag = true; 
-            localStorage.setItem('dropDownstatusFlag', dropDownstatusFlag);
-        }
-        if (dropDownstatusFlag === true) {
-            let sitekeyName = 'Filter by Site'; 
-            siteSelectionRow.innerHTML = renderSiteKeyList(siteKey);
-            mainContent.appendChild(siteSelectionRow);
-            dropdownTrigger(sitekeyName, filterWorkflowResults.stats, participantsGenderMetric.stats, participantsRaceMetric.stats, participantsAgeMetric.stats,
-                filterVerificationResults.stats, recruitsCountResults.stats, modulesMetric.stats, moduleOneMetric.stats, moduleTwoThreeMetric.stats, moduleNoneMetric.stats, ssnMetric.stats, optOutsMetric.stats, biospecimenStatsMetric.stats, allModulesAllSamplesMetric.stats);
-        }
-
-        // Add metrics cards at top of dashboard
-        const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples });
-        mainContent.appendChild(metricsCards);
-
-        renderAllCharts(activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
-            genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats, biospecimenStats);
-
-        animation(false);
+    localStorage.setItem('dropDownstatusFlag', false);
+    if (isParent === 'true') {
+        localStorage.setItem('dropDownstatusFlag', true);
+        let sitekeyName = 'Filter by Site'; 
+        siteSelectionRow.innerHTML = renderSiteKeyList(accessToken);
+        mainContent.appendChild(siteSelectionRow);
+        dropdownTrigger(sitekeyName, workflowMetrics, genderMetrics, raceMetrics, ageMetrics, verificationMetrics, recruitsCountMetrics.stats, allModulesMetrics, moduleOneMetrics, modulesTwoThreeMetrics, modulesNoneMetrics, ssnMetrics, optOutsMetrics, biospecimenMetrics, allModulesAllSamplesMetrics);
     }
-    if (recruitsCountResults.code === 401) {
-        clearLocalStorage();
-    }
-}
 
+    // Add metrics cards at top of dashboard
+    const metricsCards = metricsCardsView({ activeRecruits: recruitsCount.activeCount, passiveRecruits: recruitsCount.passiveCount, verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified, modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples });
+    mainContent.appendChild(metricsCards);
+
+    renderAllCharts(
+      activeRecruitsFunnel,
+      passiveRecruitsFunnel,
+      totalRecruitsFunnel,
+      activeCurrentWorkflow,
+      passiveCurrentWorkflow,
+      totalCurrentWorkflow,
+      genderStats,
+      raceStats,
+      ageStats,
+      activeVerificationStatus,
+      passiveVerificationStatus,
+      denominatorVerificationStatus,
+      recruitsCount,
+      modulesStats,
+      ssnStats,
+      optOutsStats,
+      biospecimenStats
+    );
+
+    animation(false);
+};
 
 const renderSiteKeyList = () => {
     let template = ``;
@@ -353,12 +382,7 @@ const renderSiteKeyList = () => {
             </div>
             `
     return template;
-}
-
-
-
-
-
+};
 
 const dropdownTrigger = (sitekeyName, filterWorkflowResults, participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, filterVerificationResults, 
     recruitsCountResults, modulesResults, moduleOneResults, moduleTwoThreeResults, moduleNoneResults, ssnResults, optOutsResults, biospecimenResults, allModulesAllSamplesResults) => {
@@ -399,6 +423,25 @@ const fetchStats = async (siteKey, type) => {
     });
     return response.json();
 }
+
+const getStatsForDashboard = async (accessToken) => {
+  try {
+    const response = await fetch(
+      `${baseAPI}/dashboard?api=getStatsForDashboard`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: "Bearer " + accessToken,
+        },
+      }
+    );
+
+    return await response.json();
+  } catch (error) {
+    console.error(error);
+    return { code: 500, data: [], message: "Internal Server Error" };
+  }
+};
 
 const authorize = async (siteKey) => {
     const response = await fetch(`${baseAPI}/dashboard?api=validateSiteUsers`, {
