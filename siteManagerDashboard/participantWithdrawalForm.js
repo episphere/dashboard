@@ -373,15 +373,15 @@ const retainPreviouslySetOptions = (retainOptions, requestedHolder) => {
 export const reasonForRefusalPage = (retainOptions, requestedHolder, suspendDate) => {
     let source = 'page1'
     let renderContent = document.getElementById('formMainPage');
-    let template = ``;
-    template += ` <div class="modal fade" id="modalShowFinalSelectedData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    let template = `
+            <div class="modal fade" id="modalShowFinalSelectedData" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content sub-div-shadow">
                             <div class="modal-header" id="modalHeader"></div>
                             <div class="modal-body" id="modalBody"></div>
                         </div>
                     </div>
-            </div>`
+            </div>`;
 
     template += renderRefusalOptions();
             
@@ -435,10 +435,10 @@ export const causeOfDeathPage = (retainOptions) => {
 
 const collectFinalResponse = (retainOptions, requestedHolder, source, suspendDate) => {
     let finalOptions = []
-    const a = document.getElementById('defaultCheck24');
-    if (a !== null) a.value && finalOptions.push(a)
+    const otherReasonsInput = document.getElementById('defaultCheck24');
+    otherReasonsInput?.value && finalOptions.push(otherReasonsInput);
     let checkboxes = document.getElementsByName('options');
-    checkboxes.forEach(x => { if (x.checked) {  finalOptions.push(x)} })
+    checkboxes.forEach(checkbox => { if (checkbox.checked) {  finalOptions.push(checkbox)} });
     sendResponses(finalOptions, retainOptions, requestedHolder, source, suspendDate);
 }
 
@@ -512,33 +512,33 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     source === 'page2' ? (
         combineResponses(finalOptions, sendRefusalData, suspendDate)
     ) : (
-    finalOptions.forEach(x => {
-        (parseInt(x.dataset.optionkey) === fieldMapping.otherReasonsSpecify) ?
-            ( sendRefusalData[fieldMapping.otherReasonsSpecify] = x.value )
+    finalOptions.forEach(input => {
+        (parseInt(input.dataset.optionkey) === fieldMapping.otherReasonsSpecify) ?
+            ( sendRefusalData[fieldMapping.otherReasonsSpecify] = input.value )
         :
-            ( sendRefusalData[x.dataset.optionkey] = fieldMapping.yes )
+            ( sendRefusalData[input.dataset.optionkey] = fieldMapping.yes )
         }))
-    const computeScore = getComputeScore(retainOptions, highestStatus);
-    if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = computeScore
+    const statusConceptId = getComputeScore(retainOptions, highestStatus);
+    if (retainOptions.length !== 0) sendRefusalData[fieldMapping.participationStatus] = statusConceptId
     
-    if (computeScore === fieldMapping.withdrewConsent) { 
+    if (statusConceptId === fieldMapping.withdrewConsent) {
         sendRefusalData[fieldMapping.dateWithdrewConsentRequested] = new Date().toISOString();
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedWithdrewConsent, fieldMapping.whoRequestedWithdrewConsentOther)
     }
-    if (computeScore === fieldMapping.destroyDataStatus) { 
+    if (statusConceptId === fieldMapping.destroyDataStatus) {
         sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
         sendRefusalData[fieldMapping.dataDestroyCategorical] = fieldMapping.requestedDataDestroyNotSigned;
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedDataDestruction, fieldMapping.whoRequestedDataDestructionOther)
     }
-    if (computeScore === fieldMapping.revokeHIPAAOnly) { 
+    if (statusConceptId === fieldMapping.revokeHIPAAOnly) {
         sendRefusalData[fieldMapping.dateHipaaRevokeRequested] = new Date().toISOString();
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedHIPAArevocation, fieldMapping.whoRequestedHIPAArevocationOther)
     }
-    if (computeScore === fieldMapping.refusedAll) {
+    if (statusConceptId === fieldMapping.refusedAll) {
         sendRefusalData[fieldMapping.refAllFutureActivitesTimeStamp] = new Date().toISOString(); 
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedAllFutureActivities, fieldMapping.whoRequestedAllFutureActivitiesOther)
     } 
-    if (computeScore === fieldMapping.refusedSome) {
+    if (statusConceptId === fieldMapping.refusedSome) {
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequested, fieldMapping.requestOtherText)
     }
 
