@@ -1,353 +1,198 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="light dark">
-<meta name="supported-color-schemes" content="light dark">
-<title>Fall Newsletter 2023</title>
-<style type="text/css">
-	body {
-		margin: 0;
-		background-color: #cccccc;
-	}
-	p {	
-		margin: 0;
-	}
-	table {
-		border-spacing: 0;
-	}
-	td {
-		padding: 0;
-	}
-	img {
-		border: 0;
-	}
-	.wrapper {
-		width: 100%;
-		table-layout: fixed;
-		background-color: #cccccc;
-		padding-bottom: 60px;
-	}
-	.main {
-		background-color: #2A72A5;
-		margin: 0 auto;
-		width: 300%;
-		max-width: 800px;;
-		border-spacing: 20px;
-		font-family: sans-serif;
-		color: #171a1b;
-	}
-	.two-columns {
-		text-align: center;
-		font-size: 0;
-	}
-	.two-columns .column {
-		width: 100%;
-		max-width: 300px;
-		display: inline-block;
-		vertical-align: top;
-		text-align: center;
-	}
-	.two-columns .last {
-		padding: 10px 0;
-	}
-	.two-columns .padding {
-		padding: 40px;
-	}
-	.two-columns .content {
-		font-size: 15px;
-		line-height: 20px;
-		text-align: left;
-	}
-	.button {
-		background-color: #ffffff;
-		color: #171a1b;
-		text-decoration: none;
-		padding: 12px 20px;
-		border-radius: 5px;
-		font-weight: bold;
-	}
-	.button-dark {
-		background-color: #171a1b;
-		color: #ffffff;
-		text-decoration: none;
-		padding: 12px 20px;
-		border-radius: 5px;
-		font-weight: bold;
-	}
+<html xmlns="http://www.w3.org/1999/xhtml" style="color-scheme:light dark;supported-color-schemes:light dark;">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="color-scheme" content="light dark">
+    <meta name="supported-color-schemes" content="light dark">
+    <title>HTML Email Template</title>
+    <style type="text/css">
+    	body {
+        margin: 0;
+        background-color: #cccccc;
+      }
+      p {	
+        margin: 0;
+      }
+      table {
+        border-spacing: 0;
+      }
+      td {
+        padding: 0;
+      }
+      img {
+        border: 0;
+      }
+      .landingImg:hover {
+        content: url(https://github.com/episphere/dashboard/blob/dev/siteManagerDashboard/assets/images/oneyear.gif?raw=true)
+      }
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #cccccc;
+        padding-bottom: 60px;
+      }
+      .main {
+        background-color: #2A72A5;
+        margin: 0 auto;
+        width: 300%;
+        max-width: 800px;;
+        border-spacing: 20px;
+        font-family: sans-serif;
+        color: #171a1b;
+      }
+      .two-columns {
+        text-align: center;
+        font-size: 0;
+      }
+      .two-columns .column {
+        width: 100%;
+        max-width: 300px;
+        display: inline-block;
+        vertical-align: top;
+        text-align: center;
+      }
+
     		/* Custom Dark Mode Colors */
     :root {
          color-scheme: light dark;
          supported-color-schemes: light dark;
       }
+      /* Custom Dark Mode Colors */
+
       @media (prefers-color-scheme: dark) {
-         .darkmode-bg {
-            background: #2d2d2d!important;
-            color: #ffffff!important;
-         }
-		 p {
-			color: #ffffff!important;
-			margin: 0;
-		 }
-		 .dark-btn {
-			background-color: #FFBF17;
-			color: #000000!important;
-		 }
-         .darkmode-transparent {
-            background-color: transparent!important;
-         }
-		 .dark-hyperlink { 
-			color: #2A72A5!important;									
-			font-weight: bold;
-		 }
-      }
-</style>
-</head>
-<body>
+               .darkmode-bg {
+                  background: #2d2d2d!important;
+                  color: #ffffff!important;
+               }
+      		 p {
+      			color: #ffffff!important;
+      			margin: 0;
+      		 }
+      		 #dark-btn {
+      			background-color: #FFBF17!important;
+      			color: #000000!important;
+      		 }
+               .darkmode-transparent {
+                  background-color: transparent!important;
+               }
+      		 .dark-hyperlink {
+      			color: #2A72A5!important;
+      			font-weight: bold;
+      		 }
+            }
+    </style>
+  </head>
+  <body style="margin:0;background-color:#cccccc;">
 
-		<table class="main">
-                 <!--[if (gte mso 9)|(IE)]>
-                        <table width="300%" style="max-width: 800px;" role="presentation">
-                 <![endif]-->
-			<tr>
-				<td style="padding: 14px 0 4px;">
-					<table width="100%">
-						<tr>
-							<td class="two-columns">
-								<table class="column">
-									<tr>
-										<td style="padding: 0 18px 10px;">
-											<a href="https://cancer.gov/connect-prevention-study" target="_blank"><img src="https://github.com/episphere/dashboard/blob/dev/siteManagerDashboard/assets/images/connectlogo.png?raw=true" width="180"></a>
-										</td>
-									</tr>
-								</table>
-								<table class="column">
-									<tr>
-										<td style="padding: 10px 120px;">
-                                            <p style="margin:0;height: 25px; width: 164px;font-family: sans-serif; font-size: 22px; letter-spacing: 0; line-height: 21.8px; text-align: right; color: white;">October 2023</p>
-										</td>
-									</tr>
-								</table>
-
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td>
-					<table width="100%">
-						<tr>
-							<td style="padding: 0 32px 3px 15px;">
-								<p style="box-sizing: border-box; height: 1px; width: 850px; border: 1px solid #FFFFFF; "></p>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			<tr>
-				<td style="padding: 0 32px 10px;">
-					<p style="height: 33px; width: 560px; color: #ffffff; font-family: sans-serif; font-size: 28px; font-weight: bold; letter-spacing: 0; line-height: 30.8px;">What's New with Connect</p>
-				</td>
-            </tr>
-            
-
+  
+    <table class="main" style="border-spacing:0;background-color:#2A72A5;margin:0 auto;width:300%;max-width:800px;border-spacing:20px;font-family:sans-serif;color:#171a1b;">
+      <!--[if (gte mso 9)|(IE)]>
+        <table width="300%" style="max-width: 800px;" role="presentation">
+      <![endif]-->
+        <td style="padding: 14px 0 4px;">
+          <table width="100%" style="border-spacing:0;">
             <tr>
-                <td style="padding: 0 32px 10px;">
-                  <a href="https://cancer.gov/connect-prevention-study/news" target="_blank"><img src="https://raw.githubusercontent.com/episphere/dashboard/dev/siteManagerDashboard/assets/images/fallbanner.gif" alt="" width="800px"></a>
-                                        <!--[if (gte mso 9)|(IE)]>
-                    <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:374px;">
-                      <v:fill type="tile" src="https://raw.githubusercontent.com/episphere/dashboard/dev/siteManagerDashboard/assets/images/fallbanner.gif" />
-                      <v:textbox inset="0,0,0,0">
-                    <![endif]-->
-                </td>
-                
-              </tr>
-
-			<tr>
-				<td style="padding: 0 32px 10px;">
-					<p style="height: 99px; width: 760px; color: #FFFFFF;  font-family: sans-serif; font-size: 32px; letter-spacing: 2; line-height: 48px;">The Connect team is expanding to support a growing participant cohort!</p>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="padding: 0 40px 10px; padding-bottom:30px">
-					<table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: auto;">
-						<tr>
-							<td> 
-								<a style="height: 38px; width: 109px; background-color: #FFBF17; text-decoration: underline;" href="https://cancer.gov/connectstudy/news/whatsnew-growing-team" class="button dark-btn" target="_blank">Read More</a>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-			
-		
-
-
-			<tr>
-				<td style="height: 350px; width: 900px; border-radius: 3px; background-color: #FFFFFF;" class="darkmode-bg">
-					<table width="100%">
-						<tr>
-							<td class="two-columns last">
-                                    <!--[if (gte mso 9)|(IE)]>
-                                        <table width="100%" style="border-spacing: 0;" role="presentation">
-                                        <tr>
-                                        <td width="30" valign="top" style="padding: 0;">
-                                    <![endif]-->
-								<table class="column" style="margin-right: 60px;">
-									<tr>
-										<td class="padding">
-											<table class="content">
-												<tr>
-													<td>
-														<p style="padding-top: 10px; height: 31px; width: 294px; color: #606060; font-family: sans-serif; font-size: 18px; font-weight: bold; letter-spacing: 0; line-height: 24.8px;">Meet Michelle Lackore from Kaiser Permanente Colorado </p>
-														<p style="padding-top: 35px; height: 148px; width: 294px; color: #2E2E2E; font-family: sans-serif; font-size: 18px; letter-spacing: 0; line-height: 24px;">Michelle shares how participating in Connect confirms her belief that, “Knowledge for the greater good is power for the greater good.”
-														<br /><a href="https://cancer.gov/connectstudy/news/spotlight-michelle-lackore" style="height: 24px; width: 294px; color: #2A72A5; font-family: sans-serif; font-size: 18px; 
-															font-weight: bold; letter-spacing: 0; line-height: 24px; text-decoration: underline;" target="_blank ">Read more</a></p>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-
-                                   <!--[if (gte mso 9)|(IE)]>
-                                    </td><td width="30" valign="top" style="padding: 0;">
-                                    <![endif]-->
-
-								<table class="column">
-									<tr>
-										<td class="padding">
-											<table class="content">
-												<tr>
-													<td>
-														<a href="https://cancer.gov/connectstudy/news/spotlight-michelle-lackore" target="_blank"><img src="https://github.com/episphere/dashboard/assets/30497847/28046f49-fd27-4468-8c05-7731b791c85a"
-															style="position:relative; right:10px; top:2px; max-width: 300px; margin-top: 10px; float: right;"></a>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-                                      <!--[if (gte mso 9)|(IE)]>
-                              </td>
-                              </tr>
-                              </table>
-                           <![endif]-->
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="padding: 0 32px 15px;">
-					<p></p>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="height: 401px; width: 560px; border-radius: 3px; background-color: #FFFFFF; padding-bottom: 25px;" class="darkmode-bg">
-					<table width="100%">
-						<tr>
-							<td class="two-columns last"  style="margin-right: 40px;">
-                                   <!--[if (gte mso 9)|(IE)]>
-                                        <table width="100%" style="border-spacing: 0;" role="presentation">
-                                        <tr>
-                                        <td width="30" valign="top" style="padding: 0;">
-                                    <![endif]-->
-								<table class="column">
-									<tr>
-										<td >
-											<table class="content">
-												<tr>
-													<td>
-														<p style="padding-top: 40px; height: 50px; width: 294px; color: #606060; font-family: Tahoma; font-size: 21px; font-weight: bold; letter-spacing: 0; line-height: 24.8px;">Did You Know?</p>
-														<p style="height: 100px; width: 294px; color: #2E2E2E; font-family: sans-serif; font-size: 18px; letter-spacing: 0; line-height: 20px;">Exposure to smoke from wildfires can impact your health in different ways. 
-                                                            Learn about the impact of wildfires and ways to stay safe, as well as resources to help you protect yourself during these events.
-                                                            <br /><a href="https://cancer.gov/connectstudy/news/wildfire-prevention-safety-didyouknow" style="height: 24px; width: 294px; color: #2A72A5; font-family: sans-serif; font-size: 18px; 
-                                                            font-weight: bold; letter-spacing: 0; line-height: 24px; text-decoration: underline;" target="_blank">Read more</a>
-														</p>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-								<table class="column">
-									<tr>
-										<td class="padding">
-											<table class="content"  style="padding-left: 25px;">
-												<tr>
-													<td>
-														<a href="https://cancer.gov/connectstudy/news/wildfire-prevention-safety-didyouknow" target="_blank"><img src="https://github.com/episphere/dashboard/blob/dev/siteManagerDashboard/assets/images/didyouknowimg.jpg?raw=true"
-															style="max-width: 360px;  margin-top: 10px; float: right;"></a>
-													</td>
-												</tr>
-											</table>
-										</td>
-									</tr>
-								</table>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-
-
-			<tr width="100%">
-				<td style="padding: 20px 0 10px 30px; height: 75px; width: 760px; color: #FFFFFF; font-family: sans-serif; font-size: 18px; font-weight: bold; letter-spacing: 0; line-height: 24px; text-align: center;">
-					<p>We want to hear from you! Which 
-						topics would you like to see covered in future newsletters? <br /> Are you interested in sharing why you joined Connect? <br /> Send your feedback to <a href="mailto:ConnectSupport@norc.org" style="color: white"  target="_blank">ConnectSupport@norc.org</a>
-					<br /></p>
-				
-				</td>
-			</tr>
-
-			<tr>
-				<td>
-					<table width="100%">
-						<tr>
-							<td style="padding: 0 32px 3px 15px;">
-								<p style="box-sizing: border-box; height: 1px; width: 850px; border: 1px solid #FFFFFF; "></p>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-
-			<tr>
-				<td style="background-color: #2A72A5; padding-bottom: 20px;">
-					<table width="100%">
-						<tr>
-							<td style="height: 92px; width: 559px; color: #FFFFFF; font-family: sans-serif; font-size: 18px; letter-spacing: 0; 
-							line-height: 24px; text-align: center; padding: 10px 0 20px 20px;">
-									<p>Connect for Cancer Prevention Study</p>
-									<p style="color: white">
-										<a href="https://www.cancer.gov/" style="color: white" target="_blank">National Cancer Institute</a>  |  <a href="https://www.nih.gov" style="color: white" target="_blank">National Institutes of Health<a> |
-										<a href="https://www.hhs.gov/" style="color: white" target="_blank">U.S. Department of Health and Human Services</a> |  <a href="https://www.usa.gov/" style="color: white" target="_blank">USA.gov</a></p>
-							</td>
-						</tr>
-					</table>
-					<table width="100%">
-						<tr>
-							<td style="height: 64px; width: 559px; color: #FFFFFF; font-family: sans-serif; font-size: 15px; letter-spacing: 0; line-height: 21px; text-align: center;">
-									<p>Connect for Cancer Prevention Study, the Connect for Cancer Prevention Study logo, and “Connect today. Prevent cancer tomorrow.” 
-										are trademarks of the U.S. Department of Health and Human Services (HHS).®</p>
-							</td>
-						</tr>
-					</table>
-				</td>
-			</tr>
-            <!--[if (gte mso 9)|(IE)]>
+              <td class="two-columns" style="padding:0;text-align:center;font-size:0;">
+                <table class="column" style="border-spacing:0;width:100%;max-width:300px;display:inline-block;vertical-align:top;text-align:center;">
+                  <tr>
+                    <td style="padding: 0 0 15px 10px; ">
+                      <a href="https://cancer.gov/connect-prevention-study/news" target="_blank">
+                        <img src="https://github.com/episphere/dashboard/blob/dev/siteManagerDashboard/assets/images/connectlogo.png?raw=true"
+                        style="border:0;  display: flex; justify-content: center; margin: auto 5px; float: left; width: 100%;
+                        height: auto;">
+                      </a>
+                    </td>
+                  </tr>
                 </table>
-            <![endif]-->
-	</table>
 
-
-
-</body>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0;">
+          <table width="100%" style="border-spacing:0;">
+            <tr>
+              <td style="padding: 0 32px 3px 0px;">
+                <p style="margin:0;box-sizing: border-box; height: 1px; width: 760px; border: 1px solid #FFFFFF; ;"></p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <p style="color: #ffffff; font-family: sans-serif; font-size: 28px; font-weight: bold; letter-spacing: 0; line-height: 30.8px; display: flex; justify-content: center;">
+            It’s your Connect anniversary! </p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 0 32px 10px;">
+          <a href="https://cancer.gov/connect-prevention-study/news" target="_blank"><img class="landingImg" src="https://user-images.githubusercontent.com/30497847/224184907-80e79218-ad99-4660-bbb0-8a23a1f5dddc.png" alt="" width="700px" 
+            style="border:0; display: flex;
+            justify-content: center;"></a>
+          <!--[if (gte mso 9)|(IE)]>
+            <v:rect xmlns:v="urn:schemas-microsoft-com:vml" fill="true" stroke="false" style="width:600px;height:374px;">
+              <v:fill type="tile" src="https://user-images.githubusercontent.com/30497847/224184907-80e79218-ad99-4660-bbb0-8a23a1f5dddc.png" />
+                <v:textbox inset="0,0,0,0">
+          <![endif]-->
+        </td>
+      </tr>
+      </tr>
+      <tr>
+    
+      <tr width="100%">
+        <td style="padding: 0px 0 10px 30px;">
+          <p style="margin:0;height: 75px; width: 760px; color: #FFFFFF; font-family: sans-serif; font-size: 18px;  letter-spacing: 0; line-height: 24px; text-align: justify;">Over the past year, your contributions to Connect have helped us start to build a resource for cancer prevention research. 
+            Your continued participation will help us grow and use this resource to explore the causes of cancer and learn how to better prevent it. <br/><br><b>We appreciate your commitment to partnering with us for the future of cancer prevention and encourage you to 
+            <a href="https://www.cancer.gov/connect-prevention-study/" style="color: #FFBF17;">spread the word</a> to others.</b> We look forward to having you as part of the Connect community for years to come!
+            <br/></p>
+        </td>
+      </tr>
+	<tr>
+        <td style="padding: 0 1px 100px 40px;">
+          <p style="margin:0;"></p>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0;">
+          <table width="100%" style="border-spacing:0;">
+            <tr>
+              <td style="padding: 0 32px 3px 15px;">
+                <p style="margin:0;box-sizing: border-box; height: 1px; width: 760px; border: 1px solid #FFFFFF; ;"></p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td style="padding:0;background-color: #2A72A5; padding-bottom: 20px;">
+          <table width="100%" style="border-spacing:0;">
+            <tr>
+              <td style="height: 92px; width: 559px; color: #FFFFFF; font-family: sans-serif; font-size: 18px; letter-spacing: 0; 
+							line-height: 24px; text-align: center; padding: 10px 0 20px 20px;">
+                <p style="margin:0;">Connect for Cancer Prevention Study</p>
+                <a href="https://www.cancer.gov/" style="color: white" target="_blank">National Cancer Institute</a>  |  <a href="https://www.nih.gov" style="color: white" target="_blank">National Institutes of Health</a><a> |
+                </a><a href="https://www.hhs.gov/" style="color: white" target="_blank">U.S. Department of Health and Human Services</a> |  <a href="https://www.usa.gov/" style="color: white" target="_blank">USA.gov</a>
+              </td>
+            </tr>
+          </table>
+          <table width="100%" style="border-spacing:0;">
+            <tr>
+              <td style="padding:0;height: 64px; width: 559px; color: #FFFFFF; font-family: sans-serif; font-size: 15px; letter-spacing: 0; line-height: 21px; text-align: center;">
+                <p style="margin:0;">Connect for Cancer Prevention Study, the Connect for Cancer Prevention Study logo, and “Connect today. Prevent cancer tomorrow.” 
+                  are trademarks of the U.S. Department of Health and Human Services (HHS).®</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <!--[if (gte mso 9)|(IE)]>
+      </table>
+      <![endif]-->
+    </table>
+  </body>
 </html>
