@@ -1,265 +1,143 @@
-export const renderAllCharts = (activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow,
-    participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, 
-    modulesSurvey, ssnSurvey, optOuts, biospecimenMetrics  ) => {
+export const renderAllCharts = (inputData) => {
+    const {activeRecruitsFunnel, passiveRecruitsFunnel, totalRecruitsFunnel, activeCurrentWorkflow, passiveCurrentWorkflow, totalCurrentWorkflow, genderStats, raceStats, ageStats, activeVerificationStatus, passiveVerificationStatus, denominatorVerificationStatus, recruitsCount, modulesStats, ssnStats, optOutsStats, biospecimenStats} = inputData;
+    const chartsLayoutHTML = `
+    <div class="row">
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="funnelChart">${renderLabel(recruitsCount.activeCount, "Active")}</div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="barChart">${renderLabel(recruitsCount.activeCount, "Active")}</div>
+        </div>
+        <div class = "col-lg-4 charts">
+                <div class="col-lg-12 sub-div-shadow viz-div" id="activeOptouts"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="passiveFunnelChart">${renderLabel(recruitsCount.passiveCount, "Passive")}</div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="passiveBarChart">${renderLabel(recruitsCount.passiveCount, "Passive")}</div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="passiveCounts"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="totalFunnelChart">${renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, "Total")}</div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="totalBarChart">${renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, "Total")}</div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="totalCounts"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="activeVerificationStatus"></div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="passiveVerificationStatus"></div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="placeHolder"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="ageMetrics"></div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="raceMetrics"></div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="sexMetrics"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="moduleMetrics"></div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="ssnMetrics"></div>
+        </div>
+        <div class = "col-lg-4 charts">
+            <div class="col-lg-12 sub-div-shadow viz-div" id="biospecimenMetrics"></div>
+        </div>
+    </div>
+    `;
 
-   const row = document.createElement('div');
-   row.classList = ['row'];
+    const mainContent = document.getElementById('mainContent');
+    const metricsCards = metricsCardsView({
+      activeRecruits: recruitsCount.activeCount,
+      passiveRecruits: recruitsCount.passiveCount,
+      verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified,
+      modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples,
+    });
+    mainContent.appendChild(metricsCards);
 
-   let funnelChart = document.createElement('div');
-   funnelChart.classList = ['col-lg-4 charts'];
+    const tempDiv= document.createElement('div');
+    tempDiv.innerHTML = chartsLayoutHTML;
+    mainContent.append(...tempDiv.children);
 
-   let subFunnelChart = document.createElement('div');
-   subFunnelChart.classList = ['col-lg-12 sub-div-shadow viz-div'];
-   subFunnelChart.innerHTML = renderLabel(recruitsCount.activeCount, 'Active');
-   subFunnelChart.setAttribute('id', 'funnelChart');
-   funnelChart.appendChild(subFunnelChart);
-
-   let barChart = document.createElement('div');
-   barChart.classList = ['col-lg-4 charts'];
-
-   let subBarChart = document.createElement('div');
-   subBarChart.classList = ['col-lg-12 sub-div-shadow viz-div'];
-   subBarChart.innerHTML = renderLabel(recruitsCount.activeCount, 'Active');
-   subBarChart.setAttribute('id', 'barChart');
-   barChart.appendChild(subBarChart);
-
-   let activeOptouts = document.createElement('div');
-   activeOptouts.classList = ['col-lg-4 charts'];
-
-   let subactiveOptouts = document.createElement('div');
-   subactiveOptouts.classList = ['col-lg-12 sub-div-shadow viz-div'];
-   subactiveOptouts.setAttribute('id', 'activeOptouts');
-   activeOptouts.appendChild(subactiveOptouts);
-
-   row.appendChild(funnelChart);
-   row.appendChild(barChart);
-   row.appendChild(activeOptouts);
-
-   mainContent.appendChild(row); // active 
-
-   const row1 = document.createElement('div');
-   row1.classList = ['row'];
-
-   let funnelChart1 = document.createElement('div');
-   funnelChart1.classList = ['col-lg-4 charts'];
-
-   let subFunnelChart1 = document.createElement('div');
-   subFunnelChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subFunnelChart1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
-   subFunnelChart1.setAttribute('id', 'passiveFunnelChart');
-   funnelChart1.appendChild(subFunnelChart1);
-
-   let barChart1 = document.createElement('div');
-   barChart1.classList = ['col-lg-4 charts'];
-
-   let subBarChart1 = document.createElement('div');
-   subBarChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subBarChart1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
-   subBarChart1.setAttribute('id', 'passiveBarChart');
-   barChart1.appendChild(subBarChart1);
-
-   let activeCounts1 = document.createElement('div');
-   activeCounts1.classList = ['col-lg-4 charts'];
-   let subActiveCounts1 = document.createElement('div');
-   subActiveCounts1.classList = ['col-lg-12 viz-div sub-div-shadow'];
-  // subActiveCounts1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
-   subActiveCounts1.setAttribute('id', 'passiveCounts');
-   activeCounts1.appendChild(subActiveCounts1);
-
-
-   row1.appendChild(funnelChart1);
-   row1.appendChild(barChart1);
-   row1.appendChild(activeCounts1);
-
-   mainContent.appendChild(row1); // passive
-
-   const row2 = document.createElement('div');
-   row2.classList = ['row'];
-
-   let funnelChart2 = document.createElement('div');
-   funnelChart2.classList = ['col-lg-4 charts'];
-
-   let subFunnelChart2 = document.createElement('div');
-   subFunnelChart2.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subFunnelChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');
-   subFunnelChart2.setAttribute('id', 'totalFunnelChart');
-   funnelChart2.appendChild(subFunnelChart2);
-  
-
-   let barChart2 = document.createElement('div');
-   barChart2.classList = ['col-lg-4 charts'];
-
-   let subBarChart2 = document.createElement('div');
-   subBarChart2.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subBarChart2.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
-   subBarChart2.setAttribute('id', 'totalBarChart');
-   barChart2.appendChild(subBarChart2);
-
-
-   let totalCounts = document.createElement('div');
-   totalCounts.classList = ['col-lg-4 charts'];
-
-   let subTotalCounts = document.createElement('div');
-   subTotalCounts.classList = ['col-lg-12 sub-div-shadow viz-div'];
- //  subTotalCounts.innerHTML = renderLabel(recruitsCount.activeCount + recruitsCount.passiveCount, 'Total');;
-   subTotalCounts.setAttribute('id', 'totalCounts');
-   totalCounts.appendChild(subTotalCounts);
-
-   row2.appendChild(funnelChart2)
-   row2.appendChild(barChart2);
-   row2.appendChild(totalCounts);
-
-   mainContent.appendChild(row2); // total
-
-   const row3 = document.createElement('div');
-   row3.classList = ['row'];
-
-   let pieChart = document.createElement('div');
-   pieChart.classList = ['col-lg-4 charts'];
-
-   let subPieChart = document.createElement('div');
-   subPieChart.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChart.setAttribute('id', 'activeVerificationStatus');
-   pieChart.appendChild(subPieChart);
-  
-   let pieChart1 = document.createElement('div');
-   pieChart1.classList = ['col-lg-4 charts'];
-
-   let subPieChart1 = document.createElement('div');
-   subPieChart1.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChart1.setAttribute('id', 'passiveVerificationStatus');
-   pieChart1.appendChild(subPieChart1);
-
-   let placeHolder = document.createElement('div');
-   placeHolder.classList = ['col-lg-4 charts'];
-   let subPlaceHolder = document.createElement('div');
-   subPlaceHolder.classList = ['col-lg-12 viz-div sub-div-shadow'];
-  // subActiveCounts1.innerHTML = renderLabel(recruitsCount.passiveCount, 'Passive');
-   subPlaceHolder.setAttribute('id', 'placeHolder');
-   placeHolder.appendChild(subPlaceHolder);
-
-
-   row3.appendChild(pieChart);
-   row3.appendChild(pieChart1);
-   row3.appendChild(placeHolder);
-
-   mainContent.appendChild(row3); // Misc.
-
-   const row4 = document.createElement('div');
-   row4.classList = ['row'];
-
-   let pieChartAge = document.createElement('div');
-   pieChartAge.classList = ['col-lg-4 charts'];
-
-   let subPieChartAge = document.createElement('div');
-   subPieChartAge.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChartAge.setAttribute('id', 'ageMetrics');
-   pieChartAge.appendChild(subPieChartAge);
-  
-   let pieChartRace = document.createElement('div');
-   pieChartRace.classList = ['col-lg-4 charts'];
-
-   let subPieChartRace = document.createElement('div');
-   subPieChartRace.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChartRace.setAttribute('id', 'raceMetrics');
-   pieChartRace.appendChild(subPieChartRace);
-
-
-   let pieChartSex = document.createElement('div');
-   pieChartSex.classList = ['col-lg-4 charts'];
-   let subPieChartSex = document.createElement('div');
-   subPieChartSex.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChartSex.setAttribute('id', 'sexMetrics');
-   pieChartSex.appendChild(subPieChartSex);
-
-
-   row4.appendChild(pieChartAge);
-   row4.appendChild(pieChartRace);
-   row4.appendChild(pieChartSex);
-
-   mainContent.appendChild(row4); // Misc.
-
-   const row5 = document.createElement('div');
-   row5.classList = ['row'];
-
-   let pieChartModule = document.createElement('div');
-   pieChartModule.classList = ['col-lg-4 charts'];
-
-   let subPieChartModule = document.createElement('div');
-   subPieChartModule.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChartModule.setAttribute('id', 'moduleMetrics');
-   pieChartModule.appendChild(subPieChartModule);
-  
-   let pieChartSsn = document.createElement('div');
-   pieChartSsn.classList = ['col-lg-4 charts'];
-
-   let subPieChartSsn = document.createElement('div');
-   subPieChartSsn.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subPieChartSsn.setAttribute('id', 'ssnMetrics');
-   pieChartSsn.appendChild(subPieChartSsn);
-
-//    let pieChartBiopspecimen = document.createElement('div');
-//    pieChartBiopspecimen.classList = ['col-lg-4 charts'];
-
-//    let subPieChartBiopspecimen = document.createElement('div');
-//    subPieChartBiopspecimen.classList = ['col-lg-12 viz-div sub-div-shadow'];
-//    subPieChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
-//    pieChartBiopspecimen.appendChild(subPieChartBiopspecimen);
-
-   let barChartBiopspecimen = document.createElement('div');
-   barChartBiopspecimen.classList = ['col-lg-4 charts'];
-
-   let subBarChartBiopspecimen = document.createElement('div');
-   subBarChartBiopspecimen.classList = ['col-lg-12 viz-div sub-div-shadow'];
-   subBarChartBiopspecimen.setAttribute('id', 'biospecimenMetrics');
-   barChartBiopspecimen.appendChild(subBarChartBiopspecimen);
-
-   
-
-   row5.appendChild(pieChartModule);
-   row5.appendChild(pieChartSsn);
-   row5.appendChild(barChartBiopspecimen);
-
-   mainContent.appendChild(row5); // Misc.
-
-   //renderStackBarChart(participantsGenderMetric, participantsRaceMetric, participantsAgeMetric, 'metrics')
-   renderAgeMetrics(participantsAgeMetric, 'ageMetrics');
-   renderRaceMetrics(participantsRaceMetric, 'raceMetrics');
-   renderSexMetrics(participantsGenderMetric, 'sexMetrics');
-
+   renderAgeMetrics(ageStats, 'ageMetrics');
+   renderRaceMetrics(raceStats, 'raceMetrics');
+   renderSexMetrics(genderStats, 'sexMetrics');
    renderActiveFunnelChart(activeRecruitsFunnel, 'funnelChart')
    renderActiveBarChart(activeCurrentWorkflow, 'barChart');
-   renderActiveOptouts(optOuts, recruitsCount.activeCount, 'activeOptouts');
-
+   renderActiveOptouts(optOutsStats, recruitsCount.activeCount, 'activeOptouts');
    renderPassiveFunnelChart(passiveRecruitsFunnel, 'passiveFunnelChart');
    renderPassiveBarChart(passiveCurrentWorkflow, 'passiveBarChart');
-
    renderTotalFunnelChart(totalRecruitsFunnel, 'totalFunnelChart');
    renderTotalCurrentWorkflow(totalCurrentWorkflow, 'totalBarChart');
-
    renderActiveVerificationStatus(activeVerificationStatus, denominatorVerificationStatus, 'activeVerificationStatus');
    renderPassiveVerificationStatus(passiveVerificationStatus, denominatorVerificationStatus, 'passiveVerificationStatus');
-   renderModuleChart(modulesSurvey, 'moduleMetrics');
-   renderSsnChart(ssnSurvey, 'ssnMetrics');
-   const verifiedPts = ssnSurvey.verifiedParticipants
-   renderBiospecimenChart(biospecimenMetrics, verifiedPts, 'biospecimenMetrics');
+   renderModuleChart(modulesStats, 'moduleMetrics');
+   renderSsnChart(ssnStats, 'ssnMetrics');
+   renderBiospecimenChart(biospecimenStats, ssnStats.verifiedParticipants, 'biospecimenMetrics');
 }
+
+// Add metrics cards at top of dashboard
+const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, modulesAndBaselinesCompletedParticipants}) => {
+    const template = `
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value">${activeRecruits}</div>
+        <p class="metrics-value-description">
+          Active Recruits
+        </p>
+    </div>
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value">${verifiedParticipants}</div>
+        <p class="metrics-value-description">Verified Participants</p>
+      <p class="ratio-value">
+      <span class="hovertext" data-hover="out of Active and Passive Recruits">      
+          Response Ratio:</span>
+          ${activeRecruits + passiveRecruits === 0 || verifiedParticipants ===0 ? 0 : (verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
+      </p>
+    </div>
+    <div class="metrics-card">
+      <div class="card-top"></div>
+      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} </div>
+        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Verified Participants who Completed Baseline Survey and Samples</span></p>
+        <p class="ratio-value">Completion Ratio: ${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%</p>
+    </div>`
+    const rowDiv = document.createElement("div");
+    rowDiv.className = "row d-flex justify-content-center";
+    rowDiv.innerHTML = template;
+    return rowDiv;
+ }
 
 const renderLabel = (count, recruitType) => {
     let template = ``;
-    (recruitType === 'Active') ?
-        (template += `<span class="badge bg-primary" style="color:white"> ${recruitType} Recruits: ${count}</span>`)
-        :
-    (recruitType === 'Passive') ?
-        (template += `<span class="badge bg-primary" style="color:white"> ${recruitType} Recruits: ${count}</span>`)
-        :
-    (recruitType === 'Total') ?
-        (template += `<span class="badge bg-primary" style="color:white"> ${recruitType} Recruits: ${count}</span>`)
-        :
-        ''
+    if (["Active", "Passive", "Total"].includes(recruitType)) {
+        template = `<span class="badge bg-primary" style="color:white">${recruitType} Recruits: ${count}</span>`;
+    }
 
     return template;
-
 }
 
 const renderActiveFunnelChart = (activeRecruitsFunnel, id) => {
