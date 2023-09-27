@@ -331,7 +331,7 @@ export default
     'withdrawConsent': 747006172,
     'destroyData': 831041022,
     'participantDeceased': 987563196,
-
+    // reasosns for refusal/withdrawal
     'tooBusy': 141450621,
     'noLongerInterested': 919699172,
     'participantGreedy': 576083042,
@@ -359,6 +359,7 @@ export default
     'otherReasonsSpecify': 715390138,
     'reasonNotGiven': 538619788,
     'concernedInfoOnline': 637147033,
+    tooManyTechnicalProblems: 440351122,
 
     'spouse': 817514412,
     'child': 597175457,
@@ -408,26 +409,15 @@ export default
 
     'suspendContact': 113579866,
     'startDateSuspendedContact': 161366008,
-    // 'whoRequested': 678208830,
-    // 'requestParticipant': 990304236,
-    // 'requestPrincipalInvestigator': 711721942,
-    // 'requestConnectIRB': 290977684,
-    // 'requestPIListed': 149224829,
-    // 'requestChairSite': 869233107,
-    // 'requestOther': 951080629,
-    // 'requestOtherText': 366295286,
-
-
+ 
     'requestParticipant': 648459216,
     'requestPrincipalInvestigator': 658808644,
     'requestConnectIRB': 745366882,
     'requestPIListed': 786757575,
     'requestChairSite': 847056701,
     'requestOther': 807835037,
-
     'whoRequested': 297147359,
     'requestOtherText': 366295286,
-
     'whoRequestedAllFutureActivities': 603278289,
     'whoRequestedAllFutureActivitiesOther': 821930940,
     'whoRequestedHIPAArevocation': 175506524,

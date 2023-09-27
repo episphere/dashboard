@@ -1,8 +1,8 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
 
 export const renderRefusalOptions = () => {
-  let template = ``
-  template +=  `  <div>
+  const template = `
+                <div>
                     <span><h6>Reason for refusal/withdrawal (select all that apply):​</h6></span>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" value="I’m no longer interested in the study​" name="options" 
@@ -160,10 +160,17 @@ export const renderRefusalOptions = () => {
                         </label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="Participant is incarcerated" name="options" 
+                        <input class="form-check-input" type="checkbox" value="I am concerned about providing information online" name="options" 
                         data-optionKey=${fieldMapping.concernedInfoOnline} id="defaultCheck22">
                         <label class="form-check-label" for="defaultCheck22">
                             I am concerned about providing information online
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="Too many technical problems with MyConnect" name="options" 
+                        data-optionKey=${fieldMapping.tooManyTechnicalProblems} id="tooManyTechnicalProblemsCheckbox">
+                        <label class="form-check-label" for="tooManyTechnicalProblemsCheckbox">
+                            Too many technical problems with MyConnect
                         </label>
                     </div>
                     <div class="form-check">
@@ -185,15 +192,13 @@ export const renderRefusalOptions = () => {
                     <button type="button" id="backToPrevPage" class="btn btn-primary">Previous</button>
                     <button type="button" id="submit" class="btn btn-success">Submit</button>
                 </div>
-            `
+            `;
     return template;
 }
 
 export const renderCauseOptions = () => {
-    let template = ``;
-    template +=
-            `
-                <div>
+    const template = `
+            <div>
                     <span> Date of Death:
                     <div class="form-group row">
                     <label class="col-md-4 col-form-label">Month</label>
@@ -266,6 +271,6 @@ export const renderCauseOptions = () => {
                 <button type="button" id="backToPrevPage" class="btn btn-primary">Previous</button>
                 <button type="button" id="submit" class="btn btn-success">Submit</button>
             </div>
-            `
+            `;
     return template;
 }

@@ -32,12 +32,14 @@ export const render = (participant) => {
          `
     } else {
         template += `
-                <div id="root root-margin"> `
-        template += renderParticipantHeader(participant);
-        template += `<div id="alert_placeholder"></div>`
-        template += `<div id="formMainPage">
+                <div id="root root-margin">
+                    ${renderParticipantHeader(participant)}
+                    <div id="alert_placeholder"></div>
+                    <div id="formMainPage">
                     ${renderParticipantWithdrawalLandingPage()}
-                    </div></div>`
+                    </div>
+                </div>
+                `;
     }
     return template;
 }
