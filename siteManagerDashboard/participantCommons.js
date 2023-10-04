@@ -1,12 +1,12 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation } from './index.js'
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
+export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 
 export const renderTable = (data, source) => {
     let prevState = appState.getState().filterHolder
@@ -30,7 +30,7 @@ export const renderTable = (data, source) => {
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    if(array.length > 0) {
+    if (conceptIdMapping) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
@@ -417,7 +417,7 @@ const pagninationNextTrigger = () => {
             a.disabled = true;
             return alertTrigger();
         }
-        else if(response.code != 200 && response.data.length === 0) {
+        else if (response.code !== 200) {
             clearLocalStorage();
         }
     })
@@ -575,10 +575,10 @@ const tableTemplate = (data, showButtons) => {
             )
             :  (x === (fieldMapping.refusedAllFutureActivities).toString()) ?
             (
-                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
+                (participant[fieldMapping.refusalOptions]?.[x] === fieldMapping.yes ?
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
                     :
-                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                    ( template += `<td>${participant[fieldMapping.refusalOptions]?.[x] ? 'No'  : ''}</td>` )
                 )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)

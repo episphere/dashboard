@@ -385,7 +385,7 @@ const checkIncentiveIssued = (participantModule) => {
     return participantModule[fieldMapping.paymentRoundup] &&
     (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.paymentIssued] === (fieldMapping.yes)) ? 
     `Issued on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.datePaymentIssued])}`: 
-    (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ? 
+    (participantModule[fieldMapping.paymentRoundup]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ? 
     `Declined on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePaymentDate])}`:
     `N/A`
 }
