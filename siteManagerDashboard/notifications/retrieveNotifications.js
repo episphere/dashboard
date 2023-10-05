@@ -22,7 +22,7 @@ const triggerSchemaEdit = (categoriesHolder, categoryName, concepts) => {
     viewNotificationSchema(concepts);
     editNotificationSchema();
     renderCategorydDropdown(categoriesHolder);
-    dropdownTrigger(categoriesHolder, categoryName);
+    triggerCategories(categoriesHolder, categoryName);
 }
 
 
@@ -243,7 +243,7 @@ const renderCategorydDropdown = (categoriesHolder) => {
 }
 
 
-const dropdownTrigger = (originalCategoriesHolder, categoryName) => {
+const triggerCategories = (originalCategoriesHolder, categoryName) => {
     let a = document.getElementById('dropdownCategories');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonCategories');
     let tempCategory = a.innerHTML = categoryName;

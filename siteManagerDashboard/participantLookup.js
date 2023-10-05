@@ -15,7 +15,7 @@ export function renderParticipantLookup(){
     renderLookupSiteDropdown();
     addEventSearch();
     addEventSearchId();
-    dropdownTrigger();
+    triggerLookup();
 }
 
 export function renderParticipantSearch() {
@@ -117,7 +117,7 @@ export function renderParticipantSearch() {
 }
 
 
-const dropdownTrigger = () => {
+const triggerLookup = () => {
     let dropdownMenuButton = document.getElementById('dropdownMenuLookupSites');
     let a = document.getElementById('dropdownSites');
     if (dropdownMenuButton) {
