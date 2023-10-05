@@ -62,12 +62,7 @@ export const renderTable = (data, source) => {
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
                 </div>
-                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
-                                                                                                margin-left:25px;
-                                                                                                padding: 10px 20px;
-                                                                                                border-radius: 10px;
-                                                                                                width:25%;
-                                                                                                height:25%;">
+                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="margin-left:25px; padding: 10px 20px; border-radius: 10px; width:25%; height:25%;">
                     <button type="button" class="btn btn-outline-info btn-lg" id="activeFilter">Active</button>
                     <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
                 </div>
@@ -75,15 +70,11 @@ export const renderTable = (data, source) => {
                     <h5 style="padding-left: 15px;"> &nbsp; Filter by Verification Status Time:  &nbsp;</h5>
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
-                        <input type="date" class="form-control" id="startDate" style="
-                                                                                                width:200px;
-                                                                                                height:50px;">
+                        <input type="date" class="form-control" id="startDate" style="width:200px; height:50px;">
                     </div>
                     <h5 style="margin-left:15px;">To:</h5>
                     <div class="form-group mx-sm-3 mb-2">
-                        <input type="date" class="form-control" id="endDate" style="
-                                                                                                width:200px;
-                                                                                                height:50px;">
+                        <input type="date" class="form-control" id="endDate" style="width:200px; height:50px;">
                     </div>
                     <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;" >Search</button>
 
@@ -480,19 +471,24 @@ const pagninationPreviousTrigger = () => {
 
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
-    let template = '';
-    let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    template += `<thead class="thead-dark sticky-row"><tr><th class="sticky-row">Select</th>`
-    importantColumns.forEach(x => {
-            const parsedConceptIdField = parseInt(x)
-            template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? ((parsedConceptIdField !== fieldMapping.fName && parsedConceptIdField !== fieldMapping.mName && 
-                parsedConceptIdField !== fieldMapping.lName && parsedConceptIdField !== fieldMapping.refusedSpecimenSurevys && parsedConceptIdField !== fieldMapping.dateHipaaRevokeRequested &&
-                parsedConceptIdField !== fieldMapping.consentFirstName && parsedConceptIdField !== fieldMapping.consentMiddleName && parsedConceptIdField !== fieldMapping.consentLastName) ? 
-                conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</th>`
-        })
-    template += `
-        </tr>
-    </thead>`;
+    let headerStringArray = [];
+    for (const column of importantColumns) {
+        let columnName = column;
+        if (fieldMapping[column]) {
+            const customVariableName = getCustomVariableNames(column);
+            columnName = customVariableName || fieldMapping[column]["Variable Label"] || fieldMapping[column]["Variable Name"];
+        }
+        
+        headerStringArray.push(`<th class="sticky-row">${columnName}</th>`);
+    }
+
+    let template = `<thead class="thead-dark sticky-row">
+            <tr>
+                <th class="sticky-row">Select</th>
+                ${headerStringArray.join("")}
+            </tr>
+        </thead>`;
+    
     data.forEach(participant => {
         // mapping from concept id to variable name
         template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
