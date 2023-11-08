@@ -1084,6 +1084,7 @@ const renderParticipantsNotSignedIn = async () => {
     }
 }
 
+// todo: add data to `fieldToConceptIdMapping.js` and remove this function
 const getMappings = async () => {
     const response = await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/aggregate.json');
     const mappings = await response.json();
