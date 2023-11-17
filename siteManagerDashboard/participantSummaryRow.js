@@ -87,12 +87,23 @@ export const baselineUrineSample = (participantModule) => {
     return template;
 }
 
+const kitStatusCidToString = {
+    517216441: "Pending",
+    849527480: "Address Printed",
+    241974920: "Assigned",
+    277438316: "Shipped",
+    375535639: "Received"
+};
+
 export const baselineMouthwashSample = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
+    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
+    const isHomeMouthwashTubeReceived = participantModule[fieldMapping.collectionDetails]?.[fieldMapping.baseline]?.[fieldMapping.bioKitMouthwash]?.[fieldMapping.kitStatus] === fieldMapping.kitStatusValues.recieved;
     let template = ``;
     let refusedMouthwashOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedMouthwash];
     let mouthwashFlag = participantModule[fieldMapping.mouthwash];
-    
+    let kitStatusStr = kitStatusCidToString[participantModule[fieldMapping.collectionDetails]?.[fieldMapping.baseline]?.[fieldMapping.bioKitMouthwash]?.[fieldMapping.kitStatus]];
+    kitStatusStr = kitStatusStr ? "Kit " + kitStatusStr : "N/A";
+
     if (isDataDestroyed === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Data Destroyed", "N/A", "N/A", "N", "N/A");
     } else if (refusedMouthwashOption === fieldMapping.yes) {
@@ -103,12 +114,16 @@ export const baselineMouthwashSample = (participantModule) => {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
         humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.mouthwashDateTime]), 
         "Research", "N", "N/A");
+    } else if (isHomeMouthwashTubeReceived) {
+        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
+        humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.mouthwashDateTime]), 
+        "Home", "N", kitStatusStr);
     } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A");
+        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", kitStatusStr);
     }
     
     return template;
-}
+};
 
 export const baselineBOHSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
@@ -296,7 +311,7 @@ export const baselineBloodUrineSurvey = (participant) => {
 }
 
 export const baselineMouthwashSurvey = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
+    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
     let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys];
     let template = ``;
     
@@ -317,7 +332,7 @@ export const baselineMouthwashSurvey = (participantModule) => {
     }
 
     return template;
-}
+};
 
 export const baselineMenstrualSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
