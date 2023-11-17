@@ -229,7 +229,7 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
 
     conceptDropdown(concepts, 'preferred-name-concept');
     const preferredname = document.getElementById('preferrednameconcept0');
-    if(updateSchemaNotification.preferredNameField && preferredname) { preferredname.value = updateSchemaNotification.preferredNameField};
+    if (updateSchemaNotification.preferredNameField && preferredname) { preferredname.value = updateSchemaNotification.preferredNameField; }
 
 
     conceptDropdown(concepts, 'phone-concept');
@@ -527,9 +527,9 @@ const storeNotificationSchema = async (schema) => {
     const a = document.getElementById('updateId').getAttribute('data-id');
     const idFlag = localStorage.getItem("idFlag");
     if(idFlag == "true" || a && a.length != 0) { 
-        let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
+        const updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema")) || {};
         localStorage.setItem("idFlag", false);
-        schema.id = updateSchemaNotification.id;
+        schema.id = updateSchemaNotification.id || "";
         localStorage.removeItem("updateNotificationSchema");
     }
     showAnimation();

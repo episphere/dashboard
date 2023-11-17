@@ -867,7 +867,7 @@ const reRenderDashboard = async (siteTextContent, siteKey) => {
 };
 
 
-const clearLocalStorage = () => {
+export const clearLocalStorage = () => {
     firebase.auth().signOut();
     internalNavigatorHandler(counter);
     animation(false);
@@ -876,7 +876,7 @@ const clearLocalStorage = () => {
     delete localStorage.userSession;
     appState.setState({userSession: {}});
     window.location.hash = '#';
-}
+};
 
 /**
  * Filter and return data matching the site code
