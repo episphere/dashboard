@@ -567,7 +567,7 @@ const filterModuleMetrics = (allModulesMetrics, moduleOneMetrics, modulesTwoThre
     });
     moduleOneMetrics && moduleOneMetrics.forEach((data) => moduleOne += data.countModule1);
     modulesTwoThreeMetrics && modulesTwoThreeMetrics.forEach((data) =>  modulesTwoThree += data.countModules);
-    moduleNoneMetrics && moduleNoneMetrics.filter((data) =>  noModules += data.countModules);
+    moduleNoneMetrics && moduleNoneMetrics.forEach((data) =>  noModules += data.countModules);
 
     return {
         noModulesSubmitted: noModules,
