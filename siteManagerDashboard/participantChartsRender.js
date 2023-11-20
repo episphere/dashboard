@@ -74,7 +74,7 @@ export const renderAllCharts = (inputData) => {
       activeRecruits: recruitsCount.activeCount,
       passiveRecruits: recruitsCount.passiveCount,
       verifiedParticipants: activeVerificationStatus.verified + passiveVerificationStatus.verified,
-      modulesAndBaselinesCompletedParticipants: modulesStats.allModulesAllSamples,
+      allModulesBlood: modulesStats.allModulesBlood,
     });
     mainContent.appendChild(metricsCards);
 
@@ -99,8 +99,7 @@ export const renderAllCharts = (inputData) => {
    renderBiospecimenChart(biospecimenStats, ssnStats.verifiedParticipants, 'biospecimenMetrics');
 }
 
-// Add metrics cards at top of dashboard
-const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, modulesAndBaselinesCompletedParticipants}) => {
+const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants, allModulesBlood}) => {
     const template = `
     <div class="metrics-card">
       <div class="card-top"></div>
@@ -116,20 +115,20 @@ const metricsCardsView = ({activeRecruits, passiveRecruits, verifiedParticipants
       <p class="ratio-value">
       <span class="hovertext" data-hover="out of Active and Passive Recruits">      
           Response Ratio:</span>
-          ${activeRecruits + passiveRecruits === 0 || verifiedParticipants ===0 ? 0 : (verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%
+          ${activeRecruits + passiveRecruits === 0 || verifiedParticipants === 0 ? 0 : `${(verifiedParticipants / (activeRecruits + passiveRecruits) * 100).toFixed(1)}%`}
       </p>
     </div>
     <div class="metrics-card">
       <div class="card-top"></div>
-      <div class="metrics-value"> ${modulesAndBaselinesCompletedParticipants} </div>
-        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + All 3 Specimen Collections">Verified Participants who Completed Baseline Survey and Samples</span></p>
-        <p class="ratio-value">Completion Ratio: ${verifiedParticipants ===0 || modulesAndBaselinesCompletedParticipants ===0 ? 0 : (modulesAndBaselinesCompletedParticipants/verifiedParticipants*100).toFixed(1)}%</p>
-    </div>`
+      <div class="metrics-value">${allModulesBlood}</div>
+        <p class="metrics-value-description"><span class="hovertext" data-hover="All 4 Initial Survey Sections + Blood Collection">Verified Participants who Completed Baseline Survey and Blood Sample</span></p>
+        <p class="ratio-value">Completion Ratio: ${verifiedParticipants === 0 || allModulesBlood === 0 ? 0 : `${(allModulesBlood / verifiedParticipants * 100).toFixed(1)}%`}</p>
+    </div>`;
     const rowDiv = document.createElement("div");
     rowDiv.className = "row d-flex justify-content-center";
     rowDiv.innerHTML = template;
     return rowDiv;
- }
+ };
 
 const renderLabel = (count, recruitType) => {
     let template = ``;

@@ -484,5 +484,21 @@ export default
     959657954 : 'Verification Complete',
     850536553 : 'Cannot Be Verified' ,
 	364179400 : 'Verified - mimimally Enrolled',
-    485892221 : 'Fully Enrolled'   
-}
+    485892221 : 'Fully Enrolled',
+
+    collectionDetails: 173836415,
+    baseline: 266600170,
+    bioKitMouthwash: 8583443674,
+    kitType: 379252329,
+    kitTypeValues: {
+        mouthwash: 390351864
+    },
+    kitStatus: 221592017,
+    kitStatusValues: {
+        pending: 517216441,
+        addressPrinted: 849527480,
+        assigned: 241974920,
+        shipped: 277438316,
+        recieved: 375535639
+    },
+};
