@@ -489,6 +489,9 @@ export default
     collectionDetails: 173836415,
     baseline: 266600170,
     bioKitMouthwash: 8583443674,
+    kitReceivedTime: 826941471,
+    kitShippedTime: 661940160,
+    uniqeKitAssemblyId: 687158491,
     kitType: 379252329,
     kitTypeValues: {
         mouthwash: 390351864
@@ -499,6 +502,6 @@ export default
         addressPrinted: 849527480,
         assigned: 241974920,
         shipped: 277438316,
-        recieved: 375535639
+        received: 375535639
     },
 };
