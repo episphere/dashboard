@@ -1,5 +1,5 @@
 import { renderParticipantDetails } from './participantDetails.js';
-import { animation } from './index.js'
+import { animation, clearLocalStorage } from './index.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
@@ -420,7 +420,7 @@ const pagninationPreviousTrigger = () => {
     let b = document.getElementById('nextLink');
     if (parseInt(a.getAttribute('data-nextpage')) === 1 || parseInt(a.getAttribute('data-nextpage')) < 1 ) {
         // disables the previous button if clicked on the first page
-        doctument.getElementById('previousLink').disabled = true;
+        document.getElementById('previousLink').disabled = true;
     }
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
@@ -860,7 +860,7 @@ export const addEventFilterData = (data, showButtons) => {
         if(value.length < 3) {
             renderData(data, showButtons);
             return;
-        };
+        }
         renderData(searchBy(data, value), showButtons);
     });
 }
@@ -936,7 +936,7 @@ export const activeColumns = (data, showButtons) => {
 
 export const searchBy = (data, value) => {
     return data.filter(dt => {
-        const fn = dt[conceptIdMapping.fName];
+        const fn = dt[fieldMapping.fName];
         const ln = dt['996038075'];
         
         if((new RegExp(value, 'i')).test(fn)) {
@@ -968,6 +968,7 @@ const alertTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
+
 const missingDateTrigger = () => {
     let alertList = document.getElementById('alert_placeholder');
     let template = ``;
@@ -981,7 +982,6 @@ const missingDateTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
-
 
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');
