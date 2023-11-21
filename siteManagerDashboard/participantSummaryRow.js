@@ -98,23 +98,21 @@ const kitStatusCidToString = {
 export const baselineMouthwashSample = (participantModule) => {
   const homeMouthwashData =
     participantModule[fieldMapping.collectionDetails]?.[fieldMapping.baseline]?.[fieldMapping.bioKitMouthwash] || {};
-  const mouthwashTimestamp =
-    homeMouthwashData[fieldMapping.kitReceivedTime] ||
-    homeMouthwashData[fieldMapping.kitShippedTime] ||
+  const collectionTime =
     participantModule[fieldMapping.collectionDetails]?.[fieldMapping.baseline]?.[fieldMapping.mouthwashDateTime] ||
     "";
-  const [yyyy, mm, dd] = mouthwashTimestamp.split("T")[0].split("-");
+  const [yyyy, mm, dd] = collectionTime.split("T")[0].split("-");
 
-  let dateString = "N/A";
+  let collectionDate = "N/A";
   if (yyyy && mm && dd) {
-    dateString = `${mm}/${dd}/${yyyy}`;
+    collectionDate = `${mm}/${dd}/${yyyy}`;
   }
 
   const kitStatusStr = kitStatusCidToString[homeMouthwashData[fieldMapping.kitStatus]];
   let displayedFields = {
     icon: {faIcon: "fa fa-times fa-2x", style: "color: red"},
     status: "Not Collected",
-    date: dateString,
+    date: "N/A",
     setting: "N/A",
     refused: "N",
     extra: kitStatusStr ? "Kit " + kitStatusStr : "N/A",
@@ -126,6 +124,7 @@ export const baselineMouthwashSample = (participantModule) => {
       ...displayedFields,
       icon: {faIcon: "fa fa-check fa-2x", style: "color: green"},
       status: "Collected",
+      date: collectionDate,
       setting: "Research",
     };
   }
@@ -136,6 +135,7 @@ export const baselineMouthwashSample = (participantModule) => {
       ...displayedFields,
       icon: {faIcon: "fa fa-times fa-2x", style: "color: red"},
       status: "Not Collected",
+      date: "N/A",
       setting: "Home",
     };
   }
@@ -147,6 +147,8 @@ export const baselineMouthwashSample = (participantModule) => {
       ...displayedFields,
       icon: {faIcon: "fa fa-check fa-2x", style: "color: green"},
       status: "Collected",
+      date: collectionDate,
+      setting: "Home",
     };
   }
 
