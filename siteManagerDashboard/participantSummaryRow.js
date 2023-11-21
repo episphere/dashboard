@@ -120,16 +120,6 @@ export const baselineMouthwashSample = (participantModule) => {
     extra: kitStatusStr ? "Kit " + kitStatusStr : "N/A",
   };
 
-  const dataDestroyedOption = participantModule[fieldMapping.dataHasBeenDestroyed];
-  if (dataDestroyedOption === fieldMapping.yes) {
-    displayedFields.status = "Data Destroyed";
-  }
-
-  const refusedMouthwashOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedMouthwash];
-  if (refusedMouthwashOption === fieldMapping.yes) {
-    displayedFields.refused = "Y";
-  }
-
   const baselineMouthwashCollected = participantModule[fieldMapping.mouthwash];
   if (baselineMouthwashCollected === fieldMapping.yes) {
     displayedFields = {
@@ -158,6 +148,16 @@ export const baselineMouthwashSample = (participantModule) => {
       icon: {faIcon: "fa fa-check fa-2x", style: "color: green"},
       status: "Collected",
     };
+  }
+
+  const refusedMouthwashOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedMouthwash];
+  if (refusedMouthwashOption === fieldMapping.yes) {
+    displayedFields.refused = "Y";
+  }
+
+  const dataDestroyedOption = participantModule[fieldMapping.dataHasBeenDestroyed];
+  if (dataDestroyedOption === fieldMapping.yes) {
+    displayedFields.status = "Data Destroyed";
   }
 
   return getTemplateRow(
