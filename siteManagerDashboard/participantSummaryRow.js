@@ -141,7 +141,7 @@ export const baselineMouthwashSample = (participantModule) => {
   }
 
   const isHomeMouthwashTubeReceived =
-    homeMouthwashData[fieldMapping.kitStatus] === fieldMapping.kitStatusValues.recieved;
+    homeMouthwashData[fieldMapping.kitStatus] === fieldMapping.kitStatusValues.received;
   if (isHomeMouthwashTubeReceived) {
     displayedFields = {
       ...displayedFields,
