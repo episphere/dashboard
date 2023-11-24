@@ -282,7 +282,6 @@ const transformDataForCharts = (siteData) => {
     allModules: allModulesMetrics,
     moduleOne: moduleOneMetrics,
     modulesTwoThree: modulesTwoThreeMetrics,
-    allModulesAllSamples: allModulesAllSamplesMetrics,
     modulesNone: modulesNoneMetrics,
     ssn: ssnMetrics,
     biospecimen: biospecimenMetrics,
@@ -317,8 +316,7 @@ const transformDataForCharts = (siteData) => {
     modulesTwoThreeMetrics,
     modulesNoneMetrics,
     activeVerificationStatus.verified,
-    passiveVerificationStatus.verified,
-    allModulesAllSamplesMetrics
+    passiveVerificationStatus.verified
   );
   const ssnStats = filterSsnMetrics(ssnMetrics, activeVerificationStatus.verified, passiveVerificationStatus.verified);
   const biospecimenStats = filterBiospecimenStats(
@@ -554,31 +552,33 @@ const filterOptOutsMetrics = (participantOptOutsMetric) => {
     return currentWorflowObj;
 }
 
-const filterModuleMetrics = (participantsModuleMetrics, participantModuleOne, participantModulesTwoThree, participantModuleNone, activeVerifiedParticipants, passiveVerifiedParticipants, participantsAllModulesAllSamples) => {
-    let currentWorflowObj = {}
-    let noModulesSubmitted = 0
-    let moduleOneSubmitted = 0
-    let modulesTwoThreeSubmitted = 0
-    let modulesSubmitted = 0
+const filterModuleMetrics = (allModulesMetrics, moduleOneMetrics, modulesTwoThreeMetrics, moduleNoneMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
+    let noModules = 0;
+    let moduleOne = 0;
+    let modulesTwoThree = 0;
+    let allModules = 0;
+    let allModulesBlood = 0;
     let allModulesAllSamples = 0;
   
-    participantsModuleMetrics && participantsModuleMetrics.filter(i => modulesSubmitted += i.countModules)
-    participantModuleOne && participantModuleOne.filter( i => moduleOneSubmitted += i.countModule1)
-    participantModulesTwoThree && participantModulesTwoThree.filter( i =>  modulesTwoThreeSubmitted += i.countModules )
-    participantModuleNone && participantModuleNone.filter( i =>  noModulesSubmitted += i.countModules )
-    participantsAllModulesAllSamples && participantsAllModulesAllSamples.forEach(item => {
-        allModulesAllSamples += item.countAllModulesAllSamples;
-    })
-    const verifiedParticipants = activeVerifiedParticipants + passiveVerifiedParticipants
-    currentWorflowObj.noModulesSubmitted = noModulesSubmitted
-    currentWorflowObj.moduleOneSubmitted = moduleOneSubmitted
-    currentWorflowObj.modulesTwoThreeSubmitted = modulesTwoThreeSubmitted
-    currentWorflowObj.modulesSubmitted = modulesSubmitted
-    currentWorflowObj.verifiedParticipants = verifiedParticipants
-    currentWorflowObj.allModulesAllSamples = allModulesAllSamples;
-    return currentWorflowObj;  
+    allModulesMetrics && allModulesMetrics.forEach((data) => {
+        allModules += data.countAllModules;
+        allModulesBlood += data.countAllModulesBlood;
+        allModulesAllSamples += data.countAllModulesBloodUrineMouthwash;
+    });
+    moduleOneMetrics && moduleOneMetrics.forEach((data) => moduleOne += data.countModule1);
+    modulesTwoThreeMetrics && modulesTwoThreeMetrics.forEach((data) =>  modulesTwoThree += data.countModules);
+    moduleNoneMetrics && moduleNoneMetrics.forEach((data) =>  noModules += data.countModules);
 
-}
+    return {
+        noModulesSubmitted: noModules,
+        moduleOneSubmitted: moduleOne,
+        modulesTwoThreeSubmitted: modulesTwoThree,
+        modulesSubmitted: allModules,
+        verifiedParticipants: activeVerifiedParticipants + passiveVerifiedParticipants,
+        allModulesBlood,
+        allModulesAllSamples
+    };
+};
 
 const filterSsnMetrics = (participantsSsnMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
     let currentWorflowObj = {}
@@ -867,7 +867,7 @@ const reRenderDashboard = async (siteTextContent, siteKey) => {
 };
 
 
-const clearLocalStorage = () => {
+export const clearLocalStorage = () => {
     firebase.auth().signOut();
     internalNavigatorHandler(counter);
     animation(false);
@@ -876,7 +876,7 @@ const clearLocalStorage = () => {
     delete localStorage.userSession;
     appState.setState({userSession: {}});
     window.location.hash = '#';
-}
+};
 
 /**
  * Filter and return data matching the site code
@@ -1084,6 +1084,7 @@ const renderParticipantsNotSignedIn = async () => {
     }
 }
 
+// todo: add data to `fieldToConceptIdMapping.js` and remove this function
 const getMappings = async () => {
     const response = await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/aggregate.json');
     const mappings = await response.json();

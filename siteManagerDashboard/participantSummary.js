@@ -6,13 +6,6 @@ import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,b
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
 import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping, pdfCoordinatesMap } from './utils.js';
 
-const headerImportantColumns = [
-    { field: fieldMapping.fName },
-    { field: fieldMapping.mName },
-    { field: fieldMapping.lName },
-    { field: fieldMapping.suffix }
-];
-
 const { PDFDocument, StandardFonts } = PDFLib
 
 document.body.scrollTop = document.documentElement.scrollTop = 0;
@@ -29,36 +22,36 @@ export const renderParticipantSummary = (participant) => {
 }
 
 export const render = (participant) => {
-    let template = `<div class="container-fluid">`
     if (!participant) {
-        template +=` 
-            <div id="root">
-            Please select a participant first!
-            </div>
-        </div>
-         `
-    } else {
-        template += `
-                <div id="root root-margin"> `
-        template += renderParticipantHeader(participant);
-        template += `<div class="table-responsive">
-                        <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
-                        <div class="sticky-header">
-                            <table class="table table-striped">
-                                <thead class="thead-dark sticky-row"> 
-                                    <tr>
-                                        <th class="sticky-row" scope="col">Icon</th>
-                                        <th class="sticky-row" scope="col">Timeline</th>
-                                        <th class="sticky-row" scope="col">Category</th>
-                                        <th class="sticky-row" scope="col">Item</th>
-                                        <th class="sticky-row" scope="col">Status</th>
-                                        <th class="sticky-row" scope="col">Date</th>
-                                        <th class="sticky-row" scope="col">Setting</th>
-                                        <th class="sticky-row" scope="col">Refused</th>
-                                        <th class="sticky-row" scope="col">Extra</th>
-                                    </tr>
-                                </thead>   
-                            
+        return `
+            <div class="container-fluid">
+                <div id="root">
+                    Please select a participant first!
+                </div>
+            </div>`;
+    }
+
+    return `
+        <div class="container-fluid">
+            <div id="root root-margin">
+                ${renderParticipantHeader(participant)}
+                <div class="table-responsive">
+                    <span> <h4 style="text-align: center;">Participant Summary </h4> </span>
+                    <div class="sticky-header">
+                        <table class="table table-striped">
+                            <thead class="thead-dark sticky-row"> 
+                                <tr>
+                                    <th class="sticky-row" scope="col">Icon</th>
+                                    <th class="sticky-row" scope="col">Timeline</th>
+                                    <th class="sticky-row" scope="col">Category</th>
+                                    <th class="sticky-row" scope="col">Item</th>
+                                    <th class="sticky-row" scope="col">Status</th>
+                                    <th class="sticky-row" scope="col">Date</th>
+                                    <th class="sticky-row" scope="col">Setting</th>
+                                    <th class="sticky-row" scope="col">Refused</th>
+                                    <th class="sticky-row" scope="col">Extra</th>
+                                </tr>
+                            </thead>   
                             <tbody>
                                 <tr class="row-color-enrollment-dark">
                                     ${consentHandler(participant)}
@@ -89,7 +82,7 @@ export const render = (participant) => {
                                 </tr>
                                 <tr class="row-color-survey-light">
                                     ${baselineCOVIDSurvey(participant)}
-                                 </tr>
+                                </tr>
                                 <tr class="row-color-survey-dark">
                                     ${baselineBiospecSurvey(participant)}
                                 </tr>
@@ -122,16 +115,12 @@ export const render = (participant) => {
                                 ${participant[fieldMapping.destroyData] === fieldMapping.yes ? 
                                     (`<tr class="row-color-enrollment-dark"> ${dataDestroy(participant)} </tr>`): (``)}
                             </tbody>
-                            </table>
-                        </div>
-                    </div>`                
-        template +=`</div></div>`
-
-    }
-    return template;
-
-
-}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+};
 
 const downloadCopyHandler = (participant) => {
     const a = document.getElementById('downloadCopy');

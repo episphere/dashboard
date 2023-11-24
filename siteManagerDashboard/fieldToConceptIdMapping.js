@@ -125,26 +125,6 @@ export default
     "covidStartDate": 268176409,
     "covidCompletedDate": 784810139,
 
-    // "boh": "D_726699695",
-    // "bohStatusFlag": "D_949302066",
-    // "bohCompletedDate": "D_517311251",
-    // "bohStartDate": "D_205553981",
-
-    // "mre": "D_745268907",
-    // "mreStatusFlag": "D_536735468",
-    // "mreCompletedDate": "D_832139544",
-    // "mreStartDate": "D_541836531",
-
-    // "sas": "D_965707586",
-    // "sasStatusFlag": "D_976570371",
-    // "sasCompletedDate": "D_770257102",
-    // "sasStartDate": "D_386488297",
-
-    // "law": "D_716117817",
-    // "lawStausFlag": "D_663265240",
-    // "lawCompletedDate": "D_264644252",
-    // "lawStartDate": "D_452942800",
-
     // "ssn": "D_716117818",
     "ssnFullflag": 311580100,
     "ssnFulldate": 454067894,
@@ -504,5 +484,24 @@ export default
     959657954 : 'Verification Complete',
     850536553 : 'Cannot Be Verified' ,
 	364179400 : 'Verified - mimimally Enrolled',
-    485892221 : 'Fully Enrolled'   
-}
+    485892221 : 'Fully Enrolled',
+
+    collectionDetails: 173836415,
+    baseline: 266600170,
+    bioKitMouthwash: 8583443674,
+    kitReceivedTime: 826941471,
+    kitShippedTime: 661940160,
+    uniqeKitAssemblyId: 687158491,
+    kitType: 379252329,
+    kitTypeValues: {
+        mouthwash: 390351864
+    },
+    kitStatus: 221592017,
+    kitStatusValues: {
+        pending: 517216441,
+        addressPrinted: 849527480,
+        assigned: 241974920,
+        shipped: 277438316,
+        received: 375535639
+    },
+};

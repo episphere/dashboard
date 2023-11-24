@@ -1,12 +1,12 @@
 import { renderParticipantDetails } from './participantDetails.js';
-import { animation } from './index.js'
+import { animation, clearLocalStorage } from './index.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
 
+export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 
 export const renderTable = (data, source) => {
     let prevState = appState.getState().filterHolder
@@ -30,7 +30,7 @@ export const renderTable = (data, source) => {
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    if(array.length > 0) {
+    if (conceptIdMapping) {
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
@@ -62,12 +62,7 @@ export const renderTable = (data, source) => {
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
                     </ul>
                 </div>
-                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="
-                                                                                                margin-left:25px;
-                                                                                                padding: 10px 20px;
-                                                                                                border-radius: 10px;
-                                                                                                width:25%;
-                                                                                                height:25%;">
+                <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="margin-left:25px; padding: 10px 20px; border-radius: 10px; width:25%; height:25%;">
                     <button type="button" class="btn btn-outline-info btn-lg" id="activeFilter">Active</button>
                     <button type="button" class="btn btn-outline-info btn-lg" id="passiveFilter">Passive</button>
                 </div>
@@ -75,15 +70,11 @@ export const renderTable = (data, source) => {
                     <h5 style="padding-left: 15px;"> &nbsp; Filter by Verification Status Time:  &nbsp;</h5>
                     <h5 style="margin-right:25px;">From:</h5>
                     <div class="form-group mb-2">
-                        <input type="date" class="form-control" id="startDate" style="
-                                                                                                width:200px;
-                                                                                                height:50px;">
+                        <input type="date" class="form-control" id="startDate" style="width:200px; height:50px;">
                     </div>
                     <h5 style="margin-left:15px;">To:</h5>
                     <div class="form-group mx-sm-3 mb-2">
-                        <input type="date" class="form-control" id="endDate" style="
-                                                                                                width:200px;
-                                                                                                height:50px;">
+                        <input type="date" class="form-control" id="endDate" style="width:200px; height:50px;">
                     </div>
                     <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;" >Search</button>
 
@@ -417,7 +408,7 @@ const pagninationNextTrigger = () => {
             a.disabled = true;
             return alertTrigger();
         }
-        else if(response.code != 200 && response.data.length === 0) {
+        else if (response.code !== 200) {
             clearLocalStorage();
         }
     })
@@ -429,7 +420,7 @@ const pagninationPreviousTrigger = () => {
     let b = document.getElementById('nextLink');
     if (parseInt(a.getAttribute('data-nextpage')) === 1 || parseInt(a.getAttribute('data-nextpage')) < 1 ) {
         // disables the previous button if clicked on the first page
-        doctument.getElementById('previousLink').disabled = true;
+        document.getElementById('previousLink').disabled = true;
     }
     a && a.addEventListener('click', async () => {
         let pageCounter = parseInt(a.getAttribute('data-prevpage'));
@@ -480,19 +471,24 @@ const pagninationPreviousTrigger = () => {
 
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
-    let template = '';
-    let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    template += `<thead class="thead-dark sticky-row"><tr><th class="sticky-row">Select</th>`
-    importantColumns.forEach(x => {
-            const parsedConceptIdField = parseInt(x)
-            template += `<th class="sticky-row">${conceptIdMapping[x] && conceptIdMapping[x] ? ((parsedConceptIdField !== fieldMapping.fName && parsedConceptIdField !== fieldMapping.mName && 
-                parsedConceptIdField !== fieldMapping.lName && parsedConceptIdField !== fieldMapping.refusedSpecimenSurevys && parsedConceptIdField !== fieldMapping.dateHipaaRevokeRequested &&
-                parsedConceptIdField !== fieldMapping.consentFirstName && parsedConceptIdField !== fieldMapping.consentMiddleName && parsedConceptIdField !== fieldMapping.consentLastName) ? 
-                conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</th>`
-        })
-    template += `
-        </tr>
-    </thead>`;
+    let headerStringArray = [];
+    for (const column of importantColumns) {
+        let columnName = column;
+        if (fieldMapping[column]) {
+            const customVariableName = getCustomVariableNames(column);
+            columnName = customVariableName || fieldMapping[column]["Variable Label"] || fieldMapping[column]["Variable Name"];
+        }
+        
+        headerStringArray.push(`<th class="sticky-row">${columnName}</th>`);
+    }
+
+    let template = `<thead class="thead-dark sticky-row">
+            <tr>
+                <th class="sticky-row">Select</th>
+                ${headerStringArray.join("")}
+            </tr>
+        </thead>`;
+    
     data.forEach(participant => {
         // mapping from concept id to variable name
         template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
@@ -575,10 +571,10 @@ const tableTemplate = (data, showButtons) => {
             )
             :  (x === (fieldMapping.refusedAllFutureActivities).toString()) ?
             (
-                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
+                (participant[fieldMapping.refusalOptions]?.[x] === fieldMapping.yes ?
                     ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
                     :
-                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                    ( template += `<td>${participant[fieldMapping.refusalOptions]?.[x] ? 'No'  : ''}</td>` )
                 )
             )
             : (x === 'studyId') ? (template += `<td>${participant['state']['studyId'] ? participant['state']['studyId'] : ``}</td>`)
@@ -864,7 +860,7 @@ export const addEventFilterData = (data, showButtons) => {
         if(value.length < 3) {
             renderData(data, showButtons);
             return;
-        };
+        }
         renderData(searchBy(data, value), showButtons);
     });
 }
@@ -940,7 +936,7 @@ export const activeColumns = (data, showButtons) => {
 
 export const searchBy = (data, value) => {
     return data.filter(dt => {
-        const fn = dt[conceptIdMapping.fName];
+        const fn = dt[fieldMapping.fName];
         const ln = dt['996038075'];
         
         if((new RegExp(value, 'i')).test(fn)) {
@@ -972,6 +968,7 @@ const alertTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
+
 const missingDateTrigger = () => {
     let alertList = document.getElementById('alert_placeholder');
     let template = ``;
@@ -985,7 +982,6 @@ const missingDateTrigger = () => {
     alertList.innerHTML = template;
     return template;
 }
-
 
 export const dropdownTriggerAllParticipants = (sitekeyName) => {
     let a = document.getElementById('dropdownSites');

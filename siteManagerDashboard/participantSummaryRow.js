@@ -87,28 +87,94 @@ export const baselineUrineSample = (participantModule) => {
     return template;
 }
 
+const kitStatusCidToString = {
+  517216441: "Pending",
+  849527480: "Address Printed",
+  241974920: "Assigned",
+  277438316: "Shipped",
+  375535639: "Received",
+};
+
 export const baselineMouthwashSample = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
-    let template = ``;
-    let refusedMouthwashOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedMouthwash];
-    let mouthwashFlag = participantModule[fieldMapping.mouthwash];
-    
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedMouthwashOption === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "Y", "N/A");
-    } else if (!mouthwashFlag) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A");
-    } else if (mouthwashFlag === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Sample", "Mouthwash", "Collected", 
-        humanReadableMDY(participantModule[fieldMapping.biospecimenCollectionDetail]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.mouthwashDateTime]), 
-        "Research", "N", "N/A");
-    } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Mouthwash", "Not Collected", "N/A", "N/A", "N", "N/A");
-    }
-    
-    return template;
-}
+  const homeMouthwashData =
+    participantModule[fieldMapping.collectionDetails]?.[fieldMapping.baseline]?.[fieldMapping.bioKitMouthwash] || {};
+  const collectionTime =
+    participantModule[fieldMapping.collectionDetails]?.[fieldMapping.baseline]?.[fieldMapping.mouthwashDateTime] ||
+    "";
+  const [yyyy, mm, dd] = collectionTime.split("T")[0].split("-");
+
+  let collectionDate = "N/A";
+  if (yyyy && mm && dd) {
+    collectionDate = `${mm}/${dd}/${yyyy}`;
+  }
+
+  const kitStatusStr = kitStatusCidToString[homeMouthwashData[fieldMapping.kitStatus]];
+  let displayedFields = {
+    icon: {faIcon: "fa fa-times fa-2x", style: "color: red"},
+    status: "Not Collected",
+    date: "N/A",
+    setting: "N/A",
+    refused: "N",
+    extra: kitStatusStr ? "Kit " + kitStatusStr : "N/A",
+  };
+
+  const baselineMouthwashCollected = participantModule[fieldMapping.mouthwash];
+  if (baselineMouthwashCollected === fieldMapping.yes) {
+    displayedFields = {
+      ...displayedFields,
+      icon: {faIcon: "fa fa-check fa-2x", style: "color: green"},
+      status: "Collected",
+      date: collectionDate,
+      setting: "Research",
+    };
+  }
+
+  const isHomeMouthwash = homeMouthwashData[fieldMapping.kitType] === fieldMapping.kitTypeValues.mouthwash;
+  if (isHomeMouthwash) {
+    displayedFields = {
+      ...displayedFields,
+      icon: {faIcon: "fa fa-times fa-2x", style: "color: red"},
+      status: "Not Collected",
+      date: "N/A",
+      setting: "Home",
+    };
+  }
+
+  const isHomeMouthwashTubeReceived =
+    homeMouthwashData[fieldMapping.kitStatus] === fieldMapping.kitStatusValues.received;
+  if (isHomeMouthwashTubeReceived) {
+    displayedFields = {
+      ...displayedFields,
+      icon: {faIcon: "fa fa-check fa-2x", style: "color: green"},
+      status: "Collected",
+      date: collectionDate,
+      setting: "Home",
+    };
+  }
+
+  const refusedMouthwashOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedMouthwash];
+  if (refusedMouthwashOption === fieldMapping.yes) {
+    displayedFields.refused = "Y";
+  }
+
+  const dataDestroyedOption = participantModule[fieldMapping.dataHasBeenDestroyed];
+  if (dataDestroyedOption === fieldMapping.yes) {
+    displayedFields.status = "Data Destroyed";
+  }
+
+  return getTemplateRow(
+    displayedFields.icon.faIcon,
+    displayedFields.icon.style,
+    "Baseline",
+    "Sample",
+    "Mouthwash",
+    displayedFields.status,
+    displayedFields.date,
+    displayedFields.setting,
+    displayedFields.refused,
+    displayedFields.extra
+  );
+};
 
 export const baselineBOHSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
@@ -296,7 +362,7 @@ export const baselineBloodUrineSurvey = (participant) => {
 }
 
 export const baselineMouthwashSurvey = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
+    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
     let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys];
     let template = ``;
     
@@ -317,7 +383,7 @@ export const baselineMouthwashSurvey = (participantModule) => {
     }
 
     return template;
-}
+};
 
 export const baselineMenstrualSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
@@ -385,7 +451,7 @@ const checkIncentiveIssued = (participantModule) => {
     return participantModule[fieldMapping.paymentRoundup] &&
     (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.paymentIssued] === (fieldMapping.yes)) ? 
     `Issued on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.datePaymentIssued])}`: 
-    (participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ? 
+    (participantModule[fieldMapping.paymentRoundup]?.[fieldMapping.biospecimenFollowUp]?.[fieldMapping.refusedBaselinePayment] === (fieldMapping.yes)) ? 
     `Declined on ${humanReadableMDY(participantModule[fieldMapping.paymentRoundup][fieldMapping.biospecimenFollowUp][fieldMapping.refusedBaselinePaymentDate])}`:
     `N/A`
 }
