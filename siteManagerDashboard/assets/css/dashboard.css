@@ -222,7 +222,6 @@ table {
 }
 
 .sticky-header {
-    height: 600px; 
     overflow-y: auto; 
     position: sticky; 
     top: 0;

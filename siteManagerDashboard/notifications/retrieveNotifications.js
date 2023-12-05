@@ -7,7 +7,8 @@ export const renderRetrieveNotificationSchema = async () => {
     const isParent = localStorage.getItem('isParent')
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
-    document.getElementById('notifications').classList.add('active');
+    const notificationsAnchor = document.getElementById('notifications');
+    notificationsAnchor && notificationsAnchor.classList.add('active');
     showAnimation();
     const siteKey = await getAccessToken();
     const response = await getNotificationSchema('all', siteKey);
@@ -71,6 +72,7 @@ const getNotificationSchema = async (category, siteKey) => {
 
 const renderNotificationCards = (data) => {
     let template = ``;
+    if (!data || data.length === 0) return template;
     data.forEach((i, index) => {
         let schemaInfo = JSON.stringify(i)
         schemaInfo = escape(JSON.stringify(i))
