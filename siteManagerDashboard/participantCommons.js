@@ -474,7 +474,7 @@ const tableTemplate = (data, showButtons) => {
     let headerStringArray = [];
     for (const column of importantColumns) {
         let columnName = column;
-        let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+        const conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
         if (conceptIdMapping[column]) {
             const customVariableName = getCustomVariableNames(column);
             columnName = customVariableName || conceptIdMapping[column]["Variable Label"] || conceptIdMapping[column]["Variable Name"];
