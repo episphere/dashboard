@@ -471,16 +471,14 @@ const pagninationPreviousTrigger = () => {
 
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
-    let headerStringArray = [];
-    for (const column of importantColumns) {
-        let columnName = column;
-        const conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-        if (conceptIdMapping[column]) {
-            const customVariableName = getCustomVariableNames(column);
-            columnName = customVariableName || conceptIdMapping[column]["Variable Label"] || conceptIdMapping[column]["Variable Name"];
-        }
-        headerStringArray.push(`<th class="sticky-row">${columnName}</th>`);
-    }
+    const conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+    const headerStringArray = importantColumns.map(column => {
+        let columnName = conceptIdMapping[column]
+            ? getCustomVariableNames(column) || conceptIdMapping[column]["Variable Label"] || conceptIdMapping[column]["Variable Name"]
+            : column;
+    
+        return `<th class="sticky-row">${columnName}</th>`;
+    });
 
     let template = `<thead class="thead-dark sticky-row">
             <tr>
