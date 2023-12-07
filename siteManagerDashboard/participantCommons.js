@@ -471,16 +471,14 @@ const pagninationPreviousTrigger = () => {
 
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
-    let headerStringArray = [];
-    for (const column of importantColumns) {
-        let columnName = column;
-        if (fieldMapping[column]) {
-            const customVariableName = getCustomVariableNames(column);
-            columnName = customVariableName || fieldMapping[column]["Variable Label"] || fieldMapping[column]["Variable Name"];
-        }
-        
-        headerStringArray.push(`<th class="sticky-row">${columnName}</th>`);
-    }
+    const conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
+    const headerStringArray = importantColumns.map(column => {
+        let columnName = conceptIdMapping[column]
+            ? getCustomVariableNames(column) || conceptIdMapping[column]["Variable Label"] || conceptIdMapping[column]["Variable Name"]
+            : column;
+    
+        return `<th class="sticky-row">${columnName}</th>`;
+    });
 
     let template = `<thead class="thead-dark sticky-row">
             <tr>
@@ -563,10 +561,10 @@ const tableTemplate = (data, showButtons) => {
                 x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
                 x === (fieldMapping.refusedFutureSurveys).toString()) ?
             (
-                (participant[fieldMapping.refusalOptions][x] === fieldMapping.yes ?
-                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'Yes'  : ''}</td>` )
+                (participant[fieldMapping.refusalOptions]?.[x] === fieldMapping.yes ?
+                    ( template += `<td>${participant[fieldMapping.refusalOptions]?.[x] ? 'Yes'  : ''}</td>` )
                     :
-                    ( template += `<td>${participant[fieldMapping.refusalOptions][x] ? 'No'  : ''}</td>` )
+                    ( template += `<td>${participant[fieldMapping.refusalOptions]?.[x] ? 'No'  : ''}</td>` )
                 )
             )
             :  (x === (fieldMapping.refusedAllFutureActivities).toString()) ?
