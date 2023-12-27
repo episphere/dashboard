@@ -8,7 +8,7 @@ import { renderSiteMessages } from './siteMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
 import { renderStoreNotificationSchema } from './notifications/storeNotifications.js';
 import { renderRetrieveNotificationSchema } from './notifications/retrieveNotifications.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls, getAccessToken } from './utils.js';
+import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { nameToKeyObj } from './siteKeysToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
@@ -209,8 +209,8 @@ const renderActivityCheck = () => {
 const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
-        const accessToken = await getAccessToken();
-        const isAuthorized = await authorize(accessToken);
+        const idToken = await getIdToken();
+        const isAuthorized = await authorize(idToken);
         if (isAuthorized && isAuthorized.code === 200) {
             localStorage.setItem('isParent', isAuthorized.isParent)
             localStorage.setItem('coordinatingCenter', isAuthorized.coordinatingCenter)
@@ -222,7 +222,7 @@ const renderDashboard = async () => {
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
             location.host !== urls.prod ? mainContent.innerHTML = headsupBanner() : ``
-            renderCharts(accessToken, isParent);
+            renderCharts(idToken, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
         if (isAuthorized.code === 401) {
@@ -899,8 +899,8 @@ const filterDataBySiteCode = (siteCode) => {
 
 const renderParticipantsNotVerified = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'notyetverified');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'notyetverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -924,8 +924,8 @@ const renderParticipantsNotVerified = async () => {
 
 const renderParticipantsCanNotBeVerified = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'cannotbeverified');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'cannotbeverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -955,8 +955,8 @@ const renderParticipantsCanNotBeVerified = async () => {
 
 const renderParticipantsVerified = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'verified');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'verified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -982,8 +982,8 @@ const renderParticipantsAll = async () => {
     animation(true);
     if (appState.getState().filterHolder)reMapFilters(appState.getState().filterHolder)
     else {
-        const siteKey = await getAccessToken();
-        const response = await fetchData(siteKey, 'all');
+        const idToken = await getIdToken();
+        const response = await fetchData(idToken, 'all');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {
             const isParent = localStorage.getItem('isParent')
@@ -1011,8 +1011,8 @@ const renderParticipantsAll = async () => {
 
 const renderParticipantsProfileNotSubmitted = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'profileNotSubmitted');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'profileNotSubmitted');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -1036,8 +1036,8 @@ const renderParticipantsProfileNotSubmitted = async () => {
 
 const renderParticipantsConsentNotSubmitted = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'consentNotSubmitted');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'consentNotSubmitted');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -1061,8 +1061,8 @@ const renderParticipantsConsentNotSubmitted = async () => {
 
 const renderParticipantsNotSignedIn = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'notSignedIn');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'notSignedIn');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')

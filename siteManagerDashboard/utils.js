@@ -131,13 +131,6 @@ export const conceptToSiteMapping = {
   13: 'NCI'
 }
 
-export const getAccessToken = async () => {
-  const access_token = await getIdToken();
-  const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-  const siteKey = access_token !== null ? access_token : localStr.siteKey
-  return siteKey;
-}
-
 /**
  * Coordinates are name, date, signature
  */

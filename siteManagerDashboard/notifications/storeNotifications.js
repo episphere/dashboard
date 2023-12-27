@@ -1,5 +1,5 @@
 import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
-import { showAnimation, hideAnimation, baseAPI, getAccessToken } from '../utils.js';
+import { showAnimation, hideAnimation, baseAPI, getIdToken } from '../utils.js';
 
 
 export const renderStoreNotificationSchema = async () => {
@@ -526,14 +526,14 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 const storeNotificationSchema = async (schema) => {
     const a = document.getElementById('updateId').getAttribute('data-id');
     const idFlag = localStorage.getItem("idFlag");
-    if(idFlag == "true" || a && a.length != 0) { 
+    if(idFlag == "true" || a && a.length != 0) {
         const updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema")) || {};
         localStorage.setItem("idFlag", false);
         schema.id = updateSchemaNotification.id || "";
         localStorage.removeItem("updateNotificationSchema");
     }
     showAnimation();
-    const siteKey = await getAccessToken();  
+    const idToken = await getIdToken();  
     const schemaPayload = {
         "data": schema
     }
@@ -542,7 +542,7 @@ const storeNotificationSchema = async (schema) => {
         method:'POST',
         body: JSON.stringify(schemaPayload),
         headers:{
-            Authorization:"Bearer "+siteKey,
+            Authorization:"Bearer " + idToken,
             "Content-Type": "application/json"
             }
         }))

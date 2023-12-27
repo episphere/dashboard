@@ -1,5 +1,5 @@
 import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
-import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
+import { getIdToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
 import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
 
 
@@ -10,8 +10,8 @@ export const renderRetrieveNotificationSchema = async () => {
     const notificationsAnchor = document.getElementById('notifications');
     notificationsAnchor && notificationsAnchor.classList.add('active');
     showAnimation();
-    const siteKey = await getAccessToken();
-    const response = await getNotificationSchema('all', siteKey);
+    const idToken = await getIdToken();
+    const response = await getNotificationSchema('all', idToken);
     let categoriesHolder = getNotificationSchemaCategories(response.data);
     hideAnimation();
     mainContent.innerHTML = await render(response);
@@ -253,8 +253,8 @@ const triggerCategories = (originalCategoriesHolder, categoryName) => {
         dropdownMenuButton.addEventListener('click', async (e) => {
             if (categoryName === 'Filter by Category' || categoryName === tempCategory) {
                 a.innerHTML = e.target.textContent;
-                const siteKey = await getAccessToken();
-                const response = await getNotificationSchema(e.target.textContent, siteKey);
+                const idToken = await getIdToken();
+                const response = await getNotificationSchema(e.target.textContent, idToken);
                 mainContent.innerHTML = await render(response);
                 triggerSchemaEdit(originalCategoriesHolder, e.target.textContent);
             }
