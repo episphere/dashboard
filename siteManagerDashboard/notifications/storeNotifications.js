@@ -3,12 +3,12 @@ import { showAnimation, hideAnimation, baseAPI, getIdToken } from '../utils.js';
 
 
 export const renderStoreNotificationSchema = async () => {
-    const isParent = localStorage.getItem('isParent')
+    const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
     document.getElementById('notifications').classList.add('active');
-    let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
-    let updateCounter = localStorage.getItem("updateFlag");
+    const updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
+    const updateCounter = localStorage.getItem("updateFlag") ? parseInt(localStorage.getItem("updateFlag")) : 0;
     localStorage.removeItem('updateFlag');
     mainContent.innerHTML = render();
     localStorage.setItem("emailCheck", false);
@@ -16,10 +16,9 @@ export const renderStoreNotificationSchema = async () => {
     localStorage.setItem("pushNotificationCheck", false);
     const concepts = await getConcepts();  
     init(concepts);
-    if(updateCounter == 0) {
+    if (updateCounter === 0) {
         mapSchemaNotificaiton(updateSchemaNotification, concepts);
-    }
-    else {
+    } else {
         if (localStorage.getItem("updateNotificationSchema") !== null) {
             localStorage.setItem("idFlag", false);
             localStorage.removeItem("updateNotificationSchema");
@@ -50,29 +49,29 @@ export const render = () => {
                         <span> <h4 style="text-align: center;" id="getCurrentTitle">Create Notification Schema</h4> </span>
                             <form method="post" class="mt-3" id="configForm">
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4" for="attempt">Attempt</label>
+                                    <label class="col-form-label col-md-3" for="attempt">Attempt</label>
                                     <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact">
                                 </div>
                                 
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4" for="description">Description</label>
+                                    <label class="col-form-label col-md-3" for="description">Description</label>
                                     <textarea class="col-md-8" required id="description" cols="30" rows="3"></textarea>
                                 </div>
                                 
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4" for="category">Category</label>
+                                    <label class="col-form-label col-md-3" for="category">Category</label>
                                     <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented">
                                 </div>
                     
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Notification type</label>
+                                    <label class="col-form-label col-md-3">Notification type</label>
                                     <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;">&nbsp;<label class="mr-3" for="emailCheckBox">Email</label>
                                     <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;">&nbsp;<label class="mr-3" for="smsCheckBox">SMS</label>
                                     <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
                                 </div>
                     
                                 <div class="row">
-                                    <label class="col-form-label col-md-4" for="condition-key">Schedule at (EST)</label>
+                                    <label class="col-form-label col-md-3" for="condition-key">Schedule at (EST)</label>
                                     <div class="col-md-1 form-check">
                                         <input class="form-check-input" checked value="15:00" type="radio" name="scheduleAt" id="scheduleAt1">
                                         <label class="form-check-label" for="scheduleAt1">
@@ -114,32 +113,32 @@ export const render = () => {
                                 </div>
                                 
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Email field concept</label>
+                                    <label class="col-form-label col-md-3">Email field concept</label>
                                     <div class="email-concept col-md-8 p-0"></div>
                                 </div>
                                 
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Phone no. concept</label>
+                                    <label class="col-form-label col-md-3">Phone no. concept</label>
                                     <div class="phone-concept col-md-8 p-0"></div>
                                 </div>
                     
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">First name concept</label>
+                                    <label class="col-form-label col-md-3">First name concept</label>
                                     <div class="first-name-concept col-md-8 p-0"></div>
                                 </div>
                     
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Preferred name concept</label>
+                                    <label class="col-form-label col-md-3">Preferred name concept</label>
                                     <div class="preferred-name-concept col-md-8 p-0"></div>
                                 </div>
                     
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Primary field</label>
+                                    <label class="col-form-label col-md-3">Primary field</label>
                                     <div class="primary-field col-md-8 p-0"></div>
                                 </div>
                                 
                                 <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Time</label>
+                                    <label class="col-form-label col-md-3">Time</label>
                                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days">
                                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)">
                                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)">
@@ -149,14 +148,12 @@ export const render = () => {
                                     <button type="submit" class="btn btn-primary" id="updateId">Save Changes</button>
                                     <button type="button" class="btn btn-danger" id="exitForm">Exit Without Saving</button>
                                 </div>
-        
                             </form>
-                    </div></div>`
-
+                        </div>
+                    </div>`;
 
     return template;
-
-}
+};
 
 export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) => {
     document.getElementById("attempt").value = updateSchemaNotification.attempt;

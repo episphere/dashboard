@@ -32,7 +32,6 @@ export default
     'cannotBeVerified': 219863910,
     'duplicate': 922622075,
 
-
     "status":"NEED TO BE DEFINED",
     "suffix":506826178,
     "homePhone":438643922,
@@ -138,7 +137,6 @@ export default
     "refusedBlood": 194410742,
     "biospecimenBlood": 878865966,
 
-
     "urineFlag": 167958071,
     "urineDateTime": 847159717,
     "clinicalUrineDateTime": 139245758,
@@ -179,7 +177,6 @@ export default
     "paymentIssued": 648936790,
     "datePaymentIssued": 297462035,
     "norcIssuePayment": 222373868,
-    "datePaymentIssued": 297462035,
     "baselinePaymentDate": 787567527,
     "refusedBaselinePayment": 648228701,
     "refusedBaselinePaymentDate": 438636757,
@@ -276,7 +273,6 @@ export default
     'consentSuffix': 480305327,
     'preConsentOptOut': 158291096,
     'datePreConsentOptOut': 697256759,
-    'duplicateType': 148197146,
     'previousCancer': 452166062,
     'maxNumContactsReached': 875549268,
 
@@ -297,7 +293,6 @@ export default
     'versionDataDestroy': 304438543,
 
     'refusalOptions': 685002411,
-
     'refusedSurvey': 994064239,
     // 'refusedBloodSample': 194410742,
     // 'refusedUrineSample': 949501163,
@@ -345,7 +340,6 @@ export default
     'child': 597175457,
     'otherRelative': 341709648,
     'ihcsStaff': 890182396,
-    'other': 181769837,
 
     'participationStatus': 912301837,
 
@@ -409,7 +403,6 @@ export default
     'whoRequestedSuspendedContact': 719222792,
     'whoRequestedSuspendedContactOther': 993855378,
 
-    'campaignType': 667474224,
     'random':926338735,
     'screeningAppointment': 348281054,
     'nonScreeningAppointment':324692899, 
@@ -426,8 +419,6 @@ export default
     'popUp': 296312382,
     'outreachRequiredForVerification': 188797763,
     'manualVerification': 953614051,
-    'duplicateType': 148197146,
-    'updateRecruitType': 793822265,
     'firstNameMatch': 147176963,
     'lastNameMatch': 557461333,
     'dobMatch': 725929722,
