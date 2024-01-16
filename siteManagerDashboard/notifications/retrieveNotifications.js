@@ -241,6 +241,8 @@ const renderCategorydDropdown = (categoriesHolder) => {
         listHyperLink.innerHTML = i;
         list.appendChild(listHyperLink);
         unlistedDiv.appendChild(list);
+        unlistedDiv.style.maxHeight = "300px"; // Adjust the maximum height as needed
+        unlistedDiv.style.overflowY = "auto"; 
     })
 }
 

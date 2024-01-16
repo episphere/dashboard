@@ -4,7 +4,7 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
+import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './idsToName.js';
 
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 
@@ -44,7 +44,7 @@ export const renderTable = (data, source) => {
                     <div class="row">
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
-                    <div class="form-group dropdown" id="siteDropdownLookup" hidden>
+                    <div class="form-group dropdown dropright" id="siteDropdownLookup" hidden>
                     <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px;">
                         Filter by Site
                     </button>
@@ -79,7 +79,6 @@ export const renderTable = (data, source) => {
                     <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;" >Search</button>
 
                     <button type="button" class="btn btn-outline-danger btn-lg mb-2" id="resetDate">Reset Date</button>
-
                 </form>
                 `: ``} </div>`
 

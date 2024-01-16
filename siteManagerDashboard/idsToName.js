@@ -47,3 +47,33 @@ export const nameToKeyObj =
     "kpGA": 327912200,
     "allResults": 1000
 }
+
+export const keyToVerificationStatus = {
+    875007964 : 'Not yet verified',
+    160161595 : 'Outreach timed out',
+    197316935 : 'Verified',
+    219863910 : 'Cannot be verified',
+    922622075 : 'Duplicate'
+}
+
+export const keyToDuplicateType = {
+    638335430 : 'Active recruit signed in as Passive recruit',
+    283434980 : 'Not Active recruit signed in as Passive recruit',
+    866029623 : 'Not Active recruit signed in as an Active recruit',
+    654558118 : 'Participant already enrolled',
+    979256174 : 'Passive recruit signed in as Active recruit',
+    1000 : 'NULL'
+}
+
+export const updateRecruitmentType = {
+    132080040 : 'No Change Needed',
+    604663208 : 'Not Active To Passive',
+    854903954 : 'Passive To Active',
+    965707001 : 'Active To Passive',
+}
+
+export const recruitmentType = {
+    486306141 : 'Active',
+    854703046 : 'Passive',
+    180583933 : 'Inactive'
+}

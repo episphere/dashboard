@@ -4,13 +4,14 @@ import { renderTable, filterdata, renderData, addEventFilterData, activeColumns,
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
+import { renderParticipantVerificationToolPage } from './participantVerficationTool.js';
 import { renderSiteMessages } from './siteMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
 import { renderStoreNotificationSchema } from './notifications/storeNotifications.js';
 import { renderRetrieveNotificationSchema } from './notifications/retrieveNotifications.js';
 import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls, getAccessToken } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj } from './idsToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
 import { firebaseConfig as devFirebaseConfig } from "./dev/config.js";
 import { firebaseConfig as stageFirebaseConfig } from "./stage/config.js";
@@ -102,7 +103,7 @@ const router = async () => {
         }
         else if (route === '#participantSummary') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
-                renderParticipantSummary();
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
             }
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))
@@ -111,11 +112,21 @@ const router = async () => {
         }
         else if (route === '#participantMessages') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
-                renderParticipantMessages();
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
             }
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))
                 renderParticipantMessages(participant);
+            }
+        }
+        else if (route === '#participantVerificationTool') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
+              //  renderParticipantVerificationToolPage();
+            }
+            else {
+                let participant = JSON.parse(localStorage.getItem("participant"))
+                renderParticipantVerificationToolPage(participant);
             }
         }
         else if (route === '#siteMessages') renderSiteMessages();
@@ -194,8 +205,7 @@ const homePage = async () => {
 }
 
 const renderActivityCheck = () => {
-    let template = ``
-    template += ` <div class="modal fade" id="siteManagerMainModal" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    return  `<div class="modal fade" id="siteManagerMainModal" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content sub-div-shadow">
                             <div class="modal-header" id="siteManagerModalHeader"></div>
@@ -203,7 +213,6 @@ const renderActivityCheck = () => {
                         </div>
                     </div>
                 </div>`
-    return template;
 }
 
 const renderDashboard = async () => {
@@ -214,6 +223,7 @@ const renderDashboard = async () => {
         if (isAuthorized && isAuthorized.code === 200) {
             localStorage.setItem('isParent', isAuthorized.isParent)
             localStorage.setItem('coordinatingCenter', isAuthorized.coordinatingCenter)
+            localStorage.setItem('helpDesk', isAuthorized.helpDesk)
             const isParent = localStorage.getItem('isParent');
             //const coordinatingCenter = localStorage.getItem('coordinatingCenter');
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);

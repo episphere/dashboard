@@ -10,9 +10,10 @@ export const renderNavBarLinks = () => {
 
 export const dashboardNavBarLinks = (isParent) => {
     const coordinatingCenter = localStorage.getItem('coordinatingCenter');
+    const helpDesk = localStorage.getItem('helpDesk');
     return `
         <li class="nav-item">
-            <a class="nav-item nav-link ws-nowrap" href="#home" title="Home" id="dashboardBtn"><i class="fas fa-home"></i> Home</a>
+            <a class="nav-item nav-link ws-nowrap" href="#home" title="Home" data-toggle="collapse" data-target=".navbar-collapse.show" id="dashboardBtn"><i class="fas fa-home"></i> Home</a>
         </li>
         <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle ws-nowrap" id="participants" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -44,6 +45,10 @@ export const dashboardNavBarLinks = (isParent) => {
         <li class="nav-item" id="participantMessageBtn">
             <a class="nav-item nav-link ws-nowrap" href="#participantMessages" title="Participant Messages"><i class="fa fa-envelope-open"></i> Participant Messages</a>
         </li>
+        ${(helpDesk === 'true' || coordinatingCenter === 'true') ?
+        (`<li class="nav-item" id="participantVerificationBtn">
+            <a class="nav-item nav-link ws-nowrap" href="#participantVerificationTool" title="Participant Verification Tool"><i class="fa fa-check"></i> Participant Verification Tool</a>
+        </li>`) : (``) }
         ${(isParent !== 'true' || coordinatingCenter === 'true') ?
         (`<li class="nav-item" id="siteMessageBtn">
             <a class="nav-item nav-link ws-nowrap" href="#siteMessages" title="Site Messages"><i class="fa fa-comments""></i> Site Messages</a>
@@ -91,3 +96,5 @@ export const removeActiveClass = (className, activeClass) => {
         elm.classList.remove(activeClass);
     });
 }
+
+// data-toggle="collapse" data-target=".navbar-collapse.show"
