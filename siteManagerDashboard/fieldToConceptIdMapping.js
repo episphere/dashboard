@@ -190,6 +190,9 @@ export default
     "ageRange3": 363147933,
     "ageRange4": 636706443,
     "ageRange5": 771230670,
+    "ageRange6": 713781738,
+    "ageRange7": 631272782,
+    "ageRange8": 722846087,
 
     // de-identified
     "female": 536341288,
