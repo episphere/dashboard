@@ -62,7 +62,6 @@ export const keyToDuplicateType = {
     866029623 : 'Not Active recruit signed in as an Active recruit',
     654558118 : 'Participant already enrolled',
     979256174 : 'Passive recruit signed in as Active recruit',
-    1000 : 'NULL'
 }
 
 export const updateRecruitmentType = {
