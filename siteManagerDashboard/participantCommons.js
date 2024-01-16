@@ -580,19 +580,19 @@ const tableTemplate = (data, showButtons) => {
                 template += `<td>${participant[fieldMapping.suspendContact.toString()] ? participant[fieldMapping.suspendContact.toString()].split('T')[0] : ``}</td>`)
             : (x === fieldMapping.siteReportedAge.toString()) ? 
             (
-                ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange6 ) ?
+                ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
                     template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `30-34` : ``}</td>`
-                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange7 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `35-39` : ``}</td>`
-                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `40-45` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange2 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `46-50` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `35-39` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange3 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `51-55` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `40-45` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange4 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `56-60` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `46-50` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange5 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `51-55` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange6 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `56-60` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange7 ) ?
                     template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `61-65` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange8 ) ?
                     template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `66-70` : ``}</td>`
