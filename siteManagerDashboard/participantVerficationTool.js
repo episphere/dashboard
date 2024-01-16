@@ -202,7 +202,7 @@ const renderSelectedOptions = (selectedOptions) => {
         template += `- Update Verification Type : ${keyToVerificationStatus[selectedOptions[fieldMapping.verifiedFlag]]} <br />`
     }
     if (selectedOptions[`state.${fieldMapping.duplicateType}`]) {
-        template += `- Update Duplicate Type : ${keyToDuplicateType[selectedOptions[`state.${fieldMapping.duplicateType}`]]} <br />`
+        template += `- Update Duplicate Type : ${keyToDuplicateType[selectedOptions[`state.${fieldMapping.duplicateType}`]] || selectedOptions[`state.${fieldMapping.duplicateType}`]} <br />`
     }
     if (selectedOptions[`state.${fieldMapping.updateRecruitType}`]) {
         template += `- Update Recruit Type : ${updateRecruitmentType[selectedOptions[`state.${fieldMapping.updateRecruitType}`]]} <br />`
@@ -212,11 +212,10 @@ const renderSelectedOptions = (selectedOptions) => {
 
 const finalizeCorrections = (participant, selectedOptions) => {
     const confirmBtn = document.getElementById('confirmCorrection');
-    const duplicateTypeOptn = selectedOptions[`state.${fieldMapping.duplicateType}`]
     const updateRecruitTypeOptn = selectedOptions[`state.${fieldMapping.updateRecruitType}`]
     if (confirmBtn) {
         confirmBtn.addEventListener('click', async () => { 
-            if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate || duplicateTypeOptn === 1000) {
+            if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) {
                 selectedOptions[`state.${fieldMapping.duplicateType}`] = `NULL`
             }
             if (updateRecruitTypeOptn === fieldMapping.passiveToActive) {
