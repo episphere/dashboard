@@ -38,9 +38,9 @@ export const renderVerificationTool = (participant) => {
                                 <div style="position:relative; left:20px; top:2px;">
                                     <br />
                                     <h6><b>Verification Status</b></h6>
-                                    <p>Current Verification Status: <b>${keyToVerificationStatus[participant[fieldMapping.verifiedFlag]]}</b></p>
+                                    <p>- Current Verification Status: <b>${keyToVerificationStatus[participant[fieldMapping.verifiedFlag]]}</b></p>
                                     <div class="dropdown dropright" id="verificationDropdownLookup1">
-                                        Update Verification Type:
+                                        - Update Verification Type:
                                         <button class="btn btn-info dropdown-toggle" type="button" id="dropdownVerification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select</button>
                                         <ul class="dropdown-menu" id="dropdownMenuButtonVerificationOptns" aria-labelledby="dropdownMenuButton1">
                                             <li><a class="dropdown-item" data-cid='select' id="slct">Select</a></li>
@@ -53,10 +53,10 @@ export const renderVerificationTool = (participant) => {
                                         </ul>
                                     </div>
                                     <h6><b>Duplicate Type</b></h6>
-                                    <span style="font-size: 12px;">Note: Duplicate type variable should only be updated with prior approval from CCC.</span>
-                                    <p>Current Duplicate Type: <b>${keyToDuplicateType[participant['state'][fieldMapping.duplicateType]] || ``}</b></p>
+                                    <span style="font-size: 12px;"><b>Note: Duplicate type variable should only be updated with prior approval from CCC.</b></span>
+                                    <p>- Current Duplicate Type: <b>${keyToDuplicateType[participant['state'][fieldMapping.duplicateType]] || ``}</b></p>
                                     <div class="dropdown dropright" id="duplicateTypeDropdownLookup">
-                                        Update Duplicate Type:
+                                        - Update Duplicate Type:
                                         <button class="btn btn-info dropdown-toggle" type="button" id="dropdownDuplicateType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
                                             ${participant[fieldMapping.verifiedFlag] !== fieldMapping.duplicate ? `disabled`: ``}>Select</button>
                                         <ul class="dropdown-menu" id="dropdownMenuButtonDuplicateTypeOptns" aria-labelledby="dropdownMenuButton2">
@@ -70,11 +70,11 @@ export const renderVerificationTool = (participant) => {
                                         </ul>
                                     </div>
                                     <h6><b>Recruit Type</b></h6>
-                                    <span style="font-size: 12px;">Note: Recruit Type and Update Recruit Type should only be updated with prior approval from CCC.</span>
-                                    <p>Current Recruit Type: <b>${recruitmentType[participant[fieldMapping.recruitmentType]]}</b></p>
-                                    <p>Current Update Recruit Type Response: <b>${updateRecruitmentType[participant['state'][fieldMapping.updateRecruitType]] || ``}</b></p>
+                                    <span style="font-size: 12px;"><b>Note: Recruit Type and Update Recruit Type should only be updated with prior approval from CCC.</b></span>
+                                    <p>- Current Recruit Type: <b>${recruitmentType[participant[fieldMapping.recruitmentType]]}</b></p>
+                                    <p>- Current Update Recruit Type Response: <b>${updateRecruitmentType[participant['state'][fieldMapping.updateRecruitType]] || ``}</b></p>
                                     <div class="dropdown dropright" id="updateRecruitTypeDropdownLookup">
-                                    Update Recruit Type:
+                                    - Update Recruit Type:
                                     <button class="btn btn-info dropdown-toggle" type="button" id="dropdownUpdateRecruitType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select</button>
                                         <ul class="dropdown-menu" id="dropdownMenuButtonUpdateRecruitTypeOptns" aria-labelledby="dropdownMenuButton3">
                                             <li><a class="dropdown-item" data-cid='select' id="slct">Select</a></li>
