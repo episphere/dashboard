@@ -522,22 +522,31 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
 
 const filterAgeMetrics = (participantsAgeMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
     const verifiedParticipants =  activeVerifiedParticipants + passiveVerifiedParticipants
-    let ageObject = { '40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0, verifiedParticipants: 0 }
+    let ageObject = { '30-34': 0, '35-39': 0, '40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0, '66-70': 0, verifiedParticipants: 0 }
     participantsAgeMetrics && participantsAgeMetrics.forEach(i => {
         if (parseInt(i.recruitmentAge) === fieldMapping.ageRange1) {
-            ageObject['40-45'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['30-34'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange2) {
-            ageObject['46-50'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['35-39'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange3) {
-            ageObject['51-55'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['40-45'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange4) {
-            ageObject['56-60'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['46-50'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange5) {
+            ageObject['51-55'] +=  parseInt(i.recruitmentAgeCount)
+        }
+        else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange6) {
+            ageObject['56-60'] +=  parseInt(i.recruitmentAgeCount)
+        }
+        else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange7) {
             ageObject['61-65'] +=  parseInt(i.recruitmentAgeCount)
+        }
+        else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange8) {
+            ageObject['66-70'] +=  parseInt(i.recruitmentAgeCount)
         }
     })
     ageObject.verifiedParticipants = verifiedParticipants
