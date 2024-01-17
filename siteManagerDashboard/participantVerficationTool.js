@@ -249,7 +249,7 @@ const clickHandler = async (selectedOptions) => {
             if (response.status === 200) {
                 const query = `token=${selectedOptions.token}`;
                 const reloadedParticpant = await findParticipant(query);
-                reloadVerificationToolPage(reloadedParticpant.data[0], 'Corrections updated', 'success');
+                reloadVerificationToolPage(reloadedParticpant.data[0], 'Correction(s) updated.', 'success');
                 localStorage.setItem("participant", JSON.stringify(reloadedParticpant.data[0]));
             }
             else { 
