@@ -1,4 +1,4 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
 import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
 

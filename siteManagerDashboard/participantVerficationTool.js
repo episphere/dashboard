@@ -1,5 +1,5 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { showAnimation, hideAnimation, baseAPI, getAccessToken, getDataAttributes, triggerNotificationBanner } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import { keyToVerificationStatus, keyToDuplicateType, recruitmentType, updateRecruitmentType } from './idsToName.js';
@@ -253,7 +253,7 @@ const clickHandler = async (selectedOptions) => {
                 localStorage.setItem("participant", JSON.stringify(reloadedParticpant.data[0]));
             }
             else { 
-                triggerNotificationBanner('Error & no corrections were made.', 'warning')
+                triggerNotificationBanner('Error: No corrections were made.', 'warning')
             }
         }
     catch (error) {

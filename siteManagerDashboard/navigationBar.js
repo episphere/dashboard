@@ -1,4 +1,3 @@
-import { urls } from "./utils.js";
 
 export const renderNavBarLinks = () => {
     return `

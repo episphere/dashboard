@@ -1,4 +1,4 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { renderParticipantHeader, getParticipantStatus, getParticipantSuspendedDate } from './participantHeader.js';
 import { renderParticipantWithdrawalLandingPage, viewOptionsSelected, proceedToNextPage, autoSelectOptions, addEventMonthSelection } from './participantWithdrawalForm.js'

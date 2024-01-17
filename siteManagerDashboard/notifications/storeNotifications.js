@@ -1,4 +1,4 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { showAnimation, hideAnimation, baseAPI, getAccessToken } from '../utils.js';
 
 
