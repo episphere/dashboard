@@ -69,3 +69,4 @@ typings/
 scratch
 scratch.js
 .eslintrc.json
+.hintrc

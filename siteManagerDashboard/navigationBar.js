@@ -1,5 +1,3 @@
-import { urls } from "./utils.js";
-
 export const renderNavBarLinks = () => {
     return `
         <li class="nav-item active">
@@ -54,8 +52,9 @@ export const dashboardNavBarLinks = (isParent) => {
                     <i class="fa fa-bell"></i> Notifications 
                 </a>
                 <div class="dropdown-menu sub-div-shadow" aria-labelledby="notifications">
-                    <a class="dropdown-item" href="#notifications/createnotificationschema" id="storeNotificationSchema">Create Notification Schema</a>
-                    <a class="dropdown-item" href="#notifications/retrievenotificationschema" id="retrieveNotificationSchema">Retrieve Notification Schema</a>
+                    <a class="dropdown-item" href="#notifications/createnotificationschema" id="createNotificationSchema">Create A New Schema</a>
+                    <a class="dropdown-item" href="#notifications/retrievenotificationschema" id="retrieveNotificationSchema">Show Completed Schemas</a>
+                    <a class="dropdown-item" href="#notifications/showDraftSchemas" id="showDraftSchemas">Show Draft Schemas</a>
                 </div>
             </li>`) : (``) }
         <li class="nav-item">

@@ -1,104 +1,112 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
-import { getIdToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
-import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
+import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+import { getIdToken, showAnimation, hideAnimation, baseAPI } from '../utils.js';
+import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js';
+import { appState } from '../stateManager.js';
 
+export const renderRetrieveNotificationSchema = async (showDrafts = false) => {
+  const isParent = localStorage.getItem("isParent");
+  document.getElementById("navBarLinks").innerHTML = dashboardNavBarLinks(isParent);
+  removeActiveClass("nav-link", "active");
+  const notificationsAnchor = document.getElementById("notifications");
+  notificationsAnchor && notificationsAnchor.classList.add("active");
+  showAnimation();
+  const idToken = await getIdToken();
+  const response = await getNotificationSchema("all", idToken, showDrafts);
+  const schemaArray = response.data;
+  document.getElementById("mainContent").innerHTML = render(schemaArray, showDrafts);
+  const categoryArray = getNotificationSchemaCategories(schemaArray);
+  const concepts = await getConcepts();
+  triggerSchemaEdit(categoryArray, "Filter by Category", concepts);
+  hideAnimation();
+  appState.setState({ notification: { showDrafts, schemaArray } });
+};
 
-export const renderRetrieveNotificationSchema = async () => {
-    const isParent = localStorage.getItem('isParent')
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-    removeActiveClass('nav-link', 'active');
-    const notificationsAnchor = document.getElementById('notifications');
-    notificationsAnchor && notificationsAnchor.classList.add('active');
-    showAnimation();
-    const idToken = await getIdToken();
-    const response = await getNotificationSchema('all', idToken);
-    let categoriesHolder = getNotificationSchemaCategories(response.data);
-    hideAnimation();
-    mainContent.innerHTML = await render(response);
-    const concepts = await getConcepts();  
-    triggerSchemaEdit(categoriesHolder, 'Filter by Category', concepts);
-}
+export const showDraftSchemas = async () => {
+  await renderRetrieveNotificationSchema(true);
+};
 
-const triggerSchemaEdit = (categoriesHolder, categoryName, concepts) => {
-    viewNotificationSchema(concepts);
-    editNotificationSchema();
-    renderCategorydDropdown(categoriesHolder);
-    triggerCategories(categoriesHolder, categoryName);
-}
+const triggerSchemaEdit = (categoryArray, categoryName, concepts) => {
+  viewNotificationSchema(concepts);
+  editNotificationSchema();
+  renderCategorydDropdown(categoryArray);
+  triggerCategories(categoryArray, categoryName);
+};
 
-
-const render = async (response) => {
-    let template = ``
-    template = `<div class="container-fluid">
-                    <div id="root root-margin"> 
-                    <br />
-                    <span> <h4 style="text-align: center;">Notification Schema List</h4> </span>
-                    <div style="margin-top:10px; padding:15px;" class="dropdown" id="dropdownForm">
-                        <button class="btn btn-secondary dropdown-toggle dropdown-toggle-sites" id="dropdownCategories" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        Filter by Category
-                        </button>
-                        <ul class="dropdown-menu" id="dropdownMenuButtonCategories" aria-labelledby="dropdownMenuButton">
-                        
-                        </ul>
-                    </div>
-                    </div>
-                    </div> 
-                        ${renderNotificationCards(response.data)}
-                </div></div>`
-        template += ` <div class="modal fade" id="modalShowSchema" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
-            <div class="modal-content sub-div-shadow">
-                <div class="modal-header" id="modalHeader"></div>
-                <div class="modal-body" id="modalBody"></div>
+const render = (schemaArray, showDrafts) => {
+  const titleStr = showDrafts ? "Draft Notification Schemas" : "Completed Notification Schemas";
+  return `
+        <div class="container-fluid">
+            <div id="root root-margin"> 
+                <br />
+                <span> <h4 style="text-align: center;">${titleStr}</h4> </span>
+                <div style="margin-top:10px; padding:15px;" class="dropdown" id="dropdownForm">
+                    <button class="btn btn-secondary dropdown-toggle dropdown-toggle-sites" id="dropdownCategories" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Filter by Category
+                    </button>
+                    <ul class="dropdown-menu" id="dropdownMenuButtonCategories" aria-labelledby="dropdownMenuButton">
+                    </ul>
+                </div>
             </div>
+            ${renderNotificationCards(schemaArray)}
         </div>
-    </div>`
-         
- 
-    return template;
-}
+        <div class="modal fade" id="modalShowSchema" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+                <div class="modal-content sub-div-shadow">
+                    <div class="modal-header" id="modalHeader"></div>
+                    <div class="modal-body" id="modalBody"></div>
+                </div>
+            </div>
+        </div>`;
+};
 
-const getNotificationSchema = async (category, siteKey) => {
-    let type = category != undefined ? category : `all`
+const getNotificationSchema = async (category, idToken, showDrafts) => {
+  const catgStr = category !== undefined ? category : `all`;
+  let apiStr = `${baseAPI}/dashboard?api=retrieveNotificationSchema&category=${catgStr}`;
+  if (showDrafts) {
+    apiStr += "&drafts=true";
+  }
 
-    const response = await fetch(`${baseAPI}/dashboard?api=retrieveNotificationSchema&category=${type}`, {
-        method: 'GET',
-        headers: {
-            Authorization: "Bearer " + siteKey
-        }
-    });
-    return response.json();
-}
+  const response = await fetch(apiStr, {
+    method: "GET",
+    headers: {
+      Authorization: "Bearer " + idToken,
+    },
+  });
 
-const renderNotificationCards = (data) => {
-    let template = ``;
-    if (!data || data.length === 0) return template;
-    data.forEach((i, index) => {
-        let schemaInfo = JSON.stringify(i)
-        schemaInfo = escape(JSON.stringify(i))
-        template += `<div class="card detailedRow">
-                            <div class="card-header">
-                                Attempt: ${i.attempt}  |   Notification Type: ${i.notificationType[0] && i.notificationType[0]} ${i.notificationType[1] != undefined ? i.notificationType[1] : ``} ${i.notificationType[2] != undefined ? i.notificationType[2] : ``}
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title">Category: ${i.category} </h5>
-                                <p class="card-text">${i.description}</p>
-                                <button type="button" class="btn btn-success viewSchema" data-toggle="modal" data-target="#modalShowSchema"  data-schema=${schemaInfo} >View</button>
-                                <button type="button" class="btn btn-primary editSchema" data-schema=${schemaInfo}>Edit</button>
-                            </div>
-                        </div>`
-    });
-    return template;
-}
+  return response.json();
+};
+
+const renderNotificationCards = (schemaArray) => {
+  if (!schemaArray || schemaArray.length === 0) return "<h5>No Schema Found</h5>";
+
+  let template = "";
+  schemaArray.forEach((schema, idx) => {
+    template += `
+      <div class="card detailedRow">
+          <div class="card-header">
+              Attempt: ${schema.attempt}  |  Notification ${schema.notificationType.length > 1 ? "Types" : "Type"}: 
+              ${schema.notificationType[0]}${schema.notificationType[1] ? ", " + schema.notificationType[1] : ""}
+              ${schema.notificationType[2] ? ", " + schema.notificationType[2] : ""}
+          </div>
+          <div class="card-body">
+              <h5 class="card-title">Category: ${schema.category} </h5>
+              <p class="card-text">${schema.description}</p>
+              <button type="button" class="btn btn-success viewSchema" data-toggle="modal" data-target="#modalShowSchema" data-schema-idx=${idx}>View</button>
+              <button type="button" class="btn btn-primary editSchema" data-schema-idx=${idx}>Edit</button>
+          </div>
+      </div>`;
+});
+
+  return template;
+};
 
 const viewNotificationSchema = (concepts) => {
-    const a = Array.from(document.getElementsByClassName('detailedRow'));
-    if (a) {
-        a.forEach(element => {
-            let viewCard = element.getElementsByClassName('viewSchema')[0];
-            viewCard.addEventListener('click', () => {
-                let viewSelectedSchema = getDataAttributes(viewCard);
-                const setSelectedData  = JSON.parse(unescape(viewSelectedSchema.schema));
+    const rows = Array.from(document.getElementsByClassName('detailedRow'));
+    if (rows.length > 0) {
+        rows.forEach(element => {
+            const viewButton = element.getElementsByClassName('viewSchema')[0];
+            viewButton.addEventListener('click', () => {
+                const schema = appState.getState().notification.schemaArray[viewButton.dataset.schemaIdx];
                 const header = document.getElementById('modalHeader');
                 const body = document.getElementById('modalBody');
                 header.innerHTML = `<h5>View Schema</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
@@ -106,22 +114,22 @@ const viewNotificationSchema = (concepts) => {
                 let template = '<div>'
                 template += `
                     <div class="row form-group">
-                    <label class="col-form-label col-md-4" for="attempt">Attempt</label> 
-                    <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" value=${unescape(JSON.stringify(setSelectedData.attempt))} readonly>
+                    <label class="col-form-label col-md-3" for="attempt">Attempt</label> 
+                    <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" value=${schema.attempt} readonly>
                 </div>
                 
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4" for="description">Description</label>
-                    <textarea class="col-md-8" required id="description" cols="30" rows="3" readonly>${setSelectedData.description}</textarea>
+                    <label class="col-form-label col-md-3" for="description">Description</label>
+                    <textarea class="col-md-8" required id="description" cols="30" rows="3" readonly>${schema.description}</textarea>
                 </div>
                 
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4" for="category">Category</label>
-                    <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" value=${unescape(JSON.stringify(setSelectedData.category))} readonly>
+                    <label class="col-form-label col-md-3" for="category">Category</label>
+                    <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" value=${schema.category} readonly>
                 </div>
     
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">Notification type</label>
+                    <label class="col-form-label col-md-3">Notification type</label>
                     <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="emailCheckBox" readonly>Email</label>
                     <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="smsCheckBox" readonly>SMS</label>
                     <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;" readonly>&nbsp;<label for="pushNotificationCheckBox" readonly>Push Notification</label>
@@ -155,32 +163,32 @@ const viewNotificationSchema = (concepts) => {
                 </div>
                 
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">Email field concept</label>
+                    <label class="col-form-label col-md-3">Email field concept</label>
                     <div class="email-concept col-md-8 p-0"></div>
                 </div>
                 
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">Phone no. concept</label>
+                    <label class="col-form-label col-md-3">Phone no. concept</label>
                     <div class="phone-concept col-md-8 p-0"></div>
                 </div>
     
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">First name concept</label>
+                    <label class="col-form-label col-md-3">First name concept</label>
                     <div class="first-name-concept col-md-8 p-0"></div>
                 </div>
     
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">Preferred name concept</label>
+                    <label class="col-form-label col-md-3">Preferred name concept</label>
                     <div class="preferred-name-concept col-md-8 p-0"></div>
                 </div>
     
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">Primary field</label>
+                    <label class="col-form-label col-md-3">Primary field</label>
                     <div class="primary-field col-md-8 p-0"></div>
                 </div>
                 
                 <div class="row form-group">
-                    <label class="col-form-label col-md-4">Time</label>
+                    <label class="col-form-label col-md-3">Time</label>
                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" readonly>
                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" readonly>
                     <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" readonly>
@@ -191,7 +199,7 @@ const viewNotificationSchema = (concepts) => {
                 addEventMoreCondition(concepts, true);
                 conceptDropdown(concepts, 'condition-key');
                 conceptDropdown(concepts, 'condition-value');
-                mapSchemaNotificaiton(setSelectedData, concepts, true);
+                mapSchemaNotificaiton(schema, concepts, true);
                 document.getElementById('addConditions').disabled = true; 
             })
         })
@@ -199,36 +207,36 @@ const viewNotificationSchema = (concepts) => {
 }
 
 const editNotificationSchema = () => {
-    let updateCounter = 1;
-    const a = Array.from(document.getElementsByClassName('detailedRow'));
-        if (a) {
-            a.forEach(element => {
-                let editRow = element.getElementsByClassName('editSchema')[0];
-                editRow.addEventListener('click', () => {
-                    const editSelectedSchema = getDataAttributes(editRow);
-                    localStorage.setItem("updateNotificationSchema", unescape(editSelectedSchema.schema));
-                    updateCounter--;
-                    localStorage.setItem("updateFlag", updateCounter);
-                    redirectToStoreSchema();
-                })
-            })
-        }
-}
+  const rows = Array.from(document.getElementsByClassName("detailedRow"));
+  if (rows.length > 0) {
+    rows.forEach((element) => {
+      const editButton = element.getElementsByClassName("editSchema")[0];
+      editButton.addEventListener("click", () => {
+        const schema = appState.getState().notification.schemaArray[editButton.dataset.schemaIdx];
+        appState.setState((state) => ({
+          ...state,
+          notification: {
+            ...state.notification,
+            isEditting: true,
+            savedSchema: schema,
+          },
+        }));
 
+        const editSchemaRoute = "#notifications/editSchema";
+        location.replace(location.origin + location.pathname + editSchemaRoute);
+      });
+    });
+  }
+};
 
-const redirectToStoreSchema = () => {
-    const loadStoreSchemaPage = '#notifications/createnotificationschema'
-    window.location.replace(window.location.origin + window.location.pathname + loadStoreSchemaPage); // updates url to store notification schema
-}
+const getNotificationSchemaCategories = (schemaArray) => {
+  let categorySet = new Set(["all"]);
+  schemaArray.forEach((schema) => {
+    categorySet.add(schema.category);
+  });
 
-const getNotificationSchemaCategories = (categories) => {
-    let categoriesHolder = ["all"]
-    categories.forEach(i => {
-        categoriesHolder.push(i.category);
-    })
-    categoriesHolder = [...new Set(categoriesHolder)]
-    return categoriesHolder;
-}
+  return Array.from(categorySet);
+};
 
 const renderCategorydDropdown = (categoriesHolder) => {
     let unlistedDiv = document.getElementById('dropdownMenuButtonCategories');
@@ -254,8 +262,9 @@ const triggerCategories = (originalCategoriesHolder, categoryName) => {
             if (categoryName === 'Filter by Category' || categoryName === tempCategory) {
                 a.innerHTML = e.target.textContent;
                 const idToken = await getIdToken();
-                const response = await getNotificationSchema(e.target.textContent, idToken);
-                mainContent.innerHTML = await render(response);
+                const showDrafts = appState.getState().notification?.showDrafts ?? false;
+                const response = await getNotificationSchema(e.target.textContent, idToken, showDrafts);
+                document.getElementById("mainContent").innerHTML = await render(response.data, showDrafts);
                 triggerSchemaEdit(originalCategoriesHolder, e.target.textContent);
             }
         })

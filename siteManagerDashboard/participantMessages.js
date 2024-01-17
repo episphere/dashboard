@@ -1,7 +1,7 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import {  baseAPI, humanReadableFromISO, getIdToken } from './utils.js';
+import { baseAPI, humanReadableFromISO, getIdToken } from './utils.js';
 
 
 const headerImportantColumns = [
