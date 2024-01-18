@@ -1,29 +1,32 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { appState } from '../stateManager.js';
 import { showAnimation, hideAnimation, baseAPI, getIdToken } from '../utils.js';
 
 export const editSchema = async () => {
   const notificationData = appState.getState().notification || {};
+  if (!notificationData.isEditting) {
+    const createSchemaRoute = "#notifications/createnotificationschema";
+    location.replace(location.origin + location.pathname + createSchemaRoute);
+    return;
+  }
+
+  const concepts = await renderStoreNotificationSchema();
+  mapSchemaNotificaiton(notificationData.savedSchema, concepts, true);
+};
+
+export const renderStoreNotificationSchema = async () => {
   const isParent = localStorage.getItem("isParent");
   document.getElementById("navBarLinks").innerHTML = dashboardNavBarLinks(isParent);
   removeActiveClass("nav-link", "active");
   document.getElementById("notifications").classList.add("active");
-  mainContent.innerHTML = render(notificationData.isEditting || false);
+  mainContent.innerHTML = render();
   localStorage.setItem("emailCheck", false);
   localStorage.setItem("smsCheck", false);
   localStorage.setItem("pushNotificationCheck", false);
   const concepts = await getConcepts();
   init(concepts);
 
-  if (notificationData.isEditting) {
-    mapSchemaNotificaiton(notificationData.savedSchema, concepts, true);
-  }
-
-};
-
-export const renderStoreNotificationSchema = async () => {
-  appState.setState({ notification: {} });
-  await editSchema();
+  return concepts;
 };
 
 const init = (concepts) => { 
@@ -40,8 +43,8 @@ const init = (concepts) => {
     clearNotificationSchemaForm();
 };
 
-
-const render = (isEditting) => {
+const render = () => {
+    const isEditting = appState.getState().notification?.isEditting;
     const titleStr = isEditting ? "Edit Notification Schema" : "Create Notification Schema";
     let template = `
         <div class="container-fluid">
@@ -531,7 +534,7 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 }
 
 const storeNotificationSchema = async (schema) => {
-  schema.id = appState.getState().notification?.savedSchema?.id ?? "";
+  schema.id = appState.getState().notification?.savedSchema?.id || "";
 
   showAnimation();
   const idToken = await getIdToken();

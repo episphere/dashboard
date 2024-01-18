@@ -262,8 +262,9 @@ const triggerCategories = (originalCategoriesHolder, categoryName) => {
             if (categoryName === 'Filter by Category' || categoryName === tempCategory) {
                 a.innerHTML = e.target.textContent;
                 const idToken = await getIdToken();
-                const showDrafts = appState.getState().notification?.showDrafts ?? false;
+                const showDrafts = appState.getState().notification?.showDrafts;
                 const response = await getNotificationSchema(e.target.textContent, idToken, showDrafts);
+                appState.setState({ notification: { showDrafts, schemaArray: response.data } });
                 document.getElementById("mainContent").innerHTML = await render(response.data, showDrafts);
                 triggerSchemaEdit(originalCategoriesHolder, e.target.textContent);
             }
