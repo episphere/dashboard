@@ -122,7 +122,6 @@ const router = async () => {
         else if (route === '#participantVerificationTool') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
                 alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
-              //  renderParticipantVerificationToolPage();
             }
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))

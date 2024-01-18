@@ -163,13 +163,13 @@ const optionsHandler = (participant) => {
     body.innerHTML = `
         <div style="display:inline-block;">
         ${
+            ((selectedOptions === undefined || selectedOptions === null || Object.keys(selectedOptions).length === 0)) ? 
+            `<span><b>No corrections selected</b></span> <br />
+            <button type="button" class="btn btn-primary" disabled>Confirm</button>`
+            :
             ((!checkIncorrectSelections(participant, selectedOptions))) ?
                 `<span><b>Invalid operation</b></span> <br />
-                <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" disabled>Confirm</button>`
-            :
-            ((selectedOptions === undefined || selectedOptions === null || Object.keys(selectedOptions).length === 0)) ? 
-                `<span><b>No corrections selected</b></span> <br />
-                <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" disabled>Confirm</button>`
+                <button type="button" class="btn btn-primary" disabled>Confirm</button>`
             :
             `${renderSelectedOptions(selectedOptions)}
                 <button type="button" class="btn btn-primary" data-dismiss="modal" target="_blank" id="confirmCorrection">Confirm</button>`
@@ -212,7 +212,7 @@ const renderSelectedOptions = (selectedOptions) => {
 
 const finalizeCorrections = (participant, selectedOptions) => {
     const confirmBtn = document.getElementById('confirmCorrection');
-    const updateRecruitTypeOptn = selectedOptions[`state.${fieldMapping.updateRecruitType}`]
+    const updateRecruitTypeOptn = selectedOptions && selectedOptions[`state.${fieldMapping.updateRecruitType}`]
     if (confirmBtn) {
         confirmBtn.addEventListener('click', async () => { 
             if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) {
@@ -271,7 +271,8 @@ const reloadVerificationToolPage = (participant, message, type) => {
 
 
  const cleanUpSelectedOptions = (selectedOptions) => {
-    Object.keys(selectedOptions).some( (key) => {
+    console.log('selectedOptions', selectedOptions)
+    selectedOptions && Object.keys(selectedOptions).some( (key) => {
         if (selectedOptions[key] === "select") {
             delete selectedOptions[key]
         }

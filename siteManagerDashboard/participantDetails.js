@@ -32,7 +32,6 @@ export const renderParticipantDetails = (participant, changedOption) => {
     const isParent = localStorage.getItem('isParent');
     document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
     removeActiveClass('nav-link', 'active');
-    // closeNavBar();
     document.getElementById('participantDetailsBtn').classList.add('active');
     mainContent.innerHTML = render(participant, changedOption);
     let originalHTML =  mainContent.innerHTML;
