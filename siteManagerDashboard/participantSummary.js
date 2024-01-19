@@ -1,10 +1,10 @@
-import {renderNavBarLinks, dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { userProfile, verificationStatus, baselineBOHSurvey, baselineMRESurvey,baselineSASSurvey, 
     baselineLAWSurvey, baselineSSN, baselineCOVIDSurvey, baselineBloodSample, baselineUrineSample, baselineBiospecSurvey, baselineMenstrualSurvey,
     baselineMouthwashSample, baselineBloodUrineSurvey, baselineMouthwashSurvey, baselineEMR, baselinePayment } from './participantSummaryRow.js';
-import { humanReadableMDY, getCurrentTimeStamp, conceptToSiteMapping, pdfCoordinatesMap } from './utils.js';
+import { humanReadableMDY, conceptToSiteMapping, pdfCoordinatesMap } from './utils.js';
 
 const { PDFDocument, StandardFonts } = PDFLib
 

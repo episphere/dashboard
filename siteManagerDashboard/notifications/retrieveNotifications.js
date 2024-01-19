@@ -1,4 +1,4 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { getAccessToken, showAnimation, hideAnimation, baseAPI, getDataAttributes } from '../utils.js';
 import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js'
 
@@ -241,6 +241,8 @@ const renderCategorydDropdown = (categoriesHolder) => {
         listHyperLink.innerHTML = i;
         list.appendChild(listHyperLink);
         unlistedDiv.appendChild(list);
+        unlistedDiv.style.maxHeight = "300px"; // Adjust the maximum height as needed
+        unlistedDiv.style.overflowY = "auto"; 
     })
 }
 

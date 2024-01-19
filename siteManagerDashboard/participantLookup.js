@@ -1,7 +1,7 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import { renderTable, filterdata, filterBySiteKey, renderData, addEventFilterData, activeColumns } from './participantCommons.js';
 import { internalNavigatorHandler, getDataAttributes, getAccessToken, showAnimation, hideAnimation, baseAPI, urls } from './utils.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj } from './idsToName.js';
 
 export function renderParticipantLookup(){
     const isParent = localStorage.getItem('isParent')

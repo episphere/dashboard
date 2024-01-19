@@ -241,16 +241,6 @@ export default
 	"unaviableHLHF": 419709902,
 	"unaviableNHLHF": 896943397,
 	"unaviableEUHF": 519402449,
-
-    // "americanIndian": 583826374, 
-    // "asian": 636411467, 
-    // "africanAmerican": 458435048, 
-    // "latino": 706998638, 
-    // "middleEastern": 973565052, 
-    // "nativeHawaiian": 586825330,
-    // "white": 412790539, 
-    // "none": 807835037, 
-    // "other": 116984232,
     
     'siteReportedAge': 934298480,
     'siteReportedRace': 849518448,
@@ -279,7 +269,6 @@ export default
     'consentSuffix': 480305327,
     'preConsentOptOut': 158291096,
     'datePreConsentOptOut': 697256759,
-    'duplicateType': 148197146,
     'previousCancer': 452166062,
     'maxNumContactsReached': 875549268,
 
@@ -452,6 +441,7 @@ export default
 
     'alreadyEnrolled': 654558118,
     'noChangeNeeded': 132080040,
+    'notActiveToPassive': 604663208,
     'passiveToActive': 854903954,
     'activeToPassive': 965707001,
     'criteriumNotMet': 539025306,
