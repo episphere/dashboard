@@ -1,4 +1,4 @@
-import {dashboardNavBarLinks, removeActiveClass} from './navigationBar.js';
+import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
 import {  baseAPI, humanReadableFromISO, getIdToken } from './utils.js';
 
 export const renderSiteMessages = async () => {

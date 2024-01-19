@@ -1,6 +1,6 @@
 import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
-import { appState } from '../stateManager.js';
 import { showAnimation, hideAnimation, baseAPI, getIdToken } from '../utils.js';
+import { appState } from '../stateManager.js';
 
 export const editSchema = async () => {
   const notificationData = appState.getState().notification || {};
@@ -15,6 +15,7 @@ export const editSchema = async () => {
 };
 
 export const renderStoreNotificationSchema = async () => {
+  appState.setState({ notification: { } });
   const isParent = localStorage.getItem("isParent");
   document.getElementById("navBarLinks").innerHTML = dashboardNavBarLinks(isParent);
   removeActiveClass("nav-link", "active");

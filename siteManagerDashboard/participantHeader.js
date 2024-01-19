@@ -1,6 +1,6 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { humanReadableMDY } from './utils.js';
-import { keyToNameObj } from './siteKeysToName.js';
+import { keyToNameObj } from './idsToName.js';
 
 export const headerImportantColumns = [
     { field: 'Connect_ID' },

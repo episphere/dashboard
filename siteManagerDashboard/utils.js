@@ -47,7 +47,7 @@ setTimeout(() => {
 }, 50);
 }
 
-import { keyToNameObj } from './siteKeysToName.js';
+import { keyToNameObj } from './idsToName.js';
 
 export const siteKeyToName = (key) => {
   
@@ -129,6 +129,19 @@ export const conceptToSiteMapping = {
   657167265: 'Sanford',
   809703864: 'UCM',
   13: 'NCI'
+}
+
+export const triggerNotificationBanner = (message, type) => {
+  const alertList = document.getElementById("alert_placeholder");
+  if (alertList) {
+      alertList.innerHTML = `
+          <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+              ${message}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+          </div>`;
+  }
 }
 
 /**

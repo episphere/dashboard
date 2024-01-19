@@ -182,11 +182,14 @@ export default
     "refusedBaselinePaymentDate": 438636757,
 
     // de-identified age
-    "ageRange1": 124276120,
-    "ageRange2": 450985724,
-    "ageRange3": 363147933,
-    "ageRange4": 636706443,
-    "ageRange5": 771230670,
+    "ageRange1": 713781738,
+    "ageRange2": 631272782,
+    "ageRange3": 124276120,
+    "ageRange4": 450985724,
+    "ageRange5": 363147933,
+    "ageRange6": 636706443,
+    "ageRange7": 771230670,
+    "ageRange8": 722846087,
 
     // de-identified
     "female": 536341288,
@@ -235,16 +238,6 @@ export default
 	"unaviableHLHF": 419709902,
 	"unaviableNHLHF": 896943397,
 	"unaviableEUHF": 519402449,
-
-    // "americanIndian": 583826374, 
-    // "asian": 636411467, 
-    // "africanAmerican": 458435048, 
-    // "latino": 706998638, 
-    // "middleEastern": 973565052, 
-    // "nativeHawaiian": 586825330,
-    // "white": 412790539, 
-    // "none": 807835037, 
-    // "other": 116984232,
     
     'siteReportedAge': 934298480,
     'siteReportedRace': 849518448,
@@ -440,6 +433,7 @@ export default
 
     'alreadyEnrolled': 654558118,
     'noChangeNeeded': 132080040,
+    'notActiveToPassive': 604663208,
     'passiveToActive': 854903954,
     'activeToPassive': 965707001,
     'criteriumNotMet': 539025306,
