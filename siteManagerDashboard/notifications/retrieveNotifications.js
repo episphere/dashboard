@@ -217,7 +217,7 @@ const editNotificationSchema = () => {
           ...state,
           notification: {
             ...state.notification,
-            isEditting: true,
+            isEditing: true,
             savedSchema: schema,
           },
         }));

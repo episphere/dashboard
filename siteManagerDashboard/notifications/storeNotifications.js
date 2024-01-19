@@ -4,7 +4,7 @@ import { showAnimation, hideAnimation, baseAPI, getIdToken } from '../utils.js';
 
 export const editSchema = async () => {
   const notificationData = appState.getState().notification || {};
-  if (!notificationData.isEditting) {
+  if (!notificationData.isEditing) {
     const createSchemaRoute = "#notifications/createnotificationschema";
     location.replace(location.origin + location.pathname + createSchemaRoute);
     return;
@@ -44,8 +44,8 @@ const init = (concepts) => {
 };
 
 const render = () => {
-    const isEditting = appState.getState().notification?.isEditting;
-    const titleStr = isEditting ? "Edit Notification Schema" : "Create Notification Schema";
+    const isEditing = appState.getState().notification?.isEditing;
+    const titleStr = isEditing ? "Edit Notification Schema" : "Create Notification Schema";
     let template = `
         <div class="container-fluid">
             <div id="root root-margin"> 
