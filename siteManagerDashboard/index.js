@@ -4,7 +4,7 @@ import { renderTable, filterdata, renderData, addEventFilterData, activeColumns,
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
-import { renderParticipantVerificationToolPage } from './participantVerficationTool.js';
+import { renderDataCorrectionsToolPage } from './dataCorrectionsTool.js';
 import { renderSiteMessages } from './siteMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
 import { renderStoreNotificationSchema } from './notifications/storeNotifications.js';
@@ -119,13 +119,13 @@ const router = async () => {
                 renderParticipantMessages(participant);
             }
         }
-        else if (route === '#participantVerificationTool') {
+        else if (route === '#dataCorrectionsTool') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
                 alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
             }
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))
-                renderParticipantVerificationToolPage(participant);
+                renderDataCorrectionsToolPage(participant);
             }
         }
         else if (route === '#siteMessages') renderSiteMessages();

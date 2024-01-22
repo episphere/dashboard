@@ -7,7 +7,7 @@ import { appState } from './stateManager.js';
 import { findParticipant } from './participantLookup.js';
 
 
-export const renderParticipantVerificationToolPage = (participant) => {
+export const renderDataCorrectionsToolPage = (participant) => {
     if (participant !== undefined) {
         const isParent = localStorage.getItem('isParent')
         document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -263,7 +263,7 @@ const clickHandler = async (selectedOptions) => {
 
 const reloadVerificationToolPage = (participant, message, type) => {
     showAnimation();
-    renderParticipantVerificationToolPage(participant);
+    renderDataCorrectionsToolPage(participant);
     triggerNotificationBanner(message, type);
     hideAnimation();
 }

@@ -369,7 +369,15 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Age of Verified Participants N = ${verifiedParticipants}`
+        title: `Age of Verified Participants <br> N = ${verifiedParticipants}`,
+        legend: {
+            orientation: 'h', // 'v' for vertical, 'h' for horizontal
+            x: 1,
+            y: -1,
+            xanchor: 'right',
+            yanchor: 'bottom',
+        },
+        height: 300, // Adjust the height to increase diameter
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -400,7 +408,7 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Race/Ethnicity of Verified Participants N = ${verifiedParticipants}`
+        title: `Race/Ethnicity of Verified Participants <br> N = ${verifiedParticipants}`
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -528,7 +536,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Completion of Initial Survey among verified participants N=${verifiedParticipants}`
+        title: `Completion of Initial Survey among verified <br> participants N=${verifiedParticipants}`
     };
       
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -554,7 +562,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Completion of SSN among verified participants N=${verifiedParticipants}`
+        title: `Completion of SSN among verified <br> participants N=${verifiedParticipants}`
     };
       
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -593,7 +601,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
             automargin: true,
             fixedrange: true
         },
-        title: `Baseline biospecimens collected <br> among verified participants N=${verifiedParticipants}`
+        title: `Baseline biospecimens collected among <br> verified participants N=${verifiedParticipants}`
     };
       
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
