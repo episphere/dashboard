@@ -110,7 +110,6 @@ export const renderVerificationTool = (participant) => {
             </div>
         </div>
     </div>`
-                                        console.log('ddd', participant)
     return template;
 }
 
