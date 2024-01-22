@@ -110,7 +110,7 @@ export const renderVerificationTool = (participant) => {
             </div>
         </div>
     </div>`
-
+                                        console.log('ddd', participant)
     return template;
 }
 
@@ -215,7 +215,7 @@ const finalizeCorrections = (participant, selectedOptions) => {
     const updateRecruitTypeOptn = selectedOptions && selectedOptions[`state.${fieldMapping.updateRecruitType}`]
     if (confirmBtn) {
         confirmBtn.addEventListener('click', async () => { 
-            if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) {
+            if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate && `state.${fieldMapping.duplicateType}` in selectedOptions === false) {
                 selectedOptions[`state.${fieldMapping.duplicateType}`] = `NULL`
             }
             if (updateRecruitTypeOptn === fieldMapping.passiveToActive) {
@@ -271,7 +271,6 @@ const reloadVerificationToolPage = (participant, message, type) => {
 
 
  const cleanUpSelectedOptions = (selectedOptions) => {
-    console.log('selectedOptions', selectedOptions)
     selectedOptions && Object.keys(selectedOptions).some( (key) => {
         if (selectedOptions[key] === "select") {
             delete selectedOptions[key]
