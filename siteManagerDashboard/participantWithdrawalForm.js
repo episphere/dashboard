@@ -1,5 +1,5 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { showAnimation, hideAnimation, baseAPI, getAccessToken } from './utils.js';
+import { showAnimation, hideAnimation, baseAPI, getIdToken } from './utils.js';
 import { renderRefusalOptions, renderCauseOptions } from './participantWithdrawalRender.js';
 
 export const renderParticipantWithdrawalLandingPage = () => {
@@ -546,8 +546,8 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (JSON.stringify(refusalObj) === '{}') delete sendRefusalData[fieldMapping.refusalOptions]
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
-    const siteKey = await getAccessToken();
-    clickHandler(sendRefusalData, siteKey, token);
+    const idToken = await getIdToken();
+    clickHandler(sendRefusalData, idToken, token);
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {

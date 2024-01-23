@@ -1,4 +1,3 @@
-
 export const renderNavBarLinks = () => {
     return `
         <li class="nav-item active">
@@ -58,8 +57,9 @@ export const dashboardNavBarLinks = (isParent) => {
                     <i class="fa fa-bell"></i> Notifications 
                 </a>
                 <div class="dropdown-menu sub-div-shadow" aria-labelledby="notifications">
-                    <a class="dropdown-item" href="#notifications/createnotificationschema" id="storeNotificationSchema"><span data-target="#navbarNavAltMarkup" data-toggle="collapse">Create Notification Schema</span></a>
-                    <a class="dropdown-item" href="#notifications/retrievenotificationschema" id="retrieveNotificationSchema"><span data-target="#navbarNavAltMarkup" data-toggle="collapse">Retrieve Notification Schema</span></a>
+                    <a class="dropdown-item" href="#notifications/createnotificationschema" id="createNotificationSchema"><span data-target="#navbarNavAltMarkup" data-toggle="collapse">Create A New Schema</span></a>
+                    <a class="dropdown-item" href="#notifications/retrievenotificationschema" id="retrieveNotificationSchema"><span data-target="#navbarNavAltMarkup" data-toggle="collapse">Show Completed Schemas</span></a>
+                    <a class="dropdown-item" href="#notifications/showDraftSchemas" id="showDraftSchemas"><span data-target="#navbarNavAltMarkup" data-toggle="collapse">Show Draft Schemas</span></a>
                 </div>
             </li>`) : (``) }
         <li class="nav-item">
