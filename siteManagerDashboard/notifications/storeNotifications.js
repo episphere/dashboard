@@ -10,12 +10,16 @@ export const editSchema = async () => {
     return;
   }
 
-  const concepts = await renderStoreNotificationSchema();
+  const concepts = await initializePage();
   mapSchemaNotificaiton(notificationData.savedSchema, concepts, true);
 };
 
 export const renderStoreNotificationSchema = async () => {
   appState.setState({ notification: { } });
+  await initializePage();
+};
+
+export const initializePage = async () => {
   const isParent = localStorage.getItem("isParent");
   document.getElementById("navBarLinks").innerHTML = dashboardNavBarLinks(isParent);
   removeActiveClass("nav-link", "active");
