@@ -257,7 +257,7 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
 
 const formSubmit = () => {
   const form = document.getElementById("configForm");
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
     let schema = {};
     schema.isDraft = e.submitter.dataset.draft === "true";
@@ -313,7 +313,7 @@ const formSubmit = () => {
       }
     });
 
-    storeNotificationSchema(schema);
+    await storeNotificationSchema(schema);
   });
 };
 

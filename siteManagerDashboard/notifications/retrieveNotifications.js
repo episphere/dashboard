@@ -267,7 +267,7 @@ const triggerCategories = (originalCategoriesHolder, categoryName) => {
                 const showDrafts = appState.getState().notification?.showDrafts;
                 const response = await getNotificationSchema(e.target.textContent, idToken, showDrafts);
                 appState.setState({ notification: { showDrafts, schemaArray: response.data } });
-                document.getElementById("mainContent").innerHTML = await render(response.data, showDrafts);
+                document.getElementById("mainContent").innerHTML = render(response.data, showDrafts);
                 triggerSchemaEdit(originalCategoriesHolder, e.target.textContent);
             }
         })
