@@ -213,15 +213,12 @@ const editNotificationSchema = () => {
       const editButton = element.getElementsByClassName("editSchema")[0];
       editButton.addEventListener("click", () => {
         const schema = appState.getState().notification.schemaArray[editButton.dataset.schemaIdx];
-        appState.setState((state) => ({
-          ...state,
+        appState.setState({
           notification: {
-            ...state.notification,
             isEditing: true,
             savedSchema: schema,
           },
-        }));
-
+        });
         const editSchemaRoute = "#notifications/editSchema";
         location.replace(location.origin + location.pathname + editSchemaRoute);
       });
