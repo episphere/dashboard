@@ -7,7 +7,7 @@ import { appState } from './stateManager.js';
 import { findParticipant } from './participantLookup.js';
 
 
-export const renderParticipantVerificationToolPage = (participant) => {
+export const renderDataCorrectionsToolPage = (participant) => {
     if (participant !== undefined) {
         const isParent = localStorage.getItem('isParent')
         document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -110,7 +110,6 @@ export const renderVerificationTool = (participant) => {
             </div>
         </div>
     </div>`
-
     return template;
 }
 
@@ -215,7 +214,7 @@ const finalizeCorrections = (participant, selectedOptions) => {
     const updateRecruitTypeOptn = selectedOptions && selectedOptions[`state.${fieldMapping.updateRecruitType}`]
     if (confirmBtn) {
         confirmBtn.addEventListener('click', async () => { 
-            if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) {
+            if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate && `state.${fieldMapping.duplicateType}` in selectedOptions === false) {
                 selectedOptions[`state.${fieldMapping.duplicateType}`] = `NULL`
             }
             if (updateRecruitTypeOptn === fieldMapping.passiveToActive) {
@@ -264,14 +263,13 @@ const clickHandler = async (selectedOptions) => {
 
 const reloadVerificationToolPage = (participant, message, type) => {
     showAnimation();
-    renderParticipantVerificationToolPage(participant);
+    renderDataCorrectionsToolPage(participant);
     triggerNotificationBanner(message, type);
     hideAnimation();
 }
 
 
  const cleanUpSelectedOptions = (selectedOptions) => {
-    console.log('selectedOptions', selectedOptions)
     selectedOptions && Object.keys(selectedOptions).some( (key) => {
         if (selectedOptions[key] === "select") {
             delete selectedOptions[key]
