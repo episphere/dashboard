@@ -554,22 +554,33 @@ const storeNotificationSchema = async (schema) => {
     },
   });
   hideAnimation();
-  if (response.status === 200) {
-    successAlert();
+  const res = await response.json();
+  if (res.code === 200 && res.data?.length > 0) {
+    schema.id = res.data[0].schemaId || "";
+    appState.setState({ notification: { savedSchema: schema } });
+    successAlert(`Notfication Schema Saved as ${schema.isDraft ? "Draft" : "Complete"}.`);
   } else {
-    alert("Error in saving notification schema");
+    errorAlert("Error in saving notification schema.");
   }
 };
 
-const successAlert = () => {
+const successAlert = (alertMessage) => {
+  alertBar(alertMessage, true);
+};
+
+const errorAlert = (alertMessage) => {
+  alertBar(alertMessage, false);
+};
+
+const alertBar = (alertMessage = "Error", isSuccess = false) => {
   let alertDiv = document.getElementById("alert_placeholder");
   alertDiv.innerHTML = `
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
-        Notfication Schema Saved.
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>`;
+      <div class="alert ${isSuccess ? "alert-success" : "alert-danger"} alert-dismissible fade show" role="alert">
+          ${alertMessage}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+          </button>
+      </div>`;
 };
 
 const getOperatorResponse = (i) => {
