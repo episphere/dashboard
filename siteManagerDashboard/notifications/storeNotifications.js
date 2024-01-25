@@ -539,7 +539,8 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 }
 
 const storeNotificationSchema = async (schema) => {
-  schema.id = appState.getState().notification?.savedSchema?.id || "";
+  const notificationData = appState.getState().notification || {};
+  schema.id = notificationData.savedSchema?.id || "";
 
   showAnimation();
   const idToken = await getIdToken();
@@ -557,7 +558,7 @@ const storeNotificationSchema = async (schema) => {
   const res = await response.json();
   if (res.code === 200 && res.data?.length > 0) {
     schema.id = res.data[0].schemaId || "";
-    appState.setState({ notification: { savedSchema: schema } });
+    appState.setState({ notification: { savedSchema: schema, isEditing: notificationData.isEditing || false } });
     successAlert(`Notfication Schema Saved as ${schema.isDraft ? "Draft" : "Complete"}.`);
   } else {
     errorAlert("Error in saving notification schema.");
