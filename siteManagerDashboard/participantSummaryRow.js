@@ -26,16 +26,16 @@ export const verificationStatus = (participant) => {
         humanReadableMDY(participant[fieldMapping.verficationDate]), "N/A", "N", "N/A");
     } else if (participant[fieldMapping.verifiedFlag] === fieldMapping.cannotBeVerified) {
         template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "Can't be Verified",
-        "N/A", "N/A", "N", "N/A");
+        humanReadableMDY(participant[fieldMapping.verficationDate]) || "N/A", "N/A", "N", "N/A");
     } else if (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) {
         template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "Not yet Verified",
         "N/A", "N/A", "N", "N/A");
     } else if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Enrollment", "N/A", "Verification Status", "Duplicate",
-        "N/A", "N/A", "N", "N/A");
+        humanReadableMDY(participant[fieldMapping.verficationDate]) || "N/A", "N/A", "N", "N/A");
     } else {
         template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Enrollment", "N/A", "Verification Status", "Outreach Timed Out",
-        "N/A", "N/A", "N", "N/A");
+        humanReadableMDY(participant[fieldMapping.verficationDate]) || "N/A", "N/A", "N", "N/A");
     }
     
     return template;
