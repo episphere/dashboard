@@ -1,5 +1,5 @@
 import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
-import { showAnimation, hideAnimation, baseAPI, getIdToken } from '../utils.js';
+import { showAnimation, hideAnimation, baseAPI, getIdToken, triggerNotificationBanner } from '../utils.js';
 import { appState } from '../stateManager.js';
 
 export const editSchema = async () => {
@@ -557,31 +557,13 @@ const storeNotificationSchema = async (schema) => {
   hideAnimation();
   const res = await response.json();
   if (res.code === 200 && res.data?.length > 0) {
-    schema.id = res.data[0].schemaId || "";
+    schema.id = res.data[0].schemaId;
     appState.setState({ notification: { savedSchema: schema, isEditing: notificationData.isEditing || false } });
-    successAlert(`Notfication Schema Saved as ${schema.isDraft ? "Draft" : "Complete"}.`);
+    triggerNotificationBanner(`Notfication Schema Saved as ${schema.isDraft ? "Draft" : "Complete"}.`, "success");
   } else {
-    errorAlert("Error in saving notification schema.");
+    triggerNotificationBanner("Error in saving notification schema!", "danger");
   }
-};
 
-const successAlert = (alertMessage) => {
-  alertBar(alertMessage, true);
-};
-
-const errorAlert = (alertMessage) => {
-  alertBar(alertMessage, false);
-};
-
-const alertBar = (alertMessage = "Error", isSuccess = false) => {
-  let alertDiv = document.getElementById("alert_placeholder");
-  alertDiv.innerHTML = `
-      <div class="alert ${isSuccess ? "alert-success" : "alert-danger"} alert-dismissible fade show" role="alert">
-          ${alertMessage}
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-          </button>
-      </div>`;
 };
 
 const getOperatorResponse = (i) => {
