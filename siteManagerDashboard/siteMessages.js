@@ -1,8 +1,5 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { renderParticipantHeader } from './participantHeader.js';
-import fieldMapping from './fieldToConceptIdMapping.js';
-import {  baseAPI, humanReadableFromISO, getAccessToken } from './utils.js';
-
+import {  baseAPI, humanReadableFromISO, getIdToken } from './utils.js';
 
 export const renderSiteMessages = async () => {
     const isParent = localStorage.getItem('isParent')
@@ -14,15 +11,14 @@ export const renderSiteMessages = async () => {
 
 export const render = async () => {
     let template = `<div class="container-fluid">`
-    let siteHolder = []
     template +=` 
         <div id="root root-margin">
             <span> <h4 style="text-align: center; padding-top: 25px;">Site Messages </h4> </span>
         </div>
     </div>`
 
-    const siteKey = await getAccessToken();  
-    let messages =  await getSiteMessage(siteKey);
+    const idToken = await getIdToken();  
+    let messages =  await getSiteMessage(idToken);
     messages.data.length !== 0 ? (
         messages.data.forEach(message => 
             template += `

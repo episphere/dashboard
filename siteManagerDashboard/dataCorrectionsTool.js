@@ -1,6 +1,6 @@
 import fieldMapping from './fieldToConceptIdMapping.js';
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { showAnimation, hideAnimation, baseAPI, getAccessToken, getDataAttributes, triggerNotificationBanner } from './utils.js';
+import { showAnimation, hideAnimation, baseAPI, getIdToken, getDataAttributes, triggerNotificationBanner } from './utils.js';
 import { renderParticipantHeader } from './participantHeader.js';
 import { keyToVerificationStatus, keyToDuplicateType, recruitmentType, updateRecruitmentType } from './idsToName.js';
 import { appState } from './stateManager.js';
@@ -233,13 +233,13 @@ const finalizeCorrections = (participant, selectedOptions) => {
 const clickHandler = async (selectedOptions) => {
     try {
         showAnimation();
-        const bearerToken = await getAccessToken();
+        const idToken = await getIdToken();
         const payload = { "data": [selectedOptions] }
         const response = await fetch(`${baseAPI}/dashboard?api=participantDataCorrection`, {
             method:'POST',
             body: JSON.stringify(payload),
             headers:{
-                Authorization:"Bearer "+bearerToken,
+                Authorization:"Bearer " + idToken,
                 "Content-Type": "application/json"
                 }
             })
