@@ -41,15 +41,17 @@ export const renderVerificationTool = (participant) => {
                                     <p>- Current Verification Status: <b>${keyToVerificationStatus[participant[fieldMapping.verifiedFlag]]}</b></p>
                                     <div class="dropdown dropright" id="verificationDropdownLookup1">
                                         - Update Verification Type:
-                                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownVerification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select</button>
+                                        <button class="btn btn-info dropdown-toggle" type="button" id="dropdownVerification" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                                        ${participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified ? `disabled` : ``}> Select</button>
                                         <ul class="dropdown-menu" id="dropdownMenuButtonVerificationOptns" aria-labelledby="dropdownMenuButton1">
                                             <li><a class="dropdown-item" data-cid='select' id="slct">Select</a></li>
-                                            <li><a class="dropdown-item" data-cid=${fieldMapping.verified} id="vrfd">Verified</a></li>
-                                            <li><a class="dropdown-item" data-cid=${fieldMapping.outreachTimedout} id="outRchTime">Outreach timed out</a></li>
-                                            ${participant[fieldMapping.verifiedFlag] !== fieldMapping.verified ? 
-                                                `<li><a class="dropdown-item" data-cid=${fieldMapping.cannotBeVerified} id="cantVrfd">Cannot be verified</a></li>`
-                                                : ``}
-                                            <li><a class="dropdown-item" data-cid=${fieldMapping.duplicate} id="dup">Duplicate</a></li>
+                                            ${participant[fieldMapping.verifiedFlag] !== fieldMapping.notYetVerified ?
+                                                `<li><a class="dropdown-item" data-cid=${fieldMapping.verified} id="vrfd">Verified</a></li>
+                                                <li><a class="dropdown-item" data-cid=${fieldMapping.outreachTimedout} id="outRchTime">Outreach timed out</a></li>
+                                                ${participant[fieldMapping.verifiedFlag] !== fieldMapping.verified ? 
+                                                    `<li><a class="dropdown-item" data-cid=${fieldMapping.cannotBeVerified} id="cantVrfd">Cannot be verified</a></li>`
+                                                    : ``}
+                                                <li><a class="dropdown-item" data-cid=${fieldMapping.duplicate} id="dup">Duplicate</a></li>` : ``}
                                         </ul>
                                     </div>
                                     <h6><b>Duplicate Type</b></h6>
