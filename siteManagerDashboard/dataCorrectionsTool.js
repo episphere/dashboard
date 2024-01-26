@@ -75,7 +75,8 @@ export const renderVerificationTool = (participant) => {
                                     <p>- Current Update Recruit Type Response: <b>${updateRecruitmentType[participant['state'][fieldMapping.updateRecruitType]] || ``}</b></p>
                                     <div class="dropdown dropright" id="updateRecruitTypeDropdownLookup">
                                     - Update Recruit Type:
-                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownUpdateRecruitType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select</button>
+                                    <button class="btn btn-info dropdown-toggle" type="button" id="dropdownUpdateRecruitType" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                        ${participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified ? `disabled` : ``}>Select</button>
                                         <ul class="dropdown-menu" id="dropdownMenuButtonUpdateRecruitTypeOptns" aria-labelledby="dropdownMenuButton3">
                                             <li><a class="dropdown-item" data-cid='select' id="slct">Select</a></li>
                                             <li><a class="dropdown-item" data-cid=${fieldMapping.noChangeNeeded} id="noChnge">No change needed</a></li>
