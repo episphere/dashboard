@@ -12,7 +12,7 @@ export const renderRetrieveNotificationSchema = async (showDrafts = false) => {
   showAnimation();
   const idToken = await getIdToken();
   const response = await getNotificationSchema("all", idToken, showDrafts);
-  const schemaArray = response.data;
+  const schemaArray = response.data || [];
   document.getElementById("mainContent").innerHTML = render(schemaArray, showDrafts);
   const categoryArray = getNotificationSchemaCategories(schemaArray);
   const concepts = await getConcepts();
@@ -77,7 +77,7 @@ const getNotificationSchema = async (category, idToken, showDrafts) => {
 };
 
 const renderNotificationCards = (schemaArray) => {
-  if (!schemaArray || schemaArray.length === 0) return "<h5>No Schema Found</h5>";
+  if (!schemaArray || schemaArray.length === 0) return "<h5>No Schemas Found</h5>";
 
   let template = "";
   schemaArray.forEach((schema, idx) => {
@@ -227,6 +227,7 @@ const editNotificationSchema = () => {
 };
 
 const getNotificationSchemaCategories = (schemaArray) => {
+  if (!schemaArray || schemaArray.length === 0) return [];
   let categorySet = new Set(["all"]);
   schemaArray.forEach((schema) => {
     categorySet.add(schema.category);
