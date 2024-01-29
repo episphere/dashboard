@@ -185,9 +185,10 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
             localStorage.setItem("emailCheck", true);
         }
         if (i === "sms") {
-            document.getElementById('smsCheckBox').checked = true
+            document.getElementById('smsCheckBox').checked = true;
             renderDivs("sms", flag);
-            document.getElementById('smsBody').value = updateSchemaNotification.sms.body
+            document.getElementById('smsBody').value = updateSchemaNotification.sms.body;
+            document.getElementById('characterCounts').innerText = `${updateSchemaNotification.sms.body.length}/160 characters`;
             localStorage.setItem("smsCheck", true);
         } 
         if (i === "push") {
