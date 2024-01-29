@@ -1,31 +1,38 @@
-import { renderNavBarLinks, dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
-import { showAnimation, hideAnimation, baseAPI, getAccessToken } from '../utils.js';
+import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
+import { showAnimation, hideAnimation, baseAPI, getIdToken, triggerNotificationBanner } from '../utils.js';
+import { appState } from '../stateManager.js';
 
+export const editSchema = async () => {
+  const notificationData = appState.getState().notification || {};
+  if (!notificationData.isEditing) {
+    const createSchemaRoute = "#notifications/createnotificationschema";
+    location.replace(location.origin + location.pathname + createSchemaRoute);
+    return;
+  }
+
+  const concepts = await initializePage();
+  mapSchemaNotificaiton(notificationData.savedSchema, concepts, true);
+};
 
 export const renderStoreNotificationSchema = async () => {
-    const isParent = localStorage.getItem('isParent')
-    document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
-    removeActiveClass('nav-link', 'active');
-    document.getElementById('notifications').classList.add('active');
-    let updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema"));
-    let updateCounter = localStorage.getItem("updateFlag");
-    localStorage.removeItem('updateFlag');
-    mainContent.innerHTML = render();
-    localStorage.setItem("emailCheck", false);
-    localStorage.setItem("smsCheck", false);
-    localStorage.setItem("pushNotificationCheck", false);
-    const concepts = await getConcepts();  
-    init(concepts);
-    if(updateCounter == 0) {
-        mapSchemaNotificaiton(updateSchemaNotification, concepts);
-    }
-    else {
-        if (localStorage.getItem("updateNotificationSchema") !== null) {
-            localStorage.setItem("idFlag", false);
-            localStorage.removeItem("updateNotificationSchema");
-        }
-    }
-}
+  appState.setState({ notification: { } });
+  await initializePage();
+};
+
+export const initializePage = async () => {
+  const isParent = localStorage.getItem("isParent");
+  document.getElementById("navBarLinks").innerHTML = dashboardNavBarLinks(isParent);
+  removeActiveClass("nav-link", "active");
+  document.getElementById("notifications").classList.add("active");
+  mainContent.innerHTML = render();
+  localStorage.setItem("emailCheck", false);
+  localStorage.setItem("smsCheck", false);
+  localStorage.setItem("pushNotificationCheck", false);
+  const concepts = await getConcepts();
+  init(concepts);
+
+  return concepts;
+};
 
 const init = (concepts) => { 
     addEventMoreCondition(concepts);
@@ -39,131 +46,135 @@ const init = (concepts) => {
     addEventNotificationCheckbox();
     formSubmit();
     clearNotificationSchemaForm();
-}
+};
 
-
-export const render = () => {
-    let template = `<div class="container-fluid">
-                        <div id="root root-margin"> 
-                        <div id="alert_placeholder"></div>
-                        <br />
-                        <span> <h4 style="text-align: center;" id="getCurrentTitle">Create Notification Schema</h4> </span>
-                            <form method="post" class="mt-3" id="configForm">
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4" for="attempt">Attempt</label>
-                                    <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact">
-                                </div>
-                                
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4" for="description">Description</label>
-                                    <textarea class="col-md-8" required id="description" cols="30" rows="3"></textarea>
-                                </div>
-                                
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4" for="category">Category</label>
-                                    <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented">
-                                </div>
+const render = () => {
+    const isEditing = appState.getState().notification?.isEditing;
+    const titleStr = isEditing ? "Edit Notification Schema" : "Create Notification Schema";
+    let template = `
+        <div class="container-fluid">
+            <div id="root root-margin"> 
+                <div id="alert_placeholder"></div>
+                <br />
+                <span> <h4 style="text-align: center;" id="getCurrentTitle">${titleStr}</h4> </span>
+                <form method="post" class="mt-3" id="configForm">
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3" for="attempt">Attempt</label>
+                        <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact">
+                    </div>
                     
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Notification type</label>
-                                    <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;">&nbsp;<label class="mr-3" for="emailCheckBox">Email</label>
-                                    <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;">&nbsp;<label class="mr-3" for="smsCheckBox">SMS</label>
-                                    <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
-                                </div>
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3" for="description">Description</label>
+                        <textarea class="col-md-8" required id="description" cols="30" rows="3"></textarea>
+                    </div>
                     
-                                <div class="row">
-                                    <label class="col-form-label col-md-4" for="condition-key">Schedule at (EST)</label>
-                                    <div class="col-md-1 form-check">
-                                        <input class="form-check-input" checked value="15:00" type="radio" name="scheduleAt" id="scheduleAt1">
-                                        <label class="form-check-label" for="scheduleAt1">
-                                            3:00 PM
-                                        </label>
-                                    </div>
-                                    <div class="col-md-1 form-check">
-                                        <input class="form-check-input" type="radio" value="20:00" name="scheduleAt" id="scheduleAt2">
-                                        <label class="form-check-label" for="scheduleAt2">
-                                            8:00 PM
-                                        </label>
-                                    </div>
-                                </div>
-                                <div id="emailDiv"></div>
-                                <div id="smsDiv"></div>
-                                <div id="pushDiv"></div>
-                    
-                                <div id="conditionsDiv">
-                                    <div class="row form-group">
-                                        <label class="col-form-label col-md-3">Condition</label>
-                                        <div class="condition-key col-md-2 mr-2 p-0"></div>
-                                        <select id="operatorkey0" name="condition-operator" class="col-md-2 form-control mr-2">
-                                            <option value="equals">equals</option>
-                                            <option value="notequals">notequals</option>
-                                            <option value="greater">greater</option>
-                                            <option value="greaterequals">greaterequals</option>
-                                            <option value="less">less</option>
-                                            <option value="lessequals">lessequals</option>
-                                        </select>
-                                        <select id="valuetype0" name="value-type" class="col-md-2 form-control mr-2">
-                                            <option value="number">number</option>
-                                            <option value="string">string</option>
-                                        </select>
-                                        <div class="condition-value col-md-2 mr-2 p-0"></div>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="1">Add more condition</button>
-                                </div>
-                                
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Email field concept</label>
-                                    <div class="email-concept col-md-8 p-0"></div>
-                                </div>
-                                
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Phone no. concept</label>
-                                    <div class="phone-concept col-md-8 p-0"></div>
-                                </div>
-                    
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">First name concept</label>
-                                    <div class="first-name-concept col-md-8 p-0"></div>
-                                </div>
-                    
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Preferred name concept</label>
-                                    <div class="preferred-name-concept col-md-8 p-0"></div>
-                                </div>
-                    
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Primary field</label>
-                                    <div class="primary-field col-md-8 p-0"></div>
-                                </div>
-                                
-                                <div class="row form-group">
-                                    <label class="col-form-label col-md-4">Time</label>
-                                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days">
-                                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)">
-                                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)">
-                                </div>
-                                
-                                <div class="mt-4 mb-4" style="display:inline-block;">
-                                    <button type="submit" class="btn btn-primary" id="updateId">Save Changes</button>
-                                    <button type="button" class="btn btn-danger" id="exitForm">Exit Without Saving</button>
-                                </div>
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3" for="category">Category</label>
+                        <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented">
+                    </div>
         
-                            </form>
-                    </div></div>`
-
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">Notification type</label>
+                        <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;">&nbsp;<label class="mr-3" for="emailCheckBox">Email</label>
+                        <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;">&nbsp;<label class="mr-3" for="smsCheckBox">SMS</label>
+                        <input type="checkbox" disabled name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
+                    </div>
+        
+                    <div class="row">
+                        <label class="col-form-label col-md-3" for="condition-key">Schedule at (EST)</label>
+                        <div class="col-md-1 form-check">
+                            <input class="form-check-input" checked value="15:00" type="radio" name="scheduleAt" id="scheduleAt1">
+                            <label class="form-check-label" for="scheduleAt1">
+                                3:00 PM
+                            </label>
+                        </div>
+                        <div class="col-md-1 form-check">
+                            <input class="form-check-input" type="radio" value="20:00" name="scheduleAt" id="scheduleAt2">
+                            <label class="form-check-label" for="scheduleAt2">
+                                8:00 PM
+                            </label>
+                        </div>
+                    </div>
+                    <div id="emailDiv"></div>
+                    <div id="smsDiv"></div>
+                    <div id="pushDiv"></div>
+                    <div id="conditionsDiv">
+                        <div class="row form-group">
+                            <label class="col-form-label col-md-3">Condition</label>
+                            <div class="condition-key col-md-2 mr-2 p-0"></div>
+                            <select id="operatorkey0" name="condition-operator" class="col-md-2 form-control mr-2">
+                                <option value="equals">equals</option>
+                                <option value="notequals">notequals</option>
+                                <option value="greater">greater</option>
+                                <option value="greaterequals">greaterequals</option>
+                                <option value="less">less</option>
+                                <option value="lessequals">lessequals</option>
+                            </select>
+                            <select id="valuetype0" name="value-type" class="col-md-2 form-control mr-2">
+                                <option value="number">number</option>
+                                <option value="string">string</option>
+                            </select>
+                            <div class="condition-value col-md-2 mr-2 p-0"></div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="1">Add more condition</button>
+                    </div>
+                    
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">Email field concept</label>
+                        <div class="email-concept col-md-8 p-0"></div>
+                    </div>
+                    
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">Phone no. concept</label>
+                        <div class="phone-concept col-md-8 p-0"></div>
+                    </div>
+        
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">First name concept</label>
+                        <div class="first-name-concept col-md-8 p-0"></div>
+                    </div>
+        
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">Preferred name concept</label>
+                        <div class="preferred-name-concept col-md-8 p-0"></div>
+                    </div>
+        
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">Primary field</label>
+                        <div class="primary-field col-md-8 p-0"></div>
+                    </div>
+                    
+                    <div class="row form-group">
+                        <label class="col-form-label col-md-3">Time</label>
+                        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days">
+                        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)">
+                        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)">
+                    </div>
+                    
+                    <div class="mt-4 mb-4 d-flex justify-content-center">
+                        <button type="submit" title="Save schema as complete. Notifications triggered" class="btn btn-primary" id="updateId">
+                            Save Changes
+                        </button>
+                        <button type="submit" title="Save schema as a draft. Notifications NOT triggered" class="btn btn-outline-secondary ml-2" id="saveSchemaAsDraft" data-draft="true">
+                            Save as Draft
+                        </button>
+                        <button type="button" class="btn btn-danger ml-2" id="exitForm">Exit Without Saving</button>
+                    </div>
+                </form>
+            </div>
+        </div>`;
 
     return template;
-
-}
+};
 
 export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) => {
     document.getElementById("attempt").value = updateSchemaNotification.attempt;
     document.getElementById("description").value = updateSchemaNotification.description;
     document.getElementById("category").value = updateSchemaNotification.category;
     const titleElement = document.getElementById("getCurrentTitle");
-    if (titleElement != null) titleElement.innerHTML = "Update Notification Schema";
+    if (titleElement) titleElement.innerText = "Edit Notification Schema";
 
     (updateSchemaNotification.notificationType).forEach(i => {
         if (i === "email") {
@@ -245,68 +256,72 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
     document.getElementById('days').value = updateSchemaNotification.time['day'];
     document.getElementById('hours').value = updateSchemaNotification.time['hour'];
     document.getElementById('minutes').value = updateSchemaNotification.time['minute'];
-    const a = document.getElementById('updateId');
-    if (a != null) {
-        a.dataset.id = updateSchemaNotification.id;
-        localStorage.setItem("idFlag", true);
-    }
-}
+};
 
 
 const formSubmit = () => {
-    const form = document.getElementById('configForm');
-    form.addEventListener('submit', e => {
-        e.preventDefault();
-        const obj = {};
-        obj['attempt'] = document.getElementById('attempt').value.trim();
-        obj['description'] = document.getElementById('description').value.trim();
-        obj['category'] = document.getElementById('category').value.trim();
-        obj['notificationType'] = Array.from(document.getElementsByName('notification-checkbox')).filter(dt => dt.checked).map(dt => dt.dataset.type);
-        obj['emailField'] = document.getElementById('emailconcept0').value;
-        obj['firstNameField'] = document.getElementById('firstnameconcept0').value;
-        obj['scheduleAt'] = Array.from(document.getElementsByName('scheduleAt')).filter(dt => dt.checked)[0].value;
-        if(document.getElementById('preferrednameconcept0').value) obj['preferredNameField'] = document.getElementById('preferrednameconcept0').value;
-        obj['phoneField'] = document.getElementById('phoneconcept0').value;
-        obj['primaryField'] = document.getElementById('primaryfield0').value;
-        obj['time'] = {}
-        obj['time']['day'] = parseInt(document.getElementById('days').value);
-        obj['time']['hour'] = parseInt(document.getElementById('hours').value);
-        obj['time']['minute'] = parseInt(document.getElementById('minutes').value);
+  const form = document.getElementById("configForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    let schema = {};
+    schema.isDraft = e.submitter.dataset.draft === "true";
+    schema["attempt"] = document.getElementById("attempt").value.trim();
+    schema["description"] = document.getElementById("description").value.trim();
+    schema["category"] = document.getElementById("category").value.trim();
+    schema["notificationType"] = Array.from(document.getElementsByName("notification-checkbox"))
+      .filter((checkbox) => checkbox.checked)
+      .map((checkbox) => checkbox.dataset.type);
+    schema["emailField"] = document.getElementById("emailconcept0").value;
+    schema["firstNameField"] = document.getElementById("firstnameconcept0").value;
+    schema["scheduleAt"] = Array.from(document.getElementsByName("scheduleAt")).filter((dt) => dt.checked)[0].value;
+    if (document.getElementById("preferrednameconcept0").value) {
+      schema["preferredNameField"] = document.getElementById("preferrednameconcept0").value;
+    }
 
-        if(document.getElementById('emailSubject')) {
-            obj['email'] = {};
-            obj['email']['subject'] = document.getElementById('emailSubject').value;
-            (document.getElementById('category').value.trim() === 'newsletter') ? obj['email']['body'] = document.getElementById('emailBody').value
-                : obj['email']['body'] = document.getElementById('emailBody').value.replace(/\n/g, '<br/>') 
-        }
+    schema["phoneField"] = document.getElementById("phoneconcept0").value;
+    schema["primaryField"] = document.getElementById("primaryfield0").value;
+    schema["time"] = {
+      day: parseInt(document.getElementById("days").value),
+      hour: parseInt(document.getElementById("hours").value),
+      minute: parseInt(document.getElementById("minutes").value),
+    };
 
-        if(document.getElementById('smsBody')) {
-            obj['sms'] = {};
-            obj['sms']['body'] = document.getElementById('smsBody').value;
-        }
+    const emailSubjectEle = document.getElementById("emailSubject");
+    if (emailSubjectEle) {
+      schema["email"] = { subject: emailSubjectEle.value };
+      schema["category"] === "newsletter"
+        ? (schema["email"]["body"] = document.getElementById("emailBody").value)
+        : (schema["email"]["body"] = document.getElementById("emailBody").value.replace(/\n/g, "<br/>"));
+    }
 
-        if(document.getElementById('pushSubject')) {
-            obj['push'] = {};
-            obj['push']['subject'] = document.getElementById('pushSubject').value;
-            obj['push']['body'] = document.getElementById('pushBody').value;
-        }
+    const smsBodyEle = document.getElementById("smsBody");
+    if (smsBodyEle) {
+      schema["sms"] = { body: smsBodyEle.value };
+    }
 
-        obj['conditions'] = {};
+    const pushSubjectEle = document.getElementById("pushSubject");
+    if (pushSubjectEle) {
+      schema["push"] = { subject: pushSubjectEle.value, body: document.getElementById("pushBody").value };
+    }
 
-        Array.from(document.getElementsByName('condition-key')).forEach((e, i) => {
-            obj['conditions'][e.value] = {};
-            if(Array.from(document.getElementsByName('value-type'))[i].value == 'string') {
-                obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = Array.from(document.getElementsByName('condition-value'))[i].value;
-            }
-            else if(Array.from(document.getElementsByName('value-type'))[i].value == 'number') {
-                obj['conditions'][e.value][Array.from(document.getElementsByName('condition-operator'))[i].value] = parseInt(Array.from(document.getElementsByName('condition-value'))[i].value);
-            }
-        })
-        storeNotificationSchema(obj, 'notification_specification')
-    })
-}
+    const opeartorEleArray = Array.from(document.getElementsByName("condition-operator"));
+    const valueTypeEleArray = Array.from(document.getElementsByName("value-type"));
+    const valueEleArray = Array.from(document.getElementsByName("condition-value"));
+    schema["conditions"] = {};
+    Array.from(document.getElementsByName("condition-key")).forEach((element, i) => {
+      schema["conditions"][element.value] = {};
+      if (valueTypeEleArray[i].value === "string") {
+        schema["conditions"][element.value][opeartorEleArray[i].value] = valueEleArray[i].value;
+      } else if (valueTypeEleArray[i].value === "number") {
+        schema["conditions"][element.value][opeartorEleArray[i].value] = parseInt(valueEleArray[i].value);
+      }
+    });
 
-export const addEventMoreCondition = (concepts, flag) => {
+    await storeNotificationSchema(schema);
+  });
+};
+
+export const addEventMoreCondition = (concepts, isReadonly = false) => {
     const btn = document.getElementById('addConditions');
     btn.addEventListener('click', () => {
         const conditionNo = parseInt(btn.dataset.condition);
@@ -315,7 +330,7 @@ export const addEventMoreCondition = (concepts, flag) => {
         div.classList = ['row form-group'];
         div.innerHTML = `
             <label class="col-form-label col-md-3">Condition</label>
-            <div class="condition-key col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', flag)}</div>
+            <div class="condition-key col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionkey${conditionNo}`, 'condition-key', isReadonly)}</div>
             <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey${conditionNo}">
                 <option value="equals">equals</option>
                 <option value="notequals">notequals</option>
@@ -328,12 +343,12 @@ export const addEventMoreCondition = (concepts, flag) => {
                 <option value="number">number</option>
                 <option value="string">string</option>
             </select>
-            <div class="condition-value col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', flag)}</div>
-        `
+            <div class="condition-value col-md-2 mr-2 p-0">${getDataListTemplate(concepts, `conditionvalue${conditionNo}`, 'condition-value', isReadonly)}</div>
+        `;
         conditionDiv.appendChild(div);
         btn.dataset.condition = conditionNo + 1;
     });
-}
+};
 
 export const getConcepts = async () => {
     return await (await fetch('https://raw.githubusercontent.com/episphere/conceptGithubActions/master/jsons/varToConcept.json')).json()
@@ -346,15 +361,18 @@ export const conceptDropdown = (concepts, name) => {
     })
 }
 
-const getDataListTemplate = (concepts, id, name, flag) => {
-    let template = `<input ${id !== 'preferrednameconcept0'? 'required': ''} list="dataList${id}" id="${id}" class="form-control" ${name ? `name="${name}"`: ''} ${flag === true ? `readonly`: ``}>`;
-    template += `<datalist id="dataList${id}">`
-    for(let key in concepts) {
-        template += `<option value="${concepts[key]}">${key}</option>`
-    }
-    template += `</datalist>`
-    return template;
-}  
+const getDataListTemplate = (concepts, id, name, isReadonly = false) => {
+  let template = `<input ${id !== "preferrednameconcept0" ? "required" : ""} list="dataList${id}" id="${id}" 
+    class="form-control" ${name ? `name="${name}"` : ""} ${isReadonly === true ? "readonly" : ""}>`;
+
+  template += `<datalist id="dataList${id}">`;
+  for (let key in concepts) {
+    template += `<option value="${concepts[key]}">${key}</option>`;
+  }
+  template += `</datalist>`;
+
+  return template;
+};  
 
 const addEventNotificationCheckbox = () => {
     const chkbs = document.getElementsByName('notification-checkbox');
@@ -367,58 +385,53 @@ const addEventNotificationCheckbox = () => {
 }
 
 const getEmailNotificationTemplate = () => {
-    let template = `
-            <div class="row">
-                <div class="col">
-                    <h5>Email</h5>
-                    <div class="row form-group">
-                        <label class="col-form-label col-md-4" for="emailSubject">Subject</label>
-                        <input autocomplete="off" required class="col-md-8" type="text" id="emailSubject" placeholder="Email subject">
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-form-label col-md-4" for="emailBody">Body</label>
-                        <textarea rows="5" class="col-md-4" id="emailBody" placeholder="Email body"></textarea>
-                        <div class="col-md-4" id="emailBodyPreview"></div>
-                    </div>
-                </div>
+  return `
+    <div class="row">
+        <div class="col">
+            <h5>Email</h5>
+            <div class="row form-group">
+                <label class="col-form-label col-md-3" for="emailSubject">Subject</label>
+                <input autocomplete="off" required class="col-md-8" type="text" id="emailSubject" placeholder="Email subject">
             </div>
-        `
-    return template;
-}
+            <div class="row form-group">
+                <label class="col-form-label col-md-3" for="emailBody">Body</label>
+                <textarea rows="5" class="col-md-4" id="emailBody" placeholder="Email body"></textarea>
+                <div class="col-md-4" id="emailBodyPreview"></div>
+            </div>
+        </div>
+    </div>`;
+};
 
 const getSmsNotificationTemplate = () => {
-    let template = `
-            <div class="row">
-                <div class="col">
-                    <h5>SMS</h5><small id="characterCounts">0/160 characters</small>
-                    <div class="row form-group">
-                        <label class="col-form-label col-md-4" for="smsBody">Body</label>
-                        <textarea rows="2" class="col-md-8" id="smsBody" maxlength="160" placeholder="SMS body"></textarea>
-                    </div>
-                </div>
+  return `
+    <div class="row">
+        <div class="col">
+            <h5>SMS</h5>
+            <div class="row form-group">
+                <label class="col-form-label col-md-3" for="smsBody">Body (<small id="characterCounts">0/160 characters</small>)</label>
+                <textarea rows="2" class="col-md-8" id="smsBody" maxlength="160" placeholder="SMS body"></textarea>
+
             </div>
-        `
-    return template;
-}
+        </div>
+    </div>`;
+};
 
 const getPushNotificationTemplate = () => {
-    let template = `
-            <div class="row">
-                <div class="col">
-                    <h5>Push notification</h5>
-                    <div class="row form-group">
-                        <label class="col-form-label col-md-4" for="pushSubject">Subject</label>
-                        <input autocomplete="off" required class="col-md-8" type="text" id="pushSubject" placeholder="Push notification subject">
-                    </div>
-                    <div class="row form-group">
-                        <label class="col-form-label col-md-4" for="pushBody">Body</label>
-                        <textarea rows="2" class="col-md-8" id="pushBody" placeholder="Push notification body"></textarea>
-                    </div>
-                </div>
+  return `
+    <div class="row">
+        <div class="col">
+            <h5>Push notification</h5>
+            <div class="row form-group">
+                <label class="col-form-label col-md-3" for="pushSubject">Subject</label>
+                <input autocomplete="off" required class="col-md-8" type="text" id="pushSubject" placeholder="Push notification subject">
             </div>
-        `
-    return template;
-}
+            <div class="row form-group">
+                <label class="col-form-label col-md-3" for="pushBody">Body</label>
+                <textarea rows="2" class="col-md-8" id="pushBody" placeholder="Push notification body"></textarea>
+            </div>
+        </div>
+    </div>`;
+};
 
 const renderDivs = (array, flag) => {
 
@@ -497,12 +510,14 @@ const reRenderNotficationDivs = () => {
 }
 
 const addEventSMSCharacterCount = () => {
-    if(document.getElementById('smsBody')){
-        document.getElementById('smsBody').addEventListener('mouseenter', () => {
-            document.getElementById('characterCounts').innerHTML = `${document.getElementById('smsBody').value.length}/160 characters`;
-        })
-    }
-}
+  const characterCountEle = document.getElementById("characterCounts");
+  const smsBodyEle = document.getElementById("smsBody");
+  if (characterCountEle && smsBodyEle) {
+    smsBodyEle.addEventListener("input", () => {
+      characterCountEle.innerText = `${smsBodyEle.value.length}/160 characters`;
+    });
+  }
+};
 
 const addEmailPreview = (emailBody) => {
     const converter = new showdown.Converter()
@@ -524,49 +539,32 @@ const downloadObjectAsJson = (exportObj, exportName) => {
 }
 
 const storeNotificationSchema = async (schema) => {
-    const a = document.getElementById('updateId').getAttribute('data-id');
-    const idFlag = localStorage.getItem("idFlag");
-    if(idFlag == "true" || a && a.length != 0) { 
-        const updateSchemaNotification = JSON.parse(localStorage.getItem("updateNotificationSchema")) || {};
-        localStorage.setItem("idFlag", false);
-        schema.id = updateSchemaNotification.id || "";
-        localStorage.removeItem("updateNotificationSchema");
-    }
-    showAnimation();
-    const siteKey = await getAccessToken();  
-    const schemaPayload = {
-        "data": schema
-    }
+  const notificationData = appState.getState().notification || {};
+  schema.id = notificationData.savedSchema?.id || "";
 
-    const response = await (await fetch(`${baseAPI}/dashboard?api=storeNotificationSchema`,{
-        method:'POST',
-        body: JSON.stringify(schemaPayload),
-        headers:{
-            Authorization:"Bearer "+siteKey,
-            "Content-Type": "application/json"
-            }
-        }))
-        hideAnimation();
-        if (response.status === 200) {
-            successAlert();
-         }
-           else { 
-               (alert('Error'))
-        }
-}
+  showAnimation();
+  const idToken = await getIdToken();
+  const schemaPayload = { data: schema };
 
-const successAlert = () => {
-    let alertList = document.getElementById('alert_placeholder');
-    let template = '';
-    // throws an alert when canncel changes button is clicked
-    template += `<div class="alert alert-success alert-dismissible fade show" role="alert">
-                    Notfication Schema Saved.
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                    </div>`
-    alertList.innerHTML = template;
-}
+  const response = await fetch(`${baseAPI}/dashboard?api=storeNotificationSchema`, {
+    method: "POST",
+    body: JSON.stringify(schemaPayload),
+    headers: {
+      Authorization: "Bearer " + idToken,
+      "Content-Type": "application/json",
+    },
+  });
+  hideAnimation();
+  const res = await response.json();
+  if (res.code === 200 && res.data?.length > 0) {
+    schema.id = res.data[0].schemaId;
+    appState.setState({ notification: { savedSchema: schema, isEditing: notificationData.isEditing || false } });
+    triggerNotificationBanner(`Notfication Schema Saved as ${schema.isDraft ? "Draft" : "Complete"}.`, "success");
+  } else {
+    triggerNotificationBanner("Error in saving notification schema!", "danger");
+  }
+
+};
 
 const getOperatorResponse = (i) => {
     return Object.keys(i)[0];

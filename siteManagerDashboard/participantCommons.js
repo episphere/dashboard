@@ -1,10 +1,10 @@
 import { renderParticipantDetails } from './participantDetails.js';
 import { animation, clearLocalStorage } from './index.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
-import { getAccessToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
+import { getIdToken, getDataAttributes, showAnimation, hideAnimation, baseAPI, urls  } from './utils.js';
 import { appState } from './stateManager.js';
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './siteKeysToName.js';
+import { nameToKeyObj, keyToNameObj, keyToShortNameObj } from './idsToName.js';
 
 export const importantColumns = [fieldMapping.fName, fieldMapping.mName, fieldMapping.lName, fieldMapping.birthMonth, fieldMapping.birthDay, fieldMapping.birthYear, fieldMapping.email, 'Connect_ID', fieldMapping.healthcareProvider];
 
@@ -44,7 +44,7 @@ export const renderTable = (data, source) => {
                     <div class="row">
                     ${(source === 'participantAll') ? ` 
                     <span style="padding-left: 20px;"></span>  
-                    <div class="form-group dropdown" id="siteDropdownLookup" hidden>
+                    <div class="form-group dropdown dropright" id="siteDropdownLookup" hidden>
                     <button class="btn btn-primary btn-lg dropdown-toggle" type="button" id="dropdownSites" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin-top: 10px;">
                         Filter by Site
                     </button>
@@ -79,7 +79,6 @@ export const renderTable = (data, source) => {
                     <button type="submit" class="btn btn-warning btn-lg mb-2" style="margin-right:10px;" >Search</button>
 
                     <button type="button" class="btn btn-outline-danger btn-lg mb-2" id="resetDate">Reset Date</button>
-
                 </form>
                 `: ``} </div>`
 
@@ -581,18 +580,23 @@ const tableTemplate = (data, showButtons) => {
             : (x === fieldMapping.siteReportedAge.toString()) ? 
             (
                 ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange1 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `40-45` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `30-34` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange2 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `46-50` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `35-39` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange3 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `51-55` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `40-45` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange4 ) ?
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `56-60` : ``}</td>`
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `46-50` : ``}</td>`
                 :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange5 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `51-55` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange6 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `56-60` : ``}</td>`
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange7 ) ?
                     template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `61-65` : ``}</td>`
-                :   (
-                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `ERROR` : ``}</td>`)
-                )
+                :   ( participant['state'][fieldMapping.siteReportedAge.toString()] === fieldMapping.ageRange8 ) ?
+                    template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `66-70` : ``}</td>`
+                :
+                    ( template += `<td>${participant['state'][fieldMapping.siteReportedAge.toString()] ? `ERROR` : ``}</td>`))
             : (x === fieldMapping.siteReportedSex.toString()  ) ? (
             (  
                 ( participant['state'][fieldMapping.siteReportedSex.toString()] === fieldMapping.female ) ?
@@ -844,8 +848,8 @@ const addEventShowMoreInfo = (data) => {
             let changedOption = {};
             const loadDetailsPage = '#participantDetails'
             location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantDetails upon screen update
-            const siteKey = await getAccessToken();
-            renderParticipantDetails(filteredData[0], changedOption, siteKey);
+            const idToken = await getIdToken();
+            renderParticipantDetails(filteredData[0], changedOption, idToken);
         });
     });
 
@@ -1052,7 +1056,7 @@ const getCustomVariableNames = (x) => {
 const getMoreParticipants = async (query, nextPageCounter) => {
     let filterHolder = appState.getState().filterHolder
     if (filterHolder.source === `participantAll`) appState.setState({filterHolder:{...filterHolder, 'nextPageCounter': nextPageCounter}})
-    const siteKey = await getAccessToken();
+    const idToken = await getIdToken();
     let template = `/dashboard?api=getParticipants`;
     const limit = 50;
     if (filterHolder.source === `participantAll`) {
@@ -1088,7 +1092,7 @@ const getMoreParticipants = async (query, nextPageCounter) => {
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
-            Authorization:"Bearer "+siteKey
+            Authorization:"Bearer " + idToken
         }
     });
     return await response.json();
@@ -1098,14 +1102,14 @@ const getMoreParticipants = async (query, nextPageCounter) => {
 const getParticipantFromSites = async (query) => {
     let prevState = appState.getState().filterHolder
     appState.setState({filterHolder:{...prevState, 'siteCode': query, 'nextPageCounter': 0}})
-    const siteKey = await getAccessToken();
+    const idToken = await getIdToken();
     let template = ``;
     const limit = 50;
     (query === nameToKeyObj.allResults) ? template += `/dashboard?api=getParticipants&type=all&limit=${limit}` : template += `/dashboard?api=getParticipants&type=all&siteCode=${query}&limit=${limit}`
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
-            Authorization:"Bearer "+siteKey
+            Authorization:"Bearer " + idToken
         }
     });
     return await response.json();
@@ -1114,7 +1118,7 @@ const getParticipantFromSites = async (query) => {
 const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) => {
     let prevState = appState.getState().filterHolder
     appState.setState({filterHolder:{...prevState, 'type': type, 'nextPageCounter': 0}})
-    const siteKey = await getAccessToken();
+    const idToken = await getIdToken();
     let template = `/dashboard?api=getParticipants&type=${type}`;
     const limit = 50;
 
@@ -1130,7 +1134,7 @@ const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) =>
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
-            Authorization:"Bearer "+siteKey
+            Authorization:"Bearer " + idToken
         }
     });
     return await response.json();
@@ -1139,7 +1143,7 @@ const getParticipantsWithFilters = async (type, sitePref, startDate, endDate) =>
 const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate) => {
     let prevState = appState.getState().filterHolder
     appState.setState({filterHolder:{...prevState, 'startDate': startDate, 'endDate': endDate, 'nextPageCounter': 0}})
-    const siteKey = await getAccessToken();
+    const idToken = await getIdToken();
     let template = ``;
     const limit = 50;
     if (type !== null && sitePref !== 'Filter by Site') template += `/dashboard?api=getParticipants&type=${type}&siteCode=${sitePref}&from=${startDate}T00:00:00.000Z&to=${endDate}T23:59:59.999Z&limit=${limit}`
@@ -1150,14 +1154,14 @@ const getParticipantsWithDateFilters = async (type, sitePref, startDate, endDate
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
-            Authorization:"Bearer "+siteKey
+            Authorization:"Bearer "+idToken
         }
     });
     return await response.json();
 }
 
 const getCurrentSelectedParticipants = async (query) => {
-    const siteKey = await getAccessToken();
+    const idToken = await getIdToken();
     let template = `/dashboard?api=getParticipants`;
     template += `${query}`
     const limit = 50;
@@ -1165,7 +1169,7 @@ const getCurrentSelectedParticipants = async (query) => {
     const response = await fetch(`${baseAPI}${template}`, {
         method: "GET",
         headers: {
-            Authorization:"Bearer "+siteKey
+            Authorization:"Bearer " + idToken
         }
     });
     return await response.json();

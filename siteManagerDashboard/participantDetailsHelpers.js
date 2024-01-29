@@ -3,7 +3,7 @@ import { render, renderParticipantDetails } from './participantDetails.js';
 import { findParticipant, renderLookupResultsTable } from './participantLookup.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { appState } from './stateManager.js';
-import { baseAPI, getAccessToken, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
+import { baseAPI, getDataAttributes, getIdToken, hideAnimation, showAnimation } from './utils.js';
 
 export const allStates = {
     "Alabama":1,
@@ -644,12 +644,12 @@ const processParticipantLoginMethod = async (participantAuthenticationEmail, par
             const url = `${baseAPI}/dashboard?api=updateUserAuthentication`;
             const signinMechanismPayload = { "data": switchPackage };
             
-            const bearerToken = await getAccessToken();
-            const response = await postLoginData(url, signinMechanismPayload, bearerToken);
+            const idToken = await getIdToken();
+            const response = await postLoginData(url, signinMechanismPayload, idToken);
             const responseJSON = await response.json();
 
             if (response.status === 200) {
-                const updateResult = await updateParticipantFirestoreProfile(changedOption, bearerToken);
+                const updateResult = await updateParticipantFirestoreProfile(changedOption, idToken);
                 hideAnimation();
                 if (!updateResult) {
                     showAuthUpdateAPIError('modalBody', "IMPORTANT: There was an error updating the participant's profile.\n\nPLEASE PROCESS THE OPERATION AGAIN.");
