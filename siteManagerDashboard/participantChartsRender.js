@@ -332,25 +332,35 @@ const renderTotalCurrentWorkflow = (totalCurrentWorkflow, id) => {
 const renderAgeMetrics = (ageMetrics, id) => {
     const verifiedParticipants = ageMetrics.verifiedParticipants ? ageMetrics.verifiedParticipants : 0
 
-    const participantAgeRange1 = ageMetrics['40-45'] !== undefined ? ageMetrics['40-45'] : 0;
-    const participantAgeRange2 = ageMetrics['46-50'] !== undefined ? ageMetrics['46-50'] : 0;
-    const participantAgeRange3 = ageMetrics['51-55'] !== undefined ? ageMetrics['51-55'] : 0;
-    const participantAgeRange4 = ageMetrics['56-60'] !== undefined ? ageMetrics['56-60'] : 0;
-    const participantAgeRange5 = ageMetrics['61-65'] !== undefined ? ageMetrics['61-65'] : 0;
+    const participantAgeRange1 = ageMetrics['30-34'] !== undefined ? ageMetrics['30-34'] : 0;
+    const participantAgeRange2 = ageMetrics['35-39'] !== undefined ? ageMetrics['35-39'] : 0;
+    const participantAgeRange3 = ageMetrics['40-45'] !== undefined ? ageMetrics['40-45'] : 0;
+    const participantAgeRange4 = ageMetrics['46-50'] !== undefined ? ageMetrics['46-50'] : 0;
+    const participantAgeRange5 = ageMetrics['51-55'] !== undefined ? ageMetrics['51-55'] : 0;
+    const participantAgeRange6 = ageMetrics['56-60'] !== undefined ? ageMetrics['56-60'] : 0;
+    const participantAgeRange7 = ageMetrics['61-65'] !== undefined ? ageMetrics['61-65'] : 0;
+    const participantAgeRange8 = ageMetrics['66-70'] !== undefined ? ageMetrics['66-70'] : 0;
 
     const participantAgeRangeResponse1 = ((participantAgeRange1)/(verifiedParticipants)*100).toFixed(1);
     const participantAgeRangeResponse2 = ((participantAgeRange2)/(verifiedParticipants)*100).toFixed(1);
     const participantAgeRangeResponse3 = ((participantAgeRange3)/(verifiedParticipants)*100).toFixed(1);
     const participantAgeRangeResponse4 = ((participantAgeRange4)/(verifiedParticipants)*100).toFixed(1);
     const participantAgeRangeResponse5 = ((participantAgeRange5)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse6 = ((participantAgeRange6)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse7 = ((participantAgeRange7)/(verifiedParticipants)*100).toFixed(1);
+    const participantAgeRangeResponse8 = ((participantAgeRange8)/(verifiedParticipants)*100).toFixed(1);
 
     let data = [{
-        values: [participantAgeRangeResponse1, participantAgeRangeResponse2, participantAgeRangeResponse3, participantAgeRangeResponse4, participantAgeRangeResponse5],
-        labels: [ `40-45: N = ${participantAgeRange1}`, 
-                    `46-50: N = ${participantAgeRange2}`, 
-                    `51-55: N = ${participantAgeRange3}`,
-                    `56-60: N = ${participantAgeRange4}`, 
-                    `61-65: N = ${participantAgeRange5}`],
+        values: [participantAgeRangeResponse1, participantAgeRangeResponse2, participantAgeRangeResponse3, participantAgeRangeResponse4, participantAgeRangeResponse5, participantAgeRangeResponse6, participantAgeRangeResponse7, participantAgeRangeResponse8],
+        labels: [   `30-34: N = ${participantAgeRange1}`, 
+                    `35-39: N = ${participantAgeRange2}`,
+                    `40-45: N = ${participantAgeRange3}`, 
+                    `46-50: N = ${participantAgeRange4}`, 
+                    `51-55: N = ${participantAgeRange5}`,
+                    `56-60: N = ${participantAgeRange6}`, 
+                    `61-65: N = ${participantAgeRange7}`,
+                    `66-70: N = ${participantAgeRange8}`
+                ],
         hoverinfo: 'label+value',
         type: 'pie'
       }];
@@ -359,7 +369,15 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Age of Verified Participants N = ${verifiedParticipants}`
+        title: `Age of Verified Participants <br> N = ${verifiedParticipants}`,
+        legend: {
+            orientation: 'h', // 'v' for vertical, 'h' for horizontal
+            x: 1,
+            y: -1,
+            xanchor: 'right',
+            yanchor: 'bottom',
+        },
+        height: 300, // Adjust the height to increase diameter
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -390,7 +408,7 @@ const renderAgeMetrics = (ageMetrics, id) => {
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Race/Ethnicity of Verified Participants N = ${verifiedParticipants}`
+        title: `Race/Ethnicity of Verified Participants <br> N = ${verifiedParticipants}`
     };
 
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -518,7 +536,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Completion of Initial Survey among verified participants N=${verifiedParticipants}`
+        title: `Completion of Initial Survey among verified <br> participants N=${verifiedParticipants}`
     };
       
       Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -544,7 +562,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
         showlegend: true,
         paper_bgcolor: 'rgba(0,0,0,0)',
         plot_bgcolor: 'rgba(0,0,0,0)',
-        title: `Completion of SSN among verified participants N=${verifiedParticipants}`
+        title: `Completion of SSN among verified <br> participants N=${verifiedParticipants}`
     };
       
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });
@@ -583,7 +601,7 @@ const renderActiveVerificationStatus = (activeVerificationStatus, denominatorVer
             automargin: true,
             fixedrange: true
         },
-        title: `Baseline biospecimens collected <br> among verified participants N=${verifiedParticipants}`
+        title: `Baseline biospecimens collected among <br> verified participants N=${verifiedParticipants}`
     };
       
     Plotly.newPlot(id, data, layout, { responsive: true, displayModeBar: false });

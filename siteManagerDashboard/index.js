@@ -4,13 +4,14 @@ import { renderTable, filterdata, renderData, addEventFilterData, activeColumns,
 import { renderParticipantDetails } from './participantDetails.js';
 import { renderParticipantSummary } from './participantSummary.js';
 import { renderParticipantMessages } from './participantMessages.js';
+import { renderDataCorrectionsToolPage } from './dataCorrectionsTool.js';
 import { renderSiteMessages } from './siteMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { renderStoreNotificationSchema } from './notifications/storeNotifications.js';
-import { renderRetrieveNotificationSchema } from './notifications/retrieveNotifications.js';
-import { internalNavigatorHandler, getDataAttributes, getIdToken, userLoggedIn, baseAPI, urls, getAccessToken } from './utils.js';
+import { renderStoreNotificationSchema, editSchema } from './notifications/storeNotifications.js';
+import { renderRetrieveNotificationSchema, showDraftSchemas } from './notifications/retrieveNotifications.js';
+import { internalNavigatorHandler, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
-import { nameToKeyObj } from './siteKeysToName.js';
+import { nameToKeyObj } from './idsToName.js';
 import { renderAllCharts } from './participantChartsRender.js';
 import { firebaseConfig as devFirebaseConfig } from "./dev/config.js";
 import { firebaseConfig as stageFirebaseConfig } from "./stage/config.js";
@@ -102,7 +103,7 @@ const router = async () => {
         }
         else if (route === '#participantSummary') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
-                renderParticipantSummary();
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
             }
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))
@@ -111,11 +112,20 @@ const router = async () => {
         }
         else if (route === '#participantMessages') {
             if (JSON.parse(localStorage.getItem("participant")) === null) {
-                renderParticipantMessages();
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
             }
             else {
                 let participant = JSON.parse(localStorage.getItem("participant"))
                 renderParticipantMessages(participant);
+            }
+        }
+        else if (route === '#dataCorrectionsTool') {
+            if (JSON.parse(localStorage.getItem("participant")) === null) {
+                alert("No participant selected. Please select a participant from the participants dropdown or the participant lookup page");
+            }
+            else {
+                let participant = JSON.parse(localStorage.getItem("participant"))
+                renderDataCorrectionsToolPage(participant);
             }
         }
         else if (route === '#siteMessages') renderSiteMessages();
@@ -130,6 +140,8 @@ const router = async () => {
         }
         else if (route === '#notifications/createnotificationschema') renderStoreNotificationSchema();
         else if (route === '#notifications/retrievenotificationschema') renderRetrieveNotificationSchema();
+        else if (route === '#notifications/editSchema') editSchema();
+        else if (route === '#notifications/showDraftSchemas') showDraftSchemas();
         else if (route === '#logout') clearLocalStorage();
         else window.location.hash = '#home';
     }
@@ -146,7 +158,7 @@ const headsupBanner = () => {
                     </div>`;
 };
 
-const homePage = async () => {
+const homePage = () => {
     if (localStorage.dashboard) {
         window.location.hash = '#home';
     }
@@ -156,7 +168,7 @@ const homePage = async () => {
         mainContent.innerHTML = renderLogin();
 
         const form = document.getElementById('ssoLogin');
-        form.addEventListener('submit', async e => {
+        form.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('ssoEmail').value;
             let tenantID = '';
@@ -181,21 +193,20 @@ const homePage = async () => {
             const saml = new firebase.auth.SAMLAuthProvider(provider);
             firebase.auth().tenantId = tenantID;
             firebase.auth().signInWithPopup(saml)
-                .then(async (result) => {
+                .then((result) => {
                     appState.setState({userSession:{email: result.user.email}});
                     localStorage.setItem('userSession', JSON.stringify({email: result.user.email}));
                     location.hash = '#home'
                 })
                 .catch((error) => {
-                    console.log(error)
+                    console.log(error);
                 });
-        })
+        });
     }
-}
+};
 
 const renderActivityCheck = () => {
-    let template = ``
-    template += ` <div class="modal fade" id="siteManagerMainModal" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
+    return  `<div class="modal fade" id="siteManagerMainModal" data-keyboard="false" tabindex="-1" role="dialog" data-backdrop="static" aria-hidden="true">
                     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
                         <div class="modal-content sub-div-shadow">
                             <div class="modal-header" id="siteManagerModalHeader"></div>
@@ -203,17 +214,17 @@ const renderActivityCheck = () => {
                         </div>
                     </div>
                 </div>`
-    return template;
 }
 
 const renderDashboard = async () => {
     if (localStorage.dashboard || await getIdToken()) {
         animation(true);
-        const accessToken = await getAccessToken();
-        const isAuthorized = await authorize(accessToken);
+        const idToken = await getIdToken();
+        const isAuthorized = await authorize(idToken);
         if (isAuthorized && isAuthorized.code === 200) {
             localStorage.setItem('isParent', isAuthorized.isParent)
             localStorage.setItem('coordinatingCenter', isAuthorized.coordinatingCenter)
+            localStorage.setItem('helpDesk', isAuthorized.helpDesk)
             const isParent = localStorage.getItem('isParent');
             //const coordinatingCenter = localStorage.getItem('coordinatingCenter');
             document.getElementById('navBarLinks').innerHTML = dashboardNavBarLinks(isParent);
@@ -222,7 +233,7 @@ const renderDashboard = async () => {
             mainContent.innerHTML = '';
             mainContent.innerHTML = renderActivityCheck();
             location.host !== urls.prod ? mainContent.innerHTML = headsupBanner() : ``
-            renderCharts(accessToken, isParent);
+            renderCharts(idToken, isParent);
         }
         internalNavigatorHandler(counter); // function call to prevent internal navigation when there's unsaved changes
         if (isAuthorized.code === 401) {
@@ -522,22 +533,31 @@ const filterRaceMetrics = (participantsRaceMetrics, activeVerifiedParticipants, 
 
 const filterAgeMetrics = (participantsAgeMetrics, activeVerifiedParticipants, passiveVerifiedParticipants) => {
     const verifiedParticipants =  activeVerifiedParticipants + passiveVerifiedParticipants
-    let ageObject = { '40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0, verifiedParticipants: 0 }
+    let ageObject = { '30-34': 0, '35-39': 0, '40-45': 0, '46-50': 0, '51-55': 0, '56-60': 0, '61-65': 0, '66-70': 0, verifiedParticipants: 0 }
     participantsAgeMetrics && participantsAgeMetrics.forEach(i => {
         if (parseInt(i.recruitmentAge) === fieldMapping.ageRange1) {
-            ageObject['40-45'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['30-34'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange2) {
-            ageObject['46-50'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['35-39'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange3) {
-            ageObject['51-55'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['40-45'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange4) {
-            ageObject['56-60'] +=  parseInt(i.recruitmentAgeCount)
+            ageObject['46-50'] +=  parseInt(i.recruitmentAgeCount)
         }
         else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange5) {
+            ageObject['51-55'] +=  parseInt(i.recruitmentAgeCount)
+        }
+        else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange6) {
+            ageObject['56-60'] +=  parseInt(i.recruitmentAgeCount)
+        }
+        else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange7) {
             ageObject['61-65'] +=  parseInt(i.recruitmentAgeCount)
+        }
+        else if (parseInt(i.recruitmentAge) === fieldMapping.ageRange8) {
+            ageObject['66-70'] +=  parseInt(i.recruitmentAgeCount)
         }
     })
     ageObject.verifiedParticipants = verifiedParticipants
@@ -899,8 +919,8 @@ const filterDataBySiteCode = (siteCode) => {
 
 const renderParticipantsNotVerified = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'notyetverified');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'notyetverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -924,8 +944,8 @@ const renderParticipantsNotVerified = async () => {
 
 const renderParticipantsCanNotBeVerified = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'cannotbeverified');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'cannotbeverified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -955,8 +975,8 @@ const renderParticipantsCanNotBeVerified = async () => {
 
 const renderParticipantsVerified = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'verified');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'verified');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -982,8 +1002,8 @@ const renderParticipantsAll = async () => {
     animation(true);
     if (appState.getState().filterHolder)reMapFilters(appState.getState().filterHolder)
     else {
-        const siteKey = await getAccessToken();
-        const response = await fetchData(siteKey, 'all');
+        const idToken = await getIdToken();
+        const response = await fetchData(idToken, 'all');
         response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
         if (response.code === 200) {
             const isParent = localStorage.getItem('isParent')
@@ -1011,8 +1031,8 @@ const renderParticipantsAll = async () => {
 
 const renderParticipantsProfileNotSubmitted = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'profileNotSubmitted');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'profileNotSubmitted');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -1036,8 +1056,8 @@ const renderParticipantsProfileNotSubmitted = async () => {
 
 const renderParticipantsConsentNotSubmitted = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'consentNotSubmitted');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'consentNotSubmitted');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')
@@ -1061,8 +1081,8 @@ const renderParticipantsConsentNotSubmitted = async () => {
 
 const renderParticipantsNotSignedIn = async () => {
     animation(true);
-    const siteKey = await getAccessToken();
-    const response = await fetchData(siteKey, 'notSignedIn');
+    const idToken = await getIdToken();
+    const response = await fetchData(idToken, 'notSignedIn');
     response.data = response.data.sort((a, b) => (a['827220437'] > b['827220437']) ? 1 : ((b['827220437'] > a['827220437']) ? -1 : 0));
     if (response.code === 200) {
         const isParent = localStorage.getItem('isParent')

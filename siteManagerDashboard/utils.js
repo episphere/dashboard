@@ -47,7 +47,7 @@ setTimeout(() => {
 }, 50);
 }
 
-import { keyToNameObj } from './siteKeysToName.js';
+import { keyToNameObj } from './idsToName.js';
 
 export const siteKeyToName = (key) => {
   
@@ -131,11 +131,17 @@ export const conceptToSiteMapping = {
   13: 'NCI'
 }
 
-export const getAccessToken = async () => {
-  const access_token = await getIdToken();
-  const localStr = localStorage.dashboard ? JSON.parse(localStorage.dashboard) : '';
-  const siteKey = access_token !== null ? access_token : localStr.siteKey
-  return siteKey;
+export const triggerNotificationBanner = (message, type) => {
+  const alertList = document.getElementById("alert_placeholder");
+  if (alertList) {
+      alertList.innerHTML = `
+          <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+              ${message}
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                  </button>
+          </div>`;
+  }
 }
 
 /**
