@@ -162,6 +162,10 @@ export default
     "mouthwashSurveyStartedDate": 286191859,
     "mouthwashSurveyCompletedDate": 195145666,
 
+    "promisSurveyFlag": 320303124,
+    "promisSurveyStartedDate": 870643066,
+    "promisSurveyCompletedDate": 843688458,
+
     'combinedBoodUrineMouthwashSurvey': 265193023,
     'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
     'combinedBoodUrineMouthwashSurveyCompleteDate': 222161762,

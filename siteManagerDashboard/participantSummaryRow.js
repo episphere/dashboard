@@ -385,6 +385,30 @@ export const baselineMouthwashSurvey = (participantModule) => {
     return template;
 };
 
+export const baselinePromisSurvey = (participantModule) => {
+    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
+    const refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
+    let template = ``;
+    
+    if (isDataDestroyed === fieldMapping.yes) {
+        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Data Destroyed", "N/A", "N/A", "N", "N/A");
+    } else if (refusedSurveyOption === fieldMapping.yes) {
+        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "Y", "N/A");
+    } else if (!participantModule) {
+        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "N", "N/A");
+    } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1) {
+        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Follow-Up 3-mo", "Survey", "Quality of Life", "Submitted",
+        humanReadableMDY(participantModule[fieldMapping.promisSurveyCompletedDate]), "N/A", "N", "N/A");
+    } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.started1) {
+        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Follow-Up 3-mo", "Survey", "Quality of Life", "Started",
+        humanReadableMDY(participantModule[fieldMapping.promisSurveyStartedDate]), "N/A", "N", "N/A");
+    } else {
+        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Started", "N/A", "N/A", "N", "N/A");
+    }
+
+    return template;
+};
+
 export const baselineMenstrualSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
