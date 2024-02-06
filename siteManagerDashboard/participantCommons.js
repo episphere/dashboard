@@ -470,14 +470,33 @@ const pagninationPreviousTrigger = () => {
 
 // TODO: needs code refactoring
 const tableTemplate = (data, showButtons) => {
-    const conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    const headerStringArray = importantColumns.map(column => {
+    const conceptIdMapping = JSON.parse(localStorage.getItem("conceptIdMapping"));
+    let headerStringArray = [];
+    if (conceptIdMapping) {
+      headerStringArray = importantColumns.map((column) => {
         let columnName = conceptIdMapping[column]
-            ? getCustomVariableNames(column) || conceptIdMapping[column]["Variable Label"] || conceptIdMapping[column]["Variable Name"]
-            : column;
-    
+          ? getCustomVariableNames(column) ||
+            conceptIdMapping[column]["Variable Label"] ||
+            conceptIdMapping[column]["Variable Name"]
+          : column;
+
         return `<th class="sticky-row">${columnName}</th>`;
-    });
+      });
+    } else {
+      const fallbackColumnNameArray = [
+        "First Name (UP)",
+        "Middle Name (UP)",
+        "Last Name (UP)",
+        "Birth Month",
+        "Birth Day",
+        "Birth Year",
+        "Preferred email",
+        "Connect_ID",
+        "Site",
+        ...importantColumns.slice(9),
+      ];
+      headerStringArray = fallbackColumnNameArray.map((columnName) => `<th class="sticky-row">${columnName}</th>`);
+    }
 
     let template = `<thead class="thead-dark sticky-row">
             <tr>
