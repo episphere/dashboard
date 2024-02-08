@@ -402,6 +402,8 @@ export const baselinePromisSurvey = (participantModule) => {
     } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.started1) {
         template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Follow-Up 3-mo", "Survey", "Quality of Life", "Started",
         humanReadableMDY(participantModule[fieldMapping.promisSurveyStartedDate]), "N/A", "N", "N/A");
+    } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.notYetEligible1) {
+        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Yet Eligible", "N/A", "N/A", "N", "N/A");
     } else {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Started", "N/A", "N/A", "N", "N/A");
     }
