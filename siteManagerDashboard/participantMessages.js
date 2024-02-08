@@ -48,7 +48,7 @@ export const render = async (participant) => {
       let messageTitle = `Email (${message.notification.title})`;
       const messageBody = message.notification.body.replace(/<style[^>]*>.*?<\/style>/gs, "");
       if (message.notificationType === "sms") {
-        messageTitle = `SMS (${message.category}, ${message.attempt})`;
+        messageTitle = "SMS Message";
       }
 
       const currString = `
