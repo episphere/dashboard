@@ -298,6 +298,8 @@ export default
     'refusedSpecimenSurevys': 217367618,
     'refusedFutureSurveys': 867203506,
     'refusedFutureSamples': 352996056,
+    'refusedQualityOfLifeSurvey': 936015433,
+    'refusedAllFutureQualityOfLifeSurveys': 688142378,
     
     'refusedAllFutureActivities': 906417725,
     'revokeHIPAA': 773707518,
@@ -453,6 +455,8 @@ export default
     'refBaselineAllFutureSpecimensTimeStamp': 711256590,
     'refBaselineSpecimenSurveysTimeStamp': 657475009,
     'refAllFutureActivitesTimeStamp': 614264509,
+    'refQualityOfLifeSurveyTimeStamp': 667960135,
+    'refAllFutureQualityOfLifeSurveysTimeStamp': 953225775,
 
     // remaining withdrawal
     'contactSuspended': 726389747,
