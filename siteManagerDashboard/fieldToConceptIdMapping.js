@@ -82,6 +82,7 @@ export default
     "started": 1,
     "submitted": 2,
 
+    "notYetEligible1:": 789467219,
     "notStarted1": 972455046,
     "started1": 615768760,
     "submitted1": 231311385,
@@ -161,6 +162,10 @@ export default
     "mouthwashSurveyFlag": 547363263,
     "mouthwashSurveyStartedDate": 286191859,
     "mouthwashSurveyCompletedDate": 195145666,
+
+    "promisSurveyFlag": 320303124,
+    "promisSurveyStartedDate": 870643066,
+    "promisSurveyCompletedDate": 843688458,
 
     'combinedBoodUrineMouthwashSurvey': 265193023,
     'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
