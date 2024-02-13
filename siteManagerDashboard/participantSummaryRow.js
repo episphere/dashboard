@@ -385,24 +385,27 @@ export const baselineMouthwashSurvey = (participantModule) => {
     return template;
 };
 
-export const baselinePromisSurvey = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
-    const refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
+export const baselinePromisSurvey = (participant) => {
+    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed];
+    const refusedAllFutureSurveys = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedFutureSurveys];
+    const refusedAllFutureActivities = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedAllFutureActivities];
+    const refusedQualityOfLifeSurvey = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedQualityOfLifeSurvey];
+
     let template = ``;
     
     if (isDataDestroyed === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedSurveyOption === fieldMapping.yes) {
+    } else if (refusedAllFutureSurveys === fieldMapping.yes || refusedAllFutureActivities === fieldMapping.yes || refusedQualityOfLifeSurvey === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "Y", "N/A");
-    } else if (!participantModule) {
+    } else if (!participant) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "N", "N/A");
-    } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1) {
+    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Follow-Up 3-mo", "Survey", "Quality of Life", "Submitted",
-        humanReadableMDY(participantModule[fieldMapping.promisSurveyCompletedDate]), "N/A", "N", "N/A");
-    } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.started1) {
+        humanReadableMDY(participant[fieldMapping.promisSurveyCompletedDate]), "N/A", "N", "N/A");
+    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1) {
         template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Follow-Up 3-mo", "Survey", "Quality of Life", "Started",
-        humanReadableMDY(participantModule[fieldMapping.promisSurveyStartedDate]), "N/A", "N", "N/A");
-    } else if (participantModule[fieldMapping.promisSurveyFlag] === fieldMapping.notYetEligible1) {
+        humanReadableMDY(participant[fieldMapping.promisSurveyStartedDate]), "N/A", "N", "N/A");
+    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.notYetEligible1) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Yet Eligible", "N/A", "N/A", "N", "N/A");
     } else {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Started", "N/A", "N/A", "N", "N/A");

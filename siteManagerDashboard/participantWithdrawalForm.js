@@ -64,6 +64,18 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                     <div class="form-check">
                                         <span><i><b>Surveys</b></i></span>
                                         <br />
+                                        <input class="form-check-input" name="options" type="checkbox" value="Quality of Life 3-Mo Survey (but willing to do other future surveys)" 
+                                        data-optionKey=${fieldMapping.refusedQualityOfLifeSurvey} id="refusedQualityOfLifeSurveyCheck">
+                                        <label class="form-check-label" for="refusedQualityOfLifeSurveyCheck">
+                                            Quality of Life 3-Mo Survey (but willing to do other future surveys)
+                                        </label>
+                                        <br />
+                                        <input class="form-check-input" name="options" type="checkbox" value="All future QOL Surveys (but willing to do other future surveys)" 
+                                        data-optionKey=${fieldMapping.refusedAllFutureQualityOfLifeSurveys} id="refusedAllFutureQualityOfLifeSurveysCheck">
+                                        <label class="form-check-label" for="refusedAllFutureQualityOfLifeSurveysCheck">
+                                            All future QOL Surveys (but willing to do other future surveys)
+                                        </label>
+                                        <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="All future surveys (willing to do specimens)" 
                                         data-optionKey=${fieldMapping.refusedFutureSurveys} id="defaultCheck6">
                                         <label class="form-check-label" for="defaultCheck6">
@@ -448,29 +460,35 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     sendRefusalData[fieldMapping.refusalOptions] = {};
     retainOptions.forEach(x => {
         if (parseInt(x.dataset.optionkey) === fieldMapping.refusedSurvey) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
-            }
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSurveyTimeStamp);
+        }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedBlood) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
-            }
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineBloodTimeStamp);
+        }
         else if (parseInt(x.dataset.optionkey) === fieldMapping.refusedUrine) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp);
-            }
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineUrineTimeStamp);
+        }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedMouthwash) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
-            }
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
+        }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurevys) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSurveys) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp);
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSurveysTimeStamp);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSamples) {
-                setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineAllFutureSpecimensTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedQualityOfLifeSurvey) {
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refQualityOfLifeSurveyTimeStamp);
+        }
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedAllFutureQualityOfLifeSurveys) {
+            setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refAllFutureQualityOfLifeSurveysTimeStamp);
         }
         else {
-                sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
-            }
+            sendRefusalData[x.dataset.optionkey] = fieldMapping.yes
+        }
     })
     if (requestedHolder.length != 0) {
         requestedHolder.forEach(x => {
