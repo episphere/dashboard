@@ -82,7 +82,7 @@ export default
     "started": 1,
     "submitted": 2,
 
-    "notYetEligible1:": 789467219,
+    "notYetEligible1": 789467219,
     "notStarted1": 972455046,
     "started1": 615768760,
     "submitted1": 231311385,
