@@ -388,7 +388,7 @@ export const baselineMouthwashSurvey = (participantModule) => {
 export const baselinePromisSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed];
     const refusedAllFutureSurveys = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedFutureSurveys];
-    const refusedAllFutureActivities = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedAllFutureActivities];
+    const refusedAllFutureActivities = participant[fieldMapping.refusedAllFutureActivities];
     const refusedQualityOfLifeSurvey = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedQualityOfLifeSurvey];
 
     let template = ``;
