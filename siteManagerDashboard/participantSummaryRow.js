@@ -386,32 +386,38 @@ export const baselineMouthwashSurvey = (participantModule) => {
 };
 
 export const baselinePromisSurvey = (participant) => {
+    
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed];
     const refusedAllFutureSurveys = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedFutureSurveys];
     const refusedAllFutureActivities = participant[fieldMapping.refusedAllFutureActivities];
     const refusedQualityOfLifeSurvey = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedQualityOfLifeSurvey];
 
-    let template = ``;
-    
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedAllFutureSurveys === fieldMapping.yes || refusedAllFutureActivities === fieldMapping.yes || refusedQualityOfLifeSurvey === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "Y", "N/A");
-    } else if (!participant) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1) {
-        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Follow-Up 3-mo", "Survey", "Quality of Life", "Submitted",
-        humanReadableMDY(participant[fieldMapping.promisSurveyCompletedDate]), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1) {
-        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Follow-Up 3-mo", "Survey", "Quality of Life", "Started",
-        humanReadableMDY(participant[fieldMapping.promisSurveyStartedDate]), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.notYetEligible1) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Yet Eligible", "N/A", "N/A", "N", "N/A");
-    } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Started", "N/A", "N/A", "N", "N/A");
-    }
+    const icon = participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? "fa fa-check fa-2x" 
+                : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? "fa fa-hashtag fa-2x" 
+                : "fa fa-times fa-2x";
 
-    return template;
+    const color = participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? "color: green" 
+                : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? "color: orange" 
+                : "color: red";
+
+    const timeline = "Follow-Up 3-mo";
+    const category = "Survey";
+    const item = "Quality of Life";
+    
+    const itemStatus = isDataDestroyed === fieldMapping.yes ? "Data Destroyed"
+                    : participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? "Submitted"
+                    : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? "Started"
+                    : "Not Started";
+
+    const date = participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? humanReadableMDY(participant[fieldMapping.promisSurveyCompletedDate]) 
+                : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? humanReadableMDY(participant[fieldMapping.promisSurveyStartedDate]) 
+                : "N/A";
+
+    const setting = "N/A";
+    const refused = refusedAllFutureSurveys === fieldMapping.yes || refusedAllFutureActivities === fieldMapping.yes || refusedQualityOfLifeSurvey === fieldMapping.yes ? "Y" : "N";
+    const extra = "N/A";
+
+    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);;
 };
 
 export const baselineMenstrualSurvey = (participant) => {
