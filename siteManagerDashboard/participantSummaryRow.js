@@ -387,37 +387,21 @@ export const baselineMouthwashSurvey = (participantModule) => {
 
 export const baselinePromisSurvey = (participant) => {
     
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed];
+    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed] === fieldMapping.yes;
     const refusedAllFutureSurveys = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedFutureSurveys];
     const refusedAllFutureActivities = participant[fieldMapping.refusedAllFutureActivities];
     const refusedQualityOfLifeSurvey = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedQualityOfLifeSurvey];
 
-    const icon = participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? "fa fa-check fa-2x" 
-                : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? "fa fa-hashtag fa-2x" 
-                : "fa fa-times fa-2x";
-
-    const color = participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? "color: green" 
-                : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? "color: orange" 
-                : "color: red";
+    const { icon, color, itemStatus, date } = getSurveyStatus(participant, isDataDestroyed, fieldMapping.promisSurveyFlag, fieldMapping.promisSurveyStartedDate, fieldMapping.promisSurveyCompletedDate);
 
     const timeline = "Follow-Up 3-mo";
     const category = "Survey";
     const item = "Quality of Life";
-    
-    const itemStatus = isDataDestroyed === fieldMapping.yes ? "Data Destroyed"
-                    : participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? "Submitted"
-                    : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? "Started"
-                    : "Not Started";
-
-    const date = participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1 ? humanReadableMDY(participant[fieldMapping.promisSurveyCompletedDate]) 
-                : participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1 ? humanReadableMDY(participant[fieldMapping.promisSurveyStartedDate]) 
-                : "N/A";
-
     const setting = "N/A";
     const refused = refusedAllFutureSurveys === fieldMapping.yes || refusedAllFutureActivities === fieldMapping.yes || refusedQualityOfLifeSurvey === fieldMapping.yes ? "Y" : "N";
     const extra = "N/A";
 
-    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);;
+    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);
 };
 
 export const baselineMenstrualSurvey = (participant) => {
@@ -480,6 +464,43 @@ export const baselinePayment = (participantModule) => {
 }
 
 return template;
+}
+
+const getSurveyStatus = (participant, dataDestroyed, surveyFlag, startDate, completeDate) => {
+
+    if (dataDestroyed) {
+        return {
+            icon: "fa fa-times fa-2x",
+            color: "color: red",
+            itemStatus: "Data Destroyed",
+            date: "N/A"
+        };
+    } 
+    else {
+        switch (participant[surveyFlag]) {
+            case fieldMapping.submitted1:
+                return {
+                    icon: "fa fa-check fa-2x",
+                    color: "color: green",
+                    itemStatus: "Submitted",
+                    date: humanReadableMDY(participant[completeDate])
+                };
+            case fieldMapping.started1:
+                return {
+                    icon: "fa fa-hashtag fa-2x",
+                    color: "color: orange",
+                    itemStatus: "Started",
+                    date: humanReadableMDY(participant[startDate])
+                };
+            default:
+                return {
+                    icon: "fa fa-times fa-2x",
+                    color: "color: red",
+                    itemStatus: "Not Started",
+                    date: "N/A"
+                };
+        }
+    }
 }
 
 const checkIncentiveIssued = (participantModule) => {
