@@ -386,32 +386,22 @@ export const baselineMouthwashSurvey = (participantModule) => {
 };
 
 export const baselinePromisSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed];
+    
+    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed] === fieldMapping.yes;
     const refusedAllFutureSurveys = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedFutureSurveys];
     const refusedAllFutureActivities = participant[fieldMapping.refusedAllFutureActivities];
     const refusedQualityOfLifeSurvey = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedQualityOfLifeSurvey];
 
-    let template = ``;
-    
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedAllFutureSurveys === fieldMapping.yes || refusedAllFutureActivities === fieldMapping.yes || refusedQualityOfLifeSurvey === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "Y", "N/A");
-    } else if (!participant) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "N/A", "N/A", "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.submitted1) {
-        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Follow-Up 3-mo", "Survey", "Quality of Life", "Submitted",
-        humanReadableMDY(participant[fieldMapping.promisSurveyCompletedDate]), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.started1) {
-        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Follow-Up 3-mo", "Survey", "Quality of Life", "Started",
-        humanReadableMDY(participant[fieldMapping.promisSurveyStartedDate]), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.promisSurveyFlag] === fieldMapping.notYetEligible1) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Yet Eligible", "N/A", "N/A", "N", "N/A");
-    } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Follow-Up 3-mo", "Survey", "Quality of Life", "Not Started", "N/A", "N/A", "N", "N/A");
-    }
+    const { icon, color, itemStatus, date } = getSurveyStatus(participant, isDataDestroyed, fieldMapping.promisSurveyFlag, fieldMapping.promisSurveyStartedDate, fieldMapping.promisSurveyCompletedDate);
 
-    return template;
+    const timeline = "Follow-Up 3-mo";
+    const category = "Survey";
+    const item = "Quality of Life";
+    const setting = "N/A";
+    const refused = refusedAllFutureSurveys === fieldMapping.yes || refusedAllFutureActivities === fieldMapping.yes || refusedQualityOfLifeSurvey === fieldMapping.yes ? "Y" : "N";
+    const extra = "N/A";
+
+    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);
 };
 
 export const baselineMenstrualSurvey = (participant) => {
@@ -474,6 +464,43 @@ export const baselinePayment = (participantModule) => {
 }
 
 return template;
+}
+
+const getSurveyStatus = (participant, dataDestroyed, surveyFlag, startDate, completeDate) => {
+
+    if (dataDestroyed) {
+        return {
+            icon: "fa fa-times fa-2x",
+            color: "color: red",
+            itemStatus: "Data Destroyed",
+            date: "N/A"
+        };
+    } 
+    else {
+        switch (participant[surveyFlag]) {
+            case fieldMapping.submitted1:
+                return {
+                    icon: "fa fa-check fa-2x",
+                    color: "color: green",
+                    itemStatus: "Submitted",
+                    date: humanReadableMDY(participant[completeDate])
+                };
+            case fieldMapping.started1:
+                return {
+                    icon: "fa fa-hashtag fa-2x",
+                    color: "color: orange",
+                    itemStatus: "Started",
+                    date: humanReadableMDY(participant[startDate])
+                };
+            default:
+                return {
+                    icon: "fa fa-times fa-2x",
+                    color: "color: red",
+                    itemStatus: "Not Started",
+                    date: "N/A"
+                };
+        }
+    }
 }
 
 const checkIncentiveIssued = (participantModule) => {
