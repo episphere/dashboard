@@ -492,6 +492,13 @@ const getSurveyStatus = (participant, dataDestroyed, surveyFlag, startDate, comp
                     itemStatus: "Started",
                     date: humanReadableMDY(participant[startDate])
                 };
+            case fieldMapping.notYetEligible1:
+                return {
+                    icon: "fa fa-times fa-2x",
+                    color: "color: red",
+                    itemStatus: "Not Yet Eligible",
+                    date: "N/A"
+                };
             default:
                 return {
                     icon: "fa fa-times fa-2x",
