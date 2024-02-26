@@ -82,6 +82,7 @@ export default
     "started": 1,
     "submitted": 2,
 
+    "notYetEligible1": 789467219,
     "notStarted1": 972455046,
     "started1": 615768760,
     "submitted1": 231311385,
@@ -161,6 +162,10 @@ export default
     "mouthwashSurveyFlag": 547363263,
     "mouthwashSurveyStartedDate": 286191859,
     "mouthwashSurveyCompletedDate": 195145666,
+
+    "promisSurveyFlag": 320303124,
+    "promisSurveyStartedDate": 870643066,
+    "promisSurveyCompletedDate": 843688458,
 
     'combinedBoodUrineMouthwashSurvey': 265193023,
     'combinedBoodUrineMouthwashSurveyStartDate': 822499427,
@@ -293,6 +298,8 @@ export default
     'refusedSpecimenSurevys': 217367618,
     'refusedFutureSurveys': 867203506,
     'refusedFutureSamples': 352996056,
+    'refusedQualityOfLifeSurvey': 936015433,
+    'refusedAllFutureQualityOfLifeSurveys': 688142378,
     
     'refusedAllFutureActivities': 906417725,
     'revokeHIPAA': 773707518,
@@ -448,6 +455,8 @@ export default
     'refBaselineAllFutureSpecimensTimeStamp': 711256590,
     'refBaselineSpecimenSurveysTimeStamp': 657475009,
     'refAllFutureActivitesTimeStamp': 614264509,
+    'refQualityOfLifeSurveyTimeStamp': 667960135,
+    'refAllFutureQualityOfLifeSurveysTimeStamp': 953225775,
 
     // remaining withdrawal
     'contactSuspended': 726389747,
