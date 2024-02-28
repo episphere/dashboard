@@ -150,7 +150,7 @@ export const triggerNotificationBanner = (message, type) => {
 export const pdfCoordinatesMap = {
   'consent': {
     'HP': {
-      'V0.02': [{x: 90, y: 425}, {x0: 90, y0: 385}, {x1: 90, y1: 345}],
+      'V0.02': [{x: 90, y: 425}, {x0: 90, y0: 385}, {x1: 110, y1: 345}],
       'V0.04': [{x: 90, y: 402}, {x0: 90, y0: 362}, {x1: 110, y1: 322}],
       'V1.0': [{x: 90, y: 420}, {x0: 90, y0: 380}, {x1: 110, y1: 340}]
     },
