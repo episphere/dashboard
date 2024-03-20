@@ -295,7 +295,7 @@ export default
     // 'refusedBloodSample': 194410742,
     // 'refusedUrineSample': 949501163,
     // 'refusedMouthwashSample': 277479354,
-    'refusedSpecimenSurevys': 217367618,
+    'refusedSpecimenSurveys': 217367618,
     'refusedFutureSurveys': 867203506,
     'refusedFutureSamples': 352996056,
     'refusedQualityOfLifeSurvey': 936015433,

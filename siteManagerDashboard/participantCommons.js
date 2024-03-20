@@ -24,18 +24,18 @@ export const renderTable = (data, source) => {
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
     fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
-    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurevys, fieldMapping.refusedFutureSamples, fieldMapping.refusedQualityOfLifeSurvey, fieldMapping.refusedAllFutureQualityOfLifeSurveys,
+    fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurveys, fieldMapping.refusedFutureSamples, fieldMapping.refusedQualityOfLifeSurvey, fieldMapping.refusedAllFutureQualityOfLifeSurveys,
     fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
-    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact, 
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
     if (conceptIdMapping) {
+        
         template += `<div class="row">
             <div class="col" id="columnFilter">
                 ${array.map(x => `<button name="column-filter" class="filter-btn sub-div-shadow" data-column="${x}">${conceptIdMapping[x] && conceptIdMapping[x] ? 
-                    ((x !== fieldMapping.refusedSpecimenSurevys && x !== fieldMapping.dateHipaaRevokeRequested &&
-                        x !== fieldMapping.consentFirstName && x !== fieldMapping.consentMiddleName && x !== fieldMapping.consentLastName) ? 
+                    ((x !== fieldMapping.consentFirstName && x !== fieldMapping.consentMiddleName && x !== fieldMapping.consentLastName) ? 
                         conceptIdMapping[x]['Variable Label'] || conceptIdMapping[x]['Variable Name'] : getCustomVariableNames(x)) : x}</button>`)}
             </div>
         </div>`
@@ -576,7 +576,7 @@ const tableTemplate = (data, showButtons) => {
                 : (template += `<td>${participant[x] ? 'Not Started'  : ''}</td>` )
             )
             :  (x === (fieldMapping.refusedSurvey).toString() || x === (fieldMapping.refusedBlood).toString() || x === (fieldMapping.refusedUrine).toString() ||
-                x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurevys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
+                x === (fieldMapping.refusedMouthwash).toString() || x === (fieldMapping.refusedSpecimenSurveys).toString() || x === (fieldMapping.refusedFutureSamples).toString() || 
                 x === (fieldMapping.refusedFutureSurveys).toString() || x === (fieldMapping.refusedQualityOfLifeSurvey).toString() || x === (fieldMapping.refusedAllFutureQualityOfLifeSurveys).toString()) ?
             (
                 (participant[fieldMapping.refusalOptions]?.[x] === fieldMapping.yes ?
@@ -1059,8 +1059,6 @@ export const renderLookupSiteDropdown = () => {
 
 const getCustomVariableNames = (x) => {
     const customVariableFields = {
-                                    [fieldMapping.refusedSpecimenSurevys]: 'Refused baseline specimen surveys',
-                                    [fieldMapping.dateHipaaRevokeRequested]: 'Date revoked HIPAA',
                                     [fieldMapping.consentFirstName]: 'First Name (Consent)',
                                     [fieldMapping.consentMiddleName]: 'Middle Name (Consent)',
                                     [fieldMapping.consentLastName]: 'Last Name (Consent)',

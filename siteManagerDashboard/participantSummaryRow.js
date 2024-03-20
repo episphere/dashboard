@@ -315,7 +315,7 @@ export const baselineCOVIDSurvey = (participant) => {
 export const baselineBiospecSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let combinedBoodUrineMouthwashSurvey = participant[fieldMapping.combinedBoodUrineMouthwashSurvey] && participant[fieldMapping.combinedBoodUrineMouthwashSurvey];
-    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys];
+    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
 
     if (isDataDestroyed === fieldMapping.yes) {
@@ -339,7 +339,7 @@ export const baselineBiospecSurvey = (participant) => {
 
 export const baselineBloodUrineSurvey = (participant) => {
     const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
-    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys];
+    let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
     
     if (isDataDestroyed === fieldMapping.yes) {
@@ -363,7 +363,7 @@ export const baselineBloodUrineSurvey = (participant) => {
 
 export const baselineMouthwashSurvey = (participantModule) => {
     const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
-    let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys];
+    let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
     
     if (isDataDestroyed === fieldMapping.yes) {
