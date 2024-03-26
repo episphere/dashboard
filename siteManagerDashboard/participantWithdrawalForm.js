@@ -52,7 +52,7 @@ export const renderParticipantWithdrawalLandingPage = () => {
                                         <span><i><b>Specimen Surveys</b></i></span>
                                         <br />
                                         <input class="form-check-input" name="options" type="checkbox" value="Baseline Specimen Surveys" 
-                                        data-optionKey=${fieldMapping.refusedSpecimenSurevys} id="defaultCheck5">
+                                        data-optionKey=${fieldMapping.refusedSpecimenSurveys} id="defaultCheck5">
                                         <label class="form-check-label" for="defaultCheck5">
                                             Baseline Specimen Surveys
                                         </label>
@@ -471,7 +471,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedMouthwash) {
             setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineMouthwashTimeStamp);
         }
-        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurevys) {
+        else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedSpecimenSurveys) {
             setRefusalTimeStamp(sendRefusalData, x.dataset.optionkey, fieldMapping.refBaselineSpecimenSurveysTimeStamp);
         }
         else if (parseInt(x.dataset.optionkey) ===  fieldMapping.refusedFutureSurveys) {

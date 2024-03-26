@@ -73,7 +73,7 @@ const getParticipantSelectedRefusals = (participant) => {
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline Mouthwash (Saliva) Donation, ` 
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurevys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
+    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​​, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedQualityOfLifeSurvey] === fieldMapping.yes ) template += `Refused QOL survey 3-mo (but willing to do other future surveys)​, `
     if (participant[fieldMapping.refusalOptions][fieldMapping.refusedAllFutureQualityOfLifeSurveys] === fieldMapping.yes ) template += `Refused all future QOL surveys (but willing to do other future surveys)​, `

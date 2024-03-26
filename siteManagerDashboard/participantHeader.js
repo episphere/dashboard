@@ -47,14 +47,14 @@ export const renderParticipantHeader = (participant) => {
             template += `<span><b> DoB </b></span> : ${concatDOB(participant)} &nbsp;`
         :
         
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Consent submitted') ?
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Consent Sub') ?
             (participant[fieldMapping.consentFlag] === (fieldMapping.yes) ? 
                 template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
                 :
                 template += `<span><b> Not Consented</b></span> : N/A &nbsp;`)
         :
 
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verification status') ?
+        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verif Status') ?
             (
                 (participant[fieldMapping.verifiedFlag] === fieldMapping.verified) ? 
                     (template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
