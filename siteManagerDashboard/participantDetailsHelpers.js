@@ -790,7 +790,7 @@ export const saveResponses = (participant, changedOption, editedElement, concept
                 changedOption[currentConceptId] = newValueElement.value;
                 // if a changed field is a date of birth field then we need to update full date of birth  
                 if (fieldMapping.birthDay in changedOption || fieldMapping.birthMonth in changedOption || fieldMapping.birthYear in changedOption) {
-                    const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay];
+                    const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay] || '01'; // Not ideal here
                     const month = changedOption[fieldMapping.birthMonth] || participant[fieldMapping.birthMonth];
                     const year = changedOption[fieldMapping.birthYear] || participant[fieldMapping.birthYear];
                     const dateOfBirthComplete = fieldMapping.dateOfBirthComplete;

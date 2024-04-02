@@ -187,7 +187,7 @@ export const mapSchemaNotificaiton = (updateSchemaNotification, concepts, flag) 
         if (i === "sms") {
             document.getElementById('smsCheckBox').checked = true;
             renderDivs("sms", flag);
-            document.getElementById('smsBody').value = updateSchemaNotification.sms.body;
+            document.getElementById('smsBody').value = updateSchemaNotification.sms.body; // handle null
             document.getElementById('characterCounts').innerText = `${updateSchemaNotification.sms.body.length}/160 characters`;
             localStorage.setItem("smsCheck", true);
         } 

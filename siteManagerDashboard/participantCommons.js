@@ -938,14 +938,14 @@ export const activeColumns = (data, showButtons) => {
             }
             if (appState.getState().filterHolder.type === "passive") {
                 let passiveButton = document.getElementById('passiveFilter');
-                if ([...passiveButton.classList].includes('btn-outline-info')) {
+                if (passiveButton && [...passiveButton.classList].includes('btn-outline-info')) {
                     passiveButton.classList.remove('btn-outline-info');
                     passiveButton.classList.add('btn-info');  
                 }
             }
             if (appState.getState().filterHolder.type === "active") {
                 let activeButton = document.getElementById('activeFilter');
-                if ([...activeButton.classList].includes('btn-outline-info')) {
+                if (activeButton && [...activeButton.classList].includes('btn-outline-info')) {
                     activeButton.classList.remove('btn-outline-info');
                     activeButton.classList.add('btn-info');  
                 }

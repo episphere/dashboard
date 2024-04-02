@@ -26,7 +26,7 @@ export const renderParticipantHeader = (participant) => {
         ${
             participant[fieldMapping.consentFlag] === fieldMapping.yes
             ? `<span><b>Consented</b></span>: ${humanReadableMDY(participant[fieldMapping.consentDate])}`
-            : "<span><b>Not Consented</b></span>: N/A "
+            : "<span><b>Not Consented</b></span>: N/A"
         } &nbsp;
         ${verificationHtmlStr} &nbsp;
         <span><b>Site</b></span>: ${renderSiteLocation(participant)} &nbsp;
