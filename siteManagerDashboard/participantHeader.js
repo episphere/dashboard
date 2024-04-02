@@ -2,82 +2,39 @@ import fieldMapping from './fieldToConceptIdMapping.js';
 import { humanReadableMDY } from './utils.js';
 import { keyToNameObj } from './idsToName.js';
 
-export const headerImportantColumns = [
-    { field: 'Connect_ID' },
-    { field: fieldMapping.fName },
-    { field: fieldMapping.lName },
-    { field: fieldMapping.birthYear },
-    { field: fieldMapping.consentFlag },
-    { field: fieldMapping.verifiedFlag },
-    { field: 'Site' },
-    { field: 'Year(s) in Connect' },
-    { field: 'Participation Status'},
-    { field: 'Suspended Contact'}
-];
-
-
 export const renderParticipantHeader = (participant) => {
+  const readableVerificationDate = humanReadableMDY(participant[fieldMapping.verficationDate]);
+  let verificationHtmlStr = "";
+  if (participant[fieldMapping.verifiedFlag] === fieldMapping.verified) {
+    verificationHtmlStr = `<span><b>Verified</b></span>: ${readableVerificationDate}`;
+  } else if (participant[fieldMapping.verifiedFlag] === fieldMapping.cannotBeVerified) {
+    verificationHtmlStr = `<span><b>Can't Be Verified</b></span>: ${readableVerificationDate}`;
+  } else if (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) {
+    verificationHtmlStr = `<span><b>Not Yet Verified</b></span>: N/A`;
+  } else if (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) {
+    verificationHtmlStr = `<span><b>Duplicate</b></span>: ${readableVerificationDate}`;
+  } else {
+    verificationHtmlStr = `<span><b>Outreach Timed Out</b></span>: ${readableVerificationDate}`;
+  }
 
-    let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
-    let template = `<div class="alert alert-light .sticky-participant-header" role="alert">`
-
-    for (let x in headerImportantColumns) {
-
-        (headerImportantColumns[x].field === 'Connect_ID' ) ?
-            template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${participant[headerImportantColumns[x].field] !== undefined ?  participant[headerImportantColumns[x].field] : ""} &nbsp;`
-        :
-
-        (headerImportantColumns[x].field === 'Participation Status' ) ?
-            template += `<span><b>Participation Status </b></span> : ${getParticipantStatus(participant)}  &nbsp;`
-        :
-
-        (headerImportantColumns[x].field === 'Suspended Contact'  ) ?
-            template += getParticipantSuspendedDate(participant)
-        :
-
-        (headerImportantColumns[x].field === 'Year(s) in Connect' ) ?
-            template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${getYearsInConnect(participant)} &nbsp;`
-        :
-
-        (headerImportantColumns[x].field === 'Site' ) ?
-            template += `<span><b> ${headerImportantColumns[x].field} </b></span> : ${renderSiteLocation(participant)} &nbsp;`
-        :
-        
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Birth Year') ?
-            template += `<span><b> DoB </b></span> : ${concatDOB(participant)} &nbsp;`
-        :
-        
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Consent Sub') ?
-            (participant[fieldMapping.consentFlag] === (fieldMapping.yes) ? 
-                template += `<span><b> Consented</b></span> : ${humanReadableMDY(participant[fieldMapping.consentDate])} &nbsp;`
-                :
-                template += `<span><b> Not Consented</b></span> : N/A &nbsp;`)
-        :
-
-        (conceptIdMapping[headerImportantColumns[x].field] && conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] === 'Verif Status') ?
-            (
-                (participant[fieldMapping.verifiedFlag] === fieldMapping.verified) ? 
-                    (template += `<span><b> Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
-                    :
-                (participant[fieldMapping.verifiedFlag] === fieldMapping.cannotBeVerified) ? 
-                    (template += `<span><b>Can't Be Verified</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
-                    :
-                (participant[fieldMapping.verifiedFlag] === fieldMapping.notYetVerified) ? 
-                    (template += `<span><b>Not Yet Verified</b></span> : N/A &nbsp;`)
-                    :
-                (participant[fieldMapping.verifiedFlag] === fieldMapping.duplicate) ? 
-                    (template += `<span><b>Duplicate</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
-                    :
-                    (template += `<span><b>Outreach Timed Out</b></span> : ${humanReadableMDY(participant[fieldMapping.verficationDate])} &nbsp;`)
-            )
-            :
-            template += `<span><b> ${conceptIdMapping[headerImportantColumns[x].field]['Variable Label'] } </b></span> : ${participant[headerImportantColumns[x].field]  !== undefined ?  participant[headerImportantColumns[x].field]  : ""} &nbsp;`
-    }
-
-    template += '</div>'
-
-    return template;
-} 
+  return `
+    <div class="alert alert-light .sticky-participant-header" role="alert">
+        <span><b>Connect_ID</b></span>: ${participant["Connect_ID"] || ""} &nbsp;
+        <span><b>First Name</b></span>: ${participant[fieldMapping.fName] || ""} &nbsp;
+        <span><b>Last Name</b></span>: ${participant[fieldMapping.lName] || ""} &nbsp;
+        <span><b>DOB Yr</b></span>: ${participant[fieldMapping.birthYear] || ""} &nbsp;
+        ${
+            participant[fieldMapping.consentFlag] === fieldMapping.yes
+            ? `<span><b>Consented</b></span>: ${humanReadableMDY(participant[fieldMapping.consentDate])}`
+            : "<span><b>Not Consented</b></span>: N/A "
+        } &nbsp;
+        ${verificationHtmlStr} &nbsp;
+        <span><b>Site</b></span>: ${renderSiteLocation(participant)} &nbsp;
+        <span><b>Year(s) in Connect</b></span>: ${getYearsInConnect(participant)} &nbsp;
+        <span><b>Participation Status</b></span>: ${getParticipantStatus(participant)} &nbsp;
+        ${getParticipantSuspendedDate(participant)}
+    </div>`;
+}; 
 
 // Year(s) in Connect : 1  
 const getYearsInConnect = (participant) => {
@@ -92,22 +49,12 @@ const getYearsInConnect = (participant) => {
     totalYears <= 0 ? totalYears = '< 1' : totalYears;
     let yearsInConnect = totalYears;
     return typeof(yearsInConnect) !== 'string' && isNaN(yearsInConnect) ? 'N/A' : yearsInConnect;
-}
-
-
-
-const concatDOB = (participant) => {
-    const participantBirthMonth = participant[fieldMapping.birthMonth];
-    const participantBirthDate = participant[fieldMapping.birthDay];
-    const participantBirthYear = participant[fieldMapping.birthYear];
-    return participantBirthMonth && participantBirthDate && participantBirthYear ? participantBirthMonth + '/' + participantBirthDate + '/' + participantBirthYear : 'data deleted'; //  07/02/1966 or 'data deleted' 
-
-}
+};
 
 const renderSiteLocation = (participant) => {
     const siteHealthcareProvider = participant[fieldMapping.healthcareProvider];
     return keyToNameObj[siteHealthcareProvider];
-}
+};
 
 export const getParticipantStatus = (participant) => {
     if (typeof participant !== "string") {
@@ -120,20 +67,12 @@ export const getParticipantStatus = (participant) => {
     }
 };
 
-const getEnrollmentStatus = (participant) => {
-    if (typeof participant !== "string") {
-        const statusValue = participant[fieldMapping.enrollmentStatus];
-        if (statusValue !== undefined && statusValue !== `` )  return fieldMapping[statusValue];
-        else return `Error`;
-    }
-}
-
 export const getParticipantSuspendedDate = (participant) => {
     if (participant[fieldMapping.suspendContact] !== "" && participant[fieldMapping.suspendContact] !== undefined ) {
         let suspendContactRequestedFrom  = humanReadableMDY(participant[fieldMapping.startDateSuspendedContact]);
-        let suspendedDate = participant[fieldMapping.suspendContact]
-        return `<span><b>Suspended Contact </b></span> : From:  ${suspendContactRequestedFrom}  To:  ${suspendedDate}`
-    } else {
-        return ``
+        let suspendedDate = participant[fieldMapping.suspendContact];
+        return `<span><b>Suspended Contact </b></span>: From:  ${suspendContactRequestedFrom}  To:  ${suspendedDate}`;
     }
-}
+
+    return "";
+};
