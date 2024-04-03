@@ -18,15 +18,15 @@ export const renderParticipantHeader = (participant) => {
   }
 
   return `
-    <div class="alert alert-light .sticky-participant-header" role="alert">
+    <div class="alert alert-light" role="alert">
         <span><b>Connect_ID</b></span>: ${participant["Connect_ID"] || ""} &nbsp;
         <span><b>First Name</b></span>: ${participant[fieldMapping.fName] || ""} &nbsp;
         <span><b>Last Name</b></span>: ${participant[fieldMapping.lName] || ""} &nbsp;
         <span><b>DOB Yr</b></span>: ${participant[fieldMapping.birthYear] || ""} &nbsp;
         ${
-            participant[fieldMapping.consentFlag] === fieldMapping.yes
-            ? `<span><b>Consented</b></span>: ${humanReadableMDY(participant[fieldMapping.consentDate])}`
-            : "<span><b>Not Consented</b></span>: N/A"
+          participant[fieldMapping.consentFlag] === fieldMapping.yes
+          ? `<span><b>Consented</b></span>: ${humanReadableMDY(participant[fieldMapping.consentDate])}`
+          : "<span><b>Not Consented</b></span>: N/A"
         } &nbsp;
         ${verificationHtmlStr} &nbsp;
         <span><b>Site</b></span>: ${renderSiteLocation(participant)} &nbsp;
