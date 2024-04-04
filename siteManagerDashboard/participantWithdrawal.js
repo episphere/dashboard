@@ -68,25 +68,33 @@ const checkPreviousWithdrawalStatus = (participant) => {
 }
 
 const getParticipantSelectedRefusals = (participant) => {
-    let template = ``
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSurvey] === fieldMapping.yes ) template += `Initial Survey​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedBlood] === fieldMapping.yes ) template += `Baseline Blood Donation, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedUrine] === fieldMapping.yes )  template += `Baseline Urine Donation, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedMouthwash] === fieldMapping.yes ) template += `Baseline Mouthwash (Saliva) Donation, ` 
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys] === fieldMapping.yes ) template += `Baseline Specimen Surveys, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSamples] === fieldMapping.yes ) template += `All future specimens (willing to do surveys)​​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedQualityOfLifeSurvey] === fieldMapping.yes ) template += `Refused QOL survey 3-mo (but willing to do other future surveys)​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedAllFutureQualityOfLifeSurveys] === fieldMapping.yes ) template += `Refused all future QOL surveys (but willing to do other future surveys)​, `
-    if (participant[fieldMapping.refusalOptions][fieldMapping.refusedFutureSurveys] === fieldMapping.yes ) template += `All future surveys (willing to do specimens)​, ` 
-    if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes ) template += `All Future Study Activities, ` 
-    if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes ) template += `Revoke HIPAA Authorization, `
-    if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes ) template += `Withdraw Consent​, `
-    if (participant[fieldMapping.destroyData] === fieldMapping.yes ) template += `Destroy Data​, `
-    if (participant[fieldMapping.participantDeceased] === fieldMapping.yes ) template += `Participant Deceased, ` 
+  let strArray = [];
+  const refusalOptions = participant[fieldMapping.refusalOptions];
 
-    template = template.replace(/,\s*$/, "") // removes comma from the end
+  if (refusalOptions) {
+    if (refusalOptions[fieldMapping.refusedSurvey] === fieldMapping.yes) strArray.push("Initial Survey");
+    if (refusalOptions[fieldMapping.refusedBlood] === fieldMapping.yes) strArray.push("Baseline Blood Donation");
+    if (refusalOptions[fieldMapping.refusedUrine] === fieldMapping.yes) strArray.push("Baseline Urine Donation");
+    if (refusalOptions[fieldMapping.refusedMouthwash] === fieldMapping.yes)
+      strArray.push("Baseline Mouthwash (Saliva) Donation");
+    if (refusalOptions[fieldMapping.refusedSpecimenSurveys] === fieldMapping.yes)
+      strArray.push("Baseline Specimen Surveys");
+    if (refusalOptions[fieldMapping.refusedFutureSamples] === fieldMapping.yes)
+      strArray.push("All future specimens (willing to do surveys)");
+    if (refusalOptions[fieldMapping.refusedQualityOfLifeSurvey] === fieldMapping.yes)
+      strArray.push("Refused QOL survey 3-mo (but willing to do other future surveys)");
+    if (refusalOptions[fieldMapping.refusedAllFutureQualityOfLifeSurveys] === fieldMapping.yes)
+      strArray.push("Refused all future QOL surveys (but willing to do other future surveys)");
+    if (refusalOptions[fieldMapping.refusedFutureSurveys] === fieldMapping.yes)
+      strArray.push("All future surveys (willing to do specimens)");
+  }
 
-    return template
+  if (participant[fieldMapping.refusedAllFutureActivities] === fieldMapping.yes)
+    strArray.push("All Future Study Activities");
+  if (participant[fieldMapping.revokeHIPAA] === fieldMapping.yes) strArray.push("Revoke HIPAA Authorization");
+  if (participant[fieldMapping.withdrawConsent] === fieldMapping.yes) strArray.push("Withdraw Consent");
+  if (participant[fieldMapping.destroyData] === fieldMapping.yes) strArray.push("Destroy Data");
+  if (participant[fieldMapping.participantDeceased] === fieldMapping.yes) strArray.push("Participant Deceased");
 
-}
-
+  return strArray.join(", ");
+};
