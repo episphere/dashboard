@@ -51,8 +51,10 @@ window.onload = async () => {
     } 
     else {
         !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
+        // TODO: Remove this line
+        if (location.host.startsWith('localhost')) firebase.functions().useFunctionsEmulator('http://localhost:5001');
         !isLocalDev && window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
-    } 
+    }
 
     !isLocalDev && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
 
