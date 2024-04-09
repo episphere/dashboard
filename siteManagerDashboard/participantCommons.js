@@ -563,6 +563,8 @@ const tableTemplate = (data, showButtons) => {
                 template += `<td>${participant[x] ? 'Destroy Data Status'  : ''}</td>`
                 : (participant[x] === fieldMapping.deceased) ?
                     template += `<td>${participant[x] ? 'Deceased'  : ''}</td>` 
+                : (participant[x] === fieldMapping.dataDestroyed) ?
+                    template += `<td>${participant[x] ? 'Data Destroyed'  : ''}</td>` 
                 : template += `<td> ERROR </td>`
             )
             : (x === (fieldMapping.bohStatusFlag1).toString() || x === (fieldMapping.mreStatusFlag1).toString() 
