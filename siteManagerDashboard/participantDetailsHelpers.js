@@ -402,7 +402,7 @@ export const hideUneditableButtons = (participant, changedOption) => {
 export const reloadParticipantData = async (token) => {
     showAnimation();
     const query = `token=${token}`
-    const reloadedParticipant = await findParticipant(query); // TODO: test this
+    const reloadedParticipant = await findParticipant(query);
     mainContent.innerHTML = render(reloadedParticipant.data[0]);
     renderParticipantDetails(reloadedParticipant.data[0], {});
     hideAnimation();
