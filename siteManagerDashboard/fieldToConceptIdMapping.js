@@ -372,6 +372,7 @@ export default
     "requestedDataDestroySigned": 704529432,
     "dataHasBeenDestroyed": 861639549,
     "deceased": 618686157,
+    "dataDestroyed": 884452262,
 
     'dateWithdrewConsentRequested': 659990606,
     'dateDataDestroyRequested': 269050420,
