@@ -7,7 +7,7 @@ import { renderParticipantMessages } from './participantMessages.js';
 import { renderDataCorrectionsToolPage } from './dataCorrectionsTool.js';
 import { renderSiteMessages } from './siteMessages.js';
 import { renderParticipantWithdrawal } from './participantWithdrawal.js';
-import { renderStoreNotificationSchema, editSchema } from './notifications/storeNotifications.js';
+import { createNotificationSchema, editNotificationSchema } from './notifications/storeNotifications.js';
 import { renderRetrieveNotificationSchema, showDraftSchemas } from './notifications/retrieveNotifications.js';
 import { internalNavigatorHandler, getIdToken, userLoggedIn, baseAPI, urls } from './utils.js';
 import fieldMapping from './fieldToConceptIdMapping.js';
@@ -138,9 +138,9 @@ const router = async () => {
                 renderParticipantWithdrawal(participant);
             }
         }
-        else if (route === '#notifications/createnotificationschema') renderStoreNotificationSchema();
+        else if (route === '#notifications/createnotificationschema') createNotificationSchema();
         else if (route === '#notifications/retrievenotificationschema') renderRetrieveNotificationSchema();
-        else if (route === '#notifications/editSchema') editSchema();
+        else if (route === '#notifications/editSchema') editNotificationSchema();
         else if (route === '#notifications/showDraftSchemas') showDraftSchemas();
         else if (route === '#logout') clearLocalStorage();
         else window.location.hash = '#home';

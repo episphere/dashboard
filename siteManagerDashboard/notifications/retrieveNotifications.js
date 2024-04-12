@@ -1,6 +1,6 @@
 import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { getIdToken, showAnimation, hideAnimation, baseAPI } from '../utils.js';
-import { mapSchemaNotificaiton, addEventMoreCondition, getConcepts, conceptDropdown } from './storeNotifications.js';
+import { getSchemaHtmlStr, handleEmailPreview } from './storeNotifications.js';
 import { appState } from '../stateManager.js';
 
 export const renderRetrieveNotificationSchema = async (showDrafts = false) => {
@@ -11,12 +11,11 @@ export const renderRetrieveNotificationSchema = async (showDrafts = false) => {
   notificationsAnchor && notificationsAnchor.classList.add("active");
   showAnimation();
   const idToken = await getIdToken();
-  const response = await getNotificationSchema("all", idToken, showDrafts);
+  const response = await getNotificationSchemas("all", idToken, showDrafts);
   const schemaArray = response.data || [];
   document.getElementById("mainContent").innerHTML = render(schemaArray, showDrafts);
   const categoryArray = getNotificationSchemaCategories(schemaArray);
-  const concepts = await getConcepts();
-  triggerSchemaEdit(categoryArray, "Filter by Category", concepts);
+  triggerSchemaEdit(categoryArray, "Filter by Category");
   hideAnimation();
   appState.setState({ notification: { showDrafts, schemaArray } });
 };
@@ -25,9 +24,9 @@ export const showDraftSchemas = async () => {
   await renderRetrieveNotificationSchema(true);
 };
 
-const triggerSchemaEdit = (categoryArray, categoryName, concepts) => {
-  viewNotificationSchema(concepts);
-  editNotificationSchema();
+const triggerSchemaEdit = (categoryArray, categoryName) => {
+  handleViewNotificationSchema();
+  handleEditNotificationSchema();
   renderCategorydDropdown(categoryArray);
   triggerCategories(categoryArray, categoryName);
 };
@@ -59,7 +58,7 @@ const render = (schemaArray, showDrafts) => {
         </div>`;
 };
 
-const getNotificationSchema = async (category, idToken, showDrafts) => {
+const getNotificationSchemas = async (category, idToken, showDrafts) => {
   const catgStr = category !== undefined ? category : `all`;
   let apiStr = `${baseAPI}/dashboard?api=retrieveNotificationSchema&category=${catgStr}`;
   if (showDrafts) {
@@ -100,113 +99,25 @@ const renderNotificationCards = (schemaArray) => {
   return template;
 };
 
-const viewNotificationSchema = (concepts) => {
-    const rows = Array.from(document.getElementsByClassName('detailedRow'));
-    if (rows.length > 0) {
-        rows.forEach(element => {
-            const viewButton = element.getElementsByClassName('viewSchema')[0];
-            viewButton.addEventListener('click', () => {
-                const schema = appState.getState().notification.schemaArray[viewButton.dataset.schemaIdx];
-                const header = document.getElementById('modalHeader');
-                const body = document.getElementById('modalBody');
-                header.innerHTML = `<h5>View Schema</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`
-                
-                let template = '<div>'
-                template += `
-                    <div class="row form-group">
-                    <label class="col-form-label col-md-3" for="attempt">Attempt</label> 
-                    <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" value=${schema.attempt} readonly>
-                </div>
-                
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3" for="description">Description</label>
-                    <textarea class="col-md-8" required id="description" cols="30" rows="3" readonly>${schema.description}</textarea>
-                </div>
-                
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3" for="category">Category</label>
-                    <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" value=${schema.category} readonly>
-                </div>
-    
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">Notification type</label>
-                    <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="emailCheckBox" readonly>Email</label>
-                    <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" style="height: 25px;" readonly>&nbsp;<label class="mr-3" for="smsCheckBox" readonly>SMS</label>
-                    <input type="checkbox" name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" style="height: 25px;" readonly>&nbsp;<label for="pushNotificationCheckBox" readonly>Push Notification</label>
-                </div>
-    
-                <div id="emailDiv"></div>
-                <div id="smsDiv"></div>
-                <div id="pushDiv"></div>
-    
-                <div id="conditionsDiv">
-                    <div class="row form-group">
-                        <label class="col-form-label col-md-3">Condition</label>
-                        <div class="condition-key col-md-2 mr-2 p-0"></div>
-                        <select name="condition-operator" class="col-md-2 form-control mr-2" id="operatorkey0">
-                            <option value="equals">equals</option>
-                            <option value="notequals">notequals</option>
-                            <option value="greater">greater</option>
-                            <option value="greaterequals">greaterequals</option>
-                            <option value="less">less</option>
-                            <option value="lessequals">lessequals</option>
-                        </select>
-                        <select name="value-type" class="col-md-2 form-control mr-2" id="valuetype0">
-                            <option value="number">number</option>
-                            <option value="string">string</option>
-                        </select>
-                        <div class="condition-value col-md-2 mr-2 p-0"></div>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="1">Add more condition</button>
-                </div>
-                
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">Email field concept</label>
-                    <div class="email-concept col-md-8 p-0"></div>
-                </div>
-                
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">Phone no. concept</label>
-                    <div class="phone-concept col-md-8 p-0"></div>
-                </div>
-    
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">First name concept</label>
-                    <div class="first-name-concept col-md-8 p-0"></div>
-                </div>
-    
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">Preferred name concept</label>
-                    <div class="preferred-name-concept col-md-8 p-0"></div>
-                </div>
-    
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">Primary field</label>
-                    <div class="primary-field col-md-8 p-0"></div>
-                </div>
-                
-                <div class="row form-group">
-                    <label class="col-form-label col-md-3">Time</label>
-                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" readonly>
-                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" readonly>
-                    <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" readonly>
-                </div>
-               </div>`
+const handleViewNotificationSchema = () => {
+  const rows = Array.from(document.getElementsByClassName("detailedRow"));
+  if (rows.length > 0) {
+    rows.forEach((element) => {
+      const viewButton = element.getElementsByClassName("viewSchema")[0];
+      viewButton && viewButton.addEventListener("click", () => {
+        const schemaData = appState.getState().notification.schemaArray[viewButton.dataset.schemaIdx];
+        const header = document.getElementById("modalHeader");
+        const body = document.getElementById("modalBody");
+        header.innerHTML = `<h5>View Schema</h5><button type="button" class="modal-close-btn" id="closeModal" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>`;
 
-                body.innerHTML = template;
-                addEventMoreCondition(concepts, true);
-                conceptDropdown(concepts, 'condition-key');
-                conceptDropdown(concepts, 'condition-value');
-                mapSchemaNotificaiton(schema, concepts, true);
-                document.getElementById('addConditions').disabled = true; 
-            })
-        })
-    }
-}
+        body.innerHTML = `<div>${getSchemaHtmlStr(schemaData, true)}</div>`;
+        handleEmailPreview();
+      });
+    });
+  }
+};
 
-const editNotificationSchema = () => {
+const handleEditNotificationSchema = () => {
   const rows = Array.from(document.getElementsByClassName("detailedRow"));
   if (rows.length > 0) {
     rows.forEach((element) => {
@@ -252,7 +163,6 @@ const renderCategorydDropdown = (categoriesHolder) => {
     })
 }
 
-
 const triggerCategories = (originalCategoriesHolder, categoryName) => {
     let a = document.getElementById('dropdownCategories');
     let dropdownMenuButton = document.getElementById('dropdownMenuButtonCategories');
@@ -263,7 +173,7 @@ const triggerCategories = (originalCategoriesHolder, categoryName) => {
                 a.innerHTML = e.target.textContent;
                 const idToken = await getIdToken();
                 const showDrafts = appState.getState().notification?.showDrafts;
-                const response = await getNotificationSchema(e.target.textContent, idToken, showDrafts);
+                const response = await getNotificationSchemas(e.target.textContent, idToken, showDrafts);
                 appState.setState({ notification: { showDrafts, schemaArray: response.data } });
                 document.getElementById("mainContent").innerHTML = render(response.data, showDrafts);
                 triggerSchemaEdit(originalCategoriesHolder, e.target.textContent);
