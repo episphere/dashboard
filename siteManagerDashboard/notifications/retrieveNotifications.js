@@ -26,7 +26,7 @@ export const showDraftSchemas = async () => {
 
 const triggerSchemaEdit = (categoryArray, categoryName) => {
   handleViewNotificationSchema();
-  HandleEditNotificationSchema();
+  handleEditNotificationSchema();
   renderCategorydDropdown(categoryArray);
   triggerCategories(categoryArray, categoryName);
 };
@@ -117,7 +117,7 @@ const handleViewNotificationSchema = () => {
   }
 };
 
-const HandleEditNotificationSchema = () => {
+const handleEditNotificationSchema = () => {
   const rows = Array.from(document.getElementsByClassName("detailedRow"));
   if (rows.length > 0) {
     rows.forEach((element) => {

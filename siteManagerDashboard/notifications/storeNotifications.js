@@ -85,8 +85,8 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
   let conditionHtmlStrAll = "";
   let index = 0;
   if (schemaData) {
-    for (const conditionKey in schemaData.conditions) {
-      const [conditionOperator, conditionValue] = Object.entries(schemaData.conditions[conditionKey])[0];
+    for (const [conditionKey, valObj] of Object.entries(schemaData.conditions)) {
+      const [conditionOperator, conditionValue] = Object.entries(valObj)[0];
       conditionHtmlStrAll += getConditionHtmlStr({
         index,
         isReadOnly,
@@ -97,7 +97,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
       index++;
     }
   } else {
-    conditionHtmlStrAll = getConditionHtmlStr({index: 0, isReadOnly});
+    conditionHtmlStrAll = getConditionHtmlStr({ index, isReadOnly });
   }
 
   return `
@@ -147,7 +147,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
         ${conditionHtmlStrAll}
     </div>
     <div class="form-group">
-        <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="${index}" ${isReadOnly ? "disabled" : ""}>Add more condition</button>
+        <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="${index + 1}" ${isReadOnly ? "disabled" : ""}>Add more condition</button>
     </div>
     
     <div class="row form-group">
@@ -318,26 +318,26 @@ const getConditionHtmlStr = ({
     <div class="row form-group" data-condition-idx="${index}">
         <label class="col-form-label col-md-3">Condition</label>
         <div class="condition-key col-md-2 mr-2 p-0">
-          <input id="conditionkey${index}" required list="dataListconditionkey${index}" class="form-control" name="condition-key" ${conditionKey ? `value="${conditionKey}"` : ""}>
-          <datalist id="dataListconditionkey${index}">
+          <input required list="dataListConditionKey${index}" class="form-control" name="condition-key" ${conditionKey ? `value="${conditionKey}"` : ""}>
+          <datalist id="dataListConditionKey${index}">
               ${conceptsOptionsStr}
           </datalist>
         </div>
-        <select id="operatorkey${index}" name="condition-operator" class="col-md-2 form-control mr-2">
+        <select name="condition-operator" class="col-md-2 form-control mr-2">
             <option value="equals" ${conditionOperator === "equals" ? "selected" : ""}>equals</option>
             <option value="notequals" ${conditionOperator === "notequals" ? "selected" : ""}>notequals</option>
             <option value="greater" ${conditionOperator === "greater" ? "selected" : ""}>greater</option>
             <option value="greaterequals" ${conditionOperator === "greaterequals" ? "selected" : ""}>greaterequals</option>
-            <option value="less" ${conditionOperator === "eless" ? "selected" : ""}>less</option>
+            <option value="less" ${conditionOperator === "less" ? "selected" : ""}>less</option>
             <option value="lessequals" ${conditionOperator === "lessequals" ? "selected" : ""}>lessequals</option>
         </select>
-        <select id="valuetype${index}" name="value-type" class="col-md-1 form-control mr-2">
+        <select name="value-type" class="col-md-1 form-control mr-2">
             <option value="number" ${typeof conditionValue === "number" ? "selected" : ""}>number</option>
             <option value="string" ${typeof conditionValue === "string" ? "selected" : ""}>string</option>
         </select>
         <div class="condition-value col-md-2 mr-2 p-0">
-          <input id="conditionvalue${index}" required  list="dataListconditionvalue${index}" class="form-control" name="condition-value" ${conditionValue ? `value="${conditionValue}"` : ""}>
-          <datalist id="dataListconditionvalue${index}">
+          <input required  list="dataListConditionValue${index}" class="form-control" name="condition-value" ${conditionValue ? `value="${conditionValue}"` : ""}>
+          <datalist id="dataListConditionValue${index}">
               ${conceptsOptionsStr}
           </datalist>
         </div>
@@ -457,7 +457,7 @@ const handleSMSCharacterCount = () => {
 
 export const handleEmailPreview = () => {
   const emailBody = document.getElementById("emailBody");
-  if (!emailBody || emailBody?.hasMouseenterListener) return;
+  if (!emailBody || emailBody?.hasMouseEnterListener) return;
 
   const converter = new showdown.Converter();
   emailBody.addEventListener("mouseenter", () => {
@@ -465,7 +465,7 @@ export const handleEmailPreview = () => {
     const html = converter.makeHtml(text);
     document.getElementById("emailBodyPreview").innerHTML = html;
   });
-  emailBody.hasMouseenterListener = true;
+  emailBody.hasMouseEnterListener = true;
 };
 
 const storeNotificationSchema = async (schema) => {
