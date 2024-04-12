@@ -563,6 +563,8 @@ const tableTemplate = (data, showButtons) => {
                 template += `<td>${participant[x] ? 'Destroy Data Status'  : ''}</td>`
                 : (participant[x] === fieldMapping.deceased) ?
                     template += `<td>${participant[x] ? 'Deceased'  : ''}</td>` 
+                : (participant[x] === fieldMapping.dataDestroyed) ?
+                    template += `<td>${participant[x] ? 'Data Destroyed'  : ''}</td>` 
                 : template += `<td> ERROR </td>`
             )
             : (x === (fieldMapping.bohStatusFlag1).toString() || x === (fieldMapping.mreStatusFlag1).toString() 
@@ -938,14 +940,14 @@ export const activeColumns = (data, showButtons) => {
             }
             if (appState.getState().filterHolder.type === "passive") {
                 let passiveButton = document.getElementById('passiveFilter');
-                if ([...passiveButton.classList].includes('btn-outline-info')) {
+                if (passiveButton && [...passiveButton.classList].includes('btn-outline-info')) {
                     passiveButton.classList.remove('btn-outline-info');
                     passiveButton.classList.add('btn-info');  
                 }
             }
             if (appState.getState().filterHolder.type === "active") {
                 let activeButton = document.getElementById('activeFilter');
-                if ([...activeButton.classList].includes('btn-outline-info')) {
+                if (activeButton && [...activeButton.classList].includes('btn-outline-info')) {
                     activeButton.classList.remove('btn-outline-info');
                     activeButton.classList.add('btn-info');  
                 }
