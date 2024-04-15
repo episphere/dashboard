@@ -212,8 +212,8 @@ const handleFormSubmit = () => {
   const form = document.getElementById("configForm");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    const hasSchemaId = !!appState.getState().notification?.savedSchema?.id;
     let schema = {};
-    schema.id = appState.getState().notification?.savedSchema?.id ?? "";
     schema.isDraft = e.submitter.dataset.draft === "true";
     schema["attempt"] = document.getElementById("attempt").value.trim();
     schema["description"] = document.getElementById("description").value.trim();
@@ -272,7 +272,7 @@ const handleFormSubmit = () => {
     });
 
     const currSchemaId = await storeNotificationSchema(schema);
-    if (!schema.id && currSchemaId.length > 0) {
+    if (!hasSchemaId && currSchemaId.length > 0) {
       const form = document.getElementById("configForm");
       const wrapperDiv = document.createElement("div");
       wrapperDiv.innerHTML = getDryRunHtlmStr();
