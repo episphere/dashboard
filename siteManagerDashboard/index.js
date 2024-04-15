@@ -52,7 +52,7 @@ window.onload = async () => {
     else {
         !firebase.apps.length ? firebase.initializeApp(devFirebaseConfig) : firebase.app();
         !isLocalDev && window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'dev' });
-    } 
+    }
 
     !isLocalDev && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
 
