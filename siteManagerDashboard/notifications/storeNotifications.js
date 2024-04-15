@@ -212,8 +212,9 @@ const handleFormSubmit = () => {
   const form = document.getElementById("configForm");
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
-    const hasSchemaId = !!appState.getState().notification?.savedSchema?.id;
     let schema = {};
+    schema.id = appState.getState().notification?.savedSchema?.id ?? "";
+    const hasSchemaId = schema.id.length > 0;
     schema.isDraft = e.submitter.dataset.draft === "true";
     schema["attempt"] = document.getElementById("attempt").value.trim();
     schema["description"] = document.getElementById("description").value.trim();
