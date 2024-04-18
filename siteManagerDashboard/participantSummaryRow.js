@@ -42,7 +42,6 @@ export const verificationStatus = (participant) => {
 }
 
 export const baselineBloodSample = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     // TODO: should we use const instead of let for refusedBloodOption
     let refusedBloodOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedBlood];
     let template = ``;
@@ -63,7 +62,6 @@ export const baselineBloodSample = (participantModule) => {
 }
 
 export const baselineUrineSample = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
     let refusedUrineOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedUrine];
     let urineFlag = participantModule[fieldMapping.urineFlag];
@@ -168,7 +166,6 @@ export const baselineMouthwashSample = (participantModule) => {
 };
 
 export const baselineBOHSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
     
@@ -190,7 +187,6 @@ export const baselineBOHSurvey = (participant) => {
 }
 
 export const baselineMRESurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
     
@@ -212,7 +208,6 @@ export const baselineMRESurvey = (participant) => {
 }
 
 export const baselineSASSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
     
@@ -234,7 +229,6 @@ export const baselineSASSurvey = (participant) => {
 }
 
 export const baselineLAWSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
 
@@ -256,24 +250,19 @@ export const baselineLAWSurvey = (participant) => {
 }
 
 export const baselineSSN = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
-    let template = ``;
+    const { icon, color, itemStatus, date } = getSurveyStatus(participant, fieldMapping.ssnStatusFlag, fieldMapping.ssnPartialDate, fieldMapping.ssnFulldate);
 
-    if (participant[fieldMapping.ssnFullflag] === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SSN", "All Digits",
-        (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.ssnPartialFlag] === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "4 Digits",
-        (participant[fieldMapping.ssnPartialDate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnPartialDate]) : `N/A`), "N/A", "N", "N/A");
-    } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "None", "N/A", "N/A", "N", "N/A");
-    }
-    
-    return template;
+    const timeline = "Baseline";
+    const category = "Survey";
+    const item = "SSN";
+    const setting = "N/A";
+    const refused = "N";
+    const extra = "N/A";
+
+    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);
 }
 
 export const baselineCOVIDSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
 
     if (participant[fieldMapping.covidFlag] === fieldMapping.submitted1) {
@@ -292,7 +281,6 @@ export const baselineCOVIDSurvey = (participant) => {
 
 
 export const baselineBiospecSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let combinedBoodUrineMouthwashSurvey = participant[fieldMapping.combinedBoodUrineMouthwashSurvey] && participant[fieldMapping.combinedBoodUrineMouthwashSurvey];
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
@@ -315,7 +303,6 @@ export const baselineBiospecSurvey = (participant) => {
 }
 
 export const baselineBloodUrineSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
     
@@ -337,7 +324,6 @@ export const baselineBloodUrineSurvey = (participant) => {
 }
 
 export const baselineMouthwashSurvey = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
     let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
     
@@ -377,7 +363,6 @@ export const baselinePromisSurvey = (participant) => {
 };
 
 export const baselineMenstrualSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
 
     if (participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1) {
@@ -394,7 +379,6 @@ export const baselineMenstrualSurvey = (participant) => {
 }
 
 export const baselineEMR = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     const baselineEMR = participantModule[fieldMapping.baselineEMR]
     let template = ``;
 
@@ -411,7 +395,6 @@ export const baselineEMR = (participantModule) => {
 }
 
 export const baselinePayment = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
 
     if (!participantModule) {
