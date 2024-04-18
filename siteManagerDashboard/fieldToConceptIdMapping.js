@@ -126,6 +126,7 @@ export default
     "covidCompletedDate": 784810139,
 
     // "ssn": "D_716117818",
+    "ssnStatusFlag": 126331570,
     "ssnFullflag": 311580100,
     "ssnFulldate": 454067894,
 
