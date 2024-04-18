@@ -250,22 +250,16 @@ export const baselineLAWSurvey = (participant) => {
 }
 
 export const baselineSSN = (participant) => {
-    let template = ``;
+    const { icon, color, itemStatus, date } = getSurveyStatus(participant, fieldMapping.ssnStatusFlag, fieldMapping.ssnPartialDate, fieldMapping.ssnFulldate);
 
-    if (participant[fieldMapping.ssnStatusFlag] === fieldMapping.submitted1) {
-        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SSN", "Submitted",
-        (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.ssnStatusFlag] === fieldMapping.started1) {
-        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "Started",
-        (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.ssnStatusFlag] === fieldMapping.notStarted1) {
-        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "Not Started",
-        (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A");
-    } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "N/A", "N/A", "N/A", "N", "N/A");
-    }
-    
-    return template;
+    const timeline = "Baseline";
+    const category = "Survey";
+    const item = "SSN";
+    const setting = "N/A";
+    const refused = "N";
+    const extra = "N/A";
+
+    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);
 }
 
 export const baselineCOVIDSurvey = (participant) => {
