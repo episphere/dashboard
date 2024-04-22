@@ -42,14 +42,11 @@ export const verificationStatus = (participant) => {
 }
 
 export const baselineBloodSample = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     // TODO: should we use const instead of let for refusedBloodOption
     let refusedBloodOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedBlood];
     let template = ``;
     
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedBloodOption === fieldMapping.yes) {
+    if (refusedBloodOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Not Collected", "N/A", "N/A", "Y", "N/A");
     } else if (!participantModule[fieldMapping.bloodFlag]) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Blood", "Not Collected", "N/A", "N/A", "N", "N/A");
@@ -65,14 +62,11 @@ export const baselineBloodSample = (participantModule) => {
 }
 
 export const baselineUrineSample = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
     let refusedUrineOption = participantModule[fieldMapping.refusalOptions]?.[fieldMapping.refusedUrine];
     let urineFlag = participantModule[fieldMapping.urineFlag];
 
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedUrineOption === fieldMapping.yes) {
+    if (refusedUrineOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "Y", "N/A");
     } else if (!urineFlag) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Sample", "Urine", "Not Collected", "N/A", "N/A", "N", "N/A");
@@ -157,11 +151,6 @@ export const baselineMouthwashSample = (participantModule) => {
     displayedFields.refused = "Y";
   }
 
-  const dataDestroyedOption = participantModule[fieldMapping.dataHasBeenDestroyed];
-  if (dataDestroyedOption === fieldMapping.yes) {
-    displayedFields.status = "Data Destroyed";
-  }
-
   return getTemplateRow(
     displayedFields.icon.faIcon,
     displayedFields.icon.style,
@@ -177,13 +166,10 @@ export const baselineMouthwashSample = (participantModule) => {
 };
 
 export const baselineBOHSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
     
-    if (isDataDestroyed === fieldMapping.yes){
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "BOH", "Data Destroyed", "N/A", "N/A", "Y", "N/A");
-    }else if (refusedSurveyOption === fieldMapping.yes) {
+    if (refusedSurveyOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "BOH", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (participant[fieldMapping.bohStatusFlag1] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "BOH", "Submitted",
@@ -201,13 +187,10 @@ export const baselineBOHSurvey = (participant) => {
 }
 
 export const baselineMRESurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
     
-    if (isDataDestroyed === fieldMapping.yes){
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "MRE", "Data Destroyed", "N/A", "N/A", "Y", "N/A");
-    } else if (refusedSurveyOption === fieldMapping.yes) {
+    if (refusedSurveyOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "MRE", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (participant[fieldMapping.mreStatusFlag1] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "MRE", "Submitted",
@@ -225,13 +208,10 @@ export const baselineMRESurvey = (participant) => {
 }
 
 export const baselineSASSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
     
-    if (isDataDestroyed === fieldMapping.yes){
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SAS", "Data Destroyed", "N/A", "N/A", "Y", "N/A");
-    } else if (refusedSurveyOption === fieldMapping.yes) {
+    if (refusedSurveyOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SAS", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (participant[fieldMapping.sasStatusFlag1] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SAS", "Submitted",
@@ -249,13 +229,10 @@ export const baselineSASSurvey = (participant) => {
 }
 
 export const baselineLAWSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSurveyOption = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedSurvey];
     let template = ``;
 
-    if (isDataDestroyed === fieldMapping.yes){
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "LAW", "Data Destroyed", "N/A", "N/A", "Y", "N/A");
-    } else if (refusedSurveyOption === fieldMapping.yes) {
+    if (refusedSurveyOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "LAW", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (participant[fieldMapping.lawStausFlag1] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "LAW", "Submitted",
@@ -273,31 +250,22 @@ export const baselineLAWSurvey = (participant) => {
 }
 
 export const baselineSSN = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
-    let template = ``;
+    const { icon, color, itemStatus, date } = getSurveyStatus(participant, fieldMapping.ssnStatusFlag, fieldMapping.ssnPartialDate, fieldMapping.ssnFulldate);
 
-    if (isDataDestroyed === fieldMapping.yes){
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.ssnFullflag] === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "SSN", "All Digits",
-        (participant[fieldMapping.ssnFulldate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnFulldate]) : `N/A`), "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.ssnPartialFlag] === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-hashtag fa-2x", "color: orange", "Baseline", "Survey", "SSN", "4 Digits",
-        (participant[fieldMapping.ssnPartialDate] !== undefined ? humanReadableMDY(participant[fieldMapping.ssnPartialDate]) : `N/A`), "N/A", "N", "N/A");
-    } else {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "SSN", "None", "N/A", "N/A", "N", "N/A");
-    }
-    
-    return template;
+    const timeline = "Baseline";
+    const category = "Survey";
+    const item = "SSN";
+    const setting = "N/A";
+    const refused = "N";
+    const extra = "N/A";
+
+    return getTemplateRow(icon, color, timeline, category, item, itemStatus, date, setting, refused, extra);
 }
 
 export const baselineCOVIDSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
 
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "COVID", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.covidFlag] === fieldMapping.submitted1) {
+    if (participant[fieldMapping.covidFlag] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "COVID", "Submitted",
         humanReadableMDY(participant[fieldMapping.covidCompletedDate]), "N/A", "N", "N/A");
     } else if (participant[fieldMapping.covidFlag] === fieldMapping.started1) {
@@ -313,14 +281,11 @@ export const baselineCOVIDSurvey = (participant) => {
 
 
 export const baselineBiospecSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let combinedBoodUrineMouthwashSurvey = participant[fieldMapping.combinedBoodUrineMouthwashSurvey] && participant[fieldMapping.combinedBoodUrineMouthwashSurvey];
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
 
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedSpecimenOption === fieldMapping.yes) {
+    if (refusedSpecimenOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (!combinedBoodUrineMouthwashSurvey) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Blood/Urine/Mouthwash", "N/A", "N/A", "N/A", "N", "N/A");
@@ -338,13 +303,10 @@ export const baselineBiospecSurvey = (participant) => {
 }
 
 export const baselineBloodUrineSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let refusedSpecimenOption = participant[fieldMapping.refusalOptions] && participant[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
     
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedSpecimenOption === fieldMapping.yes) {
+    if (refusedSpecimenOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (!participant) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Clinical Blood/Urine", "N/A", "N/A", "N/A", "N", "N/A");
@@ -362,13 +324,10 @@ export const baselineBloodUrineSurvey = (participant) => {
 }
 
 export const baselineMouthwashSurvey = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed];
     let refusedSpecimenOption = participantModule[fieldMapping.refusalOptions] && participantModule[fieldMapping.refusalOptions][fieldMapping.refusedSpecimenSurveys];
     let template = ``;
     
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (refusedSpecimenOption === fieldMapping.yes) {
+    if (refusedSpecimenOption === fieldMapping.yes) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "N/A", "N/A", "N/A", "Y", "N/A");
     } else if (!participantModule) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Home Mouthwash", "N/A", "N/A", "N/A", "N", "N/A");
@@ -387,12 +346,11 @@ export const baselineMouthwashSurvey = (participantModule) => {
 
 export const baselinePromisSurvey = (participant) => {
     
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed] === fieldMapping.yes;
     const refusedAllFutureSurveys = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedFutureSurveys];
     const refusedAllFutureActivities = participant[fieldMapping.refusedAllFutureActivities];
     const refusedQualityOfLifeSurvey = participant[fieldMapping.refusalOptions]?.[fieldMapping.refusedQualityOfLifeSurvey];
 
-    const { icon, color, itemStatus, date } = getSurveyStatus(participant, isDataDestroyed, fieldMapping.promisSurveyFlag, fieldMapping.promisSurveyStartedDate, fieldMapping.promisSurveyCompletedDate);
+    const { icon, color, itemStatus, date } = getSurveyStatus(participant, fieldMapping.promisSurveyFlag, fieldMapping.promisSurveyStartedDate, fieldMapping.promisSurveyCompletedDate);
 
     const timeline = "Follow-Up 3-mo";
     const category = "Survey";
@@ -405,12 +363,9 @@ export const baselinePromisSurvey = (participant) => {
 };
 
 export const baselineMenstrualSurvey = (participant) => {
-    const isDataDestroyed = participant[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
 
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Survey", "Menstrual Cycle", "Data Destroyed", "N/A", "N/A", "N", "N/A");
-    } else if (participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1) {
+    if (participant[fieldMapping.menstrualFlag] === fieldMapping.submitted1) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "Survey", "Menstrual Cycle", "Submitted",
         humanReadableMDY(participant[fieldMapping.menstrualDateTimeCompleted]), "N/A", "N", "N/A");
     } else if (participant[fieldMapping.menstrualFlag] === fieldMapping.started1) {
@@ -424,13 +379,10 @@ export const baselineMenstrualSurvey = (participant) => {
 }
 
 export const baselineEMR = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     const baselineEMR = participantModule[fieldMapping.baselineEMR]
     let template = ``;
 
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "EMR", "N/A", "Data Destroyed", "N/A", "N/A", "N/A", "N/A");
-    } else if (!baselineEMR) {
+    if (!baselineEMR) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "EMR", "N/A", "Not Pushed", "N/A", "N/A", "N", "N/A");
     } else if (baselineEMR[fieldMapping.baselineEMRflag] === fieldMapping.yes) {
         template += getTemplateRow("fa fa-check fa-2x", "color: green", "Baseline", "EMR", "N/A", "Pushed",
@@ -443,12 +395,9 @@ export const baselineEMR = (participantModule) => {
 }
 
 export const baselinePayment = (participantModule) => {
-    const isDataDestroyed = participantModule[fieldMapping.dataHasBeenDestroyed]
     let template = ``;
 
-    if (isDataDestroyed === fieldMapping.yes) {
-        template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "Data Destroyed", "N/A", "N/A", "N/A", "N/A")
-    } else if (!participantModule) {
+    if (!participantModule) {
         template += getTemplateRow("fa fa-times fa-2x", "color: red", "Baseline", "Payment", "N/A", "N/A", "N/A", "N/A", "N/A", "N/A");
     } else if (
         participantModule[fieldMapping.paymentRoundup] &&
@@ -466,49 +415,38 @@ export const baselinePayment = (participantModule) => {
 return template;
 }
 
-const getSurveyStatus = (participant, dataDestroyed, surveyFlag, startDate, completeDate) => {
-
-    if (dataDestroyed) {
-        return {
-            icon: "fa fa-times fa-2x",
-            color: "color: red",
-            itemStatus: "Data Destroyed",
-            date: "N/A"
-        };
-    } 
-    else {
-        switch (participant[surveyFlag]) {
-            case fieldMapping.submitted1:
-                return {
-                    icon: "fa fa-check fa-2x",
-                    color: "color: green",
-                    itemStatus: "Submitted",
-                    date: humanReadableMDY(participant[completeDate])
-                };
-            case fieldMapping.started1:
-                return {
-                    icon: "fa fa-hashtag fa-2x",
-                    color: "color: orange",
-                    itemStatus: "Started",
-                    date: humanReadableMDY(participant[startDate])
-                };
-            case fieldMapping.notYetEligible1:
-                return {
-                    icon: "fa fa-times fa-2x",
-                    color: "color: red",
-                    itemStatus: "Not Yet Eligible",
-                    date: "N/A"
-                };
-            default:
-                return {
-                    icon: "fa fa-times fa-2x",
-                    color: "color: red",
-                    itemStatus: "Not Started",
-                    date: "N/A"
-                };
-        }
+const getSurveyStatus = (participant, surveyFlag, startDate, completeDate) => {
+    switch (participant[surveyFlag]) {
+        case fieldMapping.submitted1:
+            return {
+                icon: "fa fa-check fa-2x",
+                color: "color: green",
+                itemStatus: "Submitted",
+                date: humanReadableMDY(participant[completeDate]),
+            };
+        case fieldMapping.started1:
+            return {
+                icon: "fa fa-hashtag fa-2x",
+                color: "color: orange",
+                itemStatus: "Started",
+                date: humanReadableMDY(participant[startDate]),
+            };
+        case fieldMapping.notYetEligible1:
+            return {
+                icon: "fa fa-times fa-2x",
+                color: "color: red",
+                itemStatus: "Not Yet Eligible",
+                date: "N/A",
+            };
+        default:
+            return {
+                icon: "fa fa-times fa-2x",
+                color: "color: red",
+                itemStatus: "Not Started",
+                date: "N/A",
+            };
     }
-}
+};
 
 const checkIncentiveIssued = (participantModule) => {
     return participantModule[fieldMapping.paymentRoundup] &&
