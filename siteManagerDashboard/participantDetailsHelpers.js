@@ -402,9 +402,9 @@ export const hideUneditableButtons = (participant, changedOption) => {
 export const reloadParticipantData = async (token) => {
     showAnimation();
     const query = `token=${token}`
-    const reloadedParticpant = await findParticipant(query);
-    mainContent.innerHTML = render(reloadedParticpant.data[0]);
-    renderParticipantDetails(reloadedParticpant.data[0], {});
+    const reloadedParticipant = await findParticipant(query);
+    mainContent.innerHTML = render(reloadedParticipant.data[0]);
+    renderParticipantDetails(reloadedParticipant.data[0], {});
     hideAnimation();
 }
 
@@ -790,7 +790,7 @@ export const saveResponses = (participant, changedOption, editedElement, concept
                 changedOption[currentConceptId] = newValueElement.value;
                 // if a changed field is a date of birth field then we need to update full date of birth  
                 if (fieldMapping.birthDay in changedOption || fieldMapping.birthMonth in changedOption || fieldMapping.birthYear in changedOption) {
-                    const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay];
+                    const day =  changedOption[fieldMapping.birthDay] || participant[fieldMapping.birthDay] || participant[fieldMapping.dateOfBirthComplete]?.slice(6,8) || "01";
                     const month = changedOption[fieldMapping.birthMonth] || participant[fieldMapping.birthMonth];
                     const year = changedOption[fieldMapping.birthYear] || participant[fieldMapping.birthYear];
                     const dateOfBirthComplete = fieldMapping.dateOfBirthComplete;

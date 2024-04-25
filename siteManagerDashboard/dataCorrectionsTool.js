@@ -248,9 +248,9 @@ const clickHandler = async (selectedOptions) => {
 
             if (response.status === 200) {
                 const query = `token=${selectedOptions.token}`;
-                const reloadedParticpant = await findParticipant(query);
-                reloadVerificationToolPage(reloadedParticpant.data[0], 'Correction(s) updated.', 'success');
-                localStorage.setItem("participant", JSON.stringify(reloadedParticpant.data[0]));
+                const reloadedParticipant = await findParticipant(query);
+                reloadVerificationToolPage(reloadedParticipant.data[0], 'Correction(s) updated.', 'success');
+                localStorage.setItem("participant", JSON.stringify(reloadedParticipant.data[0]));
             }
             else { 
                 triggerNotificationBanner('Error: No corrections were made.', 'warning')

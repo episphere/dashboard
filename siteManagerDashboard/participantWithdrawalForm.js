@@ -565,7 +565,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     const token = localStorage.getItem("token");
     sendRefusalData['token'] = token;
     const idToken = await getIdToken();
-    clickHandler(sendRefusalData, idToken, token);
+    await sendResponsesClickHandler(sendRefusalData, idToken, token);
 }
 
 const updateWhoRequested = (sendRefusalData, updatedWhoRequested, updatedWhoRequestedOther) => {
@@ -619,35 +619,46 @@ const combineResponses = (finalOptions, sendRefusalData, suspendDate) => {
     }
 }
 
-async function clickHandler(sendRefusalData, idToken, token) {
+async function sendResponsesClickHandler(sendRefusalData, idToken, token) {
     showAnimation();
-    
-    const refusalPayload = {
-        "data": [sendRefusalData]
-    }
-    const response = await (await fetch(`${baseAPI}/dashboard?api=updateParticipantData`, {
-        method:'POST',
-        body: JSON.stringify(refusalPayload),
-        headers:{
-            Authorization:"Bearer "+idToken,
-            "Content-Type": "application/json"
-            }
-    }))
-    hideAnimation();
-    if (response.status === 200) {
-        const participantResponse = await (await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&token=${token}`, {
-            method:'GET',
-            headers:{
-                Authorization:"Bearer "+idToken,
+    try {
+        const refusalPayload = {
+            "data": [sendRefusalData]
+        };
+        const response = await fetch(`${baseAPI}/dashboard?api=updateParticipantData`, {
+            method: 'POST',
+            body: JSON.stringify(refusalPayload),
+            headers: {
+                Authorization: "Bearer " + idToken,
                 "Content-Type": "application/json"
-                }
-        })).json()
-        if (participantResponse.code === 200) {
-            const loadDetailsPage = '#participantSummary'
-            localStorage.setItem("participant", JSON.stringify(participantResponse.data[0]));
-            location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantSummary
-    }}
-       else { 
-           (alert('Error'))
+            }
+        });
+
+        if (response.status !== 200) {
+            throw new Error('Error updating participant data');
+        }
+
+        const participantResponse = await fetch(`${baseAPI}/dashboard?api=getFilteredParticipants&token=${token}`, {
+            method: 'GET',
+            headers: {
+                Authorization: "Bearer " + idToken,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const participantJSON = await participantResponse.json();
+
+        if (participantJSON.code !== 200) {
+            throw new Error('Error fetching participant data');
+        }
+
+        const loadDetailsPage = '#participantSummary';
+        localStorage.setItem("participant", JSON.stringify(participantJSON.data[0]));
+        location.replace(window.location.origin + window.location.pathname + loadDetailsPage); // updates url to participantSummary
+    } catch (error) {
+        console.error(error);
+        alert('An error occurred. Please try again.');
+    } finally {
+        hideAnimation();
     }
 }

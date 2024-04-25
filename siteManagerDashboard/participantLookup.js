@@ -46,7 +46,7 @@ export function renderParticipantSearch() {
                             </div>
                             <div class="form-group">
                                 <label class="col-form-label search-label">Phone number</label>
-                                <input class="form-control" id="phone" placeholder="Enter phone number without dashes & parenthesis"/>
+                                <input class="form-control" id="phone" placeholder="Enter a 10-digit phone number"/>
                             </div>
                             <span><i> (OR) </i></span>
                             <br />
@@ -143,15 +143,19 @@ const addEventSearch = () => {
         const email = document.getElementById('email').value;
         const phone = document.getElementById('phone').value;
         const sitePref = document.getElementById('dropdownSites').getAttribute('data-siteKey');
-        if(!firstName && !lastName && !dob && !phone && !email && !sitePref) return;
-        let query = '';
-        if(firstName) query += `firstName=${firstName}&`;
-        if(lastName) query += `lastName=${lastName}&`;
-        if(dob) query += `dob=${dob.replace(/-/g,'')}&`;
-        if(phone) query += `phone=${phone}&`;
-        if(email) query += `email=${email}&`;
-        if(sitePref) query += `sitePref=${sitePref}`;
-        performSearch(query, sitePref, "search-failed");
+
+        const params = new URLSearchParams();
+        if (firstName) params.append('firstName', firstName);
+        if (lastName) params.append('lastName', lastName);
+        if (dob) params.append('dob', dob.replace(/-/g,''));
+        if (phone) params.append('phone', phone.replace(/\D/g, ''));
+        if (email) params.append('email', email);
+
+        if (params.size === 0) {
+            return alert('Please enter at least one field to search');
+        };
+
+        performSearch(params.toString(), sitePref, "search-failed");
     })
 };
 
@@ -164,12 +168,17 @@ export const addEventSearchId = () => {
         const connectId = document.getElementById('connectId').value;
         const token = document.getElementById('token').value;
         const studyId = document.getElementById('studyId').value;
-        if(!connectId && !token && !studyId) return;
-        let query = '';
-        if(connectId) query += `connectId=${connectId}`;
-        if(token) query += `token=${token}`;
-        if(studyId) query += `studyId=${studyId}`;
-        performSearch(query, "allResults", "search-connect-id-failed");
+
+        const params = new URLSearchParams();
+        if (connectId) params.append('connectId', connectId);
+        if (token) params.append('token', token);
+        if (studyId) params.append('studyId', studyId);
+
+        if (params.size === 0) {
+            return alert('Please enter at least one field to search');
+        };
+
+        performSearch(params.toString(), "allResults", "search-connect-id-failed");
     })
 };
 
@@ -228,7 +237,7 @@ export const showNotifications = (data, error) => {
 
 export const findParticipant = async (query) => {
     const idToken = await getIdToken();
-    const response = await fetch(`${baseAPI}/dashboard?api=getParticipants&type=filter&${query}`, {
+    const response = await fetch(`${baseAPI}/dashboard?api=getFilteredParticipants&${query}`, {
         method: "GET",
         headers: {
             Authorization:"Bearer " + idToken
