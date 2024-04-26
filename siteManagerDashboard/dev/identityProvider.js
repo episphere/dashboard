@@ -33,5 +33,9 @@ export const SSOConfig = (inputValue) => {
         tenantID = 'MFC-SSO-fljvd';
         provider = 'saml.connect-mfc'
     }
+    // if() { // BSWH COMMENT~
+    //     tenantID = '';
+    //     provider = ''
+    // }
     return {tenantID, provider}
 }

@@ -138,6 +138,7 @@ const sites = () => {
         7: 'Marshfield Clinic',
         8: 'Sanford Health',
         9: 'University of Chicago Medicine',
+        10: 'Baylor Scott & White Health', // BSWH COMMENT~ 
         13: 'Natiocal Cancer Institute',
         88: 'None of these'
     }
@@ -180,6 +181,7 @@ const eligibilityScreener = () => {
                 <option value=7>Marshfield Clinic</option>
                 <option value=8>Sanford Health</option>
                 <option value=9>University of Chicago Medicine</option>
+                <option value=10>Baylor Scott & White Health</option>
                 <option value=13>Natiocal Cancer Institute</option>
                 <option value=88>None of these</option>
             </select>
