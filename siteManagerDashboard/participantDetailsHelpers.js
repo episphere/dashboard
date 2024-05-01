@@ -83,8 +83,10 @@ const fieldValues = {
 }
 
 export const getFieldValues = (variableValue, conceptId) => {
-    const formattedPhoneValue = variableValue ? formatPhoneNumber(variableValue.toString()) : '';
+    if (!variableValue || (conceptId === "Change Login Email" && variableValue.startsWith("noreply"))) return "";
+    if (variableValue in fieldValues) return fieldValues[variableValue];
 
+    const formattedPhoneValue = variableValue ? formatPhoneNumber(variableValue.toString()) : "";
     const phoneFieldValues = {
         [fieldMapping.cellPhone]: formattedPhoneValue,
         [fieldMapping.homePhone]: formattedPhoneValue,
@@ -92,11 +94,7 @@ export const getFieldValues = (variableValue, conceptId) => {
         'Change Login Phone': formattedPhoneValue
     }
 
-    if (!variableValue) return '';
-    else if (conceptId === 'Change Login Email' && variableValue.startsWith('noreply')) return '';
-    else if (variableValue in fieldValues) return fieldValues[variableValue];
-    else if (conceptId in phoneFieldValues) return phoneFieldValues[conceptId];
-    else return variableValue;
+    return phoneFieldValues[conceptId] ?? variableValue;
 }
 
 export const formatPhoneNumber = (phoneNumber) => {
@@ -868,13 +866,7 @@ const getUITextForUpdatedValue = (newValue, conceptIdArray) => {
     if (conceptIdArray.toString().includes(fieldMapping.suffix.toString())) {
         return suffixToTextMap.get(parseInt(newValue));
     } else if (conceptIdArray.some(id => [fieldMapping.canWeText.toString(), fieldMapping.voicemailMobile.toString(), fieldMapping.voicemailHome.toString(), fieldMapping.voicemailOther.toString()].includes(id.toString()))) {
-        if (newValue == fieldMapping.yes) {
-            return 'Yes';
-        } else if (newValue == fieldMapping.no) {
-            return 'No';
-        } else {
-            return '';
-        }
+        return newValue === fieldMapping.yes.toString() ? "Yes" : "No";
     } else {
         return newValue;
     }
