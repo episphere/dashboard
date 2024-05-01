@@ -395,7 +395,7 @@ const renderMonthSelector = (participantValue, conceptId) => {
 const renderTextVoicemailPermissionSelector = (participantValue, conceptId) => {
     return `
         <select name="newValue${conceptId}" id="newValue${conceptId}" data-currentValue=${participantValue}>
-            <option class="option-dark-mode" value="">-- Select --</option>
+            <option class="option-dark-mode" value="${fieldMapping.no}">-- Select --</option>
             <option class="option-dark-mode" value="${fieldMapping.yes}">Yes</option>
             <option class="option-dark-mode" value="${fieldMapping.no}">No</option>
         </select>
@@ -431,14 +431,14 @@ const renderPhoneInputBox = (participantValue, conceptId) => {
 const renderSuffixSelector = (participant, participantValue, conceptId) => {
     return `
         <select style="max-width:200px; margin-left:0px;" name="newValue${conceptId}" id="newValue${conceptId}" data-currentValue=${participantValue}>
-            <option value="">-- Select --</option>
-            <option value="612166858" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 0 ? 'selected':'') : ''}>Jr.</option>
-            <option value="255907182" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 1 ? 'selected':'') : ''}>Sr.</option>
-            <option value="226924545" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 2 ? 'selected':'') : ''}>I</option>
-            <option value="270793412" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 3 ? 'selected':'') : ''}>II</option>
-            <option value="959021713" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 4 ? 'selected':'') : ''}>III</option>
-            <option value="643664527" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 5 ? 'selected':'') : ''}>2nd</option>
-            <option value="537892528" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 6 ? 'selected':'') : ''}>3rd</option>
+            <option value="${fieldMapping.noneOfTheseApply}">-- Select --</option>
+            <option value="${fieldMapping.jr}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 0 ? 'selected':'') : ''}>Jr.</option>
+            <option value="${fieldMapping.sr}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 1 ? 'selected':'') : ''}>Sr.</option>
+            <option value="${fieldMapping.one}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 2 ? 'selected':'') : ''}>I</option>
+            <option value="${fieldMapping.two}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 3 ? 'selected':'') : ''}>II</option>
+            <option value="${fieldMapping.three}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 4 ? 'selected':'') : ''}>III</option>
+            <option value="${fieldMapping.second}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 5 ? 'selected':'') : ''}>2nd</option>
+            <option value="${fieldMapping.third}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 6 ? 'selected':'') : ''}>3rd</option>
         </select>
         `
 };
