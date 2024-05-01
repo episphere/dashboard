@@ -94,9 +94,7 @@ export const getFieldValues = (variableValue, conceptId) => {
         'Change Login Phone': formattedPhoneValue
     }
 
-    if (conceptId in phoneFieldValues) return phoneFieldValues[conceptId];
-
-    return variableValue;
+    return phoneFieldValues[conceptId] ?? variableValue;
 }
 
 export const formatPhoneNumber = (phoneNumber) => {
