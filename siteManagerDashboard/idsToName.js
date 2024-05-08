@@ -13,7 +13,7 @@ export const keyToNameObj =
     13 : "National Cancer Institute",
     300267574 : "Kaiser Permanente Hawaii",
     327912200 : "Kaiser Permanente Georgia",
-    976883292: "Baylor Scott & White Health", // BSWH COMMENT~
+    472940358: "Baylor Scott & White Health",
 
 }
 
@@ -30,7 +30,7 @@ export const keyToShortNameObj =
     13 : "NCI",
     300267574 : "KP HI",
     327912200 : "KP GA",
-    976883292: "Baylor Scorr & White Health", // BSWH COMMENT~
+    472940358: "Baylor Scott & White Health",
     1000: "All"
 
 }
@@ -47,7 +47,7 @@ export const nameToKeyObj =
     "nci": 13,
     "kpHI": 300267574,
     "kpGA": 327912200,
-    "bSWH": 976883292, // BSWH COMMENT~
+    "bSWH": 472940358,
     "allResults": 1000
 }
 
