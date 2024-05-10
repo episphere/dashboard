@@ -928,15 +928,31 @@ export const showAlreadyExistsNoteInModal = () => {
     document.getElementById('showNote').innerHTML = `This value already exists. Please enter a different value or choose 'cancel'.<br>`;
 };
 
-export const suffixList = { 612166858: 0, 255907182: 1, 226924545: 2, 270793412: 3, 959021713: 4, 643664527: 5, 537892528: 6 };
+export const suffixList = { 612166858: 0, 
+    255907182: 1, 
+    226924545: 2, 
+    270793412: 3, 
+    959021713: 4,
+    611945488: 5,
+    773963342: 6,
+    911299066: 7,
+    528373182: 8,
+    233284019: 9, 
+    643664527: 10, 
+    537892528: 11 };
 
 export const suffixToTextMap = new Map([
     [398561594, ''],
     [612166858, 'Jr.'],
     [255907182, 'Sr.'],
-    [226924545, 'I'],
-    [270793412, 'II'],
-    [959021713, 'III'],
+    [226924545, 'I, 1st'],
+    [270793412, 'II, 2nd'],
+    [959021713, 'III, 3rd'],
+    [611945488, 'IV, 4th'],
+    [773963342, 'V, 5th'],
+    [911299066, 'VI, 6th'],
+    [528373182, 'VII, 7th'],
+    [233284019, 'VIII, 8th'],
     [643664527, '2nd'],
     [537892528, '3rd'],
   ]);

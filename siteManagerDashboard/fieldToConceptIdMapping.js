@@ -60,11 +60,17 @@ export default
     "userProfileUpdateTimestamp": 371303487,
     "noneOfTheseApply": 398561594,
 
+    // suffix
     'jr': 612166858,
     'sr': 255907182,
     'one': 226924545,
     'two': 270793412,
     'three': 959021713,
+    'four': 611945488,
+    'five': 773963342,
+    'six': 911299066,
+    'seven': 528373182,
+    'eight': 233284019, 
     'second': 643664527,
     'third': 537892528,
 
