@@ -74,9 +74,6 @@ recruit.dashLogin=async function(){ // build the dashboard after logged with key
         else if(recruit.key === 'ac6i1hk9tMH4oNZO3KJM'){
             siteLogoPath = './images/Sanford_Logo.png';
         }
-        // else if(recruit.key === ''){ // BSWH COMMENT~
-        //     siteLogoPath = './images/BSWH_Logo.png';
-        // }
         else{
             siteLogoPath = './images/nci_logo.jpg';
         }

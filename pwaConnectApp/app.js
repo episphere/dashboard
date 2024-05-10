@@ -138,7 +138,7 @@ const sites = () => {
         7: 'Marshfield Clinic',
         8: 'Sanford Health',
         9: 'University of Chicago Medicine',
-        10: 'Baylor Scott & White Health', // BSWH COMMENT~ 
+        10: 'Baylor Scott & White Health',
         13: 'Natiocal Cancer Institute',
         88: 'None of these'
     }
