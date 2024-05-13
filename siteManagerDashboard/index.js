@@ -374,7 +374,7 @@ const renderSiteKeyList = () => {
                 ${((location.host !== urls.prod) && (location.host !== urls.stage)) ? `<li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>` : ``}
                 <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                 <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
-                <li><a class="dropdown-item" data-siteKey="bSWH" id="bSWH">Baylor Scott & Whtie Health</a></li>
+                <li><a class="dropdown-item" data-siteKey="baylorSWH" id="baylorSWH">Baylor Scott & Whtie Health</a></li>
             </ul>
         </div>
         `;

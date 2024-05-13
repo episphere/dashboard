@@ -47,7 +47,7 @@ export const nameToKeyObj =
     "nci": 13,
     "kpHI": 300267574,
     "kpGA": 327912200,
-    "bSWH": 472940358,
+    "baylorSWH": 472940358,
     "allResults": 1000
 }
 
