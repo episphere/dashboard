@@ -73,9 +73,14 @@ const fieldValues = {
     [fieldMapping.noneOfTheseApply]: '',
     [fieldMapping.jr]: 'Jr.',
     [fieldMapping.sr]: 'Sr.',
-    [fieldMapping.one]: 'I',
-    [fieldMapping.two]: 'II',
-    [fieldMapping.three]: 'III',
+    [fieldMapping.one]: 'I, 1st',
+    [fieldMapping.two]: 'II, 2nd',
+    [fieldMapping.three]: 'III, 3rd',
+    [fieldMapping.four]: 'IV, 4th',
+    [fieldMapping.five]: 'V, 5th',
+    [fieldMapping.six]: 'VI, 6th',
+    [fieldMapping.seven]: 'VII, 7th',
+    [fieldMapping.eight]: 'VIII, 8th',
     [fieldMapping.second]: '2nd',
     [fieldMapping.third]: '3rd',
     [fieldMapping.prefPhone]: 'Phone',
@@ -83,8 +88,10 @@ const fieldValues = {
 }
 
 export const getFieldValues = (variableValue, conceptId) => {
-    const formattedPhoneValue = variableValue ? formatPhoneNumber(variableValue.toString()) : '';
+    if (!variableValue || (conceptId === "Change Login Email" && variableValue.startsWith("noreply"))) return "";
+    if (variableValue in fieldValues) return fieldValues[variableValue];
 
+    const formattedPhoneValue = variableValue ? formatPhoneNumber(variableValue.toString()) : "";
     const phoneFieldValues = {
         [fieldMapping.cellPhone]: formattedPhoneValue,
         [fieldMapping.homePhone]: formattedPhoneValue,
@@ -92,11 +99,7 @@ export const getFieldValues = (variableValue, conceptId) => {
         'Change Login Phone': formattedPhoneValue
     }
 
-    if (!variableValue) return '';
-    else if (conceptId === 'Change Login Email' && variableValue.startsWith('noreply')) return '';
-    else if (variableValue in fieldValues) return fieldValues[variableValue];
-    else if (conceptId in phoneFieldValues) return phoneFieldValues[conceptId];
-    else return variableValue;
+    return phoneFieldValues[conceptId] ?? variableValue;
 }
 
 export const formatPhoneNumber = (phoneNumber) => {
@@ -868,13 +871,7 @@ const getUITextForUpdatedValue = (newValue, conceptIdArray) => {
     if (conceptIdArray.toString().includes(fieldMapping.suffix.toString())) {
         return suffixToTextMap.get(parseInt(newValue));
     } else if (conceptIdArray.some(id => [fieldMapping.canWeText.toString(), fieldMapping.voicemailMobile.toString(), fieldMapping.voicemailHome.toString(), fieldMapping.voicemailOther.toString()].includes(id.toString()))) {
-        if (newValue == fieldMapping.yes) {
-            return 'Yes';
-        } else if (newValue == fieldMapping.no) {
-            return 'No';
-        } else {
-            return '';
-        }
+        return newValue === fieldMapping.yes.toString() ? "Yes" : "No";
     } else {
         return newValue;
     }
@@ -936,15 +933,31 @@ export const showAlreadyExistsNoteInModal = () => {
     document.getElementById('showNote').innerHTML = `This value already exists. Please enter a different value or choose 'cancel'.<br>`;
 };
 
-export const suffixList = { 612166858: 0, 255907182: 1, 226924545: 2, 270793412: 3, 959021713: 4, 643664527: 5, 537892528: 6 };
+export const suffixList = { 612166858: 0, 
+    255907182: 1, 
+    226924545: 2, 
+    270793412: 3, 
+    959021713: 4,
+    611945488: 5,
+    773963342: 6,
+    911299066: 7,
+    528373182: 8,
+    233284019: 9, 
+    643664527: 10, 
+    537892528: 11 };
 
 export const suffixToTextMap = new Map([
     [398561594, ''],
     [612166858, 'Jr.'],
     [255907182, 'Sr.'],
-    [226924545, 'I'],
-    [270793412, 'II'],
-    [959021713, 'III'],
+    [226924545, 'I, 1st'],
+    [270793412, 'II, 2nd'],
+    [959021713, 'III, 3rd'],
+    [611945488, 'IV, 4th'],
+    [773963342, 'V, 5th'],
+    [911299066, 'VI, 6th'],
+    [528373182, 'VII, 7th'],
+    [233284019, 'VIII, 8th'],
     [643664527, '2nd'],
     [537892528, '3rd'],
   ]);

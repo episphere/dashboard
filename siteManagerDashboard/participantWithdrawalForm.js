@@ -546,6 +546,7 @@ const sendResponses = async (finalOptions, retainOptions, requestedHolder, sourc
     if (statusConceptId === fieldMapping.destroyDataStatus) {
         sendRefusalData[fieldMapping.dateDataDestroyRequested] = new Date().toISOString();
         sendRefusalData[fieldMapping.dataDestroyCategorical] = fieldMapping.requestedDataDestroyNotSigned;
+        sendRefusalData[fieldMapping.dataHasBeenDestroyed] = fieldMapping.no;
         updateWhoRequested(sendRefusalData, fieldMapping.whoRequestedDataDestruction, fieldMapping.whoRequestedDataDestructionOther)
     }
     if (statusConceptId === fieldMapping.revokeHIPAAOnly) {

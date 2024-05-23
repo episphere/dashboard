@@ -395,7 +395,7 @@ const renderMonthSelector = (participantValue, conceptId) => {
 const renderTextVoicemailPermissionSelector = (participantValue, conceptId) => {
     return `
         <select name="newValue${conceptId}" id="newValue${conceptId}" data-currentValue=${participantValue}>
-            <option class="option-dark-mode" value="">-- Select --</option>
+            <option class="option-dark-mode" value="${fieldMapping.no}">-- Select --</option>
             <option class="option-dark-mode" value="${fieldMapping.yes}">Yes</option>
             <option class="option-dark-mode" value="${fieldMapping.no}">No</option>
         </select>
@@ -431,14 +431,17 @@ const renderPhoneInputBox = (participantValue, conceptId) => {
 const renderSuffixSelector = (participant, participantValue, conceptId) => {
     return `
         <select style="max-width:200px; margin-left:0px;" name="newValue${conceptId}" id="newValue${conceptId}" data-currentValue=${participantValue}>
-            <option value="">-- Select --</option>
-            <option value="612166858" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 0 ? 'selected':'') : ''}>Jr.</option>
-            <option value="255907182" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 1 ? 'selected':'') : ''}>Sr.</option>
-            <option value="226924545" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 2 ? 'selected':'') : ''}>I</option>
-            <option value="270793412" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 3 ? 'selected':'') : ''}>II</option>
-            <option value="959021713" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 4 ? 'selected':'') : ''}>III</option>
-            <option value="643664527" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 5 ? 'selected':'') : ''}>2nd</option>
-            <option value="537892528" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 6 ? 'selected':'') : ''}>3rd</option>
+            <option value="${fieldMapping.noneOfTheseApply}">-- Select --</option>
+            <option value="${fieldMapping.jr}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 0 ? 'selected':'') : ''}>Jr.</option>
+            <option value="${fieldMapping.sr}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 1 ? 'selected':'') : ''}>Sr.</option>
+            <option value="${fieldMapping.one}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 2 ? 'selected':'') : ''}>I, 1st</option>
+            <option value="${fieldMapping.two}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 3 || suffixList[participant[fieldMapping.suffix]] == 10 ? 'selected':'') : ''}>II, 2nd</option>
+            <option value="${fieldMapping.three}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 4 || suffixList[participant[fieldMapping.suffix]] == 11 ? 'selected':'') : ''}>III, 3rd</option>
+            <option value="${fieldMapping.four}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 5 ? 'selected':'') : ''}>IV, 4th</option>
+            <option value="${fieldMapping.five}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 6 ? 'selected':'') : ''}>V, 5th</option>
+            <option value="${fieldMapping.six}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 7 ? 'selected':'') : ''}>VI, 6th</option>
+            <option value="${fieldMapping.seven}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 8 ? 'selected':'') : ''}>VII, 7th</option>
+            <option value="${fieldMapping.eight}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 9 ? 'selected':'') : ''}>VIII, 8th</option>
         </select>
         `
 };
