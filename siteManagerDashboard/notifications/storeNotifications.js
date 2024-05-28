@@ -2,7 +2,9 @@ import { dashboardNavBarLinks, removeActiveClass } from '../navigationBar.js';
 import { showAnimation, hideAnimation, baseAPI, getIdToken, triggerNotificationBanner } from '../utils.js';
 import { appState } from '../stateManager.js';
 
+const converter = new showdown.Converter();
 const newsletterCategories = ["newsletter", "eNewsletter", "anniversaryNewsletter"];
+const langArray = ["english", "spanish"];
 let conceptsOptionsStr = "";
 let concepts = null;
 
@@ -61,12 +63,14 @@ const renderSchemaPage = async (schemaData = null) => {
             </form>
         </div>
     </div>`;
-
+  
   handleEmailPreview();
+  handleSMSCharacterCount();
+  handleLangSelection("email", schemaData);
+  handleLangSelection("sms", schemaData);
   handleDeleteExistingConditions();
   handleAddCondition();
   handleNotficationDivs(schemaData);
-  handleSMSCharacterCount();
   handleFormSubmit();
   handleExitForm();
   handleDryRun();
@@ -84,7 +88,8 @@ const getDryRunHtlmStr = () => `
 export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
   let conditionHtmlStrAll = "";
   let index = 0;
-  if (schemaData) {
+
+  if (schemaData?.conditions) {
     for (const [conditionKey, valObj] of Object.entries(schemaData.conditions)) {
       const [conditionOperator, conditionValue] = Object.entries(valObj)[0];
       conditionHtmlStrAll += getConditionHtmlStr({
@@ -103,24 +108,24 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
   return `
     <div class="row form-group">
         <label class="col-form-label col-md-3" for="attempt">Attempt</label>
-        <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" ${schemaData?.attempt? `value="${schemaData.attempt}"`: "" }>
+        <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" ${schemaData?.attempt? `value="${schemaData.attempt}"`: "" } ${isReadOnly ? "disabled": ""}>
     </div>
     
     <div class="row form-group">
         <label class="col-form-label col-md-3" for="description">Description</label>
-        <textarea class="col-md-8" required id="description" cols="30" rows="3">${schemaData?.description ?? ""}</textarea>
+        <textarea class="col-md-8" required id="description" cols="30" rows="3" ${isReadOnly ? "disabled": ""}>${schemaData?.description ?? ""}</textarea>
     </div>
     
     <div class="row form-group">
         <label class="col-form-label col-md-3" for="category">Category</label>
-        <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" ${schemaData?.category? `value="${schemaData.category}"`: ""}>
+        <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" ${schemaData?.category? `value="${schemaData.category}"`: ""} ${isReadOnly ? "disabled": ""}>
     </div>
 
     <div class="row form-group">
         <label class="col-form-label col-md-3">Notification type</label>
-        <input type="checkbox" name="notification-checkbox" data-type="email" id="emailCheckBox" ${schemaData?.notificationType?.includes("email")? "checked": ""} style="height: 25px;">&nbsp;
+        <input type="checkbox" name="notification-checkbox" data-target-type="email" id="emailCheckBox" ${schemaData?.notificationType?.includes("email")? "checked": ""} ${isReadOnly ? "disabled": ""} style="height: 25px;">&nbsp;
         <label class="mr-3" for="emailCheckBox">Email</label>
-        <input type="checkbox" name="notification-checkbox" data-type="sms" id="smsCheckBox" ${schemaData?.notificationType?.includes("sms")? "checked": ""} style="height: 25px;">&nbsp;
+        <input type="checkbox" name="notification-checkbox" data-target-type="sms" id="smsCheckBox" ${schemaData?.notificationType?.includes("sms")? "checked": ""} ${isReadOnly ? "disabled": ""} style="height: 25px;">&nbsp;
         <label class="mr-3" for="smsCheckBox">SMS</label>
         <input type="checkbox" disabled name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" ${schemaData?.notificationType?.includes("push")? "checked": ""} style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
     </div>
@@ -128,20 +133,20 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row">
         <label class="col-form-label col-md-3" for="condition-key">Schedule at (EST)</label>
         <div class="col-md-1 form-check">
-            <input class="form-check-input" type="radio" value="15:00" ${schemaData?.scheduleAt !== "20:00" ? "checked" : ""} name="scheduleAt" id="scheduleAt1">
+            <input class="form-check-input" type="radio" value="15:00" ${schemaData?.scheduleAt !== "20:00" ? "checked" : ""} ${isReadOnly ? "disabled": ""} name="scheduleAt" id="scheduleAt1">
             <label class="form-check-label" for="scheduleAt1">
                 3:00 PM
             </label>
         </div>
         <div class="col-md-1 form-check">
-            <input class="form-check-input" type="radio" value="20:00" ${schemaData?.scheduleAt === "20:00" ? "checked" : ""} name="scheduleAt" id="scheduleAt2">
+            <input class="form-check-input" type="radio" value="20:00" ${schemaData?.scheduleAt === "20:00" ? "checked" : ""} ${isReadOnly ? "disabled": ""} name="scheduleAt" id="scheduleAt2">
             <label class="form-check-label" for="scheduleAt2">
                 8:00 PM
             </label>
         </div>
     </div>
-    <div id="emailDiv">${schemaData?.email?.subject  ? getEmailDivHtml(schemaData) : "" }</div>
-    <div id="smsDiv">${schemaData?.sms?.body ? getSmsDivHtml(schemaData) : "" }</div>
+    <div id="emailDiv">${schemaData?.email ? getEmailDivHtml(schemaData.email, isReadOnly, true) : "" }</div>
+    <div id="smsDiv">${schemaData?.sms ? getSmsDivHtml(schemaData.sms, isReadOnly, true) : "" }</div>
     <div id="pushDiv">${schemaData?.push?.subject ? getPushDivHtml(schemaData) : "" }</div>
     <div id="conditionsDiv">
         ${conditionHtmlStrAll}
@@ -153,7 +158,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Email field concept</label>
         <div class="email-concept col-md-8 p-0">
-            <input id="emailConceptId" required list="dataListEmailConcept" class="form-control" ${schemaData?.emailField ? `value="${schemaData.emailField}"`: ""}>
+            <input id="emailConceptId" required list="dataListEmailConcept" class="form-control" ${schemaData?.emailField ? `value="${schemaData.emailField}"`: ""} ${isReadOnly ? "disabled" : ""}>
             <datalist id="dataListEmailConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -163,7 +168,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Phone no. concept</label>
         <div class="phone-concept col-md-8 p-0">
-            <input id="phoneConceptId" required list="dataListPhoneConcept" class="form-control" ${schemaData?.phoneField ? `value="${schemaData.phoneField}"`: ""}>
+            <input id="phoneConceptId" required list="dataListPhoneConcept" class="form-control" ${schemaData?.phoneField ? `value="${schemaData.phoneField}"`: ""} ${isReadOnly ? "disabled" : ""}>
             <datalist id="dataListPhoneConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -173,7 +178,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">First name concept</label>
         <div class="first-name-concept col-md-8 p-0">
-            <input id="firstNameConceptId" required list="dataListFirstNameConcept" class="form-control" ${schemaData?.firstNameField ? `value="${schemaData.firstNameField}"`: ""}>
+            <input id="firstNameConceptId" required list="dataListFirstNameConcept" class="form-control" ${schemaData?.firstNameField ? `value="${schemaData.firstNameField}"`: ""} ${isReadOnly ? "disabled" : ""}>
             <datalist id="dataListFirstNameConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -183,7 +188,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Preferred name concept</label>
         <div class="preferred-name-concept col-md-8 p-0">
-            <input id="preferredNameConceptId" required list="dataListPreferredNameConcept" class="form-control" ${schemaData?.preferredNameField ? `value="${schemaData.preferredNameField}"`: ""}>
+            <input id="preferredNameConceptId" required list="dataListPreferredNameConcept" class="form-control" ${schemaData?.preferredNameField ? `value="${schemaData.preferredNameField}"`: ""} ${isReadOnly ? "disabled" : ""}>
             <datalist id="dataListPreferredNameConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -193,7 +198,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Primary field</label>
         <div class="primary-field col-md-8 p-0">
-            <input id="primaryFieldConceptId" required list="dataListPrimaryField" class="form-control" ${schemaData?.primaryField ? `value="${schemaData.primaryField}"`: ""}>
+            <input id="primaryFieldConceptId" required list="dataListPrimaryField" class="form-control" ${schemaData?.primaryField ? `value="${schemaData.primaryField}"`: ""} ${isReadOnly ? "disabled" : ""}>
             <datalist id="dataListPrimaryField">
                 ${conceptsOptionsStr}
             </datalist>
@@ -202,9 +207,9 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     
     <div class="row form-group">
         <label class="col-form-label col-md-3">Time</label>
-        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" ${schemaData?.time ? `value="${schemaData.time.day ?? 0}"` : ""}>
-        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" ${schemaData?.time ? `value="${schemaData.time.hour ?? 0}"`: ""}>
-        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" ${schemaData?.time ? `value="${schemaData.time.minute ?? 0}"`: ""}>
+        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" ${schemaData?.time ? `value="${schemaData.time.day ?? 0}"` : `value="0"`} ${isReadOnly ? "disabled" : ""}>
+        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" ${schemaData?.time ? `value="${schemaData.time.hour ?? 0}"`: `value="0"`} ${isReadOnly ? "disabled" : ""}>
+        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" ${schemaData?.time ? `value="${schemaData.time.minute ?? 0}"`: `value="0"`} ${isReadOnly ? "disabled" : ""}>
     </div>`;
 };
 
@@ -221,9 +226,14 @@ const handleFormSubmit = () => {
     schema["category"] = document.getElementById("category").value.trim();
     schema["notificationType"] = Array.from(document.getElementsByName("notification-checkbox"))
       .filter((checkbox) => checkbox.checked)
-      .map((checkbox) => checkbox.dataset.type);
-    schema["scheduleAt"] = Array.from(document.getElementsByName("scheduleAt")).filter((dt) => dt.checked)[0].value;
+      .map((checkbox) => checkbox.dataset.targetType);
+    if (schema["notificationType"].length === 0) { 
+      triggerNotificationBanner("Please select at least one notification type!", "danger");
+      return;
+    }
 
+    schema["scheduleAt"] = Array.from(document.getElementsByName("scheduleAt")).filter((dt) => dt.checked)[0].value;
+    schema["sendType"]= "scheduled";
     schema["emailField"] = document.getElementById("emailConceptId").value;
     schema["phoneField"] = document.getElementById("phoneConceptId").value;
     schema["firstNameField"] = document.getElementById("firstNameConceptId").value;
@@ -239,20 +249,33 @@ const handleFormSubmit = () => {
       minute: parseInt(document.getElementById("minutes").value),
     };
 
-    const emailSubjectEle = document.getElementById("emailSubject");
-    if (emailSubjectEle) {
-      schema["email"] = { subject: emailSubjectEle.value };
-      if (newsletterCategories.includes(schema["category"])) {
-        schema["email"]["body"] = document.getElementById("emailBody").value;
-      } else {
-        schema["email"]["body"] = document.getElementById("emailBody").value.replace(/\n/g, "<br/>");
-      }
+    const emailInputDivList = document.querySelectorAll("#emailDiv div[data-email-lang]");
+    if (emailInputDivList.length > 0) {
+      schema["email"] = {};
+      emailInputDivList.forEach((emailInputDiv) => {
+        const lang = emailInputDiv.dataset.emailLang;
+        schema["email"][lang] = {};
+        schema["email"][lang]["subject"] = emailInputDiv.querySelector(`#${lang}EmailSubject`).value;
+        if (newsletterCategories.includes(schema["category"])) {
+          schema["email"][lang]["body"] = emailInputDiv.querySelector(`#${lang}EmailBody`).value;
+        } else {
+          schema["email"][lang]["body"] = emailInputDiv.querySelector(`#${lang}EmailBody`).value.replace(/\n/g, "<br/>");
+        }
+      });
     }
+    schema.email.subject = schema.email.english.subject;
+    schema.email.body = schema.email.english.body;
 
-    const smsBodyEle = document.getElementById("smsBody");
-    if (smsBodyEle) {
-      schema["sms"] = { body: smsBodyEle.value };
+    const smsInputDivList = document.querySelectorAll("#smsDiv div[data-sms-lang]");
+    if (smsInputDivList.length > 0) {
+      schema["sms"] = {};
+      smsInputDivList.forEach((smsInputDiv) => {
+        const lang = smsInputDiv.dataset.smsLang;
+        schema["sms"][lang] = {};
+        schema["sms"][lang]["body"] = smsInputDiv.querySelector(`#${lang}SmsBody`).value;
+      });
     }
+    schema.sms.body = schema.sms.english.body;
 
     const pushSubjectEle = document.getElementById("pushSubject");
     if (pushSubjectEle) {
@@ -319,12 +342,12 @@ const getConditionHtmlStr = ({
     <div class="row form-group" data-condition-idx="${index}">
         <label class="col-form-label col-md-3">Condition</label>
         <div class="condition-key col-md-2 mr-2 p-0">
-          <input required list="dataListConditionKey${index}" class="form-control" name="condition-key" ${conditionKey ? `value="${conditionKey}"` : ""}>
+          <input required list="dataListConditionKey${index}" class="form-control" name="condition-key" ${conditionKey ? `value="${conditionKey}"` : ""} ${isReadOnly ? "disabled": ""}>
           <datalist id="dataListConditionKey${index}">
               ${conceptsOptionsStr}
           </datalist>
         </div>
-        <select name="condition-operator" class="col-md-2 form-control mr-2">
+        <select name="condition-operator" class="col-md-2 form-control mr-2" ${isReadOnly ? "disabled": ""}>
             <option value="equals" ${conditionOperator === "equals" ? "selected" : ""}>equals</option>
             <option value="notequals" ${conditionOperator === "notequals" ? "selected" : ""}>notequals</option>
             <option value="greater" ${conditionOperator === "greater" ? "selected" : ""}>greater</option>
@@ -332,12 +355,12 @@ const getConditionHtmlStr = ({
             <option value="less" ${conditionOperator === "less" ? "selected" : ""}>less</option>
             <option value="lessequals" ${conditionOperator === "lessequals" ? "selected" : ""}>lessequals</option>
         </select>
-        <select name="value-type" class="col-md-1 form-control mr-2">
+        <select name="value-type" class="col-md-1 form-control mr-2" ${isReadOnly ? "disabled": ""}>
             <option value="number" ${typeof conditionValue === "number" ? "selected" : ""}>number</option>
             <option value="string" ${typeof conditionValue === "string" ? "selected" : ""}>string</option>
         </select>
         <div class="condition-value col-md-2 mr-2 p-0">
-          <input required  list="dataListConditionValue${index}" class="form-control" name="condition-value" ${conditionValue ? `value="${conditionValue}"` : ""}>
+          <input required  list="dataListConditionValue${index}" class="form-control" name="condition-value" ${conditionValue ? `value="${conditionValue}"` : ""} ${isReadOnly ? "disabled": ""}>
           <datalist id="dataListConditionValue${index}">
               ${conceptsOptionsStr}
           </datalist>
@@ -365,34 +388,87 @@ const getConcepts = async () => {
   }
 }; 
 
-const getEmailDivHtml = (schemaData = null) => {
+
+const getEmailInputHtmlStr = (lang, emailLangData, isReadOnly) => {
+  const langStrWithCap = getStringWithCap(lang);
+
   return `
-    <div class="row">
-        <div class="col">
-            <h5>Email</h5>
-            <div class="row form-group">
-                <label class="col-form-label col-md-3" for="emailSubject">Subject</label>
-                <input autocomplete="off" required class="col-md-8" type="text" id="emailSubject" placeholder="Email subject" ${schemaData?.email?.subject ? `value="${schemaData.email.subject}"`: ""}>
-            </div>
-            <div class="row form-group">
-                <label class="col-form-label col-md-3" for="emailBody">Body</label>
-                <textarea rows="5" class="col-md-4" id="emailBody" placeholder="Email body">${schemaData?.email?.body ?? ""}</textarea>
-                <div class="col-md-4" id="emailBodyPreview"></div>
-            </div>
+    <div data-email-lang="${lang}">
+        <div class="row">
+            <label class="col-form-label col-md-3" for="${lang}EmailSubject">${langStrWithCap} Subject</label>
+            <input autocomplete="off" required class="col-md-8" type="text" id="${lang}EmailSubject" placeholder="${langStrWithCap} Email Subject" ${emailLangData?.subject ? `value="${emailLangData.subject}"`: ""} ${isReadOnly ? "disabled": ""}>
+        </div>
+        <div class="row" data-email-body="${lang}">
+            <label class="col-form-label col-md-3" for="${lang}EmailBody">${langStrWithCap} Body</label>
+            <textarea rows="5" class="col-md-4"  id="${lang}EmailBody" placeholder="${langStrWithCap} Email Content" ${isReadOnly ? "disabled": ""}>${emailLangData?.body ?? ""}</textarea>
+            <div class="col-md-4" id="${lang}EmailBodyPreview"></div>
         </div>
     </div>`;
 };
 
-const getSmsDivHtml = (schemaData = null) => {
+const getEmailDivHtml = (emailData = null, isReadOnly = false, isInitialRun = false) => {
+  if (isInitialRun && !emailData) return "";
+  if (!emailData) emailData = { english: {} };
+
   return `
     <div class="row">
-        <div class="col">
-            <h5>SMS</h5>
-            <div class="row form-group">
-                <label class="col-form-label col-md-3" for="smsBody">Body (<small id="characterCounts">${schemaData?.sms?.body?.length ?? 0}/160 characters</small>)</label>
-                <textarea rows="2" class="col-md-8" id="smsBody" maxlength="160" placeholder="SMS body">${schemaData?.sms?.body ?? ""}</textarea>
+        <div class="col" data-input-type="email">
+            <div class="row">
+                <h5 class="col-md-3">Email</h5>
+                ${langArray
+                  .map(
+                    (lang) =>
+                      `<input type="checkbox" data-type="email" data-lang="${lang}" id="${lang}CheckBox" ${ lang === "english" ? "checked disabled" :
+                        emailData[lang] ? "checked" : ""
+                      } ${isReadOnly ? "disabled" : ""} style="height: 25px;">&nbsp;
+                      <label class="mr-3" for="${lang}CheckBox">${getStringWithCap(lang)}</label>`
+                  )
+                  .join("")}
+            </div>
+            ${langArray
+              .filter((lang) => emailData[lang])
+              .map((lang) => getEmailInputHtmlStr(lang, emailData[lang], isReadOnly))
+              .join("")}
+
+        </div>
+    </div>`;
+};
+
+const getSmsInputHtmlStr = (lang, smsLangData, isReadOnly) => {
+  const langStrWithCap = getStringWithCap(lang);
+  return `
+    <div data-sms-lang="${lang}">
+        <div class="row">
+            <label class="col-form-label col-md-3" for="${lang}SmsBody">${langStrWithCap} Body (<small id="${lang}CharacterCount">${smsLangData?.body?.length ?? 0}/160 characters</small>)</label>
+            <textarea rows="2" class="col-md-8" id="${lang}SmsBody" maxlength="160" placeholder="${langStrWithCap} SMS Content" ${isReadOnly ? "disabled": ""}>${smsLangData?.body ?? ""}</textarea>
+        </div>
+    </div>`;
+};
+
+const getSmsDivHtml = (smsData = null, isReadOnly = false, isInitialRun = false) => {
+  if (isInitialRun && !smsData) return "";
+  if (!smsData) smsData = { english: { body: "" } };
+
+  return `
+    <div class="row">
+        <div class="col" data-input-type="sms">
+            <div class="row">
+                <h5 class="col-md-3">SMS</h5>
+                ${langArray
+                  .map(
+                    (lang) =>
+                      `<input type="checkbox" data-type="sms" data-lang="${lang}" id="${lang}SmsCheckBox" ${lang === "english" ? "checked disabled" :
+                        smsData?.[lang] ? "checked" : ""
+                      } ${isReadOnly ? "disabled" : ""} style="height: 25px;">&nbsp;
+                      <label class="mr-3" for="${lang}SmsCheckBox">${getStringWithCap(lang)}</label>`
+                  )
+                  .join("")}
 
             </div>
+            ${langArray
+              .filter((lang) => smsData?.[lang])
+              .map((lang) => getSmsInputHtmlStr(lang, smsData[lang], isReadOnly))
+              .join("")}
         </div>
     </div>`;
 };
@@ -402,11 +478,11 @@ const getPushDivHtml = (schemaData = null) => {
     <div class="row">
         <div class="col">
             <h5>Push notification</h5>
-            <div class="row form-group">
+            <div class="row">
                 <label class="col-form-label col-md-3" for="pushSubject">Subject</label>
                 <input autocomplete="off" required class="col-md-8" type="text" id="pushSubject" placeholder="Push notification subject" ${schemaData?.push?.subject ? `value="${schemaData.push.subject}"`: ""}>
             </div>
-            <div class="row form-group">
+            <div class="row">
                 <label class="col-form-label col-md-3" for="pushBody">Body</label>
                 <textarea rows="2" class="col-md-8" id="pushBody" placeholder="Push notification body">${schemaData?.push?.body ?? ""}</textarea>
             </div>
@@ -418,7 +494,8 @@ const handleNotficationDivs = (schemaData) => {
   const emailCheckbox = document.getElementById("emailCheckBox");
   emailCheckbox.addEventListener("click", () => {
     if (emailCheckbox.checked === true) {
-      document.getElementById("emailDiv").innerHTML = getEmailDivHtml(schemaData);
+      document.getElementById("emailDiv").innerHTML = getEmailDivHtml(schemaData?.email);
+      handleLangSelection("email", schemaData);
       handleEmailPreview();
     } else {
       document.getElementById("emailDiv").innerHTML = "";
@@ -428,7 +505,8 @@ const handleNotficationDivs = (schemaData) => {
   const smsCheckbox = document.getElementById("smsCheckBox");
   smsCheckbox.addEventListener("click", () => {
     if (smsCheckbox.checked === true) {
-      document.getElementById("smsDiv").innerHTML = getSmsDivHtml(schemaData);
+      document.getElementById("smsDiv").innerHTML = getSmsDivHtml(schemaData?.sms);
+      handleLangSelection("sms", schemaData);
       handleSMSCharacterCount();
     } else {
       document.getElementById("smsDiv").innerHTML = "";
@@ -445,10 +523,17 @@ const handleNotficationDivs = (schemaData) => {
   });
 };
 
-const handleSMSCharacterCount = () => {
-  const characterCountEle = document.getElementById("characterCounts");
-  const smsBodyEle = document.getElementById("smsBody");
-  if (characterCountEle && smsBodyEle && !smsBodyEle.hasInputListener) {
+const handleSMSCharacterCount = (smsInputDivList = null) => {
+  if (!smsInputDivList) {
+    smsInputDivList = document.querySelectorAll("#smsDiv div[data-sms-lang]");
+    if (smsInputDivList.length === 0) return;
+  }
+
+  for (const smsInputDiv of smsInputDivList) {
+    const smsBodyEle = smsInputDiv.querySelector("textarea");
+    const characterCountEle = smsInputDiv.querySelector("small");
+    if (!smsBodyEle || !characterCountEle || smsBodyEle.hasInputListener) continue;
+
     smsBodyEle.addEventListener("input", () => {
       characterCountEle.innerText = `${smsBodyEle.value.length}/160 characters`;
     });
@@ -456,17 +541,61 @@ const handleSMSCharacterCount = () => {
   }
 };
 
-export const handleEmailPreview = () => {
-  const emailBody = document.getElementById("emailBody");
-  if (!emailBody || emailBody?.hasMouseEnterListener) return;
+export const handleEmailPreview = (emailDivList = null) => {
+  if (!emailDivList) {
+    emailDivList = document.querySelectorAll("#emailDiv div[data-email-lang]");
+    if (emailDivList.length === 0) return;
+  }
 
-  const converter = new showdown.Converter();
-  emailBody.addEventListener("mouseenter", () => {
-    const text = emailBody.value;
-    const html = converter.makeHtml(text);
-    document.getElementById("emailBodyPreview").innerHTML = html;
-  });
-  emailBody.hasMouseEnterListener = true;
+  for (const emailInputDiv of emailDivList) {
+    const emailBodyDiv = emailInputDiv.querySelector("div[data-email-body]");
+    const lang = emailBodyDiv.dataset.emailBody;
+    const emailBody = emailBodyDiv.querySelector("textarea");
+    const emailPreview = emailBodyDiv.querySelector(`#${lang}EmailBodyPreview`);
+    if (!emailBody || !emailPreview || emailBody.hasMouseEnterListener) continue;
+
+    emailBody.addEventListener("mouseenter", () => {
+      emailPreview.innerHTML = converter.makeHtml(emailBody.value);
+    });
+    emailBody.hasMouseEnterListener = true;
+  }
+};
+
+const handleLangSelection = (notificationType, shemaData = null) => {
+  const checkboxes = document.querySelectorAll(`input[type=checkbox][data-type=${notificationType}]`);
+  if (checkboxes.length === 0) return;
+
+  for (const checkbox of checkboxes) {
+    if (checkbox.hasClickListener) continue;
+
+    checkbox.addEventListener("click", () => {
+      const lang = checkbox.dataset.lang;
+      const currDiv = document.querySelector(`div[data-${notificationType}-lang=${lang}]`);
+
+      if (!checkbox.checked) {
+        currDiv && currDiv.remove();
+      } else {
+        const wrapperDiv = document.createElement("div");
+        if (notificationType === "email") {
+          wrapperDiv.innerHTML = getEmailInputHtmlStr(lang, shemaData?.email?.[lang]);
+          handleEmailPreview([wrapperDiv]);
+        } else if (notificationType === "sms") {
+          wrapperDiv.innerHTML = getSmsInputHtmlStr(lang, shemaData?.sms?.[lang]);
+          handleSMSCharacterCount([wrapperDiv]);
+        }
+
+        if (!currDiv) {
+          const parentDiv = document.querySelector(`div[data-input-type=${notificationType}]`);
+          parentDiv.append(wrapperDiv.firstElementChild);
+        } else {
+          currDiv.replaceWith(wrapperDiv.firstElementChild);
+        }
+      }
+
+    });
+
+    checkbox.hasClickListener = true;
+  }
 };
 
 const storeNotificationSchema = async (schema) => {
@@ -536,3 +665,8 @@ const handleDryRun = () => {
 
   dryRunBtn.hasClickListener = true;
 };
+
+function getStringWithCap(str) {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
