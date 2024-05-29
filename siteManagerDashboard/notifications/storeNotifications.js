@@ -86,6 +86,7 @@ const getDryRunHtlmStr = () => `
   </div>`;
 
 export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
+  const readonlyCheck = isReadOnly ? "disabled" : "";
   let conditionHtmlStrAll = "";
   let index = 0;
 
@@ -108,24 +109,24 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
   return `
     <div class="row form-group">
         <label class="col-form-label col-md-3" for="attempt">Attempt</label>
-        <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" ${schemaData?.attempt? `value="${schemaData.attempt}"`: "" } ${isReadOnly ? "disabled": ""}>
+        <input autocomplete="off" required class="col-md-8" type="text" id="attempt" placeholder="eg. 1st contact" ${schemaData?.attempt? `value="${schemaData.attempt}"`: "" } ${readonlyCheck}>
     </div>
     
     <div class="row form-group">
         <label class="col-form-label col-md-3" for="description">Description</label>
-        <textarea class="col-md-8" required id="description" cols="30" rows="3" ${isReadOnly ? "disabled": ""}>${schemaData?.description ?? ""}</textarea>
+        <textarea class="col-md-8" required id="description" cols="30" rows="3" ${readonlyCheck}>${schemaData?.description ?? ""}</textarea>
     </div>
     
     <div class="row form-group">
         <label class="col-form-label col-md-3" for="category">Category</label>
-        <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" ${schemaData?.category? `value="${schemaData.category}"`: ""} ${isReadOnly ? "disabled": ""}>
+        <input autocomplete="off" required class="col-md-8" type="text" id="category" placeholder="eg. consented" ${schemaData?.category? `value="${schemaData.category}"`: ""} ${readonlyCheck}>
     </div>
 
     <div class="row form-group">
         <label class="col-form-label col-md-3">Notification type</label>
-        <input type="checkbox" name="notification-checkbox" data-target-type="email" id="emailCheckBox" ${schemaData?.notificationType?.includes("email")? "checked": ""} ${isReadOnly ? "disabled": ""} style="height: 25px;">&nbsp;
+        <input type="checkbox" name="notification-checkbox" data-target-type="email" id="emailCheckBox" ${schemaData?.notificationType?.includes("email")? "checked": ""} ${readonlyCheck} style="height: 25px;">&nbsp;
         <label class="mr-3" for="emailCheckBox">Email</label>
-        <input type="checkbox" name="notification-checkbox" data-target-type="sms" id="smsCheckBox" ${schemaData?.notificationType?.includes("sms")? "checked": ""} ${isReadOnly ? "disabled": ""} style="height: 25px;">&nbsp;
+        <input type="checkbox" name="notification-checkbox" data-target-type="sms" id="smsCheckBox" ${schemaData?.notificationType?.includes("sms")? "checked": ""} ${readonlyCheck} style="height: 25px;">&nbsp;
         <label class="mr-3" for="smsCheckBox">SMS</label>
         <input type="checkbox" disabled name="notification-checkbox" data-type="push" id="pushNotificationCheckBox" ${schemaData?.notificationType?.includes("push")? "checked": ""} style="height: 25px;">&nbsp;<label for="pushNotificationCheckBox">Push Notification</label>
     </div>
@@ -133,13 +134,13 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row">
         <label class="col-form-label col-md-3" for="condition-key">Schedule at (EST)</label>
         <div class="col-md-1 form-check">
-            <input class="form-check-input" type="radio" value="15:00" ${schemaData?.scheduleAt !== "20:00" ? "checked" : ""} ${isReadOnly ? "disabled": ""} name="scheduleAt" id="scheduleAt1">
+            <input class="form-check-input" type="radio" value="15:00" ${schemaData?.scheduleAt !== "20:00" ? "checked" : ""} ${readonlyCheck} name="scheduleAt" id="scheduleAt1">
             <label class="form-check-label" for="scheduleAt1">
                 3:00 PM
             </label>
         </div>
         <div class="col-md-1 form-check">
-            <input class="form-check-input" type="radio" value="20:00" ${schemaData?.scheduleAt === "20:00" ? "checked" : ""} ${isReadOnly ? "disabled": ""} name="scheduleAt" id="scheduleAt2">
+            <input class="form-check-input" type="radio" value="20:00" ${schemaData?.scheduleAt === "20:00" ? "checked" : ""} ${readonlyCheck} name="scheduleAt" id="scheduleAt2">
             <label class="form-check-label" for="scheduleAt2">
                 8:00 PM
             </label>
@@ -152,13 +153,13 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
         ${conditionHtmlStrAll}
     </div>
     <div class="form-group">
-        <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="${index + 1}" ${isReadOnly ? "disabled" : ""}>Add more condition</button>
+        <button type="button" class="btn btn-outline-primary" id="addConditions" data-condition="${index + 1}" ${readonlyCheck}>Add more condition</button>
     </div>
     
     <div class="row form-group">
         <label class="col-form-label col-md-3">Email field concept</label>
         <div class="email-concept col-md-8 p-0">
-            <input id="emailConceptId" required list="dataListEmailConcept" class="form-control" ${schemaData?.emailField ? `value="${schemaData.emailField}"`: ""} ${isReadOnly ? "disabled" : ""}>
+            <input id="emailConceptId" required list="dataListEmailConcept" class="form-control" ${schemaData?.emailField ? `value="${schemaData.emailField}"`: ""} ${readonlyCheck}>
             <datalist id="dataListEmailConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -168,7 +169,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Phone no. concept</label>
         <div class="phone-concept col-md-8 p-0">
-            <input id="phoneConceptId" required list="dataListPhoneConcept" class="form-control" ${schemaData?.phoneField ? `value="${schemaData.phoneField}"`: ""} ${isReadOnly ? "disabled" : ""}>
+            <input id="phoneConceptId" required list="dataListPhoneConcept" class="form-control" ${schemaData?.phoneField ? `value="${schemaData.phoneField}"`: ""} ${readonlyCheck}>
             <datalist id="dataListPhoneConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -178,7 +179,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">First name concept</label>
         <div class="first-name-concept col-md-8 p-0">
-            <input id="firstNameConceptId" required list="dataListFirstNameConcept" class="form-control" ${schemaData?.firstNameField ? `value="${schemaData.firstNameField}"`: ""} ${isReadOnly ? "disabled" : ""}>
+            <input id="firstNameConceptId" required list="dataListFirstNameConcept" class="form-control" ${schemaData?.firstNameField ? `value="${schemaData.firstNameField}"`: ""} ${readonlyCheck}>
             <datalist id="dataListFirstNameConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -188,7 +189,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Preferred name concept</label>
         <div class="preferred-name-concept col-md-8 p-0">
-            <input id="preferredNameConceptId" required list="dataListPreferredNameConcept" class="form-control" ${schemaData?.preferredNameField ? `value="${schemaData.preferredNameField}"`: ""} ${isReadOnly ? "disabled" : ""}>
+            <input id="preferredNameConceptId" required list="dataListPreferredNameConcept" class="form-control" ${schemaData?.preferredNameField ? `value="${schemaData.preferredNameField}"`: ""} ${readonlyCheck}>
             <datalist id="dataListPreferredNameConcept">
                 ${conceptsOptionsStr}
             </datalist>
@@ -198,7 +199,7 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     <div class="row form-group">
         <label class="col-form-label col-md-3">Primary field</label>
         <div class="primary-field col-md-8 p-0">
-            <input id="primaryFieldConceptId" required list="dataListPrimaryField" class="form-control" ${schemaData?.primaryField ? `value="${schemaData.primaryField}"`: ""} ${isReadOnly ? "disabled" : ""}>
+            <input id="primaryFieldConceptId" required list="dataListPrimaryField" class="form-control" ${schemaData?.primaryField ? `value="${schemaData.primaryField}"`: ""} ${readonlyCheck}>
             <datalist id="dataListPrimaryField">
                 ${conceptsOptionsStr}
             </datalist>
@@ -207,9 +208,9 @@ export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
     
     <div class="row form-group">
         <label class="col-form-label col-md-3">Time</label>
-        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" ${schemaData?.time ? `value="${schemaData.time.day ?? 0}"` : `value="0"`} ${isReadOnly ? "disabled" : ""}>
-        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" ${schemaData?.time ? `value="${schemaData.time.hour ?? 0}"`: `value="0"`} ${isReadOnly ? "disabled" : ""}>
-        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" ${schemaData?.time ? `value="${schemaData.time.minute ?? 0}"`: `value="0"`} ${isReadOnly ? "disabled" : ""}>
+        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="text" id="days" placeholder="# days" ${schemaData?.time ? `value="${schemaData.time.day ?? 0}"` : `value="0"`} ${readonlyCheck}>
+        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2 mr-2" type="number" min="0" max="23" id="hours" placeholder="hour (0-23)" ${schemaData?.time ? `value="${schemaData.time.hour ?? 0}"`: `value="0"`} ${readonlyCheck}>
+        <input required autocomplete="off" pattern="[0-9]+" class="col-md-2" type="number" min="0" max="59" id="minutes" placeholder="minutes (0-59)" ${schemaData?.time ? `value="${schemaData.time.minute ?? 0}"`: `value="0"`} ${readonlyCheck}>
     </div>`;
 };
 
@@ -338,16 +339,17 @@ const getConditionHtmlStr = ({
   conditionOperator = null,
   conditionValue = null,
 }) => {
+  const readonlyCheck = isReadOnly ? "disabled" : "";
   return `
     <div class="row form-group" data-condition-idx="${index}">
         <label class="col-form-label col-md-3">Condition</label>
         <div class="condition-key col-md-2 mr-2 p-0">
-          <input required list="dataListConditionKey${index}" class="form-control" name="condition-key" ${conditionKey ? `value="${conditionKey}"` : ""} ${isReadOnly ? "disabled": ""}>
+          <input required list="dataListConditionKey${index}" class="form-control" name="condition-key" ${conditionKey ? `value="${conditionKey}"` : ""} ${readonlyCheck}>
           <datalist id="dataListConditionKey${index}">
               ${conceptsOptionsStr}
           </datalist>
         </div>
-        <select name="condition-operator" class="col-md-2 form-control mr-2" ${isReadOnly ? "disabled": ""}>
+        <select name="condition-operator" class="col-md-2 form-control mr-2" ${readonlyCheck}>
             <option value="equals" ${conditionOperator === "equals" ? "selected" : ""}>equals</option>
             <option value="notequals" ${conditionOperator === "notequals" ? "selected" : ""}>notequals</option>
             <option value="greater" ${conditionOperator === "greater" ? "selected" : ""}>greater</option>
@@ -355,17 +357,17 @@ const getConditionHtmlStr = ({
             <option value="less" ${conditionOperator === "less" ? "selected" : ""}>less</option>
             <option value="lessequals" ${conditionOperator === "lessequals" ? "selected" : ""}>lessequals</option>
         </select>
-        <select name="value-type" class="col-md-1 form-control mr-2" ${isReadOnly ? "disabled": ""}>
+        <select name="value-type" class="col-md-1 form-control mr-2" ${readonlyCheck}>
             <option value="number" ${typeof conditionValue === "number" ? "selected" : ""}>number</option>
             <option value="string" ${typeof conditionValue === "string" ? "selected" : ""}>string</option>
         </select>
         <div class="condition-value col-md-2 mr-2 p-0">
-          <input required  list="dataListConditionValue${index}" class="form-control" name="condition-value" ${conditionValue ? `value="${conditionValue}"` : ""} ${isReadOnly ? "disabled": ""}>
+          <input required  list="dataListConditionValue${index}" class="form-control" name="condition-value" ${conditionValue ? `value="${conditionValue}"` : ""} ${readonlyCheck}>
           <datalist id="dataListConditionValue${index}">
               ${conceptsOptionsStr}
           </datalist>
         </div>
-        <button type ="button" data-btn-idx="${index}" ${isReadOnly ? "disabled" : ""} class="btn btn-warning ml-1 col-md-1" title="Delete condition in this row">Delete</button>
+        <button type ="button" data-btn-idx="${index}" ${readonlyCheck} class="btn btn-warning ml-1 col-md-1" title="Delete condition in this row">Delete</button>
     </div>`;
 };
 
@@ -391,16 +393,17 @@ const getConcepts = async () => {
 
 const getEmailInputHtmlStr = (lang, emailLangData, isReadOnly) => {
   const langStrWithCap = getStringWithCap(lang);
+  const readonlyCheck = isReadOnly ? "disabled" : "";
 
   return `
     <div data-email-lang="${lang}">
         <div class="row">
             <label class="col-form-label col-md-3" for="${lang}EmailSubject">${langStrWithCap} Subject</label>
-            <input autocomplete="off" required class="col-md-8" type="text" id="${lang}EmailSubject" placeholder="${langStrWithCap} Email Subject" ${emailLangData?.subject ? `value="${emailLangData.subject}"`: ""} ${isReadOnly ? "disabled": ""}>
+            <input autocomplete="off" required class="col-md-8" type="text" id="${lang}EmailSubject" placeholder="${langStrWithCap} Email Subject" ${emailLangData?.subject ? `value="${emailLangData.subject}"`: ""} ${readonlyCheck}>
         </div>
         <div class="row" data-email-body="${lang}">
             <label class="col-form-label col-md-3" for="${lang}EmailBody">${langStrWithCap} Body</label>
-            <textarea rows="5" class="col-md-4"  id="${lang}EmailBody" placeholder="${langStrWithCap} Email Content" ${isReadOnly ? "disabled": ""}>${emailLangData?.body ?? ""}</textarea>
+            <textarea rows="5" class="col-md-4"  id="${lang}EmailBody" placeholder="${langStrWithCap} Email Content" ${readonlyCheck}>${emailLangData?.body ?? ""}</textarea>
             <div class="col-md-4" id="${lang}EmailBodyPreview"></div>
         </div>
     </div>`;
@@ -410,6 +413,7 @@ const getEmailDivHtml = (emailData = null, isReadOnly = false, isInitialRun = fa
   if (isInitialRun && !emailData) return "";
   if (!emailData) emailData = { english: {} };
 
+  const readonlyCheck = isReadOnly ? "disabled" : "";
   return `
     <div class="row">
         <div class="col" data-input-type="email">
@@ -420,7 +424,7 @@ const getEmailDivHtml = (emailData = null, isReadOnly = false, isInitialRun = fa
                     (lang) =>
                       `<input type="checkbox" data-type="email" data-lang="${lang}" id="${lang}CheckBox" ${ lang === "english" ? "checked disabled" :
                         emailData[lang] ? "checked" : ""
-                      } ${isReadOnly ? "disabled" : ""} style="height: 25px;">&nbsp;
+                      } ${readonlyCheck} style="height: 25px;">&nbsp;
                       <label class="mr-3" for="${lang}CheckBox">${getStringWithCap(lang)}</label>`
                   )
                   .join("")}
@@ -447,8 +451,9 @@ const getSmsInputHtmlStr = (lang, smsLangData, isReadOnly) => {
 
 const getSmsDivHtml = (smsData = null, isReadOnly = false, isInitialRun = false) => {
   if (isInitialRun && !smsData) return "";
-  if (!smsData) smsData = { english: { body: "" } };
+  if (!smsData) smsData = { english: {} };
 
+  const readonlyCheck = isReadOnly ? "disabled" : "";
   return `
     <div class="row">
         <div class="col" data-input-type="sms">
@@ -458,15 +463,15 @@ const getSmsDivHtml = (smsData = null, isReadOnly = false, isInitialRun = false)
                   .map(
                     (lang) =>
                       `<input type="checkbox" data-type="sms" data-lang="${lang}" id="${lang}SmsCheckBox" ${lang === "english" ? "checked disabled" :
-                        smsData?.[lang] ? "checked" : ""
-                      } ${isReadOnly ? "disabled" : ""} style="height: 25px;">&nbsp;
+                        smsData[lang] ? "checked" : ""
+                      } ${readonlyCheck} style="height: 25px;">&nbsp;
                       <label class="mr-3" for="${lang}SmsCheckBox">${getStringWithCap(lang)}</label>`
                   )
                   .join("")}
 
             </div>
             ${langArray
-              .filter((lang) => smsData?.[lang])
+              .filter((lang) => smsData[lang])
               .map((lang) => getSmsInputHtmlStr(lang, smsData[lang], isReadOnly))
               .join("")}
         </div>
