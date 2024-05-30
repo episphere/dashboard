@@ -82,7 +82,7 @@ const getDryRunHtlmStr = () => `
       <div class="col-md-3">
           <button type="button" class="btn btn-secondary" id="dryRunBtn" title="Test notification schemas scheduled at 3pm or 8pm">Dry Run</button>
       </div>
-      <textarea class="col-md-8" id="dryRunResult" cols="30" rows="3" style="font-family: monospace, Courier New"></textarea>
+      <textarea class="col-md-8" id="dryRunResult" cols="30" rows="5" style="font-family: monospace, Courier New"></textarea>
   </div>`;
 
 export const getSchemaHtmlStr = (schemaData = null, isReadOnly = false) => {
@@ -656,9 +656,15 @@ const handleDryRun = () => {
     });
 
     const resJson = await res.json();
-    const dataObj = resJson.data[0] || { emailCount: 0, smsCount: 0 };
+    const dataObj = resJson.data[0];
+    let strArray = [];
+    ["email", "sms"].forEach((key) => {
+      langArray.forEach((lang) => { 
+        strArray.push(`${lang.charAt(0).toUpperCase() + lang.slice(1)} ${key} count:`.padEnd(30, " ") +  `${dataObj[key][lang]}`);
+      });
+    });
 
-    resultEle.textContent = `${"Emails count:".padEnd(25, " ")}${dataObj.emailCount}\n${"SMS messages count:".padEnd(25, " ")}${dataObj.smsCount}\n`;
+    resultEle.textContent = strArray.join("\n") + "\n";
     if (resJson.code === 200) {
       resultEle.textContent += "Everything looks good!";
     } else {
