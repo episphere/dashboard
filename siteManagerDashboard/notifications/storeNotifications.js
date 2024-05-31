@@ -659,18 +659,19 @@ const handleDryRun = () => {
     const dataObj = resJson.data[0];
     let strArray = [];
     ["email", "sms"].forEach((key) => {
-      langArray.forEach((lang) => { 
-        strArray.push(`${lang.charAt(0).toUpperCase() + lang.slice(1)} ${key} count:`.padEnd(30, " ") +  `${dataObj?.[key]?.[lang] ?? 0}`);
+      langArray.forEach((lang) => {
+        strArray.push(`${getStringWithCap(lang)} ${key} count:`.padEnd(30, " ") +  `${dataObj?.[key]?.[lang] ?? 0}`);
       });
     });
 
-    resultEle.textContent = strArray.join("\n") + "\n";
+    let dryRunSummary = strArray.join("\n") + "\n";
     if (resJson.code === 200) {
-      resultEle.textContent += "Everything looks good!";
+      dryRunSummary += "Everything looks good!";
     } else {
-      resultEle.textContent += `Error occurred in dry run:\n${resJson.message}`;
+      dryRunSummary += `Error occurred in dry run:\n${resJson.message}`;
     }
 
+    resultEle.textContent = dryRunSummary;
     hideAnimation();
   });
 
