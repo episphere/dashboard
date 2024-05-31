@@ -122,6 +122,8 @@ export const getImportantRows = (participant, changedOption) => {
     const isCellPhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.cellPhone);
     const isHomePhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.homePhone);
     const isOtherPhonePresent = isPhoneNumberInForm(participant, changedOption, fieldMapping.otherPhone);
+    const coordinatingCenter = localStorage.getItem('coordinatingCenter');
+    const helpDesk = localStorage.getItem('helpDesk');
     const importantRowsArray = [ 
         { field: fieldMapping.lName,
             label: 'Last Name',
@@ -293,7 +295,7 @@ export const getImportantRows = (participant, changedOption) => {
         },
         { field: fieldMapping.preferredLanguage,
             label: 'Consent and Notification Language',
-            editable: true,
+            editable: (helpDesk === 'true' || coordinatingCenter === 'true'),
             display: true,
             validationType: 'none',
             isRequired: false
