@@ -660,7 +660,7 @@ const handleDryRun = () => {
     let strArray = [];
     ["email", "sms"].forEach((key) => {
       langArray.forEach((lang) => { 
-        strArray.push(`${lang.charAt(0).toUpperCase() + lang.slice(1)} ${key} count:`.padEnd(30, " ") +  `${dataObj[key][lang]}`);
+        strArray.push(`${lang.charAt(0).toUpperCase() + lang.slice(1)} ${key} count:`.padEnd(30, " ") +  `${dataObj?.[key]?.[lang] ?? 0}`);
       });
     });
 
