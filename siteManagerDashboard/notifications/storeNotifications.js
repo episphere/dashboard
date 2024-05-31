@@ -263,9 +263,10 @@ const handleFormSubmit = () => {
           schema["email"][lang]["body"] = emailInputDiv.querySelector(`#${lang}EmailBody`).value.replace(/\n/g, "<br/>");
         }
       });
+
+      schema.email.subject = schema.email.english.subject;
+      schema.email.body = schema.email.english.body;
     }
-    schema.email.subject = schema.email.english.subject;
-    schema.email.body = schema.email.english.body;
 
     const smsInputDivList = document.querySelectorAll("#smsDiv div[data-sms-lang]");
     if (smsInputDivList.length > 0) {
@@ -275,8 +276,9 @@ const handleFormSubmit = () => {
         schema["sms"][lang] = {};
         schema["sms"][lang]["body"] = smsInputDiv.querySelector(`#${lang}SmsBody`).value;
       });
+      
+      schema.sms.body = schema.sms.english.body;
     }
-    schema.sms.body = schema.sms.english.body;
 
     const pushSubjectEle = document.getElementById("pushSubject");
     if (pushSubjectEle) {
