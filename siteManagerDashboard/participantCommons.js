@@ -508,7 +508,6 @@ const tableTemplate = (data, showButtons) => {
     data.forEach(participant => {
         // mapping from concept id to variable name
         template += `<tbody><tr><td><button class="btn btn-primary select-participant" data-token="${participant.token}">Select</button></td>`
-        console.log(importantColumns);
         importantColumns.forEach(x => {
             (participant[x] && typeof participant[x] === 'object') ?
                 (template += `<td><pre>${JSON.stringify(participant[x], undefined, 4)}</pre></td>`)
@@ -845,7 +844,6 @@ const tableTemplate = (data, showButtons) => {
             //     : template += `<td>${participant['state'][fieldMapping.preferredLanguage.toString()] ? `Spanish` : ``}</td>`
             // )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
-            console.log(x, fieldMapping.preferredLanguage.toString(), participant['state']);
         })
         template += `</tr>`; 
     });
