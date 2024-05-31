@@ -85,6 +85,8 @@ const fieldValues = {
     [fieldMapping.third]: '3rd',
     [fieldMapping.prefPhone]: 'Phone',
     [fieldMapping.email]: 'Email',
+    [fieldMapping.language.en]: 'English',
+    [fieldMapping.language.es]: 'Spanish',
 }
 
 export const getFieldValues = (variableValue, conceptId) => {
@@ -288,6 +290,13 @@ export const getImportantRows = (participant, changedOption) => {
             display: true,
             validationType: 'none',
             isRequired: true
+        },
+        { field: fieldMapping.preferredLanguage,
+            label: 'Consent and Notification Language',
+            editable: true,
+            display: true,
+            validationType: 'none',
+            isRequired: false
         },
     ];
 
@@ -817,7 +826,8 @@ const forceDataTypesForFirestore = (changedOption) => {
         fieldMapping.canWeText, 
         fieldMapping.voicemailMobile, 
         fieldMapping.voicemailHome, 
-        fieldMapping.voicemailOther
+        fieldMapping.voicemailOther,
+        fieldMapping.preferredLanguage
     ];
     
     const fieldsToString = [
@@ -870,6 +880,8 @@ const updateUIValues = (editedElement, newValue, conceptIdArray) => {
 const getUITextForUpdatedValue = (newValue, conceptIdArray) => {
     if (conceptIdArray.toString().includes(fieldMapping.suffix.toString())) {
         return suffixToTextMap.get(parseInt(newValue));
+    } else if (conceptIdArray.toString().includes(fieldMapping.preferredLanguage.toString())) {
+        return languageToTextMap.get(parseInt(newValue));
     } else if (conceptIdArray.some(id => [fieldMapping.canWeText.toString(), fieldMapping.voicemailMobile.toString(), fieldMapping.voicemailHome.toString(), fieldMapping.voicemailOther.toString()].includes(id.toString()))) {
         return newValue === fieldMapping.yes.toString() ? "Yes" : "No";
     } else {
@@ -946,6 +958,10 @@ export const suffixList = { 612166858: 0,
     643664527: 10, 
     537892528: 11 };
 
+export const languageList = { 
+    163149180: 0, 
+    773342525: 1};
+
 export const suffixToTextMap = new Map([
     [398561594, ''],
     [612166858, 'Jr.'],
@@ -960,6 +976,11 @@ export const suffixToTextMap = new Map([
     [233284019, 'VIII, 8th'],
     [643664527, '2nd'],
     [537892528, '3rd'],
+  ]);
+
+export const languageToTextMap = new Map([
+    [163149180, 'English'],
+    [773342525, 'Spanish'],
   ]);
 
 export const removeAllErrors = () => {
