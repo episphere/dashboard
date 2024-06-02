@@ -161,19 +161,19 @@ const downloadCopyHandler = (participant) => {
     const c = document.getElementById('downloadCopyHipaaRevoc');
     if (c) {
         const versionArray = participant[fieldMapping.versionHIPAARevoc].split('_');
-        const version = versionArray[2];
+        const version = versionArray[2] || 'V1.0';
         const lang = versionArray[3];
         c.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), `./forms/HIPAA Revocation/HIPAA_Revocation_V1.0${(lang ? '_'+lang : '')}.pdf`, getRevocationCoordinates(), 'hipaarevoc');
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateHIPAARevoc]), `./forms/HIPAA Revocation/HIPAA_Revocation_${version}${(lang ? '_'+lang : '')}.pdf`, getRevocationCoordinates('HIPAA',version,lang || 'Eng'), 'hipaarevoc');
         })
     }
     const d = document.getElementById('downloadCopyDataDestroy');
     if (d) {
         const versionArray = participant[fieldMapping.versionDataDestroy].split('_');
-        const version = versionArray[2];
+        const version = versionArray[2] || 'V1.0';
         const lang = versionArray[3];
         d.addEventListener('click',  () => {  
-            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), `./forms/Data Destruction/Data_Destruction_V1.0${(lang ? '_'+lang : '')}.pdf`, getRevocationCoordinates(), 'datadestruction');
+            renderDownload(participant, humanReadableMDY(participant[fieldMapping.dateDataDestroy]), `./forms/Data Destruction/Data_Destruction_${version}${(lang ? '_'+lang : '')}.pdf`, getRevocationCoordinates('Data',version,lang || 'Eng'), 'datadestruction');
         })
     }
  
@@ -204,8 +204,21 @@ const getHealthcareProviderCoordinates = (healthcareProvider, source, version, l
 }
 
 const getRevocationCoordinates = (type, version, lang) => {
-    const coordinates = [{x: 150, y: 425}, {x0: 150, y0: 380}, {x1: 150, y1: 405}];
-    return coordinates;
+    const coordinates = {
+        "Data": {
+            "V1.0": {
+                "Eng": [{x: 150, y: 400}, {x0: 155, y0: 380}, {x1: 150, y1: 420}],
+                "Span": [{x: 188, y: 385}, {x0: 88, y0: 365}, {x1: 88, y1: 410}]
+            }
+        },
+        "HIPAA": {
+            "V1.0": {
+                "Eng": [{x: 150, y: 420}, {x0: 155, y0: 380}, {x1: 150, y1: 400}],
+                "Span": [{x: 188, y: 410}, {x0: 88, y0: 365}, {x1: 88, y1: 385}]
+            }
+        }
+    };
+    return coordinates[type][version][lang];
 }
 
 const renderDownload = async (participant, timeStamp, fileLocation, coordinates, type) => {
