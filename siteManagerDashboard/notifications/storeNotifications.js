@@ -445,8 +445,8 @@ const getSmsInputHtmlStr = (lang, smsLangData, isReadOnly) => {
   return `
     <div data-sms-lang="${lang}">
         <div class="row">
-            <label class="col-form-label col-md-3" for="${lang}SmsBody">${langStrWithCap} Body (<small id="${lang}CharacterCount">${smsLangData?.body?.length ?? 0}/160 characters</small>)</label>
-            <textarea rows="2" class="col-md-8" id="${lang}SmsBody" maxlength="160" placeholder="${langStrWithCap} SMS Content" ${isReadOnly ? "disabled": ""}>${smsLangData?.body ?? ""}</textarea>
+            <label class="col-form-label col-md-3" for="${lang}SmsBody">${langStrWithCap} Body (<small id="${lang}CharacterCount">${smsLangData?.body?.length ?? 0} characters</small>)</label>
+            <textarea rows="2" class="col-md-8" id="${lang}SmsBody" placeholder="${langStrWithCap} SMS Content" ${isReadOnly ? "disabled": ""}>${smsLangData?.body ?? ""}</textarea>
         </div>
     </div>`;
 };
@@ -542,7 +542,7 @@ const handleSMSCharacterCount = (smsInputDivList = null) => {
     if (!smsBodyEle || !characterCountEle || smsBodyEle.hasInputListener) continue;
 
     smsBodyEle.addEventListener("input", () => {
-      characterCountEle.innerText = `${smsBodyEle.value.length}/160 characters`;
+      characterCountEle.innerText = `${smsBodyEle.value.length} characters`;
     });
     smsBodyEle.hasInputListener = true;
   }
