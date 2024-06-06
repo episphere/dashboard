@@ -8,6 +8,11 @@ export default
     "birthDay":795827569,
     "birthYear":544150384,
     "dateOfBirthComplete": 371067537,
+    "preferredLanguage": 255077064,
+    "language": {
+        "en": 163149180,
+        "es": 773342525
+    },
 
     // consent
     "consentDate":454445267,

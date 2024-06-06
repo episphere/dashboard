@@ -23,7 +23,7 @@ export const renderTable = (data, source) => {
     fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
+    fieldMapping.preferredLanguage, fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
     fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurveys, fieldMapping.refusedFutureSamples, fieldMapping.refusedQualityOfLifeSurvey, fieldMapping.refusedAllFutureQualityOfLifeSurveys,
     fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
     fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
@@ -748,6 +748,16 @@ const tableTemplate = (data, showButtons) => {
                     template += `<td>${participant[x] ? 'Fully Enrolled'  : ''}</td>` 
                 : template += `<td> ERROR </td>` 
             )
+            : (x === (fieldMapping.preferredLanguage).toString()) ? 
+            (   
+                (participant[x] === fieldMapping.language.en) ?
+                template += `<td>${participant[x] ? 'English'  : ''}</td>`
+                : (participant[x] === fieldMapping.language.es) ?
+                    template += `<td>${participant[x] ? 'Spanish'  : ''}</td>`
+                : (!participant[x]) ?
+                    template += `<td></td>` 
+                : template += `<td> ERROR </td>` 
+            )
             : (x === fieldMapping.automatedVerification.toString()) ? (
                 ( participant['state'][fieldMapping.automatedVerification.toString()] === fieldMapping.methodUsed ) ?
                     template += `<td>${participant['state'][fieldMapping.automatedVerification.toString()] ? `Method Used` : ``}</td>`
@@ -828,6 +838,11 @@ const tableTemplate = (data, showButtons) => {
                     template += `<td>${participant['state'][fieldMapping.cancerStatusMatch.toString()] ? `CriteriumMet` : ``}</td>`
                 : template += `<td>${participant['state'][fieldMapping.cancerStatusMatch.toString()] ? `Not Criterium Met` : ``}</td>`
             )
+            // : (x === fieldMapping.preferredLanguage.toString()) ? (
+            //     ( participant['state'][fieldMapping.preferredLanguage.toString()] === fieldMapping.language.en ) ?
+            //         template += `<td>${participant['state'][fieldMapping.preferredLanguage.toString()] ? `English` : ``}</td>`
+            //     : template += `<td>${participant['state'][fieldMapping.preferredLanguage.toString()] ? `Spanish` : ``}</td>`
+            // )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
         template += `</tr>`; 
