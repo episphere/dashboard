@@ -308,7 +308,7 @@ const hippaHandler = (participant) => {
                     <td>${participant[fieldMapping.hippaDate] && humanReadableMDY(participant[fieldMapping.hippaDate])}</td>
                     <td>${participant[fieldMapping.hipaaVersion]}</td>
                     <td>N/A</td>
-                    <td><a style="color: blue; text-decoration: underline;" target="_blank" id="downloadCopyHIPAA">Download Link</a></td>
+                    <td><a style="color: blue; text-decoration: underline; cursor: pointer;" target="_blank" id="downloadCopyHIPAA">Download Link</a></td>
     ` ) : 
     (
         template +=`<td><i class="fa fa-times fa-2x" style="color: red;"></i></td>
