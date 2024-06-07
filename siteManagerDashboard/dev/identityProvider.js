@@ -1,6 +1,7 @@
 export const SSOConfig = (inputValue) => {
     let tenantID = '';
     let provider = '';
+    
     if (/nih.gov/i.test(inputValue)) {
         tenantID = 'NIH-SSO-qfszp';
         provider = 'saml.nih-sso';
