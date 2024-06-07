@@ -294,7 +294,7 @@ export const getImportantRows = (participant, changedOption) => {
             isRequired: true
         },
         { field: fieldMapping.preferredLanguage,
-            label: 'Consent and Notification Language',
+            label: 'Preferred Language',
             editable: (helpDesk === 'true' || coordinatingCenter === 'true'),
             display: true,
             validationType: 'none',
