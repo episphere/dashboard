@@ -12,7 +12,7 @@ export const SSOConfig = (inputValue) => {
     ]
 
     for (const ssoConfig of ssoConfigs) { 
-        if (ssoConfig.regex.some(regex => regex.test(inputValue))) { 
+        if (ssoConfig.regex.test(inputValue)) { 
             return { tenantID: ssoConfig.tenantID, provider: ssoConfig.provider } 
         } 
     }
