@@ -19,5 +19,3 @@ export const SSOConfig = (inputValue) => {
 
     return { tenantID: '', provider: '' }
 }
-
-
