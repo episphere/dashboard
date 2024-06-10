@@ -260,6 +260,18 @@ export default
 	"unaviableHLHF": 419709902,
 	"unaviableNHLHF": 896943397,
 	"unaviableEUHF": 519402449,
+
+    // Baylor Scott White & Health
+    'bswhReportedRaceEthnicity': 253532712,
+
+    // Reported race/ethnicity options (Other and Unavailable already exist)
+    "whiteNonHispanic":  723775357,
+    "blackNonHispanic": 153444133,
+    "hispanicLatino": 572474909,
+    "asian": 308427446,
+    "americanIndianOrAlaskanNative": 211228524,
+    "nativeHawaiianOrOtherPacificIslander": 277568192,
+    "multiRacial": 611398522 ,
     
     'siteReportedAge': 934298480,
     'siteReportedRace': 849518448,

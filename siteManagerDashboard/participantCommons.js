@@ -26,7 +26,7 @@ export const renderTable = (data, source) => {
     fieldMapping.preferredLanguage, fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
     fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurveys, fieldMapping.refusedFutureSamples, fieldMapping.refusedQualityOfLifeSurvey, fieldMapping.refusedAllFutureQualityOfLifeSurveys,
     fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
-    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
+    fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact, fieldMapping.bswhReportedRaceEthnicity
  ];
     localStorage.removeItem("participant");
     let conceptIdMapping = JSON.parse(localStorage.getItem('conceptIdMapping'));
@@ -49,6 +49,7 @@ export const renderTable = (data, source) => {
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
+                        <li><a class="dropdown-item" data-siteKey="BSWH" id="BSWH">Baylor Scott & White Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
                         <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
@@ -59,7 +60,6 @@ export const renderTable = (data, source) => {
                         ${((location.host !== urls.prod) && (location.host !== urls.stage)) ? `<li><a class="dropdown-item" data-siteKey="nci" id="nci">NCI</a></li>` : ``}
                         <li><a class="dropdown-item" data-siteKey="snfrdHealth" id="snfrdHealth">Sanford Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="uChiM" id="uChiM">UofC Medicine</a></li>
-                        <li>< a class="dropdown-item" data-siteKey="BSWH" id="BSWH">Baylor Scott & White Health</a></li>
                     </ul>
                 </div>
                 <div class="btn-group .btn-group-lg" role="group" aria-label="Basic example" style="margin-left:25px; padding: 10px 20px; border-radius: 10px; width:25%; height:25%;">
@@ -685,6 +685,28 @@ const tableTemplate = (data, showButtons) => {
                         :
                         template += `<td>${participant['state'][fieldMapping.henryFReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                     )
+            : (x === fieldMapping.bswhReportedRaceEthnicity.toString()) ? (
+                (
+                    (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.whiteNonHispanic) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `White non-Hispanic` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.blackNonHispanic) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Black non-Hispanic` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.hispanicLatino) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Hispanic/Latino` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.asian) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Asian` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.americanIndianOrAlaskanNative) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `American Indian or Alaskan Native` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.nativeHawaiianOrOtherPacificIslander) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Native Hawaiian or Other Pacific Islander` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.multiRacial) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Multi-racial` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.other) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Other` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.unavailable) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Unavailable/Unknown` : ``}</td>` 
+                        : template += `<td>${``}</td>`)
+                )
             : (x === fieldMapping.preConsentOptOut.toString()) ? (
                 ( participant['state'][fieldMapping.preConsentOptOut.toString()] === fieldMapping.yes ) ?
                 template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `Yes` : ``}</td>`
