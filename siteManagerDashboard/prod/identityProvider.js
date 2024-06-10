@@ -9,7 +9,7 @@ export const SSOConfig = (inputValue) => {
         { tenantID: 'HFHS-SSO-lo99j', provider: 'saml.connect-hfhs', regex: /hfhs.org/i }, 
         { tenantID: 'MFC-SSO-tdj17', provider: 'saml.connect-mfc', regex: /(marshfieldresearch.org|marshfieldclinic.org)/i }, 
         { tenantID: 'BSWH-SSO-dcoos', provider: 'saml.connect-bswh', regex: /bswhealth.org/i }, 
-    ]
+    ];
 
     for (const ssoConfig of ssoConfigs) { 
         if (ssoConfig.regex.test(inputValue)) { 
