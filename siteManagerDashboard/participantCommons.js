@@ -645,7 +645,7 @@ const tableTemplate = (data, showButtons) => {
                     :   ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.other ) ?
                         template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `Other` : ``}</td>`
                     :
-                        template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                        template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                     )
             : (x === fieldMapping.sanfordReportedRace.toString()) ? (
                 (  
