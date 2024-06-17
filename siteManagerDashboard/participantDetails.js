@@ -1,5 +1,5 @@
 import { dashboardNavBarLinks, removeActiveClass } from './navigationBar.js';
-import { attachUpdateLoginMethodListeners, allStates, closeModal, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, viewParticipantSummary, } from './participantDetailsHelpers.js';
+import { attachUpdateLoginMethodListeners, allStates, closeModal, getFieldValues, getImportantRows, getModalLabel, hideUneditableButtons, renderReturnSearchResults, resetChanges, saveResponses, showSaveNoteInModal, submitClickHandler, suffixList, languageList, viewParticipantSummary, } from './participantDetailsHelpers.js';
 import fieldMapping from './fieldToConceptIdMapping.js'; 
 import { renderParticipantHeader } from './participantHeader.js';
 import { getDataAttributes } from './utils.js';
@@ -316,6 +316,7 @@ const renderFormInModal = (participant, changedOption, conceptId, participantKey
     const renderMonth = conceptId == fieldMapping.birthMonth;
     const renderState = conceptId == fieldMapping.state;
     const renderSuffix = conceptId == fieldMapping.suffix;
+    const renderLanguage = conceptId == fieldMapping.preferredLanguage;
     const elementId = `fieldModified${conceptId}`;
 
     return `
@@ -330,6 +331,7 @@ const renderFormInModal = (participant, changedOption, conceptId, participantKey
             ${renderSuffix ? renderSuffixSelector(participant, participantValue, conceptId) : ''}
             ${renderText ? renderTextInputBox(participantValue, conceptId) : ''}
             ${renderPhone ? renderPhoneInputBox(participantValue, conceptId) : ''}
+            ${renderLanguage ? renderLanguageSelector(participant, participantValue, conceptId) : ''}
             <br/>
             <span id="showError"></span>
             <span style="font-size: 12px;" id="showNote"><i></i></span>
@@ -442,6 +444,16 @@ const renderSuffixSelector = (participant, participantValue, conceptId) => {
             <option value="${fieldMapping.six}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 7 ? 'selected':'') : ''}>VI, 6th</option>
             <option value="${fieldMapping.seven}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 8 ? 'selected':'') : ''}>VII, 7th</option>
             <option value="${fieldMapping.eight}" ${participant[fieldMapping.suffix] ? (suffixList[participant[fieldMapping.suffix]] == 9 ? 'selected':'') : ''}>VIII, 8th</option>
+        </select>
+        `
+};
+
+const renderLanguageSelector = (participant, participantValue, conceptId) => {
+    return `
+        <select style="max-width:200px; margin-left:0px;" name="newValue${conceptId}" id="newValue${conceptId}" data-currentValue=${participantValue}>
+            <option value="">-- Select --</option>
+            <option value="${fieldMapping.language.en}" ${participant[fieldMapping.preferredLanguage] ? (languageList[participant[fieldMapping.preferredLanguage]] == 0 ? 'selected':'') : ''}>English</option>
+            <option value="${fieldMapping.language.es}" ${participant[fieldMapping.preferredLanguage] ? (languageList[participant[fieldMapping.preferredLanguage]] == 1 ? 'selected':'') : ''}>Spanish</option>
         </select>
         `
 };

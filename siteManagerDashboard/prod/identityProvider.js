@@ -1,37 +1,21 @@
-export const SSOConfig = (inputValue) => {
-    let tenantID = '';
-    let provider = '';
-    if(/nih.gov/i.test(inputValue)) {
-        tenantID = 'NIH-SSO-wthvn';
-        provider = 'saml.nih-sso';
-    };
-    if(/healthpartners.com/i.test(inputValue)) {
-        tenantID = 'HP-SSO-252sf';
-        provider = 'saml.healthpartner';
-    };
-    if(/sanfordhealth.org/i.test(inputValue)) {
-        tenantID = 'SFH-SSO-pb390';
-        provider = 'saml.connect-sanford';
-    };
-    if(/norc.org/i.test(inputValue)) {
-        tenantID = 'NORC-SSO-nwvau';
-        provider = 'saml.connect-norc-prod';
-    };
-    if(/kp.org/i.test(inputValue)) {
-        tenantID = 'KP-SSO-ii9sr';
-        provider = 'saml.connect-kp';
-    };
-    if(/uchicago.edu/i.test(inputValue)) {
-        tenantID = 'UCM-SSO-p4f5m';
-        provider = 'saml.connect-uchicago';
-    };
-    if(/hfhs.org/i.test(inputValue)) {
-        tenantID = 'HFHS-SSO-lo99j';
-        provider = 'saml.connect-hfhs';
-    };
-    if(/marshfieldresearch.org/i.test(inputValue) || /marshfieldclinic.org/i.test(inputValue)) {
-        tenantID = 'MFC-SSO-tdj17';
-        provider = 'saml.connect-mfc'
+export const SSOConfig = (inputValue) => { 
+    const ssoConfigs = [ 
+        { tenantID: 'NIH-SSO-wthvn', provider: 'saml.nih-sso', regex: /nih.gov/i }, 
+        { tenantID: 'HP-SSO-252sf', provider: 'saml.healthpartner', regex: /healthpartners.com/i }, 
+        { tenantID: 'HFHS-SSO-lo99j', provider: 'saml.connect-hfhs', regex: /hfhs.org/i }, 
+        { tenantID: 'SFH-SSO-pb390', provider: 'saml.connect-sanford', regex: /sanfordhealth.org/i }, 
+        { tenantID: 'UCM-SSO-p4f5m', provider: 'saml.connect-uchicago', regex: /uchicago.edu/i }, 
+        { tenantID: 'NORC-SSO-nwvau', provider: 'saml.connect-norc-prod', regex: /norc.org/i }, 
+        { tenantID: 'KP-SSO-ii9sr', provider: 'saml.connect-kp', regex: /kp.org/i }, 
+        { tenantID: 'MFC-SSO-tdj17', provider: 'saml.connect-mfc', regex: /(marshfieldresearch.org|marshfieldclinic.org)/i }, 
+        { tenantID: 'BSWH-SSO-dcoos', provider: 'saml.connect-bswh', regex: /bswhealth.org/i }, 
+    ];
+
+    for (const ssoConfig of ssoConfigs) { 
+        if (ssoConfig.regex.test(inputValue)) { 
+            return { tenantID: ssoConfig.tenantID, provider: ssoConfig.provider } 
+        } 
     }
-    return {tenantID, provider}
+
+    return { tenantID: '', provider: '' };
 }
