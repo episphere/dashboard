@@ -14,7 +14,7 @@ export const renderTable = (data, source) => {
     let template = '';
     if(data.length === 0) return `No data found!`;
     let array = [ 'Connect_ID', 'pin', 'token', 'studyId', fieldMapping.timeStudyIdSubmitted, fieldMapping.recruitmentType, fieldMapping.recruitmentDate, fieldMapping.siteReportedAge, fieldMapping.siteReportedRace, 
-    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.henryFReportedRace, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
+    fieldMapping.siteReportedSex, fieldMapping.sanfordReportedSex, fieldMapping.sanfordReportedRace, fieldMapping.henryFReportedRace, fieldMapping.bswhReportedRaceEthnicity, fieldMapping.campaignType, fieldMapping.signedInFlag, fieldMapping.signinDate, fieldMapping.pinEntered, fieldMapping.noPin, fieldMapping.consentFlag, 
     fieldMapping.consentDate, fieldMapping.consentVersion, fieldMapping.hippaFlag, fieldMapping.hippaDate, fieldMapping.hipaaVersion, fieldMapping.userProfileFlag, 
     fieldMapping.userProfileDateTime, fieldMapping.verifiedFlag, fieldMapping.verficationDate, fieldMapping.automatedVerification, fieldMapping.outreachRequiredForVerification, fieldMapping.manualVerification,
     fieldMapping.duplicateType, fieldMapping.firstNameMatch, fieldMapping.lastNameMatch, fieldMapping.dobMatch, fieldMapping.pinMatch, fieldMapping.tokenMatch, 
@@ -23,7 +23,7 @@ export const renderTable = (data, source) => {
     fieldMapping.consentMiddleName, fieldMapping.consentLastName, fieldMapping.accountName,fieldMapping.accountPhone, fieldMapping.accountEmail, fieldMapping.prefName, 
     fieldMapping.address1, fieldMapping.address2, fieldMapping.city, fieldMapping.state, fieldMapping.zip, fieldMapping.email, fieldMapping.email1, 
     fieldMapping.email2, fieldMapping.cellPhone, fieldMapping.homePhone, fieldMapping.otherPhone, fieldMapping.previousCancer, fieldMapping.allBaselineSurveysCompleted, 
-    fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
+    fieldMapping.preferredLanguage, fieldMapping.participationStatus, fieldMapping.bohStatusFlag1, fieldMapping.mreStatusFlag1, fieldMapping.sasStatusFlag1, fieldMapping.lawStausFlag1, 
     fieldMapping.ssnFullflag, fieldMapping.ssnPartialFlag , fieldMapping.refusedSurvey,  fieldMapping.refusedBlood, fieldMapping.refusedUrine,  fieldMapping.refusedMouthwash, fieldMapping.refusedSpecimenSurveys, fieldMapping.refusedFutureSamples, fieldMapping.refusedQualityOfLifeSurvey, fieldMapping.refusedAllFutureQualityOfLifeSurveys,
     fieldMapping.refusedFutureSurveys, fieldMapping.refusedAllFutureActivities, fieldMapping.revokeHIPAA, fieldMapping.dateHipaaRevokeRequested, fieldMapping.dateHIPAARevoc, fieldMapping.withdrawConsent, fieldMapping.dateWithdrewConsentRequested, 
     fieldMapping.participantDeceased, fieldMapping.dateOfDeath, fieldMapping.destroyData, fieldMapping.dateDataDestroyRequested, fieldMapping.dateDataDestroy, fieldMapping.suspendContact
@@ -49,6 +49,7 @@ export const renderTable = (data, source) => {
                     </button>
                     <ul class="dropdown-menu" id="dropdownMenuButtonSites" aria-labelledby="dropdownMenuButton">
                         <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
+                        <li><a class="dropdown-item" data-siteKey="BSWH" id="BSWH">Baylor Scott & White Health</a></li>
                         <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
                         <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                         <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
@@ -644,7 +645,7 @@ const tableTemplate = (data, showButtons) => {
                     :   ( participant['state'][fieldMapping.siteReportedRace.toString()] === fieldMapping.other ) ?
                         template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `Other` : ``}</td>`
                     :
-                        template += `<td>${participant['state'][fieldMapping.siteReportedSex.toString()] ? `Unavailable/Unknown` : ``}</td>`)
+                        template += `<td>${participant['state'][fieldMapping.siteReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                     )
             : (x === fieldMapping.sanfordReportedRace.toString()) ? (
                 (  
@@ -684,6 +685,28 @@ const tableTemplate = (data, showButtons) => {
                         :
                         template += `<td>${participant['state'][fieldMapping.henryFReportedRace.toString()] ? `Unavailable/Unknown` : ``}</td>`)
                     )
+            : (x === fieldMapping.bswhReportedRaceEthnicity.toString()) ? (
+                (
+                    (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.whiteNonHispanic) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `White non-Hispanic` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.blackNonHispanic) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Black non-Hispanic` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.hispanicLatino) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Hispanic/Latino` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.asian) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Asian` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.americanIndianOrAlaskanNative) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `American Indian or Alaskan Native` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.nativeHawaiianOrOtherPacificIslander) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Native Hawaiian or Other Pacific Islander` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.multiRacial) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Multi-racial` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.other) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Other` : ``}</td>`
+                        : (participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] === fieldMapping.unavailable) ?
+                        template += `<td>${participant['state'][fieldMapping.bswhReportedRaceEthnicity.toString()] ? `Unavailable/Unknown` : ``}</td>` 
+                        : template += `<td>${``}</td>`)
+                )
             : (x === fieldMapping.preConsentOptOut.toString()) ? (
                 ( participant['state'][fieldMapping.preConsentOptOut.toString()] === fieldMapping.yes ) ?
                 template += `<td>${participant['state'][fieldMapping.preConsentOptOut.toString()] ? `Yes` : ``}</td>`
@@ -745,6 +768,16 @@ const tableTemplate = (data, showButtons) => {
                 template += `<td>${participant[x] ? 'Verified Mimimally Enrolled'  : ''}</td>`
                 : (participant[x] === fieldMapping.fullyEnrolledEnrollment) ?
                     template += `<td>${participant[x] ? 'Fully Enrolled'  : ''}</td>` 
+                : template += `<td> ERROR </td>` 
+            )
+            : (x === (fieldMapping.preferredLanguage).toString()) ? 
+            (   
+                (participant[x] === fieldMapping.language.en) ?
+                template += `<td>${participant[x] ? 'English'  : ''}</td>`
+                : (participant[x] === fieldMapping.language.es) ?
+                    template += `<td>${participant[x] ? 'Spanish'  : ''}</td>`
+                : (!participant[x]) ?
+                    template += `<td></td>` 
                 : template += `<td> ERROR </td>` 
             )
             : (x === fieldMapping.automatedVerification.toString()) ? (
@@ -827,6 +860,11 @@ const tableTemplate = (data, showButtons) => {
                     template += `<td>${participant['state'][fieldMapping.cancerStatusMatch.toString()] ? `CriteriumMet` : ``}</td>`
                 : template += `<td>${participant['state'][fieldMapping.cancerStatusMatch.toString()] ? `Not Criterium Met` : ``}</td>`
             )
+            // : (x === fieldMapping.preferredLanguage.toString()) ? (
+            //     ( participant['state'][fieldMapping.preferredLanguage.toString()] === fieldMapping.language.en ) ?
+            //         template += `<td>${participant['state'][fieldMapping.preferredLanguage.toString()] ? `English` : ``}</td>`
+            //     : template += `<td>${participant['state'][fieldMapping.preferredLanguage.toString()] ? `Spanish` : ``}</td>`
+            // )
             : (template += `<td>${participant[x] ? participant[x] : ''}</td>`)
         })
         template += `</tr>`; 

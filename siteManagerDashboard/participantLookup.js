@@ -61,6 +61,7 @@ export function renderParticipantSearch() {
                                 </button>
                                 <ul class="dropdown-menu" id="dropdownMenuLookupSites" aria-labelledby="dropdownMenuButton">
                                     <li><a class="dropdown-item" data-siteKey="allResults" id="all">All</a></li>
+                                    <li><a class="dropdown-item" data-siteKey="BSWH" id="BSWH">Baylor Scott & White Health</a></li>
                                     <li><a class="dropdown-item" data-siteKey="hfHealth" id="hfHealth">Henry Ford HS</a></li>
                                     <li><a class="dropdown-item" data-siteKey="hPartners" id="hPartners">Health Partners</a></li>
                                     <li><a class="dropdown-item" data-siteKey="kpGA" id="kpGA">KP GA</a></li>
