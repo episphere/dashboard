@@ -20,6 +20,7 @@ import { SSOConfig as devSSOConfig} from './dev/identityProvider.js';
 import { SSOConfig as stageSSOConfig} from './stage/identityProvider.js';
 import { SSOConfig as prodSSOConfig} from './prod/identityProvider.js';
 import { appState } from './stateManager.js';
+import appVersion from './appVersion.js';
 
 let saveFlag = false;
 let counter = 0;
@@ -1154,3 +1155,13 @@ const activityCheckController = () => {
     document.onmousemove = resetTimer;
     document.onkeypress = resetTimer;
 };
+
+(function displayAppVersion() {
+    document.addEventListener('DOMContentLoaded', function() {
+        const contentWrapper = document.querySelector('.footer-content .content-wrapper');
+
+        const newElement = document.createElement('div');
+        newElement.innerHTML = `<p id="appVersion">${appVersion.versionNumber}</p>`;
+        contentWrapper.appendChild(newElement);
+    });
+})();
