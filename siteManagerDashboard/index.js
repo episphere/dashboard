@@ -41,6 +41,8 @@ const isLocalDev = location.hostname === 'localhost' || location.hostname === '1
 const statsDataTimeLimit = 1200000; // 20 minutes
 
 window.onload = async () => {
+    
+    /*
     if(location.host === urls.prod) {
         !firebase.apps.length ? firebase.initializeApp(prodFirebaseConfig) : firebase.app();
         window.DD_RUM && window.DD_RUM.init({ ...datadogConfig, env: 'prod' });
@@ -56,7 +58,11 @@ window.onload = async () => {
 
     !isLocalDev && window.DD_RUM && window.DD_RUM.startSessionReplayRecording();
 
+    */
+
     router();
+
+    /*
     await getMappings();
     localStorage.setItem("flags", JSON.stringify(saveFlag));
     localStorage.setItem("counters", JSON.stringify(counter));
@@ -71,7 +77,7 @@ window.onload = async () => {
     } else {
       appState.setState({statsData: {}, statsDataUpdateTime: 0});
     }
-    
+    */
 };
 
 window.onhashchange = () => {
@@ -79,6 +85,8 @@ window.onhashchange = () => {
 };
 
 const router = async () => {
+
+    /*
     const hash = decodeURIComponent(window.location.hash);
     const route = hash || '#';
     const isParent = localStorage.getItem('isParent')
@@ -147,6 +155,10 @@ const router = async () => {
     }
     else if (route === '#') homePage();
     else window.location.hash = '#';
+
+    */
+
+    homePage();
 }
 
 const headsupBanner = () => {
@@ -159,6 +171,10 @@ const headsupBanner = () => {
 };
 
 const homePage = () => {
+
+    mainContent.innerHTML = renderLogin();
+
+    /*
     if (localStorage.dashboard) {
         window.location.hash = '#home';
     }
@@ -203,6 +219,7 @@ const homePage = () => {
                 });
         });
     }
+    */
 };
 
 const renderActivityCheck = () => {
