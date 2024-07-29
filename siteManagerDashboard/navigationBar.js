@@ -73,7 +73,9 @@ export const  renderLogin = () => {
         <h1>Site Study Manager Dashboard</h1>
 
         </br></br>
-        <h4>Single Sign-On</h4>
+        <h4>This dashboard has changed locations - please visit https://episphere.github.io/studyManagerDashboard/</h4>
+
+        <!--
         <form id="ssoLogin">
             <div class="row">
                 <div class="col">
@@ -86,6 +88,7 @@ export const  renderLogin = () => {
                 </div>
             </div>
         </form>
+        -->
     `;
 }
 
